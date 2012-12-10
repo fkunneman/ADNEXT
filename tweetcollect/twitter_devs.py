@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 
 import re
+import urllib2
+import datetime
+import otter
 
 # def for collecting tweets based on a keyword, returns tweet text with metadata
 def extract_tweets(keyword,api,l):
@@ -56,3 +59,26 @@ def timerel(event_begin,event_end,tweet_time):
 	else:
 		rel = "during"    
 	return rel
+
+def collect_user_topsy(username,kw):
+        tweetlist = []
+        for page in range(500):
+                try:
+                        search = otter.Resource('search', **kw)
+                        searchterm = "from:" + username 
+                        try:
+                                search(q=searchterm, type='tweet', perpage=100, page = page + 1)
+                                for item in search.response.list:
+                                        tweetuser = item.trackback_author_nick
+                                        tweetdate = datetime.datetime.fromtimestamp(int(item.trackback_date))
+                                        tweet = item.content
+                                        tweettokens = [tweetuser,str(tweetdate),tweet]
+                                        tweetlist.append(tweettokens)
+					print tweetdate
+                        except UnicodeEncodeError:
+                                print "ascii..."
+                                continue
+                except urllib2.HTTPError:
+                        print "break..."
+                        break
+        return tweetlist
