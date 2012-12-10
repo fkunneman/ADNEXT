@@ -21,12 +21,11 @@ content = 0
 for user in users:
         print user
         tweetlist = twitter_devs.collect_user_topsy(user,kw)
-	print len(tweetlist)
         if len(tweetlist) == 0:
-		print "stop"
                 userfile = codecs.open(sys.argv[1],"w","utf-8")
                 for u in users[completed:]:
                         userfile.write(u + "\n")
+		break
         else:   
                 outfile = codecs.open(userdirectory + user + ".txt","w","utf-8")
                 for tweet in tweetlist:
