@@ -16,13 +16,14 @@ for user in userfile:
         user = re.sub("\n","",user)
         users.append(user)
 
+completed = 0
 content = 0
 for user in users:
         print user
         tweetlist = twitter_devs.collect_user_topsy(user,kw)
 	print len(tweetlist)
         if len(tweetlist) == 0:
-                continue
+		print "stop"
                 userfile = codecs.open(sys.argv[1],"w","utf-8")
                 for u in users[completed:]:
                         userfile.write(u + "\n")
