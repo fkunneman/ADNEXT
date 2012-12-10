@@ -49,8 +49,8 @@ for event in eventfile:
 	eventtag = eventinfo[0] 
 	eventdate = eventinfo[1]
 	eventtime = eventinfo[2]
-	eventdate_end = eventinfo[3]
-	eventtime_end = eventinfo[4]
+	#eventdate_end = eventinfo[3]
+	#eventtime_end = eventinfo[4]
 	dateparse = parse_date.search(eventdate).groups(1)
 	eventyear = int(dateparse[2])
 	eventmonth = int(dateparse[1])
