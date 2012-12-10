@@ -23,7 +23,7 @@ for user in users:
         tweetlist = twitter_devs.collect_user_topsy(user,kw)
         if len(tweetlist) == 0:
                 userfile = codecs.open(sys.argv[1],"w","utf-8")
-                for u in users[completed:]:
+                for u in users[completed-1:]:
                         userfile.write(u + "\n")
 		break
         else:   
