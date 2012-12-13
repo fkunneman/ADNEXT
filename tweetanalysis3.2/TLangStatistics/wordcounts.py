@@ -38,12 +38,10 @@ class SingleWordAnalysis():
 
 	"""
 
-	def __init__(self, frogged_file, dutch_words_file=None, stop_words_file=None):
+	def __init__(self, frogged_file=None, dutch_words_file=None, stop_words_file=None):
 		"Set the file values"
 
-		tweet_file = frogged_file
-
-		self.tf = Tweetsfeatures(tweet_file)
+		self.tf = Tweetsfeatures(frogged_file)
 		self.tf.set_tweets(u=1, ht=1, p=1) # remove urls, hashtags and punctuation
 
 		self.stop_words = [] #only if it has any element in, will taken into account.
@@ -400,6 +398,15 @@ class SingleWordAnalysis():
 				# 		print(word, relative_freq_after, self.counter_after[word])
 
 
+	def froggedToSet(self, frogged_file):
+		"Returns a set of words from a frogged file"
+		frogged_tf = Tweetsfeatures(frogged_file)
+		frogged_tf.set_tweets(u=1, ht=1, p=1) # remove urls, hashtags and punctuation
+		s=set()
+
+		for t in frogged_tf:
+			for w in t.get_wordsequence():
+				s.add(w)
 
 
 
