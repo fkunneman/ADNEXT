@@ -343,8 +343,8 @@ class Tweetsfeatures():
 		s=set()
 		for t in self.tweets:
 			for w in t.get_wordsequence():
-				if w[0] != '@':
-					s.add(w)
+				# if w[0] != '@': #-- does not exclude usernames.
+				s.add(w)
 		return s
 
 
