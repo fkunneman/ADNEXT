@@ -25,7 +25,7 @@ for frogged_file in args.f:# take files that come from command line
 	print(frogged_file)
 
 	tf = Tweetsfeatures(frogged_file)
-	tf.set_tweets(u=1, ht=1, p=1) # remove urls, hashtags and punctuation
+	tf.set_tweets(ht=1, p=1) # remove urls, hashtags and punctuation
 	set_dict[frogged_file] = tf.get_words_set()
 	set_all_words = set_all_words.union(set_dict[frogged_file]) # put all words in this set
 
