@@ -35,13 +35,14 @@ event_times = [datetime.datetime(2012,4,29,14,30,0), datetime.datetime(2012,3,30
 event_places = {'fce':'eindhoven','spa':'rotterdam','scc':'leeuwarden','fcd':'den bosch','aja':'amsterdam','fey':'rotterdam','psv':'eindhoven','fcu':'utrecht','utr':'utrecht','gro':'groningen','hee':'heerenveen','vvv':'venlo','twe':'enschede','fct':'enschede','rod':'kerkrade','rjc':'kerkrade','her':'almelo','nac':'breda','rkc':'waalwijk','ado':'den haag','az':'alkmaar','aza':'alkmaar','exc':'rotterdam','gra':'doetinchem','nec':'nijmegen','vit':'arnhem','wii':'tilburg','hel':'helmond'}
 labels = ['before'] # it can include any others as well like: during, after, etc.
 
-
 event_info = []
 
 swa = SingleWordAnalysis(tweets_file_big_temp, dutch_words_file, stop_words_file, event_names, event_times)
 
 swa.create_event_objects(event_names, event_times, event_places, labels)
-swa.plot_word_event_based('de','before', 'tweaja', 120, 8, True, True)
+
+for w in ['enschede', 'twente','ajax']:
+	swa.plot_word_event_based(w,'before', 'tweaja', 120, 8) # word, label, event_name, minutesForFrame, day back count
 
 
 swa.count_words() # order of these mathods should be preserved.
@@ -70,6 +71,27 @@ swa.calc_words_relative_freq()
 #swa.get_sorted_rel_freq()
 #swa.plot_most_relfreq_words_before()
 #swa.get_sorted_freq()
+
+#-----------------------------------------------------------------------------
+#....... Tweet counts for each Before a soccer match
+# tweaja 3380 - feyaz 3326 - ajavvv 3308 - heefey 3168 -feyher 1885 - ajagro 1727
+# rkcvit 1345 bayche 1332 adofey 1170 twehee 1127
+# vitaja 1056 vitrkc 1005 psvado 801 graexc 774
+# psvnec 687 excpsv 616 vitnec 567 twerkc 519
+# rodpsv 501 heevit 485 necrkc 481 exctwe 416
+# grogra 395 helvvv 386 vvvhel 385 adogra 361
+# utrvit 349 vvvtwe 338 herhee 335 nacrkc 311
+# gronac 291 graher 288 vitexc 266 vvvado 251
+# necaz 249 azgro 242 utrnac 228 azvvv 219
+# nacrod 191 rkcutr 188 rkcrod 177 rodutr 130
+# rkcrjc 80 fcehel 71 nacrjc 69 fctrkc 40
+# rjcutr 40 fcuvit 37 rkcfcu 19 feyaza 18
+# fcunac 17 fcdgra 13 vvvscc 11 adogro 10
+# twenac 10 vvvvit 8 grautr 7 rjcfey 6
+# wiispa 6 grafcd 6 ajagra 6 sccvvv 4
+# rjcfcu 4 spawii 3 rodfcu 2 azavvv 1 psvaza 1 
+
+#-----------------------------------------------------------------------------
 
 
 
