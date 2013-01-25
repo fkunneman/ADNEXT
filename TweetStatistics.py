@@ -40,12 +40,9 @@ crea_event_objs_for=['tweaja','feyaz']
 #swa.crea_event_objs_for(labels, crea_event_objs_for) # just two
 swa.crea_event_objs_for(labels, event_names) # all
 
-swa.find_same_time_events()
 
-exit()
-
-#swa.calc_label_event_tseries()
-swa.plot_words_of_label_of_event('before', 'tweaja', 120, 8)
+for c_e in crea_event_objs_for:
+	swa.plot_words_of_label_of_event('before', c_e, 120, 8)
 
 
 # Event based, word graphs
@@ -98,6 +95,7 @@ swa.plot_words_of_label_of_event('before', 'tweaja', 120, 8)
 # wiispa 6 grafcd 6 ajagra 6 sccvvv 4
 # rjcfcu 4 spawii 3 rodfcu 2 azavvv 1 psvaza 1 
 #-----------------------------------------------------------------------------
+#  --> swa.find_same_time_events()
 #... Events per time ...
 # 2012-04-29 14:30:00 ['feyaz', 'feyaza', 'tweaja']
 # 2012-03-30 20:00:00 ['utrexc', 'fcuexc']

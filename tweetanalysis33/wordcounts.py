@@ -661,7 +661,8 @@ class SingleWordAnalysis():
 		if len(event_obj.tweets[label]) == 0:
 			print(event_obj.name, label, '--> Does not have any Tweet, Exit !')
 			exit()
-		#event_obj.print_word_counts()
+		event_obj.print_word_counts()
+		return
 		for word, count in event_obj.words[label].most_common():
 
 			if count == 1:
@@ -874,9 +875,7 @@ def words_decreasing_rel_freq():
 # TempCategory - Before/During/After- Word -  : Inheritance Order
 
 
-
-
-# Code Sample :
+# Code Samples :
 # -------------------------------------------------------------
 # wordfrequency = defaultdict(list)
 # for word in sequence:
