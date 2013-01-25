@@ -43,9 +43,13 @@ class Event:
 #Notes:
 # Which tweet count should be taken to calculate the frequency ? Now: just for relevant time category tweet counts.
 # Make the calculations for just one word, the one requested, think about it !
-#
+# inherit a class from Event class which can be a combination of events (list of names, places, start times)
+# Some attributes or subclasses for different time in the week, and day.
+# Compare just same day of the week, same hour, later extend.Like same day and hour but different week, ...
+# For not accumulated ones but : delete words with the count 1, so more efficient.
 
 	def __init__(self, e_name, e_place, e_time, label_list):
+
 		self.name = e_name
 		self.place = e_place
 		self.time = e_time
@@ -72,7 +76,6 @@ class Event:
 			self.w_stdev_list[l] = {}
 
 
-
 	def store_event_tweets(self, tf, label_list):
 		"Store tweets in the dictionary in the relevant label list"
 		for t in tf.tweets:
@@ -91,35 +94,29 @@ class Event:
 		for t in self.tweets[label]:
 			if w in list(set(t.get_wordsequence())):
 				self.words[label][w] += 1
-		print('Count for:', w,'is:',self.words[label][w])
 
 	def calcFreq_all_words(self, label_list): # you can make it just for one or several words, to gain time and memory
 		"if one label contain one word, interpreter makes word to char conversion, careful ! "
 		for label in label_list:
 			for word, w_count in self.words[label].items():
 				self.word_freq[label][word] = w_count / len(self.tweets[label])
-				print('Freq. Calc.(w, count, tweetCountForLabel, freqInThisLabel):', word, w_count, len(self.tweets[label]), self.word_freq[label][word])
 
 	def calcFreq_for_word(self, w, label): # you can make it just for one or several words, to gain time and memory
 		self.word_freq[label][w] = self.words[label][w] / len(self.tweets[label])
-		#print('Freq. Calc.(w, count, tweetCountForLabel, freqInThisLabel):', w, self.words[label][w], len(self.tweets[label]), self.word_freq[label][w])
 
 	def calc_timeseries(self, w, label, minuteForFrame, dayCount):
 		if len(self.tweet_tseries[label]) == 0:
 			time_list_for_tweets = sorted([x.time for x in self.tweets[label]])
+			#this is a tuple
 			self.tweet_tseries[label] = self.calc_tseries_tweets(time_list_for_tweets, minuteForFrame,dayCount)
 
 		time_list_for_word = [t.time for t in self.tweets[label] if w in list(set(t.get_wordsequence())) ]
 		self.w_tseries[label][w] = self.calc_tseries_words(time_list_for_word, minuteForFrame, dayCount)
 
-		#when it used, do not forget to get x axis from the self.w_tseries[label][w][0], first element of the relevant tuple.
 		self.normalized_w_tseries[label][w] = self.normalize_w_by_tweet_tseries(w, label)
 		
-
-		# cut the relevant timeserie and add it as a tuple with the smoothed result, 2, 3 ?
 		self.smoothed_w_tseries[label][w] = self.running_average(self.normalized_w_tseries[label][w])
 
-		# 
 		self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
 		self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
 
@@ -127,13 +124,6 @@ class Event:
 		#cut from back, to have a graph from the zero point of the event.
 		return (self.tweet_tseries[label][0][:-2], self.smoothed_w_tseries[label][w])
 		
-		#.. ? self.calc_mean_for_word(w, label)
-
-		# print('tweet timeseries:',self.tweet_timeseries[label])
-		# print('word time series:',self.w_tseries[label][w])
-
-		#exit() # Exit -------
-
 	def calc_tseries_tweets(self, time_list, minuteForFrame, day_count):
 		"It calculates backward from the --End of Before-- of an event, be careful for --End of other labels-- !"
 		xlabels = []
@@ -145,7 +135,6 @@ class Event:
 		timespan= self.time - datetime.timedelta(seconds_back)
 		while t_delta < seconds_back:
 			count = 0
-			#print(self.time)
 			interval = self.time - datetime.timedelta(0, t_delta)
 			before_interval = interval - datetime.timedelta(0,60*minuteForFrame)
 
@@ -164,11 +153,8 @@ class Event:
 		return (xlabels, xvalues)
 
 	def calc_tseries_words(self, time_list, minuteForFrame, day_count):
-		"""
-		It calculates backward from the --End of Before-- of an event, be careful for --End of other labels-- !
-		There is not any xlabels here, it is taken from the tweets time series.
-
-		"""
+		""" It calculates backward from the --End of Before-- of an event, be careful for --End of other labels-- !
+		There is not any xlabels here, it is taken from the tweets time series."""
 		xvalues = []
 		tweetCount = 0
 		t_delta = 0
@@ -195,33 +181,16 @@ class Event:
 
 	def normalize_w_by_tweet_tseries(self, word, label):
 		"Make this more efficient with numpy array"
-
-		w_time_per_count = []
-		a = self.w_tseries[label][word]
-		b = self.tweet_tseries[label][1]
-
-		for i in range(0, len(self.w_tseries[label][word])):
-			if b[i] == 0:
-				w_time_per_count.append(0)
-			else:
-				w_time_per_count.append(a[i]/b[i])
-
-			print('Word count:', a[i], ' -->TweetCount:', b[i])
-
-		return w_time_per_count
-
+		return [a/b if b > 0 else 0 for a, b in zip(self.w_tseries[label][word], self.tweet_tseries[label][1]) ]
 
 	def running_average(self, t_series_l):
 		"returned list has 2 elements less than normal one, make the change in plotting for the other list"
 		"? weights should be 4 2 1 or 1 2 4 ?, is the order of current, next1 and next2 right ?"
-		print(t_series_l)
-
 		r_average = []
 		av = 0
 		divide_by = 7 # 3 elems + 1 for the weight of the middle one = 4
 		for current, next1, next2 in self.neighborhood(t_series_l):
 			av=(4*current + 2*next1+next2)/divide_by
-			print(current,'--',next1,'--',next2)
 			
 			r_average.append(av)
 
@@ -231,23 +200,15 @@ class Event:
 
 	def neighborhood(self, iterable):
 		iterator = iter(iterable)
-		print(iterator)
 		
 		current = iterator.__next__()  # throws StopIteration if empty.
 		next1 = iterator.__next__()
 		next2 = iterator.__next__()
-		print('---neighborhood: ----')
-		print('1:\t',current,'2:\t',next1, '3:\t',next2)
 		for next in iterator:
 			yield (current, next1, next2)
 			current = next1
 			next1 = next2
 			next2 = next
-			print('-------------------------------Next:', next)
-
-	def calc_mean_for_word(self, word, label):
-			pass
-
 
 	def print_word_counts(self):
 		for label in self.labels:
@@ -270,32 +231,14 @@ class SingleWordAnalysis():
 
 	"""
 
-	def __init__(self, frogged_file=None, dutch_words_file=None, stop_words_file=None, events=None, event_times=None):
+	def __init__(self, frogged_file=None, event_names=None, event_times=None, event_places= None):
 		"Set the file values"
 
-		self.events=events
+		self.event_names = event_names
+		self.event_times = event_times
+		self.event_places = event_places
 		self.tf = Tweetsfeatures(frogged_file)
 		self.tf.set_tweets(u=1, ht=1, p=1) # remove urls, hashtags and punctuation
-
-		self.stop_words = [] #only if it has any element in, will taken into account.
-
-		if stop_words_file != None: # implement exception control
-			stop_words_f = codecs.open(stop_words_file,"r","utf-8")
-		
-			with stop_words_f as f:
-				for line in f:
-					stop_words_tmp = line.split(', ')
-					for sw in stop_words_tmp:
-						self.stop_words.append(sw[1:-1])
-
-		# self.dutch_words_dict = {}
-		# if dutch_words_file != None:
-		# 	dutch_words_f = codecs.open(dutch_words_file,"r","utf-8")
-
-		# 	with dutch_words_f as f:
-		# 		for line in f:
-		# 			key, val = line.split('\t')
-		# 			self.dutch_words_dict[key] = int(val)
 
 		self.relative_freq_before_dict = {}
 		self.relative_freq_during_dict = {}
@@ -315,35 +258,50 @@ class SingleWordAnalysis():
 		self.event_times = event_times
 		self.before_tweets = []
 		
+		#counts, freqs should be done, for all. # order of these mathods should be preserved.
+		# self.count_words()  self.calc_words_freq()  self.calc_words_relative_freq()
 
 		self.events_dict = {} # event objects
 
 
-	def create_event_objects(self, event_name_list, event_time_list, e_place_dict, label_list):
+	def crea_event_objs_for(self, label_list, crea_event_obj_for):
 		"it handles hashtag names specific for soccer matches"
 		"""
+		Info: Creates a different object for each event
 		Notes:
 		1- Add event list to be taken into account. Events that are not in the list should not be processed.
+		2- An event object for all soccer matches.
 		"""
-
-		t_str = '['
-		i = 0
-		for name in event_name_list:
+		for name in crea_event_obj_for:
 			
 			if len(name) == 5 and name[:2] == 'az':
 				e_place = 'az'
 			else:
 				e_place = name[:3]
 			
-			self.events_dict[name] = Event(name, e_place_dict[e_place], event_time_list[event_name_list.index(name)], label_list)
+			self.events_dict[name] = Event(name, self.event_places[e_place], self.event_times[self.event_names.index(name)], label_list)
 		
 		for t in self.tf.tweets: #put tweets in the relevant places
-			if t.label in label_list and t.event in event_name_list: #ignore tweets that does not have proper hashtag and label.
+			if t.label in label_list and t.event in crea_event_obj_for: #ignore tweets that does not have proper hashtag and label.
 				self.events_dict[t.event].tweets[t.label].append(t)
 
 		for name, event in self.events_dict.items():
 			event.count_all_words(label_list)
-			event.print_word_counts()
+		
+
+	def find_same_time_events(self):
+		found_events = []
+		time_per_event = {}
+		for name, event in self.events_dict.items():
+			time_per_event[str(event.time)] = []
+
+		for n, e in self.events_dict.items():
+			time_per_event[str(e.time)].append(e.name)
+
+		for t, l in time_per_event.items():
+			print(t,str(l))
+						
+
 
 
 	def count_words(self):
@@ -360,7 +318,6 @@ class SingleWordAnalysis():
 
 			self.all_tweet_count +=1
 			self.counter_events[t.event] += 1 # count tweets for each event
-			#print("in the event ...:", t.event, "Tweet:", i)
 			
 			if t.event in self.events: #for this event
 
@@ -389,15 +346,11 @@ class SingleWordAnalysis():
 					for w in t.get_wordsequence():
 						self.counter_after[w] += 1
 						self.all_after_word_count += 1
-					
-		# Ask Maarten: values and sum does not work properly.
-		# self.all_before_word_count = sum(self.counter_before.values())
-		# self.all_during_word_count = sum(self.counter_during.values())
-		# self.all_after_word_count = sum(self.counter_after.values())
+	
 		
 		print("Twente Ajax Before, During, After, Sum Tweet Count:", tweet_count_tweaja_before, tweet_count_tweaja_during, \
 		   tweet_count_tweaja_after, tweet_count_tweaja_before+tweet_count_tweaja_during+tweet_count_tweaja_after)
-		#exit()
+	
 		self.all_words_counter = self.counter_before + self.counter_during + self.counter_after
 		self.word_list = list(self.all_words_counter)
 
@@ -461,8 +414,6 @@ class SingleWordAnalysis():
 	def sort_dict(self, d):
 		return sorted(d.items(), key= operator.itemgetter(1), reverse= True) # Highest value first, descending
 
-
-
 	def print_sorted(self, d, c): #d:dict, c:counter
 		values = sorted(d.items(), key= operator.itemgetter(1), reverse= True)
 		
@@ -484,8 +435,6 @@ class SingleWordAnalysis():
 
 		print("End of rest words list")
 
-
-	
 	def calc_time_list_for_tweets(self):
 		time_list = []
 		for t in self.before_tweets:
@@ -534,12 +483,7 @@ class SingleWordAnalysis():
 			xlabels.append(0-t_delta/3600) # Give minutes before a match
 			t_delta = t_delta + 60*minForPeriod
 
-			#xlabels.append(date2num(interval))
-
-
 		return (xlabels, xvalues)
-
-
 		
 	def running_average(self, t_series_l):
 		"returned list has 2 elements less than normal one, make the change in plotting for the other list"
@@ -566,18 +510,14 @@ class SingleWordAnalysis():
 		current = iterator.__next__()  # throws StopIteration if empty.
 		next1 = iterator.__next__()
 		next2 = iterator.__next__()
-		print('---neighborhood: ----')
-		print('1:\t',current,'2:\t',next1, '3:\t',next2)
 		for next in iterator:
 			yield (current, next1, next2)
 			current = next1
 			next1 = next2
 			next2 = next
-			print('-------------------------------Next:', next)
-
 
 	def plot_word(self, w, minutes_for_time_period, day_back_count, withTweetCount, is_running_average): #use n to indicate number of words to make plot for
-
+		"count, freq methods should be enabled in the constructor before this start"
 		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black', 'white']
 		line_style = ['--']
 		line_markers = []
@@ -596,14 +536,12 @@ class SingleWordAnalysis():
 		else:
 			smoothed_str += 'Not Smoothed'
 
-
 		matplotlib.pyplot.title('The Word: '+w+', '+str(minutes_for_time_period)+' minutes time frame, '+str(day_back_count)+' days back, '+ smoothed_str)
 		matplotlib.pyplot.xlim((0-24*day_back_count), 0)
 		#matplotlib.pyplot.ylim(0,1)
 		xticks( [-192,-168,-144,-120,-96,-72, -48,-24,0]) # write for range of days, add an element multiplied by 24.otherwise when the days changed; it will be problem.
 		#yticks([0, 0.1, 0.2, 0.3, 0.4, 0.5])
 		#yticks([0, 0.05, 0.1,0.15, 0.2,0.25, 0.3,0.35, 0.4,0.45, 0.5,0.55, 0.6,0.65, 0.7,0.75, 0.8,0.85, 0.9])
-
 
 		i=0
 		if withTweetCount == True:
@@ -634,15 +572,12 @@ class SingleWordAnalysis():
 		
 		print('Length of axes_0 and w_time_per_count', len(axes_0), len(w_time_per_count))
 		plot(axes_0, w_time_per_count, color=line_colors[i], label=w)
-		
 
 		w_mean_freq_list = [self.freq_before_dict[w]] * len(w_time_per_count)
-		
 
 		plot(axes_0, w_mean_freq_list, color=line_colors[i+1], label = 'mean of:'+w) # straight line, mean for this word.
 		plotted_words += '-withMeanLine'
 		print('Mean Line is:', line_colors[i+1])
-
 
 		#calc. standard deviation
 		w_st_power_diff = [((a-b)**2) for a, b in zip(w_mean_freq_list, w_time_per_count)]
@@ -662,7 +597,6 @@ class SingleWordAnalysis():
 		ylabel('Relative Frequency',fontsize = 30, fontweight='bold')
 		xlabel('Hours Before Event', fontsize = 30, fontweight='bold')
 		fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/'+plotted_words+'-'+str(minutes_for_time_period)+'minPeriod'+'-'+str(day_back_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
-
 
 	def plot_word_event_based(self, word, label, event_name, minute_time_period, day_count): #use n to indicate number of words to make plot for
 		"""
@@ -703,14 +637,66 @@ class SingleWordAnalysis():
 		legend(loc='upper right', fontsize=22)
 		ylabel('Relative Frequency',fontsize = 30, fontweight='bold')
 		xlabel('Hours Before Event', fontsize = 30, fontweight='bold')
-		matplotlib.pyplot.title('Word:'+word+',Event:' +event_name+',TweetCount:'+str(len(event_obj.tweets['before']))+','+str(minute_time_period)+':minutes time frame, '+ \
+		matplotlib.pyplot.title('Word:'+word+',Event:' +event_name+',TweetCount:'+str(len(event_obj.tweets[label]))+','+str(minute_time_period)+':minutes time frame, '+ \
 			str(day_count)+' days back')
 		fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/'+plotted_words+'-Event:' +event_name+','+str(minute_time_period)+'minPeriod'+'-'+str(day_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
 
-	def fast_plot_word():
+	def plot_words_of_label_of_event(self, label, event_name, minute_time_period, day_count):
+		"""
+		 1- label should contain one element for now.
+		"""
+		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black', 'white']
+		line_style = ['--']
+		line_markers = []
+		
+		fig = matplotlib.pyplot.figure(figsize=(25,20)) #  fig size should vary according day*24
+		matplotlib.pyplot.grid(True) # ???
+		font = {'weight':'bold', 'size':22}
+		matplotlib.rc('font', **font)
+		matplotlib.rc('lines', lw=4)		
+		matplotlib.pyplot.xlim((0-24*day_count), 0)
+		xticks( [a*(-24) for a in reversed(range(0, day_count+1))] ) 
+		
+		event_obj = self.events_dict[event_name]
+		if len(event_obj.tweets[label]) == 0:
+			print(event_obj.name, label, '--> Does not have any Tweet, Exit !')
+			exit()
+		#event_obj.print_word_counts()
+		for word, count in event_obj.words[label].most_common():
+
+			if count == 1:
+				break
+
+			plotted_words = word
+			event_obj.calcFreq_for_word(word, label)
+			axes = event_obj.calc_timeseries(word, label, minute_time_period, day_count)
+			axes_x0 = axes[0]
+			axes_y1 = axes[1]
+
+			plot(axes_x0, axes_y1, color=line_colors[2], label=word)
+			plot(axes_x0, event_obj.w_mean_list[label][word], color=line_colors[1], label = 'mean of:'+word) # straight line, mean for this word.
+
+			mean_plus_stDev = [a+b for a, b in zip(event_obj.w_mean_list[label][word], event_obj.w_stdev_list[label][word])]
+			plot(axes_x0, mean_plus_stDev, color=line_colors[0], label = 'St. Dev of:'+word) # straight line, mean for this word.
+			
+			mean_plus_stDev_2 = [a+(2*b) for a, b in zip(event_obj.w_mean_list[label][word], event_obj.w_stdev_list[label][word])]
+			plot(axes_x0, mean_plus_stDev_2, color=line_colors[0]) # straight line, mean for this word.
+			
+			legend(loc='upper right', fontsize=22)
+			ylabel('Relative Frequency',fontsize = 30, fontweight='bold')
+			xlabel('Hours Before Event', fontsize = 30, fontweight='bold')
+			matplotlib.pyplot.title('Word:'+word+','+str(count)+' times'+',Event:' +event_name+',TweetCount:'+str(len(event_obj.tweets[label]))+','+str(minute_time_period)+':minutes time frame, '+ \
+				str(day_count)+' days back')
+			fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/'+plotted_words+'-Event:' +event_name+','+str(minute_time_period)+'minPeriod'+'-'+str(day_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
+			fig.clf()
+
+	def init_fig(self):
 		pass
 
 
+
+	def fast_plot_word():
+		pass
 
 
 	def plot_mostCommonWords_RelFreqWithTweets(self, n, min, withTweetCount = True): #use n to indicate number of words to make plot for
@@ -1125,4 +1111,21 @@ def words_decreasing_rel_freq():
 		#yticks([0, 0.1, 0.2, 0.3, 0.4, 0.5])
 		#yticks([0, 0.05, 0.1,0.15, 0.2,0.25, 0.3,0.35, 0.4,0.45, 0.5,0.55, 0.6,0.65, 0.7,0.75, 0.8,0.85, 0.9])
 
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+# self.stop_words = [] #only if it has any element in, will taken into account.
+		# if stop_words_file != None: # implement exception control
+		# 	stop_words_f = codecs.open(stop_words_file,"r","utf-8")
+		# 	with stop_words_f as f:
+		# 		for line in f:
+		# 			stop_words_tmp = line.split(', ')
+		# 			for sw in stop_words_tmp:
+		# 				self.stop_words.append(sw[1:-1])
+		# self.dutch_words_dict = {}
+		# if dutch_words_file != None:
+		# 	dutch_words_f = codecs.open(dutch_words_file,"r","utf-8")
+		# 	with dutch_words_f as f:
+		# 		for line in f:
+		# 			key, val = line.split('\t')
+		# 			self.dutch_words_dict[key] = int(val)
 # ----------------------------------------------------------------------------------------------------------------------------------
