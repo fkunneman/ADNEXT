@@ -13,6 +13,7 @@ import time
 import numpy
 import pandas
 import matplotlib
+import math
 
 # from pandas import *
 # from numpy import *
@@ -104,19 +105,22 @@ class Event:
 	def calcFreq_for_word(self, w, label): # you can make it just for one or several words, to gain time and memory
 		self.word_freq[label][w] = self.words[label][w] / len(self.tweets[label])
 
-	def calc_timeseries(self, w, label, minuteForFrame, dayCount):
+	def calc_tseries(self, w, label, minuteForFrame, dayCount):
 		if len(self.tweet_tseries[label]) == 0:
 			time_list_for_tweets = sorted([x.time for x in self.tweets[label]])
 			#this is a tuple
 			self.tweet_tseries[label] = self.calc_tseries_tweets(time_list_for_tweets, minuteForFrame,dayCount)
 
 		time_list_for_word = [t.time for t in self.tweets[label] if w in list(set(t.get_wordsequence())) ]
-		self.w_tseries[label][w] = self.calc_tseries_words(time_list_for_word, minuteForFrame, dayCount)
+		self.w_tseries[label][w] = self.calc_tseries_count_words(time_list_for_word, minuteForFrame, dayCount)
 
 		self.normalized_w_tseries[label][w] = self.normalize_w_by_tweet_tseries(w, label)
 		
 		self.smoothed_w_tseries[label][w] = self.running_average(self.normalized_w_tseries[label][w])
 
+		if w not in self.word_freq[label]:
+			#print('Freq is None, calculating ...:', w)
+			self.calcFreq_for_word(w, label)
 		self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
 		self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
 
@@ -152,7 +156,7 @@ class Event:
 
 		return (xlabels, xvalues)
 
-	def calc_tseries_words(self, time_list, minuteForFrame, day_count):
+	def calc_tseries_count_words(self, time_list, minuteForFrame, day_count):
 		""" It calculates backward from the --End of Before-- of an event, be careful for --End of other labels-- !
 		There is not any xlabels here, it is taken from the tweets time series."""
 		xvalues = []
@@ -302,6 +306,96 @@ class SingleWordAnalysis():
 			print(t,str(l))
 						
 
+	def calc_euc_distance_w(self, w, labels, events, minuteForFrame, dayCount):
+		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
+		"""
+		  First label should be before for now.
+		  since the X axes is same we do not take it into account
+
+		  Questions:
+		     1- Should I normalize scores for trained and test lists
+		"""
+
+
+		for e in events:
+			for l in labels:
+				event = self.events_dict[e]
+				t_series = event.calc_tseries(w, l, minuteForFrame, dayCount)
+				print(event.name, l, w)
+				print('Count:', event.words[l][w])
+				print('Freq:', event.word_freq[l][w])
+				print('Len of tseries X and Y:',len(t_series[0]), len(t_series[1]),'Y and X dimension:\n', t_series[0], t_series[1]) # calc the time serie
+				print('Len of word timeseries:',len(event.w_tseries[l][w]),'Word Time series:\n', event.w_tseries[l][w])
+				print('Len of Normalized W TSeries:',len(event.normalized_w_tseries[l][w]),'Normalized Word Time series:\n', event.normalized_w_tseries[l][w])
+				print('Len of smoothed_w_tseries:',len(event.smoothed_w_tseries[l][w]),'Smoothed Word Time series:\n', event.smoothed_w_tseries[l][w])
+				#print()
+		trained_X = self.events_dict[events[0]].tweet_tseries[labels[0]][0] # get it from tweet time series. It is same for all events.
+		#trained_Y = self.events_dict[events[0]].w_tseries[labels[0]][w] # Word counts not so good results.if there is more counts, euc. distance is more
+		trained_Y = self.events_dict[events[0]].smoothed_w_tseries[labels[0]][w] # this should produce more balanced results.
+		trained = [(a,b) for a, b in zip(trained_X, trained_Y)]
+		print('Len of trained tuples:',len(trained), 'trained tupples:\n',trained)
+		print('Reversed trained tuples:\n',list(reversed(trained)))
+		trained = list(reversed(trained)) # Time was reversed in the normal array. For the normal timeline with the test data.
+		#trained = numpy.array([trained_X, trained_Y])
+		print('Trained Y:\n',trained_Y)
+		print('Reversed Training:\n',list(reversed(trained_Y)))
+		test_Y = self.events_dict[events[1]].w_tseries[labels[0]][w]
+		#test = numpy.array([trained_X,trained_Y])
+		print( 'Len of Test:',len(test_Y),'Test:\n',test_Y)
+		print('Difference between trained and test:',len(test_Y)-len(trained))
+		test_Y = test_Y[:len(trained)] #test_Y, when not smoothed, is longer be careful
+		print( 'After length Normalization, Len of Test:',len(test_Y),'Test:\n',test_Y)
+
+		y_difference = [a-b for a, b in zip(trained_Y, test_Y)]
+		print('y_difference:\n', y_difference)
+		print('Absolue of y_difference:\n', [abs(a) for a in y_difference])
+
+		i = 0
+		test_seq = []
+		euc_diff_list = []
+		trained_sub_seq = []
+		for test_item in reversed(test_Y):
+			test_seq.append(test_item)
+			print('Test Sequence:',test_seq)
+
+			x=0
+			for t in trained:
+				temp_sub_seq = trained[x:x+len(test_seq)] #create subsequences of the length of observed test data
+				if len(temp_sub_seq) == len(test_seq):
+					trained_sub_seq.append(temp_sub_seq)
+				else:
+					break
+				x +=1
+			
+			print('--Training Sequences:')
+			print(*trained_sub_seq, sep='\n')
+
+			euc_distances = []
+			for temp_sub_seq in trained_sub_seq:
+				#Calc euc. distance and add it as a tuple with the last time point. for this subsequence
+				euc_distances.append((temp_sub_seq[-1][0],sqrt(sum([(a-b[1])**2 for a, b in zip(test_seq, temp_sub_seq)]))))
+			print('--Euclidian distances:')
+			print(*euc_distances, sep='\n')
+
+			#Find the smallest euc. distance
+			smallest_euc = min([a[1] for a in euc_distances])
+			print('Smallest Euc:', smallest_euc )
+			#Choose the average of the lowest time values if there is more than one.
+			matched_times = []
+			
+
+			print('matched times:\n', matched_times)
+			print('average of matched times:',numpy.mean(matched_times))
+
+
+			#start again for more observation
+			trained_sub_seq = [] 
+			euc_distances = []
+			print('------------------------------------------------------------------')
+			#euc_diff_list = [abs(trained[i]-test_item) for a in zip(trained_Y)]
+
+		
+		#test = [] # two dimensions
 
 
 	def count_words(self):
@@ -621,7 +715,7 @@ class SingleWordAnalysis():
 		
 		event_obj.calcFreq_for_word(word, label)
 		
-		axes = event_obj.calc_timeseries(word, label, minute_time_period, day_count)
+		axes = event_obj.calc_tseries(word, label, minute_time_period, day_count)
 		axes_x0 = axes[0]
 		axes_y1 = axes[1]
 
@@ -641,9 +735,10 @@ class SingleWordAnalysis():
 			str(day_count)+' days back')
 		fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/'+plotted_words+'-Event:' +event_name+','+str(minute_time_period)+'minPeriod'+'-'+str(day_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
 
-	def plot_words_of_label_of_event(self, label, event_name, minute_time_period, day_count):
+	def plot_most_common_words_of_label_of_event(self, label, event_name, minute_time_period, day_count):
 		"""
 		 1- label should contain one element for now.
+		 2- call one time for each event
 		"""
 		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black', 'white']
 		line_style = ['--']
@@ -661,16 +756,19 @@ class SingleWordAnalysis():
 		if len(event_obj.tweets[label]) == 0:
 			print(event_obj.name, label, '--> Does not have any Tweet, Exit !')
 			exit()
-		event_obj.print_word_counts()
-		return
-		for word, count in event_obj.words[label].most_common():
+		
 
-			if count == 1:
-				break
+		i = 0
+
+		for word, count in event_obj.words[label].most_common(500):
+
+			# limit by most_common n words(above) or words that occur n times(below) 
+			# if count == 1:
+			# 	break
 
 			plotted_words = word
 			event_obj.calcFreq_for_word(word, label)
-			axes = event_obj.calc_timeseries(word, label, minute_time_period, day_count)
+			axes = event_obj.calc_tseries(word, label, minute_time_period, day_count)
 			axes_x0 = axes[0]
 			axes_y1 = axes[1]
 
@@ -686,10 +784,84 @@ class SingleWordAnalysis():
 			legend(loc='upper right', fontsize=22)
 			ylabel('Relative Frequency',fontsize = 30, fontweight='bold')
 			xlabel('Hours Before Event', fontsize = 30, fontweight='bold')
-			matplotlib.pyplot.title('Word:'+word+','+str(count)+' times'+',Event:' +event_name+',TweetCount:'+str(len(event_obj.tweets[label]))+','+str(minute_time_period)+':minutes time frame, '+ \
+			matplotlib.pyplot.title('Word:'+word+','+str(count)+' times,'+str(i)+' most freq'+',Event:' +event_name+',TweetCount:'+str(len(event_obj.tweets[label]))+','+str(minute_time_period)+':minutes time frame, '+ \
 				str(day_count)+' days back')
 			fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/'+plotted_words+'-Event:' +event_name+','+str(minute_time_period)+'minPeriod'+'-'+str(day_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
 			fig.clf()
+
+			i += 1
+			print(str(i), word, event_obj.name)
+
+	def plot_word_list_of_label_of_event(self, w_list, label, event_name, minute_time_period, day_count):
+		"""
+		 1- label should contain one element for now.
+		 2- call one time for each event
+		"""
+		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black', 'white']
+		line_style = ['--']
+		line_markers = []
+		
+		fig = matplotlib.pyplot.figure(figsize=(25,20)) #  fig size should vary according day*24
+		matplotlib.pyplot.grid(True) # ???
+		font = {'weight':'bold', 'size':22}
+		matplotlib.rc('font', **font)
+		matplotlib.rc('lines', lw=4)		
+		matplotlib.pyplot.xlim((0-24*day_count), 0)
+		xticks( [a*(-24) for a in reversed(range(0, day_count+1))] ) 
+		
+		event_obj = self.events_dict[event_name]
+		if len(event_obj.tweets[label]) == 0:
+			print(event_obj.name, label, '--> Does not have any Tweet, Exit !')
+			exit()
+		
+
+		i = 0
+
+		for word in w_list:
+
+			plotted_words = word
+			axes = event_obj.calc_tseries(word, label, minute_time_period, day_count)
+			axes_x0 = axes[0]
+			axes_y1 = axes[1]
+
+			plot(axes_x0, axes_y1, color=line_colors[2], label=word)
+			plot(axes_x0, event_obj.w_mean_list[label][word], color=line_colors[1], label = 'mean of:'+word) # straight line, mean for this word.
+
+			mean_plus_stDev = [a+b for a, b in zip(event_obj.w_mean_list[label][word], event_obj.w_stdev_list[label][word])]
+			plot(axes_x0, mean_plus_stDev, color=line_colors[0], label = 'St. Dev of:'+word) # straight line, mean for this word.
+			
+			mean_plus_stDev_2 = [a+(2*b) for a, b in zip(event_obj.w_mean_list[label][word], event_obj.w_stdev_list[label][word])]
+			plot(axes_x0, mean_plus_stDev_2, color=line_colors[0]) # straight line, mean for this word.
+			
+			legend(loc='upper right', fontsize=22)
+			ylabel('Relative Frequency',fontsize = 30, fontweight='bold')
+			xlabel('Hours Before Event', fontsize = 30, fontweight='bold')
+			matplotlib.pyplot.title('Word:'+word+','+str(event_obj.words[label][word])+' times,'+str(i)+' most freq'+',Event:' +event_name+',TweetCount:'+str(len(event_obj.tweets[label]))+','+str(minute_time_period)+':minutes time frame, '+ \
+				str(day_count)+' days back')
+			fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/'+plotted_words+str(event_obj.words[label][word])+' times,'+str(i)+'. most freq'+'-Event:' +event_name+','+str(minute_time_period)+'minPeriod'+'-'+str(day_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
+			
+			i += 1
+			print(str(i), word, event_obj.name)
+
+			fig.clf()
+
+			
+
+
+	def get_intersec_word_counts(self, label, event_name1, event_name2, n):
+		event1 = self.events_dict[event_name1]
+		event2 = self.events_dict[event_name2]
+
+		w_list = []
+		print('The word list is for words occur in both events with count more than'+str(n))
+		for w, c in event1.words[label].most_common():
+			if event2.words[label][w] > n and c > n:
+				print(w, c, event2.words[label][w])
+				w_list.append(w)
+		return w_list
+
+
+
 
 	def init_fig(self):
 		pass
