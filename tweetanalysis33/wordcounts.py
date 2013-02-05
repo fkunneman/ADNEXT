@@ -317,8 +317,6 @@ class SingleWordAnalysis():
 		  Questions:
 		     1- Should I normalize scores for trained and test lists
 		"""
-
-
 		for e in events:
 			for l in labels:
 				event = self.events_dict[e]
@@ -408,8 +406,17 @@ class SingleWordAnalysis():
 		  Questions:
 		     1- Should I normalize scores for trained and test lists
 		"""
-
+		graph_title = 'Mean Square Error'+ '-Train:'+events[0]+' -Test:'+events[1]+' -WordCount:'+str(len(w_list))+' -minutesForFrame:'+str(minuteForFrame)+ ' -DayCount:'+str(dayCount)
+		x_label = 'Hours Before an Event'
+		y_label = 'Root Mean Square Error'
 		label = labels[0]
+		square_err_predict_list = []
+		square_err_mean_list = []
+		square_err_median_list = []
+
+		mean_sq_err_predict_l = []
+		mean_sq_err_mean_l = []
+		mean_sq_err_median_l = []
 		event_trained = self.events_dict[events[0]]
 		event_test = self.events_dict[events[1]]
 		print('Training Event:', event_trained.name)
@@ -427,14 +434,16 @@ class SingleWordAnalysis():
 
 		euc_distances_sum = []
 		test_seq = []
-		
+		square_roots = []
+		square_roots_mean = []
+		square_roots_median = []
+
 		for sample_count in range(1, len(trained_X)+1):
 			#print('Sample Count:', sample_count)
 			#print('Len Trained X:',len(trained_X))
 
 			#len of euc_distances_sum should be same count with the sequences count at this sample size.
 			euc_distances_sum = [(1111,0)] * (1+len(trained_X)-sample_count) #initialization needed for sum
-
 			
 			for w in w_list:
 				trained_Y = event_trained.smoothed_w_tseries[label][w] # this should produce more balanced results.
@@ -479,9 +488,107 @@ class SingleWordAnalysis():
 				if dist_tuple[1] == smallest_euc:
 					matched_times.append(dist_tuple[0])
 
-			print('matchedTimes:', matched_times, 'AverageTime:',numpy.mean(matched_times))
+			prediction = numpy.mean(matched_times)
+			print('matchedTimes:', matched_times, 'AverageTime:', prediction)
+
+			actual = trained[:sample_count][-1][0] # first element of last tuple of this tuple sequence
+			print('Actual time to the event:', actual)
+
+			square_err_predict = sqrt((actual - prediction)**2)
+			square_err_mean = sqrt((actual-self.mean_of_tweets)**2)
+			square_err_median = sqrt((actual - self.median_of_tweets)**2)
+			print('Error of Prediction:',square_err_predict)
+
+			square_err_predict_list.append(square_err_predict)
+			square_err_mean_list.append(square_err_mean)
+			square_err_median_list.append(square_err_median)
+
+			#print('Mean absolute percentage error:', numpy.mean(square_roots)) # right ?
+
+			mean_square_err_predict = numpy.mean(square_err_predict_list)
+			mean_square_err_mean = numpy.mean(square_err_mean_list)
+			mean_square_err_median = numpy.mean(square_err_median_list)
+
+			print('Mean square error:', mean_square_err_predict)
+			print('Baseline - Mean:', mean_square_err_mean)
+			print('Baseline - Median:', mean_square_err_median)
+
+			mean_sq_err_predict_l.append(mean_square_err_predict)
+			mean_sq_err_mean_l.append(mean_square_err_mean)
+			mean_sq_err_median_l.append(mean_square_err_median)
+
+
+
 			print('**-Next Obs.-**:Finished Sample Count:', sample_count)
+		mean_list = [mean_sq_err_predict_l, mean_sq_err_mean_l, mean_sq_err_median_l]
+		mean_list = [list(reversed(a)) for a in mean_list]
+		self.plot_tserie_list(trained_X, mean_list , ['prediction', 'mean', 'median'], graph_title, x_label, y_label)
+
+	
+	def calc_mean_median(self, minuteForFrame, daycount):
+		label = 'before'
+		product_sum = 0
+		tweet_count = 0
+		e_tserie_list = []
+
+		for name, event in self.events_dict.items():
+			if len(event.tweet_tseries[label]) == 0:
+				time_list_for_tweets = sorted([x.time for x in event.tweets[label]])
+				#this is a tuple
+				event.tweet_tseries[label] = event.calc_tseries_tweets(time_list_for_tweets, minuteForFrame,daycount)
+				e_tserie = (event.tweet_tseries[label][0][:-2], event.tweet_tseries[label][1][:-2] )
+				e_tserie_list.append(e_tserie)
+			
+			tweet_count += sum(e_tserie[1])
+			product_sum += sum([-a*b for a, b in zip(e_tserie[0], e_tserie[1])])
+
+		mean = product_sum/tweet_count
+		print('Sum of products:',product_sum,'All Tweet count:', tweet_count, 'Mean:', mean )
+
+		i = 1
+		median_tweet_count = tweet_count/2
+		median = 0
+		sum_tweets = 0
+		print(e_tserie_list)
+		while sum_tweets < median_tweet_count:
+			for ts_tuple in e_tserie_list:
+				sum_tweets += ts_tuple[1][-i]
+				median = ts_tuple[0][-i]
+			i +=1
+
+		print('median tweet count is:', median_tweet_count)
+		print('sum tweet count, median taken from:', sum_tweets)
+		print('median hour:', median)
+
+		self.mean_of_tweets = -mean
+		self.median_of_tweets = -median
+		return (self.mean_of_tweets, self.median_of_tweets)
+
+	def plot_tserie_list(self, x_axe, y_axes_list, plot_names, graphTitle, x_label, y_label ):
+		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black', 'white']
+		line_style = ['--']
+		line_markers = []
 		
+		fig = matplotlib.pyplot.figure(figsize=(25,20)) #  fig size should vary according day*24
+		matplotlib.pyplot.grid(True) # ???
+		font = {'weight':'bold', 'size':22}
+		matplotlib.rc('font', **font)
+		matplotlib.rc('lines', lw=4)		
+		matplotlib.pyplot.xlim(x_axe[-1], 0)
+		
+		i = 0
+		for y_axe in y_axes_list:
+			plot(x_axe, y_axe, color= line_colors[i], label=plot_names[i])
+			i += 1
+		
+		legend(loc='upper right', fontsize=22)
+		ylabel(y_label,fontsize = 30, fontweight='bold')
+		xlabel('Hours Before Event', fontsize = 30, fontweight='bold')
+		matplotlib.pyplot.title(graphTitle)
+		fig.savefig('/home/ali-hurriyetoglu/Desktop/Graphs/Euc/'+graphTitle+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait', linewidth=50.0)
+
+		fig.clf()
+
 
 	def count_words(self):
 		"Count words for each category"
@@ -956,104 +1063,6 @@ class SingleWordAnalysis():
 	def fast_plot_word():
 		pass
 
-
-	def plot_mostCommonWords_RelFreqWithTweets(self, n, min, withTweetCount = True): #use n to indicate number of words to make plot for
-
-		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black', 'white']
-		line_style = ['--']
-		line_markers = []
-		minutes_for_time_period = 30
-		day_back_count = 8
-
-		plotted_words = ''
-
-		fig = matplotlib.pyplot.figure(figsize=(50,100)) #  'module' object is not callable
-		matplotlib.pyplot.grid(True)
-
-		matplotlib.pyplot.title('Title')
-
-		i=0
-		if withTweetCount == True:
-			time_list_for_tweets = self.calc_time_list_for_tweets()
-
-			axes = self.calc_time_list_for_time_intervals(sorted(time_list_for_tweets), minutes_for_time_period, day_back_count)
-			newTweetCount = []
-
-			#newTweetCount = [x/4 for x in axes[1]] # divide all tweet counts by 2, normalization
-
-			newTweetCount = axes[1]
-
-			#plot(axes[0], newTweetCount, color= line_colors[0]) # Plot Tweet count Time series.
-			i += 1
-		 
-		for w, v in self.all_words_counter.most_common(n):		
-
-			time_list_for_a_word = self.calc_time_list_for_word(w)
-
-			axes = self.calc_time_list_for_time_intervals(sorted(time_list_for_a_word))
-			
-			w_time_per_count = []
-
-			w_time_per_count=[a/b for  a, b in zip(axes[1], newTweetCount)] # Relative to Tweet count.
-
-			plot(axes[0], w_time_per_count, color=line_colors[i])
-			plotted_words += '-'+w
-
-			# *** For mean freq Line, Be careful for the color when plot many words.
-			#w_mean_freq_list = []
-			# for x in de_time_per_count:
-			# 	w_mean_freq_list.append(self.freq_before_dict[w])
-			# plot(axes[0], de_mean_freq, color=line_colors[i+1]) # Plot the mean for this word for comparison. 
-
-			print(w, '-is-', line_colors[i])
-
-			i += 1
-			
-		fig.savefig('/home/ali-hurriyetoglu/Desktop/graph'+plotted_words+'-'+str(minutes_for_time_period)+'minPeriod'+'-'+str(day_back_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait')
-
-	def plot_Most_relFreqAcrossCategoriesWithWords_before(self, n=6, withTweetCount = False): #use n to indicate number of words to make plot for
-
-		line_colors=['blue', 'green','red', 'cyan', 'magenta', 'yellow', 'black'] # 'white' not used
-		line_style = ['--']
-		line_markers = []
-		plotted_words = ''
-		minutes_for_time_period = 30
-		day_back_count = 8
-
-		fig = matplotlib.pyplot.figure(figsize=(25,20)) #  'module' object is not callable
-		matplotlib.pyplot.grid(True)
-
-		matplotlib.pyplot.title('Title')
-
-		i=0
-		if withTweetCount == True:
-			time_list_for_tweets = self.calc_time_list_for_tweets()
-			
-			newTweetCount = []
-			axes = self.calc_time_list_for_time_intervals(time_list_for_tweets, minutes_for_time_period, day_back_count)
-			#newTweetCount = [x/4 for x in axes[1]] # divide all tweet counts by 2, normalization
-
-			plot(axes[0], newTweetCount, color= line_colors[0])
-			print('Tweet Count is-', line_colors[i])
-			i += 1
-
-		
-		for w, v in self.sort_dict(self.relative_freq_before_dict):		
-			if w[0] != '@' and len(w)>1:
-				time_list_for_a_word = self.calc_time_list_for_word(w)
-				
-				axes = self.calc_time_list_for_time_intervals(time_list_for_a_word)
-				if w in ['amsterdam', 'zondag', 'weekend']:
-					plot(axes[0], axes[1], color=line_colors[i])
-
-				print(w, '-is-', line_colors[i])
-				print(i)
-
-				i += 1
-				if i == n+1:
-					break
-
-		fig.savefig('/home/ali-hurriyetoglu/Desktop/graph'+plotted_words+str(minutes_for_time_period)+'minPeriod'+str(day_back_count)+'daysBack'+'.png',format='png', facecolor='w',edgecolor='w', orientation='portrait')
 
 	def timerel(event_begin,event_end,tweet_time):
 

@@ -31,43 +31,46 @@ event_times = [datetime.datetime(2012,4,29,14,30,0), datetime.datetime(2012,3,30
 event_places = {'fce':'eindhoven','spa':'rotterdam','scc':'leeuwarden','fcd':'den bosch','aja':'amsterdam','fey':'rotterdam','psv':'eindhoven','fcu':'utrecht','utr':'utrecht','gro':'groningen','hee':'heerenveen','vvv':'venlo','twe':'enschede','fct':'enschede','rod':'kerkrade','rjc':'kerkrade','her':'almelo','nac':'breda','rkc':'waalwijk','ado':'den haag','az':'alkmaar','aza':'alkmaar','exc':'rotterdam','gra':'doetinchem','nec':'nijmegen','vit':'arnhem','wii':'tilburg','hel':'helmond'}
 labels = ['before'] # it can include any others as well like: during, after, etc.
 crea_event_objs_for=['tweaja','feyaz']
+minueTimeFrame = 60
 
 
 
 swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
 swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricted
+swa.calc_mean_median(minueTimeFrame, 8)
+
 #swa.crea_event_objs_for(labels, event_names) # all
 
-#swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, 120, 8)
+#swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, minueTimeFrame, 8)
 
 same_count_control = 0
-for w_count in range(16, 700):
+for w_count in range(16,50):
 	w_list = [] # put what ever you want in it.
 	w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', w_count)
 	if len(w_list) == same_count_control:
 		continue
-	swa.calc_euc_distance_w_list(w_list, labels, crea_event_objs_for, 120, 8)
-	swa.calc_euc_distance_w_list(w_list, labels, list(reversed(crea_event_objs_for)), 120, 8)
+	swa.calc_euc_distance_w_list(w_list, labels, crea_event_objs_for, minueTimeFrame, 8)
+	swa.calc_euc_distance_w_list(w_list, labels, list(reversed(crea_event_objs_for)), minueTimeFrame, 8)
 
 	same_count_control = len(w_list)
 
-#swa.calc_euc_distance_w_list(['morgen', 'zondag'], labels, crea_event_objs_for, 120, 8)
+#swa.calc_euc_distance_w_list(['morgen', 'zondag'], labels, crea_event_objs_for, minueTimeFrame, 8)
 
 
 # w_list = [] # put what ever you want in it.
 # w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', 1)
 #for c_e in crea_event_objs_for:
-	#swa.plot_word_list_of_label_of_event(w_list, 'before', c_e, 120, 8)
+	#swa.plot_word_list_of_label_of_event(w_list, 'before', c_e, minueTimeFrame, 8)
 
 
 #plot words for the events listed in crea_event_objs_for list
 # for c_e in crea_event_objs_for:
-# 	swa.plot_words_of_label_of_event('before', c_e, 120, 8)
+# 	swa.plot_words_of_label_of_event('before', c_e, minueTimeFrame, 8)
 
 
 # Event based, word graphs
 # for w in ['enschede', 'twente','ajax']:
-# 	swa.plot_word_event_based(w,'before', 'tweaja', 120, 8) # word, label, event_name, minutesForFrame, day back count
+# 	swa.plot_word_event_based(w,'before', 'tweaja', minueTimeFrame, 8) # word, label, event_name, minutesForFrame, day back count
 
 
 # swa.count_words() # order of these mathods should be preserved.
