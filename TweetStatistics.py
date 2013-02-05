@@ -38,7 +38,21 @@ swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_p
 swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricted
 #swa.crea_event_objs_for(labels, event_names) # all
 
-swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, 120, 8)
+#swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, 120, 8)
+
+same_count_control = 0
+for w_count in range(16, 700):
+	w_list = [] # put what ever you want in it.
+	w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', w_count)
+	if len(w_list) == same_count_control:
+		continue
+	swa.calc_euc_distance_w_list(w_list, labels, crea_event_objs_for, 120, 8)
+	swa.calc_euc_distance_w_list(w_list, labels, list(reversed(crea_event_objs_for)), 120, 8)
+
+	same_count_control = len(w_list)
+
+#swa.calc_euc_distance_w_list(['morgen', 'zondag'], labels, crea_event_objs_for, 120, 8)
+
 
 # w_list = [] # put what ever you want in it.
 # w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', 1)
@@ -137,6 +151,3 @@ swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, 120, 8)
 # 2012-05-17 20:45:00 ['rkcvit']  -- 2012-04-15 12:30:00 ['grorjc'(0), 'grorod'(0)]
 # 2012-04-27 20:00:00 ['grogra']  --  2012-04-22 12:30:00 ['adofey']
 #-----------------------------------------------------------------------------
-
-
-

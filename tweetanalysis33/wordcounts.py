@@ -312,6 +312,8 @@ class SingleWordAnalysis():
 		  First label should be before for now.
 		  since the X axes is same we do not take it into account
 
+		  Error: It should take smoothed values not counts !!!
+
 		  Questions:
 		     1- Should I normalize scores for trained and test lists
 		"""
@@ -320,11 +322,11 @@ class SingleWordAnalysis():
 		for e in events:
 			for l in labels:
 				event = self.events_dict[e]
-				t_series = event.calc_tseries(w, l, minuteForFrame, dayCount)
+				word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount)
 				print(event.name, l, w)
 				print('Count:', event.words[l][w])
 				print('Freq:', event.word_freq[l][w])
-				print('Len of tseries X and Y:',len(t_series[0]), len(t_series[1]),'Y and X dimension:\n', t_series[0], t_series[1]) # calc the time serie
+				print('Len of tseries X and Y:',len(word_t_series[0]), len(word_t_series[1]),'Y and X dimension:\n', word_t_series[0], word_t_series[1]) # calc the time serie
 				print('Len of word timeseries:',len(event.w_tseries[l][w]),'Word Time series:\n', event.w_tseries[l][w])
 				print('Len of Normalized W TSeries:',len(event.normalized_w_tseries[l][w]),'Normalized Word Time series:\n', event.normalized_w_tseries[l][w])
 				print('Len of smoothed_w_tseries:',len(event.smoothed_w_tseries[l][w]),'Smoothed Word Time series:\n', event.smoothed_w_tseries[l][w])
@@ -381,9 +383,8 @@ class SingleWordAnalysis():
 			smallest_euc = min([a[1] for a in euc_distances])
 			print('Smallest Euc:', smallest_euc )
 			#Choose the average of the lowest time values if there is more than one.
-			matched_times = []
-			
-
+			matched_times = [a[0] for a in euc_distances if a[1] == smallest_euc]
+		     
 			print('matched times:\n', matched_times)
 			print('average of matched times:',numpy.mean(matched_times))
 
@@ -397,6 +398,90 @@ class SingleWordAnalysis():
 		
 		#test = [] # two dimensions
 
+	def calc_euc_distance_w_list(self, w_list, labels, events, minuteForFrame, dayCount):
+		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
+		"""
+		  -First label should be before for now.
+		  -Since the X axes is same we do not take it into account
+		  -First event training second is test
+
+		  Questions:
+		     1- Should I normalize scores for trained and test lists
+		"""
+
+		label = labels[0]
+		event_trained = self.events_dict[events[0]]
+		event_test = self.events_dict[events[1]]
+		print('Training Event:', event_trained.name)
+		print('Test event:', event_test.name)
+		euc_distances = {}
+		for e in events:
+			for l in labels:
+				event = self.events_dict[e]
+				for w in w_list:
+					if w not in event.smoothed_w_tseries[l]:
+						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
+
+		#Prepare trained set	
+		trained_X = event_trained.tweet_tseries[label][0][:-2] # get it from tweet time series. It is same for all events.
+
+		euc_distances_sum = []
+		test_seq = []
+		
+		for sample_count in range(1, len(trained_X)+1):
+			#print('Sample Count:', sample_count)
+			#print('Len Trained X:',len(trained_X))
+
+			#len of euc_distances_sum should be same count with the sequences count at this sample size.
+			euc_distances_sum = [(1111,0)] * (1+len(trained_X)-sample_count) #initialization needed for sum
+
+			
+			for w in w_list:
+				trained_Y = event_trained.smoothed_w_tseries[label][w] # this should produce more balanced results.
+				trained = [(a,b) for a, b in zip(trained_X, trained_Y)]
+				trained = list(reversed(trained)) # Time was reversed in the normal array. Therefore reverse for the normal timeline with the test data.
+				#print('Len trained_Y:', len(trained_Y))
+				#print('Len trained:', len(trained))
+				
+				x=0
+				trained_sub_seq = []
+				for t in trained:
+					temp_sub_sq = trained[x:x+sample_count] #create subsequences of the length of observed test data
+					if len(temp_sub_sq) == sample_count:
+						trained_sub_seq.append(temp_sub_sq)
+					else:
+						break
+					x +=1
+
+				#print('Trained sub seq:')
+				#print(*trained_sub_seq, sep='\n')
+
+				test_Y = event_test.smoothed_w_tseries[label][w]
+				test_Y = list(reversed(test_Y[:len(trained)])) #test_Y, when not smoothed, is longer be careful
+				test_seq = test_Y[:sample_count]
+				euc_distance_w = [] # Go clean for the next word
+
+				for temp_sub_seq in trained_sub_seq:
+				#Calc euc. distance and add it as a tuple with the last time point of this sequence. for this subsequence
+					euc_distance_w.append((temp_sub_seq[-1][0],sqrt(sum([(a-b[1])**2 for a, b in zip(test_seq, temp_sub_seq)]))))
+
+				#print('EucDistFor:', w, ':', euc_distance_w)
+				euc_distances_sum = [(b[0],a[1]+b[1]) for a, b in zip(euc_distances_sum, euc_distance_w)] # Add current euclidian values to the sum
+				#print('EucDistSum:', euc_distances_sum)
+				
+				
+			print('--EucDistForTheseObservations:', euc_distances_sum)
+			smallest_euc = min([a[1] for a in euc_distances_sum])
+			print('SmallestEuc:', smallest_euc )
+
+			matched_times = []
+			for dist_tuple in euc_distances_sum:
+				if dist_tuple[1] == smallest_euc:
+					matched_times.append(dist_tuple[0])
+
+			print('matchedTimes:', matched_times, 'AverageTime:',numpy.mean(matched_times))
+			print('**-Next Obs.-**:Finished Sample Count:', sample_count)
+		
 
 	def count_words(self):
 		"Count words for each category"
@@ -853,7 +938,7 @@ class SingleWordAnalysis():
 		event2 = self.events_dict[event_name2]
 
 		w_list = []
-		print('The word list is for words occur in both events with count more than'+str(n))
+		print('The word list is for words occur in both events with count more than:'+str(n))
 		for w, c in event1.words[label].most_common():
 			if event2.words[label][w] > n and c > n:
 				print(w, c, event2.words[label][w])
