@@ -472,8 +472,9 @@ class SingleWordAnalysis():
 
 				for temp_sub_seq in trained_sub_seq:
 				#Calc euc. distance and add it as a tuple with the last time point of this sequence. for this subsequence
-					euc_distance_w.append((temp_sub_seq[-1][0],sqrt(sum([(a-b[1])**2 for a, b in zip(test_seq, temp_sub_seq)]))))
+					euc_distance_w.append((temp_sub_seq[-1][0],sqrt(math.fsum([(a-b[1])**2 if a-b[1] != 0 else 0 for a, b in zip(test_seq, temp_sub_seq)]))))
 
+				# Add the euc_dist of this word at to relevant time slot by preserving relevant time.
 				#print('EucDistFor:', w, ':', euc_distance_w)
 				euc_distances_sum = [(b[0],a[1]+b[1]) for a, b in zip(euc_distances_sum, euc_distance_w)] # Add current euclidian values to the sum
 				#print('EucDistSum:', euc_distances_sum)
@@ -485,7 +486,7 @@ class SingleWordAnalysis():
 
 			matched_times = []
 			for dist_tuple in euc_distances_sum:
-				if dist_tuple[1] == smallest_euc:
+				if numpy.allclose(dist_tuple[1], smallest_euc ):
 					matched_times.append(dist_tuple[0])
 
 			prediction = numpy.mean(matched_times)
@@ -494,9 +495,9 @@ class SingleWordAnalysis():
 			actual = trained[:sample_count][-1][0] # first element of last tuple of this tuple sequence
 			print('Actual time to the event:', actual)
 
-			square_err_predict = sqrt((actual - prediction)**2)
-			square_err_mean = sqrt((actual-self.mean_of_tweets)**2)
-			square_err_median = sqrt((actual - self.median_of_tweets)**2)
+			square_err_predict = abs(actual - prediction)
+			square_err_mean = abs(actual-self.mean_of_tweets)
+			square_err_median = abs(actual - self.median_of_tweets)
 			print('Error of Prediction:',square_err_predict)
 
 			square_err_predict_list.append(square_err_predict)
@@ -540,7 +541,7 @@ class SingleWordAnalysis():
 				e_tserie_list.append(e_tserie)
 			
 			tweet_count += sum(e_tserie[1])
-			product_sum += sum([-a*b for a, b in zip(e_tserie[0], e_tserie[1])])
+			product_sum += sum([a*b for a, b in zip(e_tserie[0], e_tserie[1])])
 
 		mean = product_sum/tweet_count
 		print('Sum of products:',product_sum,'All Tweet count:', tweet_count, 'Mean:', mean )
@@ -560,8 +561,8 @@ class SingleWordAnalysis():
 		print('sum tweet count, median taken from:', sum_tweets)
 		print('median hour:', median)
 
-		self.mean_of_tweets = -mean
-		self.median_of_tweets = -median
+		self.mean_of_tweets = mean
+		self.median_of_tweets = median
 		return (self.mean_of_tweets, self.median_of_tweets)
 
 	def plot_tserie_list(self, x_axe, y_axes_list, plot_names, graphTitle, x_label, y_label ):

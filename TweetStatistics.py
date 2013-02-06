@@ -31,7 +31,7 @@ event_times = [datetime.datetime(2012,4,29,14,30,0), datetime.datetime(2012,3,30
 event_places = {'fce':'eindhoven','spa':'rotterdam','scc':'leeuwarden','fcd':'den bosch','aja':'amsterdam','fey':'rotterdam','psv':'eindhoven','fcu':'utrecht','utr':'utrecht','gro':'groningen','hee':'heerenveen','vvv':'venlo','twe':'enschede','fct':'enschede','rod':'kerkrade','rjc':'kerkrade','her':'almelo','nac':'breda','rkc':'waalwijk','ado':'den haag','az':'alkmaar','aza':'alkmaar','exc':'rotterdam','gra':'doetinchem','nec':'nijmegen','vit':'arnhem','wii':'tilburg','hel':'helmond'}
 labels = ['before'] # it can include any others as well like: during, after, etc.
 crea_event_objs_for=['tweaja','feyaz']
-minueTimeFrame = 60
+minueTimeFrame = 120
 
 
 
@@ -44,7 +44,7 @@ swa.calc_mean_median(minueTimeFrame, 8)
 #swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, minueTimeFrame, 8)
 
 same_count_control = 0
-for w_count in range(16,50):
+for w_count in range(10, 11):
 	w_list = [] # put what ever you want in it.
 	w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', w_count)
 	if len(w_list) == same_count_control:
