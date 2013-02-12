@@ -83,8 +83,9 @@ labels = ['before'] # it can include any others as well like: during, after, etc
 
 #Why is this strange error decrease than increase than again decrease.
 #What other distances would provide
-crea_event_objs_for=['tweaja','feyaz'] #14.30 sunday - 29/04/2012
-
+crea_event_objs_for=['tweaja','feyaz', 'feyaza','rodutr','excpsv','azgro', 'rjcfcu', 'adogra', 'rjcutr', 'vvvtwe', 'nacrkc','vitaja','heefey', 'rodfcu' ]
+train_events = ['tweaja','feyaz', 'feyaza']
+test_events = ['rodutr','excpsv','azgro', 'rjcfcu', 'adogra', 'rjcutr', 'vvvtwe', 'nacrkc','vitaja','heefey', 'rodfcu'] #14.30 sunday - 29/04/2012
 #crea_event_objs_for=['ajavvv','feyher'] # Wednesday - 02/05/2012
 #crea_event_objs_for=['ajavvv','tweaja'] # there is something in tweaja - same error rate increase
 #crea_event_objs_for=['ajavvv','feyaz'] #try this and below.
@@ -122,18 +123,20 @@ swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricte
 
 #swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, minueTimeFrame, 8)
 
+
+#for word counts more than range, plot predictions from normalized and smoothed frequencies.
 same_count_control = 0
-for w_count in range(1, 2):
+for w_count in range(50,51):
 	w_list = [] # put what ever you want in it.
-	w_list = swa.get_intersec_word_counts('before', crea_event_objs_for, w_count)
+	w_list = swa.get_intersec_word_counts('before', crea_event_objs_for, w_count) # Correct this to take blendobject into account
 	if len(w_list) == same_count_control:
 		continue
 
-	swa.calc_euc_dist_w_list_normalized(w_list, labels, crea_event_objs_for, minueTimeFrame, daycountback)
-	swa.calc_euc_dist_w_list_normalized(w_list, labels, list(reversed(crea_event_objs_for)), minueTimeFrame, daycountback)
+	swa.calc_euc_dist_w_list_normalized(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	#swa.calc_euc_dist_w_list_normalized(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
   #smoothed
-	swa.calc_euc_dist_w_list(w_list, labels, crea_event_objs_for, minueTimeFrame, daycountback)
-	swa.calc_euc_dist_w_list(w_list, labels, list(reversed(crea_event_objs_for)), minueTimeFrame, daycountback)
+	swa.calc_euc_dist_w_list(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	#swa.calc_euc_dist_w_list(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
 	same_count_control = len(w_list)
 
 #swa.calc_euc_distance_w_list(['morgen', 'zondag'], labels, crea_event_objs_for, minueTimeFrame, 8)
