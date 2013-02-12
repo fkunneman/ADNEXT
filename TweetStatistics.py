@@ -26,39 +26,121 @@ tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_
 
 
 #Be careful ! index of the names and times must be the same in the list
-event_names=['tweaja','fcuexc','utrexc','grohee','psvvvv','fctrod','twerod','fctrjc','twerjc','feynac','necgra','ajaher','rkcado','vitaz','vitaza','excnec','aztwe','azatwe','rodfey','rjcfey','nacher','rkcpsv','heeaja','grafcu','grautr','vvvvit','adogro','psvaz','psvaza','nechee','feyexc','twenac','grorod','grorjc','utrvvv','fcuvvv','ajagra','vitado','herrkc','nacrjc','nacrod','heevit','rkcutr','rkcfcu','graher','exctwe','adofey','azavvv','azvvv','psvnec','ajagro','grogra','herhee','fcunac','utrnac','vitexc','vvvado','rodpsv','feyaza','feyaz','necrkc','feyher','necaza','necaz','twehee','gronac','rkcrjc','rkcrod','fcuvit','utrvit','graexc','ajavvv','psvado','heefey','adogra','excpsv','azagro','azgro','rjcfcu','rjcutr','rodfcu','rodutr','nacrkc','vitaja','vvvtwe','necvit','rkcfct','rkctwe','vitnec','fctrkc','twerkc','fcdgra','wiispa','helfce','sccvvv','grafcd','spawii','fcehel','vvvscc','rkcvit','vitrkc','fcdwii','helvvv','wiifcd','vvvhel'] # make it automatic
-event_times = [datetime.datetime(2012,4,29,14,30,0), datetime.datetime(2012,3,30,20,0,0),datetime.datetime(2012,3,30,20,0,0),datetime.datetime(2012,3,31,18,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,20,45,0),datetime.datetime(2012,4,1,14,30,0),datetime.datetime(2012,4,1,14,30,0),datetime.datetime(2012,4,1,14,30,0),datetime.datetime(2012,4,1,16,30,0),datetime.datetime(2012,4,1,16,30,0),datetime.datetime(2012,4,10,20,0,0),datetime.datetime(2012,4,11,19,0,0),datetime.datetime(2012,4,11,19,0,0),datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,21,0,0),datetime.datetime(2012,4,12,19,0,0),datetime.datetime(2012,4,12,19,0,0),datetime.datetime(2012,4,12,20,0,0),datetime.datetime(2012,4,12,21,0,0),datetime.datetime(2012,4,14,18,45,0),datetime.datetime(2012,4,14,18,45,0),datetime.datetime(2012,4,14,19,45,0),datetime.datetime(2012,4,14,19,45,0),datetime.datetime(2012,4,14,20,45,0),datetime.datetime(2012,4,15,12,30,0),datetime.datetime(2012,4,15,12,30,0),datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,16,30,0),datetime.datetime(2012,4,20,20,0,0),datetime.datetime(2012,4,20,20,0,0),datetime.datetime(2012,4,21,18,45,0),datetime.datetime(2012,4,21,19,45,0),datetime.datetime(2012,4,21,19,45,0),datetime.datetime(2012,4,21,19,45,0),datetime.datetime(2012,4,21,20,45,0),datetime.datetime(2012,4,22,12,30,0),datetime.datetime(2012,4,22,14,30,0),datetime.datetime(2012,4,22,14,30,0),datetime.datetime(2012,4,22,14,30,0),datetime.datetime(2012,4,22,16,30,0),datetime.datetime(2012,4,27,20,0,0),datetime.datetime(2012,4,28,18,45,0),datetime.datetime(2012,4,28,19,45,0),datetime.datetime(2012,4,28,19,45,0),datetime.datetime(2012,4,28,19,45,0),datetime.datetime(2012,4,28,20,45,0),datetime.datetime(2012,4,29,12,30,0),datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,16,30,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,10,19,0,0),datetime.datetime(2012,5,10,21,0,0),datetime.datetime(2012,5,10,21,0,0),datetime.datetime(2012,5,13,14,30,0),datetime.datetime(2012,5,13,16,30,0),datetime.datetime(2012,5,13,16,30,0),datetime.datetime(2012,5,10,19,0,0),datetime.datetime(2012,5,10,20,0,0),datetime.datetime(2012,5,10,20,0,0),datetime.datetime(2012,5,10,21,0,0),datetime.datetime(2012,5,13,12,30,0),datetime.datetime(2012,5,13,14,30,0),datetime.datetime(2012,5,13,14,30,0),datetime.datetime(2012,5,13,16,30,0),datetime.datetime(2012,5,17,20,45,0),datetime.datetime(2012,5,20,16,30,0),datetime.datetime(2012,5,17,12,30,0),datetime.datetime(2012,5,17,14,30,0),datetime.datetime(2012,5,20,12,30,0),datetime.datetime(2012,5,20,14,30,0)]
+event_names=['tweaja','fcuexc','utrexc','grohee', \
+             'psvvvv','fctrod','twerod','fctrjc', \
+             'twerjc','feynac','necgra','ajaher', \
+             'rkcado','vitaz', 'vitaza','excnec', \
+             'aztwe','azatwe', 'rodfey','rjcfey', \
+             'nacher','rkcpsv','heeaja','grafcu', \
+             'grautr','vvvvit','adogro','psvaz', \
+             'psvaza','nechee','feyexc','twenac',\
+             'grorod','grorjc','utrvvv','fcuvvv', \
+             'ajagra','vitado','herrkc','nacrjc',\
+             'nacrod','heevit', 'rkcutr','rkcfcu',\
+             'graher','exctwe','adofey','azavvv', \
+             'azvvv','psvnec','ajagro','grogra', \
+             'herhee','fcunac','utrnac','vitexc',\
+             'vvvado','rodpsv','feyaza','feyaz', \
+             'necrkc','feyher','necaza','necaz', \
+             'twehee','gronac','rkcrjc','rkcrod',\
+             'fcuvit','utrvit','graexc','ajavvv', \
+             'psvado','heefey','adogra','excpsv',\
+             'azagro','azgro', 'rjcfcu','rjcutr',\
+             'rodfcu','rodutr','nacrkc','vitaja', \
+             'vvvtwe','necvit','rkcfct','rkctwe',\
+             'vitnec','fctrkc','twerkc','fcdgra',\
+             'wiispa','helfce','sccvvv','grafcd', \
+             'spawii','fcehel','vvvscc','rkcvit',\
+             'vitrkc','fcdwii','helvvv','wiifcd','vvvhel'] # make it automatic
+event_times = [datetime.datetime(2012,4,29,14,30,0), datetime.datetime(2012,3,30,20,0,0),datetime.datetime(2012,3,30,20,0,0),datetime.datetime(2012,3,31,18,45,0),\
+               datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,19,45,0),\
+               datetime.datetime(2012,3,31,19,45,0),datetime.datetime(2012,3,31,20,45,0),datetime.datetime(2012,4,1,14,30,0),datetime.datetime(2012,4,1,14,30,0),\
+               datetime.datetime(2012,4,1,14,30,0),datetime.datetime(2012,4,1,16,30,0),datetime.datetime(2012,4,1,16,30,0),datetime.datetime(2012,4,10,20,0,0),\
+               datetime.datetime(2012,4,11,19,0,0),datetime.datetime(2012,4,11,19,0,0),datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,20,0,0),\
+               datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,20,0,0),datetime.datetime(2012,4,11,21,0,0),datetime.datetime(2012,4,12,19,0,0),\
+               datetime.datetime(2012,4,12,19,0,0),datetime.datetime(2012,4,12,20,0,0),datetime.datetime(2012,4,12,21,0,0),datetime.datetime(2012,4,14,18,45,0),\
+               datetime.datetime(2012,4,14,18,45,0),datetime.datetime(2012,4,14,19,45,0),datetime.datetime(2012,4,14,19,45,0),datetime.datetime(2012,4,14,20,45,0),\
+               datetime.datetime(2012,4,15,12,30,0),datetime.datetime(2012,4,15,12,30,0),datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,14,30,0),\
+               datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,14,30,0),datetime.datetime(2012,4,15,16,30,0),datetime.datetime(2012,4,20,20,0,0),\
+               datetime.datetime(2012,4,20,20,0,0),datetime.datetime(2012,4,21,18,45,0),datetime.datetime(2012,4,21,19,45,0),datetime.datetime(2012,4,21,19,45,0),\
+               datetime.datetime(2012,4,21,19,45,0),datetime.datetime(2012,4,21,20,45,0),datetime.datetime(2012,4,22,12,30,0),datetime.datetime(2012,4,22,14,30,0),\
+               datetime.datetime(2012,4,22,14,30,0),datetime.datetime(2012,4,22,14,30,0),datetime.datetime(2012,4,22,16,30,0),datetime.datetime(2012,4,27,20,0,0),\
+               datetime.datetime(2012,4,28,18,45,0),datetime.datetime(2012,4,28,19,45,0),datetime.datetime(2012,4,28,19,45,0),datetime.datetime(2012,4,28,19,45,0),\
+               datetime.datetime(2012,4,28,20,45,0),datetime.datetime(2012,4,29,12,30,0),datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0),\
+               datetime.datetime(2012,4,29,16,30,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),\
+               datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),\
+               datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,2,20,0,0),\
+               datetime.datetime(2012,5,2,20,0,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),\
+               datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),\
+               datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,6,14,30,0),\
+               datetime.datetime(2012,5,6,14,30,0),datetime.datetime(2012,5,10,19,0,0),datetime.datetime(2012,5,10,21,0,0),datetime.datetime(2012,5,10,21,0,0),\
+               datetime.datetime(2012,5,13,14,30,0),datetime.datetime(2012,5,13,16,30,0),datetime.datetime(2012,5,13,16,30,0),datetime.datetime(2012,5,10,19,0,0),\
+               datetime.datetime(2012,5,10,20,0,0),datetime.datetime(2012,5,10,20,0,0),datetime.datetime(2012,5,10,21,0,0),datetime.datetime(2012,5,13,12,30,0),\
+               datetime.datetime(2012,5,13,14,30,0),datetime.datetime(2012,5,13,14,30,0),datetime.datetime(2012,5,13,16,30,0),datetime.datetime(2012,5,17,20,45,0),\
+               datetime.datetime(2012,5,20,16,30,0),datetime.datetime(2012,5,17,12,30,0),datetime.datetime(2012,5,17,14,30,0),datetime.datetime(2012,5,20,12,30,0),datetime.datetime(2012,5,20,14,30,0)]
 event_places = {'fce':'eindhoven','spa':'rotterdam','scc':'leeuwarden','fcd':'den bosch','aja':'amsterdam','fey':'rotterdam','psv':'eindhoven','fcu':'utrecht','utr':'utrecht','gro':'groningen','hee':'heerenveen','vvv':'venlo','twe':'enschede','fct':'enschede','rod':'kerkrade','rjc':'kerkrade','her':'almelo','nac':'breda','rkc':'waalwijk','ado':'den haag','az':'alkmaar','aza':'alkmaar','exc':'rotterdam','gra':'doetinchem','nec':'nijmegen','vit':'arnhem','wii':'tilburg','hel':'helmond'}
 labels = ['before'] # it can include any others as well like: during, after, etc.
-crea_event_objs_for=['tweaja','feyaz']
-minueTimeFrame = 120
+
+#Why is this strange error decrease than increase than again decrease.
+#What other distances would provide
+crea_event_objs_for=['tweaja','feyaz'] #14.30 sunday - 29/04/2012
+
+#crea_event_objs_for=['ajavvv','feyher'] # Wednesday - 02/05/2012
+#crea_event_objs_for=['ajavvv','tweaja'] # there is something in tweaja - same error rate increase
+#crea_event_objs_for=['ajavvv','feyaz'] #try this and below.
+#crea_event_objs_for=['feyher','tweaja']
+#crea_event_objs_for=['feyher','feyaz']
+
+#crea_event_objs_for=['vitaja', 'heefey'] # 14.30 sunday - 06/04/2012
+#crea_event_objs_for=['vitaja', 'tweaja']
+#crea_event_objs_for=['vitaja', 'feyaz']
+#crea_event_objs_for=['heefey', 'tweaja']
+#crea_event_objs_for=['heefey', 'feyaz']
+
+#Random Experiments
+#crea_event_objs_for=['nacrod','feyaz']
+
+
+#controls:
+#confirm match date and time
+
+
+
+minueTimeFrame = 60
+daycountback = 8
 
 
 
 swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
 swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricted
-swa.calc_mean_median(minueTimeFrame, 8)
+
+# print(*swa.get_event_tweets_from_to(labels[0], 'ajavvv', 65, 85), sep='\n')
+# exit()
+
 
 #swa.crea_event_objs_for(labels, event_names) # all
 
 #swa.calc_euc_distance_w('morgen', labels, crea_event_objs_for, minueTimeFrame, 8)
 
 same_count_control = 0
-for w_count in range(10, 11):
+for w_count in range(1, 2):
 	w_list = [] # put what ever you want in it.
-	w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', w_count)
+	w_list = swa.get_intersec_word_counts('before', crea_event_objs_for, w_count)
 	if len(w_list) == same_count_control:
 		continue
-	swa.calc_euc_distance_w_list(w_list, labels, crea_event_objs_for, minueTimeFrame, 8)
-	swa.calc_euc_distance_w_list(w_list, labels, list(reversed(crea_event_objs_for)), minueTimeFrame, 8)
 
+	swa.calc_euc_dist_w_list_normalized(w_list, labels, crea_event_objs_for, minueTimeFrame, daycountback)
+	swa.calc_euc_dist_w_list_normalized(w_list, labels, list(reversed(crea_event_objs_for)), minueTimeFrame, daycountback)
+  #smoothed
+	swa.calc_euc_dist_w_list(w_list, labels, crea_event_objs_for, minueTimeFrame, daycountback)
+	swa.calc_euc_dist_w_list(w_list, labels, list(reversed(crea_event_objs_for)), minueTimeFrame, daycountback)
 	same_count_control = len(w_list)
 
 #swa.calc_euc_distance_w_list(['morgen', 'zondag'], labels, crea_event_objs_for, minueTimeFrame, 8)
 
 
-# w_list = [] # put what ever you want in it.
-# w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', 1)
+#w_list = [] # put what ever you want in it.
+#w_list = swa.get_intersec_word_counts('before', 'tweaja','feyaz', 1)
 #for c_e in crea_event_objs_for:
 	#swa.plot_word_list_of_label_of_event(w_list, 'before', c_e, minueTimeFrame, 8)
 
@@ -118,21 +200,27 @@ for w_count in range(10, 11):
 # wiispa 6 grafcd 6 ajagra 6 sccvvv 4
 # rjcfcu 4 spawii 3 rodfcu 2 azavvv 1 psvaza 1 
 #-----------------------------------------------------------------------------
-#  --> swa.find_same_time_events()
+#  --> swa.find_same_time_events() # 1. and 6. sequences different week, same weekday, same hour
 #... Events per time ...
-# --2012-04-29 14:30:00 ['feyaz'(3326), 'feyaza'(18), 'tweaja'(3380)]
-# 2012-05-13 14:30:00 ['vitnec'(567), 'spawii'(3), 'fcehel'(71)]
 
-#-- 2012-05-02 20:00:00 ['psvado'(801), 'twehee'(1127), 'feyher'(1885), 'fcuvit'(37), 'utrvit'(349), 'necaz'(249), 'ajavvv'(3308), 'graexc'(774),
-#                        'rkcrod'(177), 'necaza', 'rkcrjc'(80), 'gronac' (291)]
-
-# --2012-05-13 16:30:00 ['twerkc'(519), 'vvvscc'(11), 'fctrkc'(40)]
-# --2012-04-20 20:00:00 ['nacrjc'(69), 'nacrod'(191)]
-# --2012-05-06 14:30:00 ['rodutr'(130), 'excpsv(616)', 'azgro'(242), 'rjcfcu'(4), 'azagro'(0), 'adogra'(361), 'rjcutr'(40), 'vvvtwe'(338), 'nacrkc'(311),
-#                        'vitaja'(1056), 'heefey'(3168), 'rodfcu'(2)]
+#Train
+# 1 --2012-04-29 14:30:00 ['feyaz'(3326), 'feyaza'(18), 'tweaja'(3380)]
 # 
-# --2012-04-28 19:45:00 ['vitexc'(266), 'fcunac'(17), 'utrnac'(228)]
-# --2012-04-21 19:45:00 ['graher'(288), 'rkcfcu'(19), 'rkcutr'(188)]
+# ?- 2 -- 2012-05-02 20:00:00 ['psvado'(801), 'twehee'(1127), 'feyher'(1885), 'fcuvit'(37), 'utrvit'(349), 'necaz'(249), 'ajavvv'(3308), 'graexc'(774),
+#                        'rkcrod'(177), 'necaza', 'rkcrjc'(80), 'gronac' (291)]
+# Test
+# 3 --2012-05-06 14:30:00 ['rodutr'(130), 'excpsv(616)', 'azgro'(242), 'rjcfcu'(4), 'azagro'(0), 'adogra'(361), 'rjcutr'(40), 'vvvtwe'(338), 'nacrkc'(311),
+#  'vitaja'(1056) : 6 may 14.30, 'heefey'(3168), 'rodfcu'(2)]
+#
+
+# 2 --2012-05-13 14:30:00 ['vitnec'(567), 'spawii'(3), 'fcehel'(71)]
+
+# 2012-05-13 16:30:00 ['twerkc'(519), 'vvvscc'(11), 'fctrkc'(40)]
+# 5 --2012-04-20 20:00:00 ['nacrjc'(69), 'nacrod'(191)]
+#                       
+# 
+# 7 --2012-04-28 19:45:00 ['vitexc'(266), 'fcunac'(17), 'utrnac'(228)]
+# 8 --2012-04-21 19:45:00 ['graher'(288), 'rkcfcu'(19), 'rkcutr'(188)]
 
 # 2012-05-20 14:30:00 ['vvvhel']  --  2012-03-30 20:00:00 ['utrexc'(0), 'fcuexc'(0)]
 # 2012-04-29 12:30:00 ['rodpsv']  --  2012-05-10 20:00:00 ['helfce'(0), 'wiispa'(6)]

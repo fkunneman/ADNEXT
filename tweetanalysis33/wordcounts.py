@@ -128,27 +128,31 @@ class Event:
 		#cut from back, to have a graph from the zero point of the event.
 		return (self.tweet_tseries[label][0][:-2], self.smoothed_w_tseries[label][w])
 		
-	def calc_tseries_tweets(self, time_list, minuteForFrame, day_count):
+	def calc_tseries_tweets(self, time_list_for_tweet, minuteForFrame, day_count):
 		"It calculates backward from the --End of Before-- of an event, be careful for --End of other labels-- !"
+		"""
+		Time list should be ordered, ascending
+		"""
 		xlabels = []
 		xvalues = []
 		tweetCount = 0
 		t_delta = 0
 
 		seconds_back = 60*60*24*day_count
-		timespan= self.time - datetime.timedelta(seconds_back)
+		timespan= self.time - datetime.timedelta(day_count)
 		while t_delta < seconds_back:
 			count = 0
 			interval = self.time - datetime.timedelta(0, t_delta)
 			before_interval = interval - datetime.timedelta(0,60*minuteForFrame)
 
-			for t in time_list:#list is ordered, break the loop if t > self.time  : implement
+			for t in time_list_for_tweet:#list is ordered, break the loop if t > self.time
 				if t > self.time:
 					break; #time list should be sorted
 				else:
 					if t < self.time and t > timespan:# if the date in the range of search space
 						if t >= before_interval and t < interval:
 							count += 1
+							#Do not put break here, it does not count anything then.
 			
 			xvalues.append(count)
 			xlabels.append(0-t_delta/3600) # Give hours before a match
@@ -156,27 +160,30 @@ class Event:
 
 		return (xlabels, xvalues)
 
-	def calc_tseries_count_words(self, time_list, minuteForFrame, day_count):
+	def calc_tseries_count_words(self, time_list_for_word, minuteForFrame, day_count):
 		""" It calculates backward from the --End of Before-- of an event, be careful for --End of other labels-- !
-		There is not any xlabels here, it is taken from the tweets time series."""
+		There is not any xlabels here, it is taken from the tweets time series.
+		Time list should be ordered, ascending
+		"""
 		xvalues = []
 		tweetCount = 0
 		t_delta = 0
 
 		seconds_back = 60*60*24*day_count
-		timespan= self.time - datetime.timedelta(seconds_back)
+		timespan= self.time - datetime.timedelta(day_count)
 		while t_delta < seconds_back:
 			count = 0
 			interval = self.time - datetime.timedelta(0, t_delta)
 			before_interval = interval - datetime.timedelta(0,60*minuteForFrame)
 			
-			for t in time_list:#list is ordered, break the loop if t > self.time  : implement
+			for t in time_list_for_word:#list is ordered, break the loop if t > self.time
 				if t > self.time:
 					break; #time list should be sorted
 				else:
 					if t < self.time and t > timespan:# if the date in the range of search space
 						if t >= before_interval and t < interval:
 							count += 1
+						#Do not put break here, it does not count anything then.
 			
 			xvalues.append(count)
 			t_delta = t_delta + 60*minuteForFrame
@@ -185,7 +192,13 @@ class Event:
 
 	def normalize_w_by_tweet_tseries(self, word, label):
 		"Make this more efficient with numpy array"
-		return [a/b if b > 0 else 0 for a, b in zip(self.w_tseries[label][word], self.tweet_tseries[label][1]) ]
+		if len(self.w_tseries[label][word]) == len(self.tweet_tseries[label][1]):
+			return [a/b if b > 0 else 0 for a, b in zip(self.w_tseries[label][word], self.tweet_tseries[label][1]) ]
+		else:
+			print("Length of the word tseries and tweet time series should be equal")
+			print("Word tserie length:",len(self.w_tseries), "Tweet tserie:", len(self.tweet_tseries[label][1]))
+			exit()
+		return False
 
 	def running_average(self, t_series_l):
 		"returned list has 2 elements less than normal one, make the change in plotting for the other list"
@@ -194,11 +207,11 @@ class Event:
 		av = 0
 		divide_by = 7 # 3 elems + 1 for the weight of the middle one = 4
 		for current, next1, next2 in self.neighborhood(t_series_l):
-			av=(4*current + 2*next1+next2)/divide_by
+			av=math.fsum([4*current, 2*next1, next2])/divide_by
 			
 			r_average.append(av)
 
-		r_average.append((4*t_series_l[-1] + 2*t_series_l[-2]+t_series_l[-3])/divide_by)
+		r_average.append(math.fsum([4*t_series_l[-1], 2*t_series_l[-2], t_series_l[-3]])/divide_by)
 
 		return r_average
 
@@ -221,7 +234,42 @@ class Event:
 
 			for w in self.words[label].most_common():
 				print(w)
-		
+
+	def get_tweets_from_to(self, label, from_hour, to_hour):
+		"""
+		1- Event time start from zero and goes back.
+		2- Give hours as positive integers.
+
+		"""
+		print('into get_tweets+from_to - Object')
+		tweets_in_interval = []
+		from_t = self.time - datetime.timedelta(hours = min(from_hour, to_hour))
+		to_t = self.time - datetime.timedelta(hours = max(from_hour, to_hour)) 
+
+		print('from_t, to_t:', from_t, to_t)
+		print('Match Time:', self.time)
+		for tweet in self.tweets[label]:# list of labels
+			#print(tweet.time)
+			if tweet.time < from_t and tweet.time > to_t:
+				tweets_in_interval.append(tweet)
+
+		print('Min and max:', min(from_hour, to_hour), max(from_hour, to_hour))
+		return [t.get_wordsequence() for t in tweets_in_interval]
+
+class BlendEvent(Event):
+
+	def __init__(self, events_l):
+		self.events_list = events_l
+		# Make Inheritance ... self.
+
+	def get_name(self):
+		name = ''
+		for e in self.events:
+			name += e.name
+		return name
+
+	def get_time(self):
+		pass # give times of the events as a list
 
 class SingleWordAnalysis():
 	"Statistical analysis of Tweets"
@@ -291,7 +339,6 @@ class SingleWordAnalysis():
 
 		for name, event in self.events_dict.items():
 			event.count_all_words(label_list)
-		
 
 	def find_same_time_events(self):
 		found_events = []
@@ -304,7 +351,10 @@ class SingleWordAnalysis():
 
 		for t, l in time_per_event.items():
 			print(t,str(l))
-						
+
+	def get_event_tweets_from_to(self, label, eventname, from_time, to_time):
+		print('into get_event_tweets_from_to')
+		return self.events_dict[eventname].get_tweets_from_to(label, from_time, to_time)
 
 	def calc_euc_distance_w(self, w, labels, events, minuteForFrame, dayCount):
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
@@ -373,7 +423,7 @@ class SingleWordAnalysis():
 			euc_distances = []
 			for temp_sub_seq in trained_sub_seq:
 				#Calc euc. distance and add it as a tuple with the last time point. for this subsequence
-				euc_distances.append((temp_sub_seq[-1][0],sqrt(sum([(a-b[1])**2 for a, b in zip(test_seq, temp_sub_seq)]))))
+				euc_distances.append((temp_sub_seq[-1][0],sqrt(math.fsum([(a-b[1])**2 for a, b in zip(test_seq, temp_sub_seq)]))))
 			print('--Euclidian distances:')
 			print(*euc_distances, sep='\n')
 
@@ -395,8 +445,7 @@ class SingleWordAnalysis():
 
 		
 		#test = [] # two dimensions
-
-	def calc_euc_distance_w_list(self, w_list, labels, events, minuteForFrame, dayCount):
+	def calc_euc_dist_w_list_normalized(self, w_list, labels, events, minuteForFrame, dayCount):
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
 		"""
 		  -First label should be before for now.
@@ -406,9 +455,7 @@ class SingleWordAnalysis():
 		  Questions:
 		     1- Should I normalize scores for trained and test lists
 		"""
-		graph_title = 'Mean Square Error'+ '-Train:'+events[0]+' -Test:'+events[1]+' -WordCount:'+str(len(w_list))+' -minutesForFrame:'+str(minuteForFrame)+ ' -DayCount:'+str(dayCount)
-		x_label = 'Hours Before an Event'
-		y_label = 'Root Mean Square Error'
+		
 		label = labels[0]
 		square_err_predict_list = []
 		square_err_mean_list = []
@@ -419,18 +466,30 @@ class SingleWordAnalysis():
 		mean_sq_err_median_l = []
 		event_trained = self.events_dict[events[0]]
 		event_test = self.events_dict[events[1]]
+
 		print('Training Event:', event_trained.name)
 		print('Test event:', event_test.name)
+		self.calc_mean_median(minuteForFrame, dayCount)
 		euc_distances = {}
 		for e in events:
 			for l in labels:
 				event = self.events_dict[e]
 				for w in w_list:
-					if w not in event.smoothed_w_tseries[l]:
+					if w not in event.normalized_w_tseries[l]:
 						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
 
 		#Prepare trained set	
-		trained_X = event_trained.tweet_tseries[label][0][:-2] # get it from tweet time series. It is same for all events.
+		trained_X = event_trained.tweet_tseries[label][0] # get it from tweet time series. It is same for all events.
+		tweet_count_plot = event_trained.tweet_tseries[label][1]
+
+		graph_title = 'TweetCount-For'+ '-Train:'+events[0]+' -Test:'+events[1]+' -WordCount:'+str(len(w_list))+' -minutesForFrame:'+str(minuteForFrame)+ ' -DayCount:'+str(dayCount) + '-normalized'
+		x_label = 'Hours Before an Event'
+		y_label = 'Tweet Count'
+		self.plot_tserie_list(trained_X, [tweet_count_plot] , ['TweetCount'], graph_title, x_label, y_label)
+
+		graph_title = 'Mean Absolute Error'+ '-Train:'+events[0]+' -Test:'+events[1]+' -WordCount:'+str(len(w_list))+' -minutesForFrame:'+str(minuteForFrame)+ ' -DayCount:'+str(dayCount) + '-normalized freq'
+		x_label = 'Hours Before an Event'
+		y_label = 'Root Mean Square Error'
 
 		euc_distances_sum = []
 		test_seq = []
@@ -446,7 +505,7 @@ class SingleWordAnalysis():
 			euc_distances_sum = [(1111,0)] * (1+len(trained_X)-sample_count) #initialization needed for sum
 			
 			for w in w_list:
-				trained_Y = event_trained.smoothed_w_tseries[label][w] # this should produce more balanced results.
+				trained_Y = event_trained.normalized_w_tseries[label][w] # this should produce more balanced results.
 				trained = [(a,b) for a, b in zip(trained_X, trained_Y)]
 				trained = list(reversed(trained)) # Time was reversed in the normal array. Therefore reverse for the normal timeline with the test data.
 				#print('Len trained_Y:', len(trained_Y))
@@ -465,7 +524,7 @@ class SingleWordAnalysis():
 				#print('Trained sub seq:')
 				#print(*trained_sub_seq, sep='\n')
 
-				test_Y = event_test.smoothed_w_tseries[label][w]
+				test_Y = event_test.normalized_w_tseries[label][w]
 				test_Y = list(reversed(test_Y[:len(trained)])) #test_Y, when not smoothed, is longer be careful
 				test_seq = test_Y[:sample_count]
 				euc_distance_w = [] # Go clean for the next word
@@ -473,10 +532,15 @@ class SingleWordAnalysis():
 				for temp_sub_seq in trained_sub_seq:
 				#Calc euc. distance and add it as a tuple with the last time point of this sequence. for this subsequence
 					euc_distance_w.append((temp_sub_seq[-1][0],sqrt(math.fsum([(a-b[1])**2 if a-b[1] != 0 else 0 for a, b in zip(test_seq, temp_sub_seq)]))))
-
+					if len(test_seq) != len(temp_sub_seq):
+						print('test sequence and sub sequence from the training should match in length.Now:', len(test_seq), len(temp_sub_seq))
+						exit()
 				# Add the euc_dist of this word at to relevant time slot by preserving relevant time.
 				#print('EucDistFor:', w, ':', euc_distance_w)
-				euc_distances_sum = [(b[0],a[1]+b[1]) for a, b in zip(euc_distances_sum, euc_distance_w)] # Add current euclidian values to the sum
+				if len(euc_distance_w) != len(euc_distances_sum):
+					print('euc distance_w and euc_distances_sum should be equal.Now:',len(euc_distance_w), len(euc_distances_sum))
+					exit()
+				euc_distances_sum = [(b[0], math.fsum([a[1],b[1]])) for a, b in zip(euc_distances_sum, euc_distance_w)] # Add current euclidian values to the sum
 				#print('EucDistSum:', euc_distances_sum)
 				
 				
@@ -521,9 +585,153 @@ class SingleWordAnalysis():
 
 
 			print('**-Next Obs.-**:Finished Sample Count:', sample_count)
-		mean_list = [mean_sq_err_predict_l, mean_sq_err_mean_l, mean_sq_err_median_l]
+		mean_list = [mean_sq_err_predict_l, mean_sq_err_mean_l, mean_sq_err_median_l, square_err_predict_list]
 		mean_list = [list(reversed(a)) for a in mean_list]
-		self.plot_tserie_list(trained_X, mean_list , ['prediction', 'mean', 'median'], graph_title, x_label, y_label)
+		self.plot_tserie_list(trained_X, mean_list , ['Mean Absolute Error', 'mean', 'median','Absolute Error'], graph_title, x_label, y_label)
+
+	def calc_euc_dist_w_list(self, w_list, labels, events, minuteForFrame, dayCount):
+		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
+		"""
+		  -First label should be before for now.
+		  -Since the X axes is same we do not take it into account
+		  -First event training second is test
+
+		  Questions:
+		     1- Should I normalize scores for trained and test lists
+		"""
+		
+		label = labels[0]
+		square_err_predict_list = []
+		square_err_mean_list = []
+		square_err_median_list = []
+
+		mean_sq_err_predict_l = []
+		mean_sq_err_mean_l = []
+		mean_sq_err_median_l = []
+		event_trained = self.events_dict[events[0]]
+		event_test = self.events_dict[events[1]]
+
+		print('Training Event:', event_trained.name)
+		print('Test event:', event_test.name)
+		self.calc_mean_median(minuteForFrame, dayCount)
+		euc_distances = {}
+		for e in events:
+			for l in labels:
+				event = self.events_dict[e]
+				for w in w_list:
+					if w not in event.smoothed_w_tseries[l]:
+						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
+
+		#Prepare trained set	
+		trained_X = event_trained.tweet_tseries[label][0][:-2] # get it from tweet time series. It is same for all events.
+		tweet_count_plot = event_trained.tweet_tseries[label][1][:-2]
+
+		graph_title = 'TweetCount-For'+ '-Train:'+events[0]+' -Test:'+events[1]+' -WordCount:'+str(len(w_list))+' -minutesForFrame:'+str(minuteForFrame)+ ' -DayCount:'+str(dayCount)
+		x_label = 'Hours Before an Event'
+		y_label = 'Tweet Count'
+		self.plot_tserie_list(trained_X, [tweet_count_plot] , ['TweetCount'], graph_title, x_label, y_label)
+
+		graph_title = 'Mean Absolute Error'+ '-Train:'+events[0]+' -Test:'+events[1]+' -WordCount:'+str(len(w_list))+' -minutesForFrame:'+str(minuteForFrame)+ ' -DayCount:'+str(dayCount)
+		x_label = 'Hours Before an Event'
+		y_label = 'Root Mean Square Error'
+
+		euc_distances_sum = []
+		test_seq = []
+		square_roots = []
+		square_roots_mean = []
+		square_roots_median = []
+
+		for sample_count in range(1, len(trained_X)+1):
+			#print('Sample Count:', sample_count)
+			#print('Len Trained X:',len(trained_X))
+
+			#len of euc_distances_sum should be same count with the sequences count at this sample size.
+			euc_distances_sum = [(1111,0)] * (1+len(trained_X)-sample_count) #initialization needed for sum
+			
+			for w in w_list:
+				trained_Y = event_trained.smoothed_w_tseries[label][w] # this should produce more balanced results.
+				trained = [(a,b) for a, b in zip(trained_X, trained_Y)]
+				trained = list(reversed(trained)) # Time was reversed in the normal array. Therefore reverse for the normal timeline with the test data.
+				#print('Len trained_Y:', len(trained_Y))
+				#print('Len trained:', len(trained))
+				
+				x=0
+				trained_sub_seq = []
+				for t in trained:
+					temp_sub_sq = trained[x:x+sample_count] #create subsequences of the length of observed test data
+					if len(temp_sub_sq) == sample_count:
+						trained_sub_seq.append(temp_sub_sq)
+					else:
+						break
+					x +=1
+
+				#print('Trained sub seq:')
+				#print(*trained_sub_seq, sep='\n')
+
+				test_Y = event_test.smoothed_w_tseries[label][w]
+				test_Y = list(reversed(test_Y[:len(trained)])) #test_Y, when not smoothed, is longer be careful
+				test_seq = test_Y[:sample_count]
+				euc_distance_w = [] # Go clean for the next word
+
+				for temp_sub_seq in trained_sub_seq:
+				#Calc euc. distance and add it as a tuple with the last time point of this sequence. for this subsequence
+					euc_distance_w.append((temp_sub_seq[-1][0],sqrt(math.fsum([(a-b[1])**2 if a-b[1] != 0 else 0 for a, b in zip(test_seq, temp_sub_seq)]))))
+					if len(test_seq) != len(temp_sub_seq):
+						print('test sequence and sub sequence from the training should match in length.Now:', len(test_seq), len(temp_sub_seq))
+						exit()
+				# Add the euc_dist of this word at to relevant time slot by preserving relevant time.
+				#print('EucDistFor:', w, ':', euc_distance_w)
+				if len(euc_distance_w) != len(euc_distances_sum):
+					print('euc distance_w and euc_distances_sum should be equal.Now:',len(euc_distance_w), len(euc_distances_sum))
+					exit()
+				euc_distances_sum = [(b[0], math.fsum([a[1],b[1]])) for a, b in zip(euc_distances_sum, euc_distance_w)] # Add current euclidian values to the sum
+				#print('EucDistSum:', euc_distances_sum)
+				
+				
+			print('--EucDistForTheseObservations:', euc_distances_sum)
+			smallest_euc = min([a[1] for a in euc_distances_sum])
+			print('SmallestEuc:', smallest_euc )
+
+			matched_times = []
+			for dist_tuple in euc_distances_sum:
+				if numpy.allclose(dist_tuple[1], smallest_euc ):
+					matched_times.append(dist_tuple[0])
+
+			prediction = numpy.mean(matched_times)
+			print('matchedTimes:', matched_times, 'AverageTime:', prediction)
+
+			actual = trained[:sample_count][-1][0] # first element of last tuple of this tuple sequence
+			print('Actual time to the event:', actual)
+
+			square_err_predict = abs(actual - prediction)
+			square_err_mean = abs(actual-self.mean_of_tweets)
+			square_err_median = abs(actual - self.median_of_tweets)
+			print('Error of Prediction:',square_err_predict)
+
+			square_err_predict_list.append(square_err_predict)
+			square_err_mean_list.append(square_err_mean)
+			square_err_median_list.append(square_err_median)
+
+			#print('Mean absolute percentage error:', numpy.mean(square_roots)) # right ?
+
+			mean_square_err_predict = numpy.mean(square_err_predict_list)
+			mean_square_err_mean = numpy.mean(square_err_mean_list)
+			mean_square_err_median = numpy.mean(square_err_median_list)
+
+			print('Mean square error:', mean_square_err_predict)
+			print('Baseline - Mean:', mean_square_err_mean)
+			print('Baseline - Median:', mean_square_err_median)
+
+			mean_sq_err_predict_l.append(mean_square_err_predict)
+			mean_sq_err_mean_l.append(mean_square_err_mean)
+			mean_sq_err_median_l.append(mean_square_err_median)
+
+
+
+			print('**-Next Obs.-**:Finished Sample Count:', sample_count)
+		mean_list = [mean_sq_err_predict_l, mean_sq_err_mean_l, mean_sq_err_median_l, square_err_predict_list]
+		mean_list = [list(reversed(a)) for a in mean_list]
+		self.plot_tserie_list(trained_X, mean_list , ['Mean Absolute Error', 'mean', 'median','Absolute Error'], graph_title, x_label, y_label)
 
 	
 	def calc_mean_median(self, minuteForFrame, daycount):
@@ -531,6 +739,7 @@ class SingleWordAnalysis():
 		product_sum = 0
 		tweet_count = 0
 		e_tserie_list = []
+		e_tserie = ([],[])
 
 		for name, event in self.events_dict.items():
 			if len(event.tweet_tseries[label]) == 0:
@@ -868,7 +1077,7 @@ class SingleWordAnalysis():
 
 		#calc. standard deviation
 		w_st_power_diff = [((a-b)**2) for a, b in zip(w_mean_freq_list, w_time_per_count)]
-		w_st_dev=sqrt(sum(w_st_power_diff)/len(w_mean_freq_list))
+		w_st_dev=sqrt(math.fsum(w_st_power_diff)/len(w_mean_freq_list))
 		w_st_dev_list = [w_st_dev] * len(w_time_per_count)
 
 		mean_plus_stDev = [a+b for a, b in zip(w_mean_freq_list, w_st_dev_list)]
@@ -1041,9 +1250,9 @@ class SingleWordAnalysis():
 			
 
 
-	def get_intersec_word_counts(self, label, event_name1, event_name2, n):
-		event1 = self.events_dict[event_name1]
-		event2 = self.events_dict[event_name2]
+	def get_intersec_word_counts(self, label, event_names, n):
+		event1 = self.events_dict[event_names[0]]
+		event2 = self.events_dict[event_names[1]]
 
 		w_list = []
 		print('The word list is for words occur in both events with count more than:'+str(n))
