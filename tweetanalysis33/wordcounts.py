@@ -1521,23 +1521,23 @@ class SingleWordAnalysis():
 		l = labels[0]
 
 		event1 = events[0]
-		event2 = events[1]
+		#event2 = events[1]
 
 		words1 = Counter()
-		words2 = Counter()
+		#words2 = Counter()
 
 		for ename in event1:
 			words1 += self.events_dict[ename].words[l]
 
-		for ename in event2:
-			words2 += self.events_dict[ename].words[l]
+		# for ename in event2:
+		# 	words2 += self.events_dict[ename].words[l]
 
-		w1_2 = words1 & words2
+		#w1_2 = words1 & words2
 		w_list = []
-		for w, c in w1_2.most_common():
-			if words1[w] > n and words2[w] > n:
+		for w, c in words1.most_common():
+			if words1[w] > n: # Take just the train set to identify most used words.
 				w_list.append(w)
-				print(w,':', words1[w],':', words2[w])
+				print(w,':', words1[w])
 
 		return w_list
 

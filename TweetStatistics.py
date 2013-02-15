@@ -22,7 +22,8 @@ parser.add_argument('--timewindow', action='store', type = int, nargs=2, default
 args = parser.parse_args() 
 
 
-tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
+#tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
+tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/frogged_tweets_league1112.txt"
 
 
 #Be careful ! index of the names and times must be the same in the list
