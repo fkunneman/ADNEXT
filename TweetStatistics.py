@@ -131,10 +131,10 @@ for w_occur_count in range(5,6):
 
 	w_list = swa.get_intersec_word_counts(w_occur_count, labels, [train_events, test_events] )
 
-	swa.calc_euc_dist_w_list_normalized_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	#swa.calc_euc_dist_w_list_normalized_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
 	#swa.calc_euc_dist_w_list_normalized(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
   #smoothed
-	#swa.calc_euc_dist_w_list(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	swa.calc_euc_dist_w_list_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
 	#swa.calc_euc_dist_w_list(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
 	same_count_control = len(w_list)
 
