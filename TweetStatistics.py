@@ -23,7 +23,7 @@ args = parser.parse_args()
 
 
 #tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
-tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/frogged_tweets_league1112.txt"
+tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/football/frogged_tweets_league1112.txt"
 
 
 #Be careful ! index of the names and times must be the same in the list
@@ -127,7 +127,7 @@ swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricte
 #for word counts more than range, plot predictions from normalized and smoothed frequencies.
 same_count_control = 0
 w_ĺist = []
-for w_occur_count in range(50,51):
+for w_occur_count in range(4,5):
 
 	w_list = swa.get_intersec_word_counts(w_occur_count, labels, [train_events, test_events] )
 
