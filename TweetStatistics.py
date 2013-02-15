@@ -111,7 +111,6 @@ minueTimeFrame = 60
 daycountback = 8
 
 
-
 swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
 swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricted
 
@@ -126,16 +125,15 @@ swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricte
 
 #for word counts more than range, plot predictions from normalized and smoothed frequencies.
 same_count_control = 0
-for w_count in range(50,51):
-	w_list = [] # put what ever you want in it.
-	w_list = swa.get_intersec_word_counts('before', crea_event_objs_for, w_count) # Correct this to take blendobject into account
-	if len(w_list) == same_count_control:
-		continue
+w_ĺist = []
+for w_occur_count in range(50,51):
 
-	swa.calc_euc_dist_w_list_normalized(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	w_list = swa.get_intersec_word_counts(w_occur_count, labels, [train_events, test_events] )
+
+	swa.calc_euc_dist_w_list_normalized_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
 	#swa.calc_euc_dist_w_list_normalized(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
   #smoothed
-	swa.calc_euc_dist_w_list(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	#swa.calc_euc_dist_w_list(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
 	#swa.calc_euc_dist_w_list(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
 	same_count_control = len(w_list)
 
