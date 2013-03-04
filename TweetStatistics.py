@@ -8,19 +8,17 @@ import datetime
 
 import argparse
 
-parser = argparse.ArgumentParser(description = "calculate word statistics")
+parser = argparse.ArgumentParser(description = "calculate and find similarity of time series.")
 
-parser.add_argument('-e', action='store', required = False, help = 'File with eventtags, date and time, divided by a linebreak (for example \'grorod 15-4-2012 12:30\'')
-parser.add_argument('-t', action='store', required = False, help = 'File with tweets in standard format')
-parser.add_argument('-o', action='store', required = False, help = 'The name of the outputfile to write the coordinates to (extension .txt)')
-parser.add_argument('-u', action='store', default = 'day', choices = ['day','hour','minute'], help = 'The unit of time by which the difference will be measured (one of \'day\', \'hour\' or \'minute\'')
-parser.add_argument('--begin', action='store', type = int, required = False, help = 'The first unit of time of tweets related to an event to be counted (for example \'-7\' for 7 units before')
-parser.add_argument('--end', action='store', type = int, required = False, help = 'The last unit of time of tweets related to an event to be counted (for example \'5\' for 5 units after')
-parser.add_argument('--weekdays', action='store', nargs='+', default = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], help = 'Restriction in the days of the week on which an event is held (default = all days)')
-parser.add_argument('--timewindow', action='store', type = int, nargs=2, default = [0,24], help = 'Restriction in the window of time (in hours) within which an event may start on a day (default = all hours)')
+# parser.add_argument("--testevents", help="Events to be tested, system should predict these.")
+# parser.add_argument("-m", "--framemin", type=int, help = "Frame length in minutes")
+# parser.add_argument("-d", "--daycountback", type=int, help="Day count to go back from the event")
+# args = parser.parse_args() 
 
-args = parser.parse_args() 
-
+# print('Test events are:', args.testevents)
+# print('Frame length in minutes:', args.m)
+# print('Day count to go back:', args.d)
+# exit()
 
 tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
 #tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/football/frogged_tweets_league1112.txt"
@@ -86,7 +84,11 @@ labels = ['before'] # it can include any others as well like: during, after, etc
 #What other distances would provide
 crea_event_objs_for=['tweaja','feyaz', 'feyaza','rodutr','excpsv','azgro', 'rjcfcu', 'adogra', 'rjcutr', 'vvvtwe', 'nacrkc','vitaja','heefey', 'rodfcu' ]
 train_events = ['tweaja','feyaz', 'feyaza']
-test_events = ['rodutr','excpsv','azgro', 'rjcfcu', 'adogra', 'rjcutr', 'vvvtwe', 'nacrkc','vitaja','heefey', 'rodfcu'] #14.30 sunday - 29/04/2012
+#All 6 May
+#test_events = ['rodutr','excpsv','azgro', 'rjcfcu', 'adogra', 'rjcutr', 'vvvtwe', 'nacrkc','vitaja','heefey', 'rodfcu'] #14.30 sunday - 29/04/2012
+
+# ["heefey"],["adogra"],["excpsv"], ["azgro"]  ----["rjcfcu","rodfcu","rjcutr","rodutr"],["nacrkc"],    ----["vitaja"] ["vvvtwe"]]
+test_events_list = [["heefey"],["adogra"],["excpsv"],["azgro"],["rjcfcu","rodfcu","rjcutr","rodutr"],["nacrkc"],["vitaja"],["vvvtwe"]]
 #crea_event_objs_for=['ajavvv','feyher'] # Wednesday - 02/05/2012
 #crea_event_objs_for=['ajavvv','tweaja'] # there is something in tweaja - same error rate increase
 #crea_event_objs_for=['ajavvv','feyaz'] #try this and below.
@@ -108,8 +110,8 @@ test_events = ['rodutr','excpsv','azgro', 'rjcfcu', 'adogra', 'rjcutr', 'vvvtwe'
 
 
 
-minueTimeFrame = 60
-daycountback = 8
+minueTimeFrame = 120
+daycountback = 7
 
 
 swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
@@ -127,16 +129,19 @@ swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricte
 #for word counts more than range, plot predictions from normalized and smoothed frequencies.
 same_count_control = 0
 w_ĺist = []
-for w_occur_count in range(5,6):
-
-	w_list = swa.get_intersec_word_counts(w_occur_count, labels, [train_events, test_events] )
+for w_occur_count in [30]:
 
 	#swa.calc_euc_dist_w_list_normalized_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
 	#swa.calc_euc_dist_w_list_normalized(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
   #smoothed
-	swa.calc_euc_dist_w_list_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
+	#swa.calc_euc_dist_w_list_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback,10) #Actual one, before fast
+	for test_e in test_events_list:
+		print('Word Occur Count is:',w_occur_count+1)
+		print('Time Frame length and days back:', minueTimeFrame, daycountback)
+		w_list = swa.get_train_word_counts(w_occur_count, labels, [train_events, test_e])
+		swa.calc_euc_dist_w_list_random_fast(w_list, labels, [train_events, test_e], minueTimeFrame, daycountback)
 	#swa.calc_euc_dist_w_list(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)
-	same_count_control = len(w_list)
+	#same_count_control = len(w_list)
 
 #swa.calc_euc_distance_w_list(['morgen', 'zondag'], labels, crea_event_objs_for, minueTimeFrame, 8)
 
@@ -211,9 +216,12 @@ for w_occur_count in range(5,6):
 # ?- 2 -- 2012-05-02 20:00:00 ['psvado'(801), 'twehee'(1127), 'feyher'(1885), 'fcuvit'(37), 'utrvit'(349), 'necaz'(249), 'ajavvv'(3308), 'graexc'(774),
 #                        'rkcrod'(177), 'necaza', 'rkcrjc'(80), 'gronac' (291)]
 # Test
-# 3 --2012-05-06 14:30:00 ['rodutr'(130), 'excpsv(616)', 'azgro'(242), 'rjcfcu'(4), 'azagro'(0), 'adogra'(361), 'rjcutr'(40), 'vvvtwe'(338), 'nacrkc'(311),
+#3 -2012-05-06 14:30:00 ['rodutr'(130), 'excpsv(616)', 'azgro'(242), 'rjcfcu'(4), 'azagro'(0),
+# 'adogra'(361), 'rjcutr'(40), 'vvvtwe'(338), 'nacrkc'(311),
 #  'vitaja'(1056) : 6 may 14.30, 'heefey'(3168), 'rodfcu'(2)]
 #
+
+# [["heefey"],["adogra"],["excpsv"],["azgro"],["rjcfcu","rodfcu","rjcutr","rodutr"],["nacrkc"],["vitaja"],["vvvtwe"]]
 
 # 2 --2012-05-13 14:30:00 ['vitnec'(567), 'spawii'(3), 'fcehel'(71)]
 
