@@ -14,6 +14,9 @@ parser = argparse.ArgumentParser(description = "calculate and find similarity of
 # parser.add_argument("-m", "--framemin", type=int, help = "Frame length in minutes")
 # parser.add_argument("-d", "--daycountback", type=int, help="Day count to go back from the event")
 parser.add_argument("--eventno", type=int, help="index of the event")
+parser.add_argument("--minframe", type=int, help="frame length in minutes")
+parser.add_argument("--dayback", type=int, help="How many days to go back")
+parser.add_argument("--wcount", type=int, help="threshold for word counts")
 args = parser.parse_args() 
 
 # print('Test events are:', args.testevents)
@@ -22,9 +25,12 @@ args = parser.parse_args()
 # exit()
 
 indexno = args.eventno
+minueTimeFrame = args.minframe
+daycountback = args.dayback
+w_count_threshold = args.wcount
 
-#tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
-tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
+tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
+#tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
 #tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
 #tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/football/frogged_tweets_league1112.txt"
 
@@ -66,8 +72,7 @@ labels = ['before'] # it can include any others as well like: during, after, etc
 
 
 
-minueTimeFrame = 240
-daycountback = 4
+
 
 
 swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
@@ -91,7 +96,7 @@ def test_by_index(tst_indexno, least_wc):
     swa.calc_euc_dist_w_list_random_fast_normalizedByHighest_t_serie(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback)
 
 
-def test_by_index_trnW(tst_indexno, least_wc):
+def test_by_index_trn01(tst_indexno, least_wc, ts_type):
   for least_wc in [least_wc]:
 
     train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
@@ -100,15 +105,39 @@ def test_by_index_trnW(tst_indexno, least_wc):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
-    swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback)
+    print('before user excluding user names:',len(w_list))
+    w_list = [w for w in w_list if w[0] != '@']
+  
+    swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
+
+def test_by_index_tfidf(tst_indexno, least_wc, ts_type):
+  for least_wc in [least_wc]:
+
+    train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
+    test_event = all_events_list[tst_indexno]
+    print('Length of Train and Test event lists:',len(train_events), len(test_event))
+    print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
+
+    w_list = swa.get_train_words(least_wc, labels, train_events)
+    print('before user excluding user names:',len(w_list))
+    w_list = [w for w in w_list if w[0] != '@']
+  
+    swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 
+#exit()
+test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries')
+test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries')
+test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries')
 
-test_by_index_trnW(indexno, 50)
+
+#tserie_type = 'smoothed_w_tseries'
+#tserie_type = 'normalized_w_tseries'
+
 exit()
+
 test_by_index(indexno, 50)
-
-
 
 
 
