@@ -125,7 +125,7 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type):
     swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 
-exit()
+#exit()
 test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries')
 test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries')
 test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
