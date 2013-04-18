@@ -106,7 +106,7 @@ def test_by_index_trn01(tst_indexno, least_wc, ts_type):
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
     print('before user excluding user names:',len(w_list))
-    w_list = [w for w in w_list if w[0] != '@']
+    w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
   
     swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
@@ -120,12 +120,12 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type):
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
     print('before user excluding user names:',len(w_list))
-    w_list = [w for w in w_list if w[0] != '@']
+    w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
   
     swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 
-#exit()
+exit()
 test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries')
 test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries')
 test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')

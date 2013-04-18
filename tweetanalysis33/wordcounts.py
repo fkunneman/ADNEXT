@@ -1508,7 +1508,7 @@ class SingleWordAnalysis():
 		
 		self.calc_mean_median(events[0])
 
-		print('\nNormalized, smoothed and normalized_by_highest:\n')
+		#print('\nNormalized, smoothed and normalized_by_highest:\n')
 		# w_list1 = self.get_train_words_above2std(w_list, event_trained.normalized_w_tseries[label])
 		# w_list2 = self.get_train_words_above2std(w_list, event_trained.smoothed_w_tseries[label])
 		# w_list3 = self.get_train_words_above2std(w_list, event_trained.normalized_w_byhighest[label])
@@ -1533,6 +1533,10 @@ class SingleWordAnalysis():
 			tst_vector_matrix.append(self.crea_vectors_value(getattr(event_test, tserie_type)[label], w_list, y))
 		print(*tst_vector_matrix, sep='\n')
 		tst_vector_matrix = numpy.array(tst_vector_matrix)
+
+		print('Calc dot products before hand:')
+		trn_dot_prod = get_dot_prod_array(trn_vector_matrix)
+		print(*trn_dot_prod)
 		
 		for i in range(0, len(test_X)):
 			
@@ -1571,6 +1575,23 @@ class SingleWordAnalysis():
 		print('Tf-IDF Calc RMSE:', tserie_type)
 		self.print_dict(self.calc_rmse(self.prediction_results))
 		self.prediction_results = {}
+
+	def get_dot_prod_array(self, mtrx):
+		'''
+
+		Returns dot product of each vector in the matrix as an array.
+
+		'''
+		dot_prdct = []
+		for m in mtrx:
+			dot_prdct.append(np.sqrt(np.dot(m,m))
+
+		return np.array(dot_prdct)
+
+
+
+
+
 
 	def calc_tfidf_from_matrix(self, mtrx):
 		'''
@@ -1666,12 +1687,12 @@ class SingleWordAnalysis():
 		Return Cosine distance between vectors
 
 		'''
-		print('In the method, len of vectors:', len(vtrn), len(vtst))
-		print('Sum of elements, trn, tst:', sum(vtrn), sum(vtst))
+		#print('In the method, len of vectors:', len(vtrn), len(vtst))
+		#print('Sum of elements, trn, tst:', sum(vtrn), sum(vtst))
 		if sum(vtrn) == 0 or sum(vtst) == 0:
 			return 0
 		cos_sim = np.dot(vtrn, vtst) / (np.sqrt(np.dot(vtrn, vtrn)) * np.sqrt(np.dot(vtst, vtst))) 
-		print('cos sim:', cos_sim)
+		#print('cos sim:', cos_sim)
 		return cos_sim
 
 
