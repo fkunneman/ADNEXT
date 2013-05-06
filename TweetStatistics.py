@@ -3,6 +3,7 @@
 from tweetanalysis33.wordcounts import SingleWordAnalysis #wordcounts
 
 import sys
+import time
 import datetime
 #from joblib import Parallel, delayed
 
@@ -29,8 +30,8 @@ minueTimeFrame = args.minframe
 daycountback = args.dayback
 w_count_threshold = args.wcount
 
-tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
-#tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
+#tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
+tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
 #tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
 #tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/football/frogged_tweets_league1112.txt"
 
@@ -110,7 +111,7 @@ def test_by_index_trn01(tst_indexno, least_wc, ts_type):
   
     swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
-def test_by_index_tfidf(tst_indexno, least_wc, ts_type):
+def test_by_index_tfidf0(tst_indexno, least_wc, ts_type):
   for least_wc in [least_wc]:
 
     train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
@@ -122,18 +123,82 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type):
     print('before user excluding user names:',len(w_list))
     w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
   
-    swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
+    swa.calc_by_vectors_tfidf0(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
+
+def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k, std_elim=0):
+  for least_wc in [least_wc]:
+
+    train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
+    test_event = all_events_list[tst_indexno]
+    print('Length of Train and Test event lists:',len(train_events), len(test_event))
+    print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
+
+    w_list = swa.get_train_words(least_wc, labels, train_events)
+    print('before user excluding user names:',len(w_list))
+    w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
+  
+    swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k, std_elim)
+
+
+def get_tweets_of_timeframe():
+  for i in range(0,170):
+    print('\n----------------------range is:', i, i+1)
+    print(*swa.get_event_tweets_from_to('before', all_events_list[indexno][0], i+1, i), sep='\n')
 
 #exit()
-test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries')
-test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries')
-test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries')
+#test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries')
+#test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries')
+#test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
+
+
+
+print('Eliminate words that do not have peaks above 5. std:....')
+t2 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 5)
+print('Func optim. time:', time.time() - t2)
+
+print('Eliminate words that do not have peaks above 6. std:....')
+t2 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 6)
+print('Func optim. time:', time.time() - t2)
+
+
+print('Eliminate words that do not have peaks above 6. std:....')
+t2 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 7)
+print('Func optim. time:', time.time() - t2)
+
+print('Do not eliminate any word...')
+t3 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 0)
+print('Func optim. time:', time.time() - t3)
+
+exit()
+
+t0 = time.time()
+test_by_index_tfidf0(indexno, w_count_threshold,'smoothed_w_tseries')
+print('Func. 0 time:', time.time() - t0)
+
+t00 = time.time()
+test_by_index_tfidf0(indexno, w_count_threshold,'smoothed_w_tseries')
+print('Func. 0 time:', time.time() - t00)
+
+t1 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 2)
+print('Func optim. time:', time.time() - t1)
+
+
+
+# test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 2)
+# print('Func optim. time:', time.time() - t1)
 
 
 #tserie_type = 'smoothed_w_tseries'
 #tserie_type = 'normalized_w_tseries'
+
+
+
 
 exit()
 
