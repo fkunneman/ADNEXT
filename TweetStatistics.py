@@ -18,6 +18,7 @@ parser.add_argument("--eventno", type=int, help="index of the event")
 parser.add_argument("--minframe", type=int, help="frame length in minutes")
 parser.add_argument("--dayback", type=int, help="How many days to go back")
 parser.add_argument("--wcount", type=int, help="threshold for word counts")
+parser.add_argument("-k", type=int, default= 1, help="how many nearest neighbors will be taken into account")
 args = parser.parse_args() 
 
 # print('Test events are:', args.testevents)
@@ -29,6 +30,9 @@ indexno = args.eventno
 minueTimeFrame = args.minframe
 daycountback = args.dayback
 w_count_threshold = args.wcount
+k = args.k
+
+print('Process Information(indexno, minueTimeFrame, daycountback, wcount, k):', indexno, minueTimeFrame, daycountback, w_count_threshold, k)
 
 #tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
 tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
@@ -79,6 +83,7 @@ labels = ['before'] # it can include any others as well like: during, after, etc
 swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
 #swa.load_train(train_events) #gets a list and make a Blend, aggregated, time serie
 #swa.load_test(test_events)
+
 swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricted
 
 
@@ -126,7 +131,7 @@ def test_by_index_tfidf0(tst_indexno, least_wc, ts_type):
     swa.calc_by_vectors_tfidf0(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 
-def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k, std_elim=0):
+def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1, std_elim=0):
   for least_wc in [least_wc]:
 
     train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
@@ -135,6 +140,7 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k, std_elim=0):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
+    print(*w_list, sep='\n')
     print('before user excluding user names:',len(w_list))
     w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
   
@@ -152,26 +158,44 @@ def get_tweets_of_timeframe():
 #test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
 
 
+t0 = time.time()
+test_by_index_tfidf0(indexno, w_count_threshold,'smoothed_w_tseries')
+print('Func. 0 time (Just for beginning of timing):', time.time() - t0)
+
+
+t0 = time.time()
+test_by_index_tfidf0(indexno, w_count_threshold,'smoothed_w_tseries')
+print('Func. 0 time(Actual time for this):', time.time() - t0)
+
+t1 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries')
+print('Func optim. & Right IDF approximation time:', time.time() - t1)
+
+t1 = time.time()
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3)
+print('Func optim. & Right IDF approximation time(k=3):', time.time() - t1)
+
+exit()
 
 print('Eliminate words that do not have peaks above 5. std:....')
 t2 = time.time()
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 5)
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', k, 5)
 print('Func optim. time:', time.time() - t2)
 
 print('Eliminate words that do not have peaks above 6. std:....')
 t2 = time.time()
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 6)
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', k, 6)
 print('Func optim. time:', time.time() - t2)
 
 
-print('Eliminate words that do not have peaks above 6. std:....')
+print('Eliminate words that do not have peaks above 7. std:....')
 t2 = time.time()
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 7)
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', k, 7)
 print('Func optim. time:', time.time() - t2)
 
 print('Do not eliminate any word...')
 t3 = time.time()
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3, 0)
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', k, 0)
 print('Func optim. time:', time.time() - t3)
 
 exit()

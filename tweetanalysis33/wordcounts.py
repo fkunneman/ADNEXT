@@ -99,6 +99,22 @@ class Event:
 				for w in list(set(t.get_wordsequence())):
 					self.words[label][w] += 1
 
+	def count_all_bigrams(self, label_list):
+		"Count and add per event and label"
+		for label in label_list:
+			for t in self.tweets[label]:
+				for bigram in self.get_bigrams(t.get_wordsequence()):
+					self.words[label][bigram] += 1
+
+	def get_bigrams(self, tweet):
+		bigrams = []
+
+		if len(tweet) > 1:
+			for i in range(0, len(tweet)-1):
+				bigrams.append(tweet[i]+'_'+tweet[i+1])
+		return bigrams
+
+
 	def count_for_word(self, label, w):
 		"Count just for this list of words, in this label"
 		for t in self.tweets[label]:
@@ -399,6 +415,9 @@ class SingleWordAnalysis():
 		self.tf = Tweetsfeatures(frogged_file)
 		#self.tf.set_tweets(u=1, ht=1, p=1) # remove urls, hashtags and punctuation
 		self.tf.set_tweets_oneline(u=1, ht=1) # new data, 2011, 2012 data
+		# self.tf.add_ngrams(n=2)
+		# self.tf.add_ngrams(n=3)
+
 
 		self.relative_freq_before_dict = {}
 		self.relative_freq_during_dict = {}
@@ -423,6 +442,8 @@ class SingleWordAnalysis():
 		# self.count_words()  self.calc_words_freq()  self.calc_words_relative_freq()
 
 		self.events_dict = {}
+
+	
 		
 	def crea_event_objs_for(self, label_list, crea_event_obj_for):
 		"it handles hashtag names specific for soccer matches"
@@ -476,8 +497,19 @@ class SingleWordAnalysis():
 				tweet_count_test += len(event.tweets[label_list[0]])
 			print('Event Name & Tweet count:', name, len(event.tweets[label_list[0]]))
 			event.count_all_words(label_list)
+			event.count_all_bigrams(label_list)
+
 		print('All tweet count:(Test, Train)', tweet_count_test, tweet_count_train)
 		#input('Press Enter to continue....')
+
+	def get_ngrams(self):
+		'''
+		Print ngrams that are added to Tweet Features by:
+		self.tf.add_ngrams(n=2)
+		self.tf.add_ngrams(n=3)
+
+		'''
+		print(*self.tf.get_features(), sep='\n')
 
 
 	def find_same_time_events(self):
@@ -494,13 +526,11 @@ class SingleWordAnalysis():
 
 	def get_event_tweets_from_to(self, label, eventname, from_time, to_time):
 		'''
-
-
-		print(*swa.get_event_tweets_from_to('before', all_events_list[indexno][0], i+1, i), sep='\n')
+		def get_tweets_of_timeframe():
+			for i in range(0,170):
+				print('\n----------------------range is:', i, i+1)
+				print(*swa.get_event_tweets_from_to('before', all_events_list[indexno][0], i+1, i), sep='\n')
 		'''
-
-
-
 
 		print('into get_event_tweets_from_to')
 		return self.events_dict[eventname].get_tweets_from_to(label, from_time, to_time)
@@ -1493,7 +1523,11 @@ class SingleWordAnalysis():
 		  	7- Change the w_list, it should come from the test set.
 		  	8- delete non-informative ones, rt, @ : maybe informative but are we sure about information ?
 		  	9- Train and test set should allow to have different days back.
-		  	10- Differentiate between similarity and distance metrics. similarity accept max, distance accepts min of the scores. 
+		  	10- Differentiate between similarity and distance metrics. similarity accept max, distance accepts min of the scores.
+
+			System Notes for this method:
+				1 - This is not optimized version of calc_by_vectors_tfidf. The optimization is done by pre-calculation of main cos. similarity dot_products.
+				2 - The test is not tf-idf, WRONG
 		"""
 		#tserie_type = 'smoothed_w_tseries'
 		#tserie_type = 'normalized_w_tseries'
@@ -1534,7 +1568,7 @@ class SingleWordAnalysis():
 		print('Raw Matrix:')
 		print(*trn_vector_matrix, sep='\n')
 		trn_vector_matrix = numpy.array(trn_vector_matrix)
-		trn_vector_matrix = self.calc_tfidf_from_matrix(trn_vector_matrix)
+		trn_vector_matrix, approx_idf_array = self.calc_tfidf_from_matrix(trn_vector_matrix) #do not use approx_idf_array here.
 		print('Tf-Idf Matrix:')
 		print(*trn_vector_matrix, sep='\n')
 
@@ -1545,9 +1579,6 @@ class SingleWordAnalysis():
 		print(*tst_vector_matrix, sep='\n')
 		tst_vector_matrix = numpy.array(tst_vector_matrix)
 
-		print('Calc dot products beforehand:')
-		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
-		print(*trn_dot_prod)
 
 		print('Calc sum of the elements beforehand:')
 		trn_elem_sum = numpy.array([np.sum(v) for v in trn_vector_matrix])
@@ -1559,6 +1590,7 @@ class SingleWordAnalysis():
 
 			for y in range(0, len(trained_X)):
 
+				print('Shape of Trn & Tst:', trn_vector_matrix.shape, tst_vector_matrix.shape)
 				euc_dist_l.append(self.cos_dist(trn_vector_matrix[y], tst_vector_matrix[i]))
 
 			all_1_euc_dist.append(euc_dist_l)			
@@ -1591,12 +1623,12 @@ class SingleWordAnalysis():
 		self.print_dict(self.calc_rmse0(self.prediction_results))
 		self.prediction_results = {}
 
-	def calc_by_vectors_tfidf(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, k, std_elim=0):
+	def calc_by_vectors_tfidf(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, k=1, std_elim=0):
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
 		"""
 		  -First label should be before for now.
 		  -Since the X axes is same we do not take it into account
-		  -First event training second is test
+		  -First event list is training second event list is test
 		  -
 
 		  Questions:
@@ -1659,26 +1691,38 @@ class SingleWordAnalysis():
 		for y in range(0, len(trained_X)):
 			trn_vector_matrix.append(self.crea_vectors_value(getattr(event_trained, tserie_type)[label], w_list, y))
 		print('Raw Matrix:')
-		print(*trn_vector_matrix, sep='\n')
+		print(*trn_vector_matrix)
 		trn_vector_matrix = numpy.array(trn_vector_matrix)
-		trn_vector_matrix = self.calc_tfidf_from_matrix(trn_vector_matrix)
-		print('Tf-Idf Matrix:')
-		print(*trn_vector_matrix, sep='\n')
+		trn_vector_matrix, approx_idf_array = self.calc_tfidf_from_matrix(trn_vector_matrix)
+		print('Tf-Idf Matrix for Train:')
+		print(*trn_vector_matrix)
+		print('approx_idf_array:', approx_idf_array)
 
-		print('\nVector Matrix for Test:')
+		print('\nVector Matrix for Test, tfidf:') # write code to estimate idf value.
 		tst_vector_matrix = []
 		for y in range(0, len(test_X)):
 			tst_vector_matrix.append(self.crea_vectors_value(getattr(event_test, tserie_type)[label], w_list, y))
-		print(*tst_vector_matrix, sep='\n')
+		print(*tst_vector_matrix)
 		tst_vector_matrix = numpy.array(tst_vector_matrix)
+		tst_vector_matrix = self.calc_tfidf_from_matrix_test(tst_vector_matrix, approx_idf_array)
+		print('Tf-Idf Matrix for Test, tfidf:')
+		print(*tst_vector_matrix)
 
-		print('Calc dot products beforehand:')
+		print('Calc dot products beforehand, trn:')
 		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
 		print(*trn_dot_prod)
 
-		print('Calc sum of the elements beforehand:')
+		print('Calc sum of the elements beforehand, trn:')
 		trn_elem_sum = numpy.array([np.sum(v) for v in trn_vector_matrix])
 		print(*trn_elem_sum)
+
+		print('Calc dot products beforehand, tst:')
+		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
+		print(*tst_dot_prod)
+
+		print('Calc sum of the elements beforehand, tst:')
+		tst_elem_sum = numpy.array([np.sum(v) for v in tst_vector_matrix])
+		print(*tst_elem_sum)
 		
 		for i in range(0, len(test_X)):
 			
@@ -1686,7 +1730,7 @@ class SingleWordAnalysis():
 
 			for y in range(0, len(trained_X)):
 
-				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], tst_vector_matrix[i], trn_dot_prod[y], trn_elem_sum[y]))
+				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix[i], tst_dot_prod[i], tst_elem_sum[i]))
 
 			all_1_euc_dist.append(euc_dist_l)			
 
@@ -1730,6 +1774,36 @@ class SingleWordAnalysis():
 
 		return numpy.array(dot_prdct)
 
+	def calc_tfidf_from_matrix_test(self, mtrx, approx_idf):
+		'''
+
+		Return tf-idf matrix in same dimensions
+
+		Precondition: each matrix row contain a time frame, 0th, 1th, etc. elem in the matrix.
+					  each row contains a vector of word occurrence values.
+
+		'''
+
+		doc_count_in_w_occ = self.calc_word_occ_per_doc(mtrx)
+		print('doc counts in which words occur:')
+		print(*doc_count_in_w_occ, sep='\n')
+		all_doc_count = len(mtrx) # every row represent a doc
+		print('all doc count:', all_doc_count)
+		idf_array = approx_idf
+		print('Idf values:', idf_array)
+
+		#idf_array = numpy.array([idf if idf > 0 else 0.00001 for idf in idf_array])
+		print('matrix in tf:', mtrx)
+		for t in range(len(mtrx)):
+			mtrx[t] = mtrx[t]*idf_array #product every line of the matrix with the idf array
+
+		print('matrix after division tfidf:', mtrx)
+			# for w in range(len(mtrx[0])):
+			# 	mtrx[t][w] = mtrx[t][w] * idf_array[w]
+
+		return mtrx
+
+
 
 
 	def calc_tfidf_from_matrix(self, mtrx):
@@ -1759,7 +1833,7 @@ class SingleWordAnalysis():
 			# for w in range(len(mtrx[0])):
 			# 	mtrx[t][w] = mtrx[t][w] * idf_array[w]
 
-		return mtrx
+		return mtrx, idf_array
 
 	def calc_w_idf(self, total_docs, doc_count_in_w_occ_array):
 		'''
@@ -1834,7 +1908,7 @@ class SingleWordAnalysis():
 		#print('cos sim:', cos_sim)
 		return cos_sim
 
-	def cos_dist2(self, vtrn, vtst, vtrn_dotted_sqrted, vtrn_summed):
+	def cos_dist2(self, vtrn, vtrn_dotted_sqrted, vtrn_summed, vtst, vtst_dotted_sqrted, vtst_summed):
 		''' () ->
 
 		optimized version of cos_dist. It uses beforehand calculated dot product and square rooted trained vectors
@@ -1844,9 +1918,9 @@ class SingleWordAnalysis():
 		'''
 		#print('In the method, len of vectors:', len(vtrn), len(vtst))
 		#print('Sum of elements, trn, tst:', sum(vtrn), sum(vtst))
-		if sum(vtst) == 0 or vtrn_summed == 0:
+		if vtst_summed == 0 or vtrn_summed == 0:
 			return 0
-		cos_sim = np.dot(vtrn, vtst) / (vtrn_dotted_sqrted * np.sqrt(np.dot(vtst, vtst))) 
+		cos_sim = np.dot(vtrn, vtst) / (vtrn_dotted_sqrted * vtst_dotted_sqrted) 
 		#print('cos sim:', cos_sim)
 		return cos_sim
 
