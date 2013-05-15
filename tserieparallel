@@ -1,0 +1,47 @@
+
+echo 'Script Begins'
+
+for h in {1..18}
+do
+
+for i in {0..13}
+do
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount 19 > out$((h*60))m8d19w${i}e &
+done
+
+wait
+
+done
+wait
+
+echo 'Second Part Begins'
+# second part ----
+
+for h in {1..18}
+do
+
+for i in {14..25}
+do
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount 19 > out$((h*60))m8d19w${i}e &
+done
+
+wait
+
+done
+wait
+
+echo 'Third and Last part Starts'
+#third part---------
+
+#for h in {1..18}
+#do
+
+#for i in {18..25}
+#do
+#python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount 49 > out$((h*60))m8d19w${i}e &
+#done
+
+#wait
+
+#done
+#wait
