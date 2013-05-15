@@ -97,7 +97,10 @@ class Event:
 		for label in label_list:
 			for t in self.tweets[label]:
 				for w in list(set(t.get_wordsequence())):
-					self.words[label][w] += 1
+					if '@' in w:
+						self.words[label]['username'] += 1
+					else:
+						self.words[label][w] += 1
 
 	def count_all_bigrams(self, label_list):
 		"Count and add per event and label"
@@ -111,7 +114,19 @@ class Event:
 
 		if len(tweet) > 1:
 			for i in range(0, len(tweet)-1):
-				bigrams.append(tweet[i]+'_'+tweet[i+1])
+
+				if '@' not in tweet[i]+tweet[i+1]:
+					bigrams.append(tweet[i]+'_'+tweet[i+1])
+
+				elif '@' in tweet[i] and '@' in tweet[i+1]:
+					bigrams.append('username'+'_'+'username')
+
+				elif '@' in tweet[i]:
+					bigrams.append('username'+'_'+ tweet[i+1])
+
+				else:
+					bigrams.append(tweet[i] + '_' + 'username')
+					
 		return bigrams
 
 
@@ -454,6 +469,7 @@ class SingleWordAnalysis():
 		2- An event object for all soccer matches.
 		"""
 
+		print('Create Event objects for:')
 		for name in crea_event_obj_for:
 			
 			if len(name) == 9 and name[:2] == 'az':
@@ -463,7 +479,7 @@ class SingleWordAnalysis():
 			
 			if name not in self.events_dict:
 				self.events_dict[name] = Event(name, self.event_places[e_place], self.event_times[self.event_names.index(name)], label_list)
-				print('Obj. created:', name)
+				print(name, end = ', ')
 			else:
 				print('Same name object can not be created !! Exit ..')
 				exit()
@@ -484,22 +500,23 @@ class SingleWordAnalysis():
 					else:
 						in_tweet_count += 1
 
-		print('Off and in Tweet counts are:', off_tweet_count, in_tweet_count)
+		print('\n\n** Off and in Tweet counts are:', off_tweet_count, in_tweet_count)
 					
 
 
 		tweet_count_train = 0
 		tweet_count_test = 0
+		print('Event Name & Tweet count:')
 		for name, event in self.events_dict.items():
 			if name[-2:] == '11':
 				tweet_count_train += len(event.tweets[label_list[0]])
 			else:
 				tweet_count_test += len(event.tweets[label_list[0]])
-			print('Event Name & Tweet count:', name, len(event.tweets[label_list[0]]))
+			print(name+':'+str(len(event.tweets[label_list[0]])), end = ', ')
 			event.count_all_words(label_list)
 			event.count_all_bigrams(label_list)
 
-		print('All tweet count:(Test, Train)', tweet_count_test, tweet_count_train)
+		print('\n\nAll tweet count:(Test, Train)', tweet_count_test, tweet_count_train)
 		#input('Press Enter to continue....')
 
 	def get_ngrams(self):
@@ -1617,7 +1634,7 @@ class SingleWordAnalysis():
 				else:
 					print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
 
-		print('Tf-IDF Prediction Results:', tserie_type)
+		print('Tf-IDF Predictions:', tserie_type)
 		self.print_dict(self.prediction_results)
 		print('Tf-IDF Calc RMSE:', tserie_type)
 		self.print_dict(self.calc_rmse0(self.prediction_results))
@@ -1729,33 +1746,49 @@ class SingleWordAnalysis():
 
 			all_1_euc_dist.append(euc_dist_l)			
 
-		for seq_len in range(0, len(test_X)): #for all frame lengths
+		for k_index in range(1,k):
+			for seq_len in range(0, len(test_X)): #for all frame lengths
 
-			# m x n matrix became (m-1)x(n-1)
-			#print('Cos Sim. Matrix for length:', seq_len)
-			
-			euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
-			#print('Distances for sequences:', euc_dist_matrix, sep='\n')
-			
-
-			if seq_len not in self.prediction_results:
-					self.prediction_results[seq_len] = []
-
-			for tst_i in range(0, len(test_X[seq_len:])):
-				predictions = self.get_predictions_sim(euc_dist_matrix[tst_i], trained_X[seq_len:], k)
+				# m x n matrix became (m-1)x(n-1)
+				#print('Cos Sim. Matrix for length:', seq_len)
 				
-				if len(predictions) != 0:
-					actual = test_X[seq_len:][tst_i]
-					self.prediction_results[seq_len].append((actual, numpy.mean(predictions)))
-					#print('Actual:',actual, 'predictions:', predictions, 'raw_errors:', raw_errors)
-				else:
-					print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
+				euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
+				#print('Distances for sequences:', euc_dist_matrix, sep='\n')
+				
 
-		print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
-		self.print_dict(self.prediction_results)
-		print('Tf-IDF Calc RMSE:', tserie_type)
-		self.print_dict(self.calc_rmse(self.prediction_results))
-		self.prediction_results = {}
+				if seq_len not in self.prediction_results:
+						self.prediction_results[seq_len] = []
+
+				for tst_i in range(0, len(test_X[seq_len:])):
+					predictions = self.get_predictions_sim(euc_dist_matrix[tst_i], trained_X[seq_len:], k_index)
+					
+					if len(predictions) != 0:
+						actual = test_X[seq_len:][tst_i]
+
+						self.prediction_results[seq_len].append((actual, self.weighted_pred(predictions)))
+
+						#self.prediction_results[seq_len].append((actual, numpy.mean(predictions)))
+						#print('Actual:',actual, 'predictions:', predictions, 'raw_errors:', raw_errors)
+					else:
+						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
+
+			print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
+			self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k'+str(k_index))
+			print('Tf-IDF Calc RMSE:', tserie_type)
+			self.print_dict(self.calc_rmse(self.prediction_results), 'tfidf_'+ tserie_type+str(k_index))
+			self.prediction_results = {}
+
+	def weighted_pred(self, predictions):
+
+		actual = predictions[0]
+
+		weight_pred = 0.0
+		sum_weights = 0.0
+		for pred_tuple in predictions:
+			weight_pred = math.fsum([weight_pred, pred_tuple[0] * pred_tuple[1]])
+			sum_weights += pred_tuple[1]
+
+		return	weight_pred/sum_weights
 
 	def get_dot_prod_array(self, mtrx):
 		'''
@@ -2005,11 +2038,11 @@ class SingleWordAnalysis():
 		return rmse_dict
 
 		
-	def print_dict(self, pr_dict):
+	def print_dict(self, pr_dict, dictinfo):
 
 		print('Errors per seq. length:')
 		for k, v in pr_dict.items():
-			print(k,':',v)
+			print(dictinfo, k,':',v)
 			
 	def get_predictions_dist(self, dist_list, trained_indexes):
 		if sum(dist_list) == 0:
@@ -2047,8 +2080,8 @@ class SingleWordAnalysis():
 				neg= len(dist_list)
 
 
-			prediction_indexes = [i for i, x in enumerate(dist_list) if x > sorted(dist_list)[-neg]] #have the index if it is in k biggest values.
-			predictions = [trained_indexes[pred] for pred in prediction_indexes]
+			prediction_indexes = [(i, x) for i, x in enumerate(dist_list) if x > sorted(dist_list)[-neg]] #have the index if it is in k biggest values.
+			predictions = [(trained_indexes[pred[0]], pred[1]) for pred in prediction_indexes]
 			return predictions
 		
 		
@@ -2360,8 +2393,9 @@ class SingleWordAnalysis():
 		e_tserie_list = []
 		e_tserie = ([],[])
 
+		print('Event name in Median Calc:')
 		for name in train_events:
-			print('Event name in Median Calc:', name)
+			print(name, end=', ')
 			e = self.events_dict[name]
 			e_tserie = (e.tweet_tseries[label][0], e.tweet_tseries[label][1])
 
@@ -2371,7 +2405,7 @@ class SingleWordAnalysis():
 			product_sum += sum([a*b for a, b in zip(e_tserie[0], e_tserie[1])])
 
 		mean = product_sum/tweet_count
-		print('Sum of products:',product_sum,'All Tweet count:', tweet_count, 'Mean:', mean )
+		print('\n\nSum of products:',product_sum,'All Tweet count:', tweet_count, 'Mean:', mean )
 
 		i = 1
 		median_tweet_count = tweet_count/2
@@ -2920,8 +2954,9 @@ class SingleWordAnalysis():
 		for w, c in words1.most_common():
 			if words1[w] > n:
 				wlist.append(w)
-				print(w,':', words1[w])
+				print(w+':'+str(words1[w]), end=', ')
 
+		print('\n')
 		return wlist
 		
 

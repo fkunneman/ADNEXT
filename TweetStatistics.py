@@ -40,38 +40,82 @@ tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-7000
 #tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/football/frogged_tweets_league1112.txt"
 
 #Be careful ! index of the names and times must be the same in the list
-event_names=['twefey_s11','utrtwe_s11','aztwe_s11','psvaja_s11', \
+event_names_same_time=['twefey_s11','utrtwe_s11','aztwe_s11','psvaja_s11', \
              'psvutr_s11','utrfey_s11','feypsv_s11','utraz_s11', \
              'ajatwe_s11','utrtwe_f11','utrfey_f11','feytwe_f11', \
              'psvaz_f12','utrpsv_f12', 'twefey_f12','utrtwe_f12', \
              'azfey_f12','utraz_f12', 'azaja_s12','utraz_s12', \
              'tweutr_s12','psvfey_s12','feyutr_s12','twefey_s12', \
              'feyaz_s12','tweaja_s12'] # make it automatic
-event_times = [datetime.datetime(2011,1,30,14,30,0), datetime.datetime(2011,2,6,14,30,0),datetime.datetime(2011,2,27,14,30,0),datetime.datetime(2011,2,27,14,30,0),\
+event_times_same_time = [datetime.datetime(2011,1,30,14,30,0), datetime.datetime(2011,2,6,14,30,0),datetime.datetime(2011,2,27,14,30,0),datetime.datetime(2011,2,27,14,30,0),\
                datetime.datetime(2011,3,20,14,30,0),datetime.datetime(2011,4,10,14,30,0),datetime.datetime(2011,4,24,14,30,0),datetime.datetime(2011,5,15,14,30,0),\
                datetime.datetime(2011,5,15,14,30,0),datetime.datetime(2011,12,4,14,30,0),datetime.datetime(2011,12,11,14,30,0),datetime.datetime(2011,12,18,14,30,0),\
                datetime.datetime(2012,9,2,14,30,0),datetime.datetime(2012,9,16,14,30,0),datetime.datetime(2012,11,4,14,30,0),datetime.datetime(2012,11,18,14,30,0),\
                datetime.datetime(2012,11,25,14,30,0),datetime.datetime(2012,12,2,14,30,0),datetime.datetime(2012,1,22,14,30,0),datetime.datetime(2012,2,19,14,30,0),\
                datetime.datetime(2012,2,26,14,30,0),datetime.datetime(2012,2,26,14,30,0),datetime.datetime(2012,3,11,14,30,0),datetime.datetime(2012,3,18,14,30,0),\
-               datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0)]
+               datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0)\
+               ]
+
+event_names_all = ['azpsv_f11','tweaz_f11','psvaja_f11','azfey_f11','ajatwe_f11','ajaaz_f11','psvutr_f11','ajafey_f11', \
+            'twepsv_f11','utraja_f11','azutr_f11','feypsv_f11','utrtwe_f11','utrfey_f11','feytwe_f11','utrfey_f12','ajaaz_f12', \
+            'psvaz_f12','utrpsv_f12','psvfey_f12','ajatwe_f12','ajautr_f12','tweaz_f12','feyaja_f12','twefey_f12','utrtwe_f12', \
+            'azfey_f12','ajapsv_f12','utraz_f12','psvtwe_f12','ajafey_s11','utraja_s11','twefey_s11','utrtwe_s11','azpsv_s11', \
+            'aztwe_s11','psvaja_s11','ajaaz_s11','psvutr_s11','twepsv_s11','feyaz_s11','utrfey_s11','feypsv_s11','utraz_s11', \
+            'ajatwe_s11','azaja_s12','utrpsv_s12','feyaja_s12','ajautr_s12','utraz_s12','tweutr_s12','psvfey_s12','psvtwe_s12',\
+            'feyutr_s12','twefey_s12','ajapsv_s12','aztwe_s12','psvaz_s12','feyaz_s12','tweaja_s12']
+
+event_times_all = [datetime.datetime(2011,8,7,12,30,0),datetime.datetime(2011,8,13,18,45,0),datetime.datetime(2011,9,18,12,30,0),datetime.datetime(2011,9,24,12,30,0), \
+        datetime.datetime(2011,9,24,20,45,0),datetime.datetime(2011,10,15,18,45,0),datetime.datetime(2011,10,15,20,45,0),datetime.datetime(2011,10,23,12,30,0), \
+        datetime.datetime(2011,10,29,20,45,0),datetime.datetime(2011,11,6,12,30,0),datetime.datetime(2011,11,25,20,0,0),datetime.datetime(2011,12,4,12,30,0),\
+        datetime.datetime(2011,12,4,14,30,0),datetime.datetime(2011,12,11,14,30,0),datetime.datetime(2011,12,18,14,30,0),datetime.datetime(2012,8,12,12,30,0),\
+        datetime.datetime(2012,8,12,16,30,0),datetime.datetime(2012,9,2,14,30,0),datetime.datetime(2012,9,16,14,30,0),datetime.datetime(2012,9,23,16,30,0), \
+        datetime.datetime(2012,9,29,20,45,0),datetime.datetime(2012,10,7,12,30,0),datetime.datetime(2012,10,7,16,30,0),datetime.datetime(2012,10,28,12,30,0), \
+        datetime.datetime(2012,11,4,14,30,0),datetime.datetime(2012,11,18,14,30,0),datetime.datetime(2012,11,25,14,30,0),datetime.datetime(2012,12,1,20,45,0),\
+        datetime.datetime(2012,12,2,14,30,0),datetime.datetime(2012,12,9,16,30,0),datetime.datetime(2011,1,19,20,45,0),datetime.datetime(2011,1,23,12,30,0),\
+        datetime.datetime(2011,1,30,14,30,0),datetime.datetime(2011,2,6,14,30,0),datetime.datetime(2011,2,12,20,45,0),datetime.datetime(2011,2,27,14,30,0),\
+        datetime.datetime(2011,2,27,14,30,0),datetime.datetime(2011,3,6,16,30,0),datetime.datetime(2011,3,20,14,30,0),datetime.datetime(2011,4,2,18,45,0),\
+        datetime.datetime(2011,4,2,20,45,0),datetime.datetime(2011,4,10,14,30,0),datetime.datetime(2011,4,24,14,30,0),datetime.datetime(2011,5,15,14,30,0),\
+        datetime.datetime(2011,5,15,14,30,0),datetime.datetime(2012,1,22,14,30,0),datetime.datetime(2012,1,22,16,30,0),datetime.datetime(2012,1,29,12,30,0),\
+        datetime.datetime(2012,2,5,12,30,0),datetime.datetime(2012,2,19,14,30,0),datetime.datetime(2012,2,26,14,30,0),datetime.datetime(2012,2,26,14,30,0),\
+        datetime.datetime(2012,3,4,16,30,0),datetime.datetime(2012,3,11,14,30,0),datetime.datetime(2012,3,18,14,30,0),datetime.datetime(2012,3,25,16,30,0),\
+        datetime.datetime(2012,4,11,19,0,0),datetime.datetime(2012,4,14,18,45,0),datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0)]
+
 
 event_places = {'fce':'eindhoven','spa':'rotterdam','scc':'leeuwarden','fcd':'den bosch','aja':'amsterdam','fey':'rotterdam','psv':'eindhoven','fcu':'utrecht','utr':'utrecht','gro':'groningen','hee':'heerenveen','vvv':'venlo','twe':'enschede','fct':'enschede','rod':'kerkrade','rjc':'kerkrade','her':'almelo','nac':'breda','rkc':'waalwijk','ado':'den haag','az':'alkmaar', \
                  'aza':'alkmaar','exc':'rotterdam','gra':'doetinchem','nec':'nijmegen','vit':'arnhem','wii':'tilburg','hel':'helmond'}
 
-crea_event_objs_for=['twefey_s11','utrtwe_s11','aztwe_s11','psvaja_s11','psvutr_s11','utrfey_s11','feypsv_s11','utraz_s11', \
+crea_event_objs_for_same_time=['twefey_s11','utrtwe_s11','aztwe_s11','psvaja_s11','psvutr_s11','utrfey_s11','feypsv_s11','utraz_s11', \
                     'ajatwe_s11','utrtwe_f11','utrfey_f11','feytwe_f11','psvaz_f12','utrpsv_f12', 'twefey_f12','utrtwe_f12', \
                     'azfey_f12','utraz_f12', 'azaja_s12','utraz_s12','tweutr_s12','psvfey_s12','feyutr_s12','twefey_s12', \
                     'feyaz_s12','tweaja_s12']
+
+
+crea_event_objs_for_all = ['azpsv_f11','tweaz_f11','psvaja_f11','azfey_f11','ajatwe_f11','ajaaz_f11','psvutr_f11','ajafey_f11',\
+              'twepsv_f11','utraja_f11','azutr_f11','feypsv_f11','utrtwe_f11','utrfey_f11','feytwe_f11','utrfey_f12','ajaaz_f12',\
+              'psvaz_f12','utrpsv_f12','psvfey_f12','ajatwe_f12','ajautr_f12','tweaz_f12','feyaja_f12','twefey_f12','utrtwe_f12',\
+              'azfey_f12','ajapsv_f12','utraz_f12','psvtwe_f12','ajafey_s11','utraja_s11','twefey_s11','utrtwe_s11','azpsv_s11',\
+              'aztwe_s11','psvaja_s11','ajaaz_s11','psvutr_s11','twepsv_s11','feyaz_s11','utrfey_s11','feypsv_s11','utraz_s11',\
+              'ajatwe_s11','azaja_s12','utrpsv_s12','feyaja_s12','ajautr_s12','utraz_s12','tweutr_s12','psvfey_s12','psvtwe_s12',\
+              'feyutr_s12','twefey_s12','ajapsv_s12','aztwe_s12','psvaz_s12','feyaz_s12','tweaja_s12']
+
 train_events = ['twefey_s11','utrtwe_s11','aztwe_s11','psvaja_s11','psvutr_s11','utrfey_s11','feypsv_s11','utraz_s11','ajatwe_s11','utrtwe_f11','utrfey_s11','feytwe_f11']
 test_events = ['psvaz_f12','utrpsv_f12', 'twefey_f12','utrtwe_f12', 'azfey_f12','utraz_f12', 'azaja_s12','utraz_s12','tweutr_s12','psvfey_s12','feyutr_s12','twefey_s12', 'feyaz_s12','tweaja_s12']
 
 test_events_list = [['psvaz_f12'],['utrpsv_f12'], ['twefey_f12'],['utrtwe_f12'], ['azfey_f12'],['utraz_f12'], ['azaja_s12'],['utraz_s12'], \
                     ['tweutr_s12'],['psvfey_s12'],['feyutr_s12'],['twefey_s12'], ['feyaz_s12'],['tweaja_s12']]
 
-all_events_list = [['psvaz_f12'],['utrpsv_f12'], ['twefey_f12'],['utrtwe_f12'], ['azfey_f12'],['utraz_f12'], ['azaja_s12'],['utraz_s12'], \
+events_list_for_same_time = [['psvaz_f12'],['utrpsv_f12'], ['twefey_f12'],['utrtwe_f12'], ['azfey_f12'],['utraz_f12'], ['azaja_s12'],['utraz_s12'], \
                   ['tweutr_s12'],['psvfey_s12'],['feyutr_s12'],['twefey_s12'], ['feyaz_s12'],['tweaja_s12'], ['twefey_s11'],['utrtwe_s11'], \
                   ['aztwe_s11'],['psvaja_s11'],['psvutr_s11'],['utrfey_s11'],['feypsv_s11'],['utraz_s11'],['ajatwe_s11'],['utrtwe_f11'],\
-                  ['utrfey_s11'],['feytwe_f11']]
+                  ['utrfey_s11'],['feytwe_f11'], ['azutr_f11'], ['feypsv_f11']]
+
+events_list_for_all = [['azpsv_f11'],['tweaz_f11'],['psvaja_f11'],['azfey_f11'],['ajatwe_f11'],['ajaaz_f11'],['psvutr_f11'],['ajafey_f11'],\
+            ['twepsv_f11'],['utraja_f11'],['azutr_f11'],['feypsv_f11'],['utrtwe_f11'],['utrfey_f11'],['feytwe_f11'],['utrfey_f12'],\
+            ['ajaaz_f12'],['psvaz_f12'],['utrpsv_f12'],['psvfey_f12'],['ajatwe_f12'],['ajautr_f12'],['tweaz_f12'],['feyaja_f12'],['twefey_f12'],\
+            ['utrtwe_f12'],['azfey_f12'],['ajapsv_f12'],['utraz_f12'],['psvtwe_f12'],['ajafey_s11'],['utraja_s11'],['twefey_s11'],['utrtwe_s11'],\
+            ['azpsv_s11'],['aztwe_s11'],['psvaja_s11'],['ajaaz_s11'],['psvutr_s11'],['twepsv_s11'],['feyaz_s11'],['utrfey_s11'],['feypsv_s11'],['utraz_s11'],\
+            ['ajatwe_s11'],['azaja_s12'],['utrpsv_s12'],['feyaja_s12'],['ajautr_s12'],['utraz_s12'],['tweutr_s12'],['psvfey_s12'],['psvtwe_s12'],['feyutr_s12'],\
+            ['twefey_s12'],['ajapsv_s12'],['aztwe_s12'],['psvaz_s12'],['feyaz_s12'],['tweaja_s12']]
 
 labels = ['before'] # it can include any others as well like: during, after, etc.
 
@@ -80,11 +124,11 @@ labels = ['before'] # it can include any others as well like: during, after, etc
 
 
 
-swa = SingleWordAnalysis(tweets_file_big_temp, event_names, event_times, event_places)
+swa = SingleWordAnalysis(tweets_file_big_temp, event_names_all, event_times_all, event_places)
 #swa.load_train(train_events) #gets a list and make a Blend, aggregated, time serie
 #swa.load_test(test_events)
 
-swa.crea_event_objs_for(labels, crea_event_objs_for) # just this list, restricted
+swa.crea_event_objs_for(labels, crea_event_objs_for_all) # just this list, restricted
 
 
 same_count_control = 0
@@ -102,7 +146,10 @@ def test_by_index(tst_indexno, least_wc):
     swa.calc_euc_dist_w_list_random_fast_normalizedByHighest_t_serie(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback)
 
 
-def test_by_index_trn01(tst_indexno, least_wc, ts_type):
+def test_by_index_trn01(tst_indexno, least_wc, ts_type, k=1):
+
+  all_events_list = events_list_for_all
+
   for least_wc in [least_wc]:
 
     train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
@@ -112,17 +159,26 @@ def test_by_index_trn01(tst_indexno, least_wc, ts_type):
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
     print('before user excluding user names:',len(w_list))
-    w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
+    # w_list = [w for w in w_list if '@' not in w]#eliminate user names
+    # print('after excluding user names:', len(w_list))
+    # print(*w_list, sep= ', ')
+    # print('\n')
   
     swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 def test_by_index_tfidf0(tst_indexno, least_wc, ts_type):
+  '''
+    It is to try the former system, now it should not be functional since it does not do idf approximation.
+
+  '''
+  all_events_list = events_list_for_all
+
   for least_wc in [least_wc]:
 
     train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
     test_event = all_events_list[tst_indexno]
     print('Length of Train and Test event lists:',len(train_events), len(test_event))
-    print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
+    print('Train events:', train_events,'\nTst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
     print('before user excluding user names:',len(w_list))
@@ -131,7 +187,9 @@ def test_by_index_tfidf0(tst_indexno, least_wc, ts_type):
     swa.calc_by_vectors_tfidf0(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 
-def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1, std_elim=0):
+def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1):
+
+  all_events_list = events_list_for_all
   for least_wc in [least_wc]:
 
     train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
@@ -140,12 +198,13 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1, std_elim=0):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
-    print(*w_list, sep='\n')
     print('before user excluding user names:',len(w_list))
-    w_list = [w for w in w_list if '@' not in w] #eliminate user names
-    print('after excluding user names:', len(w_list))
+    # w_list = [w for w in w_list if '@' not in w] #eliminate user names
+    # print('after excluding user names:', len(w_list))
+    # print(*w_list, sep= ', ')
+    # print('\n')
   
-    swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k, std_elim)
+    swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k)
 
 
 def get_tweets_of_timeframe():
@@ -159,22 +218,19 @@ def get_tweets_of_timeframe():
 #test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
 
 
-t0 = time.time()
-test_by_index_tfidf0(indexno, w_count_threshold,'smoothed_w_tseries')
-print('Func. 0 time (Just for beginning of timing):', time.time() - t0)
+# test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 9)
+# print('Results of normalized binary')
+
+# test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 9)
+# print('Results of smoothed binary')
 
 
-t0 = time.time()
-test_by_index_tfidf0(indexno, w_count_threshold,'smoothed_w_tseries')
-print('Func. 0 time(Actual time for this):', time.time() - t0)
+test_by_index_tfidf(indexno, w_count_threshold,'normalized_w_tseries', 3)
+print('Results of normalized tfidf')
 
-t1 = time.time()
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries')
-print('Func optim. & Right IDF approximation time:', time.time() - t1)
-
-t1 = time.time()
 test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3)
-print('Func optim. & Right IDF approximation time(k=3):', time.time() - t1)
+print('Results of smoothed tfidf')
+
 
 exit()
 
