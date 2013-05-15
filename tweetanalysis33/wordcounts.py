@@ -1686,43 +1686,38 @@ class SingleWordAnalysis():
 
 		all_1_euc_dist = []
 
-		print('Vector Matrix for Train:')
 		trn_vector_matrix = []
 		for y in range(0, len(trained_X)):
 			trn_vector_matrix.append(self.crea_vectors_value(getattr(event_trained, tserie_type)[label], w_list, y))
-		print('Raw Matrix:')
-		print(*trn_vector_matrix)
+		print('Ten Raw Matrix:', trn_vector_matrix)
+		
 		trn_vector_matrix = numpy.array(trn_vector_matrix)
 		trn_vector_matrix, approx_idf_array = self.calc_tfidf_from_matrix(trn_vector_matrix)
-		print('Tf-Idf Matrix for Train:')
-		print(*trn_vector_matrix)
+		print('Tf-Idf Matrix for Train:',trn_vector_matrix)
 		print('approx_idf_array:', approx_idf_array)
 
-		print('\nVector Matrix for Test, tfidf:') # write code to estimate idf value.
+		
 		tst_vector_matrix = []
 		for y in range(0, len(test_X)):
 			tst_vector_matrix.append(self.crea_vectors_value(getattr(event_test, tserie_type)[label], w_list, y))
-		print(*tst_vector_matrix)
+		print('\nVector Matrix for Test, tfidf:', tst_vector_matrix)
 		tst_vector_matrix = numpy.array(tst_vector_matrix)
 		tst_vector_matrix = self.calc_tfidf_from_matrix_test(tst_vector_matrix, approx_idf_array)
-		print('Tf-Idf Matrix for Test, tfidf:')
-		print(*tst_vector_matrix)
+		print('Tf-Idf Matrix for Test, tfidf:', tst_vector_matrix)
 
-		print('Calc dot products beforehand, trn:')
+		
 		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
-		print(*trn_dot_prod)
+		print('Calc dot products beforehand, trn:',trn_dot_prod)
 
-		print('Calc sum of the elements beforehand, trn:')
 		trn_elem_sum = numpy.array([np.sum(v) for v in trn_vector_matrix])
-		print(*trn_elem_sum)
+		print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
 
-		print('Calc dot products beforehand, tst:')
 		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
-		print(*tst_dot_prod)
+		print('Calc dot products beforehand, tst:', tst_dot_prod)
 
-		print('Calc sum of the elements beforehand, tst:')
+
 		tst_elem_sum = numpy.array([np.sum(v) for v in tst_vector_matrix])
-		print(*tst_elem_sum)
+		print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
 		
 		for i in range(0, len(test_X)):
 			
@@ -1737,10 +1732,10 @@ class SingleWordAnalysis():
 		for seq_len in range(0, len(test_X)): #for all frame lengths
 
 			# m x n matrix became (m-1)x(n-1)
-			print('Cos Sim. Matrix for length:', seq_len)
+			#print('Cos Sim. Matrix for length:', seq_len)
 			
 			euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
-			print(*euc_dist_matrix, sep='\n')
+			#print('Distances for sequences:', euc_dist_matrix, sep='\n')
 			
 
 			if seq_len not in self.prediction_results:
@@ -1858,7 +1853,7 @@ class SingleWordAnalysis():
 		The order of the words remain as it is in the matrix columns.
 
 		Precondition: each matrix row contain a time frame, 0th, 1th, etc. elem in the matrix.
-					  each row contains a vector of word occurrence values.
+					  each row contains a vector of word occurrence values/freq.
 
 		'''
 		doc_count_in_w_occ = numpy.array([0.0]* len(mtrx[0]))

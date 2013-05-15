@@ -142,7 +142,8 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1, std_elim=0):
     w_list = swa.get_train_words(least_wc, labels, train_events)
     print(*w_list, sep='\n')
     print('before user excluding user names:',len(w_list))
-    w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
+    w_list = [w for w in w_list if '@' not in w] #eliminate user names
+    print('after excluding user names:', len(w_list))
   
     swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k, std_elim)
 
