@@ -1,15 +1,17 @@
+#!/bin/bash
 
 echo '----Second Script Begins----'
 echo '4. Part Begins'
 
-wc_threshold = $1
+wcthreshold=$1
+echo $wc_threshold
 
 for h in {1..18}
 do
 
 for i in {31..40}
 do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wc_threshold}w${i}e &
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wcthreshold}w${i}e &
 done
 
 wait
@@ -25,7 +27,7 @@ do
 
 for i in {41..50}
 do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wc_threshold}w${i}e &
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wcthreshold}w${i}e &
 done
 
 wait
@@ -40,7 +42,7 @@ do
 
 for i in {51..59}
 do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wc_threshold}w${i}e &
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wcthreshold}w${i}e &
 done
 
 wait
