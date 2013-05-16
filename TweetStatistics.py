@@ -5,6 +5,7 @@ from tweetanalysis33.wordcounts import SingleWordAnalysis #wordcounts
 import sys
 import time
 import datetime
+import getpass
 #from joblib import Parallel, delayed
 
 import argparse
@@ -35,7 +36,14 @@ k = args.k
 print('Process Information(indexno, minueTimeFrame, daycountback, wcount, k):', indexno, minueTimeFrame, daycountback, w_count_threshold, k)
 
 #tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
-tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
+if getpass.getuser() == 'ali-hurriyetoglu':
+  tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/ftbll2011-12-700000tweets/tweets_converted.txt"
+else:
+  tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
+
+print('used file is:',tweets_file_big_temp)
+
+
 #tweets_file_big_temp = "/home/ali-hurriyetoglu/ADNEXT-Git/Data/football/frogged_tweets_league1112.txt"
 #tweets_file_big_temp = "/vol/bigdata/users/hurrial/Data/football/frogged_tweets_league1112.txt"
 
@@ -147,6 +155,8 @@ def test_by_index(tst_indexno, least_wc):
 
 
 def test_by_index_trn01(tst_indexno, least_wc, ts_type, k=1):
+  
+  print('k is(in test_by_index_trn01):', k)
 
   all_events_list = events_list_for_all
 
@@ -158,33 +168,14 @@ def test_by_index_trn01(tst_indexno, least_wc, ts_type, k=1):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
-    print('before user excluding user names:',len(w_list))
+    print('before excluding user names(trn01):',len(w_list))
     # w_list = [w for w in w_list if '@' not in w]#eliminate user names
     # print('after excluding user names:', len(w_list))
     # print(*w_list, sep= ', ')
     # print('\n')
   
-    swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
+    swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type, k)
 
-def test_by_index_tfidf0(tst_indexno, least_wc, ts_type):
-  '''
-    It is to try the former system, now it should not be functional since it does not do idf approximation.
-
-  '''
-  all_events_list = events_list_for_all
-
-  for least_wc in [least_wc]:
-
-    train_events = [l[0] for l in all_events_list if l != all_events_list[tst_indexno]]
-    test_event = all_events_list[tst_indexno]
-    print('Length of Train and Test event lists:',len(train_events), len(test_event))
-    print('Train events:', train_events,'\nTst event:', all_events_list[tst_indexno])
-
-    w_list = swa.get_train_words(least_wc, labels, train_events)
-    print('before user excluding user names:',len(w_list))
-    w_list = [w for w in w_list if w[0] != '@'] #eliminate user names
-  
-    swa.calc_by_vectors_tfidf0(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type)
 
 
 def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1):
@@ -198,7 +189,7 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
-    print('before user excluding user names:',len(w_list))
+    print('before excluding user names(tfidf):',len(w_list))
     # w_list = [w for w in w_list if '@' not in w] #eliminate user names
     # print('after excluding user names:', len(w_list))
     # print(*w_list, sep= ', ')
@@ -218,17 +209,18 @@ def get_tweets_of_timeframe():
 #test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
 
 
-# test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 9)
-# print('Results of normalized binary')
-
-# test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 9)
-# print('Results of smoothed binary')
+test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 16)
+print('Results of normalized binary')
 
 
-test_by_index_tfidf(indexno, w_count_threshold,'normalized_w_tseries', 3)
+test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 16)
+print('Results of smoothed binary')
+
+
+test_by_index_tfidf(indexno, w_count_threshold,'normalized_w_tseries', 16)
 print('Results of normalized tfidf')
 
-test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 3)
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 16)
 print('Results of smoothed tfidf')
 
 
