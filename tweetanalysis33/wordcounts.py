@@ -1452,7 +1452,7 @@ class SingleWordAnalysis():
 		
 		self.calc_mean_median(events[0])
 
-		print('\nNormalized, smoothed and normalized_by_highest:\n')
+		#print('\nNormalized, smoothed and normalized_by_highest:\n')
 		# w_list1 = self.get_train_words_above2std(w_list, event_trained.normalized_w_tseries[label])
 		# w_list2 = self.get_train_words_above2std(w_list, event_trained.smoothed_w_tseries[label])
 		# w_list3 = self.get_train_words_above2std(w_list, event_trained.normalized_w_byhighest[label])
@@ -1465,7 +1465,7 @@ class SingleWordAnalysis():
 		trn_vector_matrix = []
 		for y in range(0, len(trained_X)):
 			trn_vector_matrix.append(self.crea_vectors_01(getattr(event_trained, tserie_type)[label], w_list, y))
-		print(*trn_vector_matrix, sep='\n')
+		#print(*trn_vector_matrix, sep='\n')
 
 		trn_vector_matrix = numpy.array(trn_vector_matrix)
 
@@ -1474,23 +1474,23 @@ class SingleWordAnalysis():
 		tst_vector_matrix = []
 		for y in range(0, len(test_X)):
 			tst_vector_matrix.append(self.crea_vectors_01(getattr(event_test, tserie_type)[label], w_list, y))
-		print(*tst_vector_matrix, sep='\n')
+		#print(*tst_vector_matrix, sep='\n')
 		tst_vector_matrix = numpy.array(tst_vector_matrix)
 
 		
 
 		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
-		print('Calc dot products beforehand, trn:',trn_dot_prod)
+		#print('Calc dot products beforehand, trn:',trn_dot_prod)
 
 		trn_elem_sum = numpy.array([np.sum(v) for v in trn_vector_matrix])
-		print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
+		#print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
 
 		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
-		print('Calc dot products beforehand, tst:', tst_dot_prod)
+		#print('Calc dot products beforehand, tst:', tst_dot_prod)
 
 
 		tst_elem_sum = numpy.array([np.sum(v) for v in tst_vector_matrix])
-		print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
+		#print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
 		
 		for i in range(0, len(test_X)):
 			
@@ -1513,7 +1513,7 @@ class SingleWordAnalysis():
 				print('Cos Sim. Matrix for length:', seq_len)
 				
 				euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
-				print('Distances for sequences:', euc_dist_matrix, sep='\n')
+				#print('Distances for sequences:', euc_dist_matrix, sep='\n')
 				
 
 				if seq_len not in self.prediction_results:
@@ -1532,9 +1532,9 @@ class SingleWordAnalysis():
 					else:
 						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
 
-			print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
+			#print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
 			self.print_dict(self.prediction_results, 'trn01_'+ tserie_type+'-k'+str(k_index))
-			print('Tf-IDF Calc RMSE:', tserie_type)
+			print('Trn01 Calc RMSE:', tserie_type)
 			self.print_dict(self.calc_rmse(self.prediction_results), 'trn01_'+ tserie_type+'k:'+str(k_index))
 			self.prediction_results = {}		
 

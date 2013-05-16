@@ -2,7 +2,7 @@
 echo '----Second Script Begins----'
 echo '4. Part Begins'
 
-wc_threshold = 499
+wc_threshold = $1
 
 for h in {1..18}
 do
