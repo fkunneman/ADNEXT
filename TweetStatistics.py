@@ -64,6 +64,7 @@ event_times_same_time = [datetime.datetime(2011,1,30,14,30,0), datetime.datetime
                datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0)\
                ]
 
+# 60 events
 event_names_all = ['azpsv_f11','tweaz_f11','psvaja_f11','azfey_f11','ajatwe_f11','ajaaz_f11','psvutr_f11','ajafey_f11', \
             'twepsv_f11','utraja_f11','azutr_f11','feypsv_f11','utrtwe_f11','utrfey_f11','feytwe_f11','utrfey_f12','ajaaz_f12', \
             'psvaz_f12','utrpsv_f12','psvfey_f12','ajatwe_f12','ajautr_f12','tweaz_f12','feyaja_f12','twefey_f12','utrtwe_f12', \
@@ -71,6 +72,7 @@ event_names_all = ['azpsv_f11','tweaz_f11','psvaja_f11','azfey_f11','ajatwe_f11'
             'aztwe_s11','psvaja_s11','ajaaz_s11','psvutr_s11','twepsv_s11','feyaz_s11','utrfey_s11','feypsv_s11','utraz_s11', \
             'ajatwe_s11','azaja_s12','utrpsv_s12','feyaja_s12','ajautr_s12','utraz_s12','tweutr_s12','psvfey_s12','psvtwe_s12',\
             'feyutr_s12','twefey_s12','ajapsv_s12','aztwe_s12','psvaz_s12','feyaz_s12','tweaja_s12']
+
 
 event_times_all = [datetime.datetime(2011,8,7,12,30,0),datetime.datetime(2011,8,13,18,45,0),datetime.datetime(2011,9,18,12,30,0),datetime.datetime(2011,9,24,12,30,0), \
         datetime.datetime(2011,9,24,20,45,0),datetime.datetime(2011,10,15,18,45,0),datetime.datetime(2011,10,15,20,45,0),datetime.datetime(2011,10,23,12,30,0), \
@@ -87,7 +89,7 @@ event_times_all = [datetime.datetime(2011,8,7,12,30,0),datetime.datetime(2011,8,
         datetime.datetime(2012,2,5,12,30,0),datetime.datetime(2012,2,19,14,30,0),datetime.datetime(2012,2,26,14,30,0),datetime.datetime(2012,2,26,14,30,0),\
         datetime.datetime(2012,3,4,16,30,0),datetime.datetime(2012,3,11,14,30,0),datetime.datetime(2012,3,18,14,30,0),datetime.datetime(2012,3,25,16,30,0),\
         datetime.datetime(2012,4,11,19,0,0),datetime.datetime(2012,4,14,18,45,0),datetime.datetime(2012,4,29,14,30,0),datetime.datetime(2012,4,29,14,30,0)]
-
+        
 
 event_places = {'fce':'eindhoven','spa':'rotterdam','scc':'leeuwarden','fcd':'den bosch','aja':'amsterdam','fey':'rotterdam','psv':'eindhoven','fcu':'utrecht','utr':'utrecht','gro':'groningen','hee':'heerenveen','vvv':'venlo','twe':'enschede','fct':'enschede','rod':'kerkrade','rjc':'kerkrade','her':'almelo','nac':'breda','rkc':'waalwijk','ado':'den haag','az':'alkmaar', \
                  'aza':'alkmaar','exc':'rotterdam','gra':'doetinchem','nec':'nijmegen','vit':'arnhem','wii':'tilburg','hel':'helmond'}
