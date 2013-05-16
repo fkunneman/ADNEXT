@@ -11,7 +11,7 @@ do
 
 for i in {31..40}
 do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wcthreshold}w${i}e &
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
 done
 
 wait
@@ -27,7 +27,7 @@ do
 
 for i in {41..50}
 do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wcthreshold}w${i}e &
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
 done
 
 wait
@@ -42,7 +42,7 @@ do
 
 for i in {51..59}
 do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wc_threshold > out$((h*60))m8d${wcthreshold}w${i}e &
+python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
 done
 
 wait
