@@ -442,6 +442,9 @@ class Tweetsfeatures():
 			word = token[2]
 			self.wordsequence.append(word.lower())
 
+		def delete_word(self, token):
+			pass
+
 		def add_lemma(self,token):
 			lemma = token[3]
 			self.lemmasequence.append(lemma.lower())

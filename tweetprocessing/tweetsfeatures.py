@@ -383,4 +383,3 @@ class Tweetsfeatures():
 		def get_possequence(self): return self.possequence
 
 		def get_features(self): return self.features 
-

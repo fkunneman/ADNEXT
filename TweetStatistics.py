@@ -34,6 +34,7 @@ w_count_threshold = args.wcount
 k = args.k
 
 print('Process Information(indexno, minueTimeFrame, daycountback, wcount, k):', indexno, minueTimeFrame, daycountback, w_count_threshold, k)
+print('Note about the process:', 'a bit teamname normalization?')
 
 #tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
 if getpass.getuser() == 'ali-hurriyetoglu':
@@ -170,14 +171,24 @@ def test_by_index_trn01(tst_indexno, least_wc, ts_type, k=1):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
-    print('before excluding user names(trn01):',len(w_list))
-    # w_list = [w for w in w_list if '@' not in w]#eliminate user names
-    # print('after excluding user names:', len(w_list))
-    # print(*w_list, sep= ', ')
-    # print('\n')
-  
+    w_list2 = swa.get_TrnTstIntersect_words(least_wc, labels, train_events, test_event)
+    print('before and after excluding user names(tfidf):',len(w_list), len(w_list2))
+    
+    print('wlist for timing')
+    t1 = time.time()
     swa.calc_by_vectors(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type, k)
+    print('test_by_index_trn01:(slow) Func optim. time, just big:', time.time() - t1)
+    
+    print('fast wlist2')
+    t2 = time.time()
+    swa.calc_by_vectors2([w_list,w_list2], labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type, k)
+    print('test_by_index_trn01:(fast) Func optim. time, big and small:', time.time() - t2)
 
+    
+    
+
+    print('-------------------------------------------------------------------------------------------------------------------------------')
+    exit()
 
 
 def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1):
@@ -191,13 +202,36 @@ def test_by_index_tfidf(tst_indexno, least_wc, ts_type, k=1):
     print('Train events:', train_events,'Tst event:', all_events_list[tst_indexno])
 
     w_list = swa.get_train_words(least_wc, labels, train_events)
+    w_list2 = swa.get_TrnTstIntersect_words(least_wc, labels, train_events, test_event)
     print('before excluding user names(tfidf):',len(w_list))
+    print('Words that occur both in Test and Train:', len(w_list2))
     # w_list = [w for w in w_list if '@' not in w] #eliminate user names
     # print('after excluding user names:', len(w_list))
     # print(*w_list, sep= ', ')
     # print('\n')
-  
+
+    
+
+   
+
+
+    print('wlist long and short list')
+    t1 = time.time()
     swa.calc_by_vectors_tfidf(w_list, labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k)
+    print('Func optim. time, just big:', time.time() - t1)
+
+    print('tfidf2-long and short list:')
+    t0 = time.time()
+    swa.calc_by_vectors_tfidf2([w_list,w_list2], labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k)
+    print('Time of the fast, func optim, small and big:', time.time() - t0)
+
+
+    exit()
+
+    
+    print('-------------------------------------------------------------------------------------------------------------------------------')
+
+    exit()
 
 
 def get_tweets_of_timeframe():
@@ -211,12 +245,7 @@ def get_tweets_of_timeframe():
 #test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
 
 
-test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 16)
-print('Results of normalized binary')
 
-
-test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 16)
-print('Results of smoothed binary')
 
 
 test_by_index_tfidf(indexno, w_count_threshold,'normalized_w_tseries', 16)
@@ -224,6 +253,13 @@ print('Results of normalized tfidf')
 
 test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 16)
 print('Results of smoothed tfidf')
+
+test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 16)
+print('Results of normalized binary')
+
+
+test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 16)
+print('Results of smoothed binary')
 
 
 exit()

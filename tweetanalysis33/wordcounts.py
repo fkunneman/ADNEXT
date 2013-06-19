@@ -2,7 +2,6 @@
 import sys
 #sys.path.append("..")
 
-
 from tweetprocessing33.tweetsfeatures import Tweetsfeatures
 import codecs
 import operator
@@ -15,6 +14,7 @@ import numpy
 import matplotlib
 matplotlib.use('Agg') # for server xdisplay problem.
 import math
+from joblib import Parallel, delayed
 
 # from pandas import *
 # from numpy import *
@@ -96,18 +96,36 @@ class Event:
 		"Count and add per event and label"
 		for label in label_list:
 			for t in self.tweets[label]:
-				for w in list(set(t.get_wordsequence())):
+				twseq = t.get_wordsequence()
+				for w in list(set(twseq)):
+					wchange = ''
 					if '@' in w:
 						self.words[label]['username'] += 1
+						wchange = 'username'
+					elif w in ['ajax','az','psv','vvv']:
+						self.words[label]['teamname'] += 1
+						wchange = 'teamname'
 					else:
 						self.words[label][w] += 1
+						continue # not to do remove-insert for normal words
+					
+					if wchange != '':
+						twseq[twseq.index(w_old)] = wchange
+						print('Tweet changed to(unigram, username or teamname):', twseq)
+					else:
+						print('wchange Should not be empty!!..Exit()')
+						exit()
+
 
 	def count_all_bigrams(self, label_list):
 		"Count and add per event and label"
 		for label in label_list:
 			for t in self.tweets[label]:
-				for bigram in self.get_bigrams(t.get_wordsequence()):
+				twseq = t.get_wordsequence()
+				for bigram in self.get_bigrams(twseq):
 					self.words[label][bigram] += 1
+					twseq.append(bigram) # add this new feature to the tweet.
+					print('Tweet changed to(bigram added to end of it):', twseq)
 
 	def get_bigrams(self, tweet):
 		bigrams = []
@@ -115,17 +133,25 @@ class Event:
 		if len(tweet) > 1:
 			for i in range(0, len(tweet)-1):
 
-				if '@' not in tweet[i]+tweet[i+1]:
+				if ('@' not in tweet[i]+tweet[i+1]) or (tweet[i]+'_'+tweet[i+1] not in ['fc_twente', 'fc_utrecht', 'fc_groningen', 'afc_ajax']) :
 					bigrams.append(tweet[i]+'_'+tweet[i+1])
 
 				elif '@' in tweet[i] and '@' in tweet[i+1]:
 					bigrams.append('username'+'_'+'username')
 
-				elif '@' in tweet[i]:
+				elif ('@' in tweet[i]) and ('@' not in tweet[i+1]):
 					bigrams.append('username'+'_'+ tweet[i+1])
 
-				else:
+				elif ('@' not in tweet[i]) and ('@' in tweet[i+1])
 					bigrams.append(tweet[i] + '_' + 'username')
+
+				elif (tweet[i]+'_'+tweet[i+1]) in ['fc_twente', 'fc_utrecht', 'fc_groningen', 'afc_ajax']:
+					tweet[i] = 'teamname'
+					tweet.remove(tweet[i+1])
+					bigrams.append('teamname'+'_'+tweet[i+1])
+					print('Tweet changed to(bigram, fc_.. team name normalized and a new bigram created):', 'teamname'+'_'+tweet[i+1])
+
+					
 					
 		return bigrams
 
@@ -157,23 +183,38 @@ class Event:
 
 		time_list_for_word = [t.time for t in self.tweets[label] if w in list(set(t.get_wordsequence())) ]
 		self.w_tseries[label][w] = self.calc_tseries_count_words(time_list_for_word, minuteForFrame, dayCount)
+		len_wtserie = len(self.w_tseries[label][w])
 		#print('W_serie of the word:', self.w_tseries[label][w])
-		self.normalized_w_tseries[label][w] = self.normalize_tserie_by_tserie(self.w_tseries[label][w], self.tweet_tseries[label][1])
-		# print('E. Name&w.:', self.name, w)
-		# print('Tserie:', self.w_tseries[label][w])
-		#print('Normalized w tserie:', self.normalized_w_tseries[label][w])
-		
-		self.smoothed_w_tseries[label][w] = self.running_average(self.normalized_w_tseries[label][w])
-		#print('Smoothed w tserie:', self.smoothed_w_tseries[label][w])
-		self.normalized_w_byhighest[label][w] = self.normalize_by_highest(w, self.smoothed_w_tseries[label][w])#w is just to know which word tserie is in calculation
-		#print('Normalized by highest value in a tserie:', self.normalized_w_byhighest[label][w])
-		#print('...............................................................')
 
-		if w not in self.word_freq[label]:
-			#print('Freq is None, calculating ...:', w)
-			self.calcFreq_for_word(w, label)
-		self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
-		self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
+		if len(time_list_for_word) == 0: # in the test most of the training words does not exist therefore assign 0 directly
+			print('No tweet for it!!!:',w)
+			self.normalized_w_tseries[label][w] = [0] * len_wtserie
+			self.smoothed_w_tseries[label][w] =  [0] * (len_wtserie-2)
+			self.normalized_w_byhighest[label][w] = [0] * (len_wtserie-2)
+			self.word_freq[label][w] = 0
+
+			self.w_mean_list[label][w] = [0] * (len_wtserie-2)
+			self.w_stdev_list[label][w] = [0] * (len_wtserie-2)
+
+		else:
+			self.normalized_w_tseries[label][w] = self.normalize_tserie_by_tserie(self.w_tseries[label][w], self.tweet_tseries[label][1])
+			# print('E. Name&w.:', self.name, w)
+			# print('Tserie:', self.w_tseries[label][w])
+			#print('Normalized w tserie:', self.normalized_w_tseries[label][w])
+
+			self.smoothed_w_tseries[label][w] = self.running_average(self.normalized_w_tseries[label][w])
+			#print('Smoothed w tserie:', self.smoothed_w_tseries[label][w])
+		
+			self.normalized_w_byhighest[label][w] = self.normalize_by_highest(w, self.smoothed_w_tseries[label][w])#w is just to know which word tserie is in calculation
+			#print('Normalized by highest value in a tserie:', self.normalized_w_byhighest[label][w])
+			#print('...............................................................')
+
+			if w not in self.word_freq[label]:
+				#print('Freq is None, calculating ...:', w)
+				self.calcFreq_for_word(w, label)
+
+			self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
+			self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
 
 		# running average make the lists shorter
 		#cut from back, to have a graph from the zero point of the event.
@@ -349,7 +390,7 @@ class BlendEvent(Event):
 
 		for e in events_l:
 			self.words[l] += e.words[l]
-		# print(self.name)
+		print('ev. name:',self.name)
 		# print('Added Object-s word count:',e.words[self.label[0]].most_common(20), '\n---------------')
 		# print('Blend Object Word count:', self.words[self.label[0]].most_common(20), '\n---------------')
 
@@ -374,7 +415,9 @@ class BlendEvent(Event):
 			for w, tserie in e.w_tseries[l].items():
 				if w not in self.w_tseries[l]:
 					self.w_tseries[l][w] = [0] * len(tserie)
+					print('Blend tserie created for:', w, self.words[l][w])
 				self.w_tseries[l][w] = [a+b for a, b in zip(self.w_tseries[l][w], tserie)]
+				
 
 		self.word_freq = {l:{}} # A dictionary of words for a particular label to put their frequency
 		self.normalized_w_tseries = {l:{}}
@@ -385,28 +428,33 @@ class BlendEvent(Event):
 
 	def calc_tseries(self, w, label):
 
-		self.normalized_w_tseries[label][w] = self.normalize_tserie_by_tserie(self.w_tseries[label][w], self.tweet_tseries[label][1])
-		
-		# print('E. Name&w.:', self.name, w)
-		# print('Tserie:', self.w_tseries[label][w])
-		# print('Normalized w tserie:', self.normalized_w_tseries[label][w])
-		self.smoothed_w_tseries[label][w] = self.running_average(self.normalized_w_tseries[label][w])
-		
-		# print('Smoothed w tserie:', self.smoothed_w_tseries[label][w])
-		self.normalized_w_byhighest[label][w] = self.normalize_by_highest(w, self.smoothed_w_tseries[label][w])#w is just to know which word tserie is in calculation
-		# print('Normalized by highest value in a tserie:', self.normalized_w_byhighest[label][w])
-		# print('...............................................................')
+		if w not in self.w_tseries[label]:
+			print('Not in self.w_tseries[label]', w)
 
-		if w not in self.word_freq[label]:
-			#print('Freq is None, calculating ...:', w)
-			self.calcFreq_for_word(w, label)
-			#print('Calculates:', w, ' -Freq')
-		self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
-		self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
+		try:
+			self.normalized_w_tseries[label][w] = self.normalize_tserie_by_tserie(self.w_tseries[label][w], self.tweet_tseries[label][1])
+			# print('E. Name&w.:', self.name, w)
+			# print('Tserie:', self.w_tseries[label][w])
+			# print('Normalized w tserie:', self.normalized_w_tseries[label][w])
+			self.smoothed_w_tseries[label][w] = self.running_average(self.normalized_w_tseries[label][w])
+			
+			# print('Smoothed w tserie:', self.smoothed_w_tseries[label][w])
+			self.normalized_w_byhighest[label][w] = self.normalize_by_highest(w, self.smoothed_w_tseries[label][w])#w is just to know which word tserie is in calculation
+			# print('Normalized by highest value in a tserie:', self.normalized_w_byhighest[label][w])
+			# print('...............................................................')
+
+			if w not in self.word_freq[label]:
+				#print('Freq is None, calculating ...:', w)
+				self.calcFreq_for_word(w, label)
+				#print('Calculates:', w, ' -Freq')
+			self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
+			self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
+		except:
+			pass
 
 		# running average make the lists shorter
 		#cut from back, to have a graph from the zero point of the event.
-		return (self.tweet_tseries[label][0][:-2], self.smoothed_w_tseries[label][w])
+		#return (self.tweet_tseries[label][0][:-2], self.smoothed_w_tseries[label][w])
 	
 
 class SingleWordAnalysis():
@@ -517,7 +565,6 @@ class SingleWordAnalysis():
 			event.count_all_bigrams(label_list)
 
 		print('\n\nAll tweet count:(Test, Train)', tweet_count_test, tweet_count_train)
-		#input('Press Enter to continue....')
 
 	def get_ngrams(self):
 		'''
@@ -1437,7 +1484,7 @@ class SingleWordAnalysis():
 		for name, event in self.events_dict.items():
 			for l in labels:
 				for w in w_list:
-					if w not in getattr(event, tserie_type)[l]:
+					if (w in event.words[l]) and (w not in getattr(event, tserie_type)[l]):
 						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
 					else:
 						pass
@@ -1456,7 +1503,16 @@ class SingleWordAnalysis():
 		# w_list1 = self.get_train_words_above2std(w_list, event_trained.normalized_w_tseries[label])
 		# w_list2 = self.get_train_words_above2std(w_list, event_trained.smoothed_w_tseries[label])
 		# w_list3 = self.get_train_words_above2std(w_list, event_trained.normalized_w_byhighest[label])
-		w_list = w_list
+		#w_list = w_list
+
+		# find similar words(spelling, syntax, semantics) from their behaviour in time!
+		# simlist = []
+		# for w in w_list:
+		# 	if w in simlist: # if you find x, y do not check for y,x
+		# 		continue
+		# 	similars = self.find_similar_tserie(w, w_list, getattr(event_trained,tserie_type)[l])
+		# 	print('--similar to:', w,':',similars)
+		# 	simlist.append(similars[0][0])
 
 
 		all_1_euc_dist = []
@@ -1468,7 +1524,6 @@ class SingleWordAnalysis():
 		#print(*trn_vector_matrix, sep='\n')
 
 		trn_vector_matrix = numpy.array(trn_vector_matrix)
-
 
 		print('\nVector Matrix for Test:')
 		tst_vector_matrix = []
@@ -1482,23 +1537,26 @@ class SingleWordAnalysis():
 		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
 		#print('Calc dot products beforehand, trn:',trn_dot_prod)
 
-		trn_elem_sum = numpy.array([np.sum(v) for v in trn_vector_matrix])
+		trn_elem_sum = [np.sum(v) for v in trn_vector_matrix]
 		#print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
 
 		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
 		#print('Calc dot products beforehand, tst:', tst_dot_prod)
 
 
-		tst_elem_sum = numpy.array([np.sum(v) for v in tst_vector_matrix])
+		tst_elem_sum = [np.sum(v) for v in tst_vector_matrix]
 		#print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
 		
 		for i in range(0, len(test_X)):
 			
 			euc_dist_l = []
+			tst_vector_matrix_i = tst_vector_matrix[i]
+			tst_dot_prod_i = tst_dot_prod[i]
+			tst_elem_sum_i = tst_elem_sum[i]
 
 			for y in range(0, len(trained_X)):
 
-				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix[i], tst_dot_prod[i], tst_elem_sum[i]))
+				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix_i, tst_dot_prod_i, tst_elem_sum_i))
 
 			all_1_euc_dist.append(euc_dist_l)
 
@@ -1536,7 +1594,200 @@ class SingleWordAnalysis():
 			self.print_dict(self.prediction_results, 'trn01_'+ tserie_type+'-k'+str(k_index))
 			print('Trn01 Calc RMSE:', tserie_type)
 			self.print_dict(self.calc_rmse(self.prediction_results), 'trn01_'+ tserie_type+'k:'+str(k_index))
-			self.prediction_results = {}		
+			self.prediction_results = {}
+
+	def calc_by_vectors2(self, w_lists, labels, events, minuteForFrame, dayCount, tserie_type, k=1): # this use
+		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
+		"""
+		  -First label should be before for now.
+		  -Since the X axes is same we do not take it into account
+		  -First event training second is test
+		  -
+
+		  Questions:
+		     1- Should I normalize scores for trained and test lists
+		     2- In dot product should we add the similarities as we were doing for euclidean distance ?
+		     3- The train set is smoothed, normalized, etc. But should we do the same for the test, how more realistic ? 
+
+		  To Do:
+		  	1- Make the cumulative distance/similarity calculation a seperate function.
+		  	2- Make the error calculations in a seperate function.
+		  	3- Try by deleting user names
+		  	4- user based analysis ? threat or any other feature can be identified by looking to the textual history of user as well.
+		  	   - Classify users according the quality, continuity of the information they give. When try to predict,
+		  	     you can identify this users(type) relevance.
+		  	   - use most informative users, measure their affect
+		  	5- Spelling correction can be one according the user as well.
+		  	6- use all events as training except 1, and use it as test, some sort of 10 fold cross validation.
+		  	7- Change the w_list, it should come from the test set.
+		  	8- delete non-informative ones, rt, @ : maybe informative but are we sure about information ?
+		  	9- Train and test set should allow to have different days back.
+		  	10- Differentiate between similarity and distance metrics. similarity accept max, distance accepts min of the scores. 
+		"""
+		#tserie_type = 'smoothed_w_tseries'
+		#tserie_type = 'normalized_w_tseries'
+		#tserie_type='normalized_w_byhighest'
+		label = labels[0]
+		all_1_euc_dist = []
+		
+		wlist_trn = w_lists[0] # just to use to calculate - a part of the cosine similarity
+		wlist_trntst = w_lists[1]
+
+		for name, event in self.events_dict.items():
+			for l in labels:
+				for w in wlist_trn:
+					if (w in event.words[l]) and (w not in getattr(event, tserie_type)[l]):
+						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
+					else:
+						pass
+
+		event_trained, event_test = self.structure_train_test_events(events[0], events[1], tserie_type, labels, wlist_trn)
+		print('Training & Test Events:', event_trained.name, '...', event_test.name)
+
+		len_tserie_X_trained = len(getattr(event_trained, tserie_type)[l][wlist_trn[0]])
+		len_tserie_X_test = len(getattr(event_test, tserie_type)[l][wlist_trn[0]])
+		trained_X = event_trained.tweet_tseries[label][0][:len_tserie_X_trained] # get it from tweet time series. It is same for all events.
+		test_X = event_test.tweet_tseries[label][0][:len_tserie_X_test]
+		
+		self.calc_mean_median(events[0])
+
+		#print('\nNormalized, smoothed and normalized_by_highest:\n')
+		# w_list1 = self.get_train_words_above2std(w_list, event_trained.normalized_w_tseries[label])
+		# w_list2 = self.get_train_words_above2std(w_list, event_trained.smoothed_w_tseries[label])
+		# w_list3 = self.get_train_words_above2std(w_list, event_trained.normalized_w_byhighest[label])
+		#w_list = w_list2
+
+		# find similar words(spelling, syntax, semantics) from their behaviour in time!
+		# simlist = []
+		# for w in w_list:
+		# 	if w in simlist: # if you find x, y do not check for y,x
+		# 		continue
+		# 	similars = self.find_similar_tserie(w, w_list, getattr(event_trained,tserie_type)[l])
+		# 	print('--similar to:', w,':',similars)
+		# 	simlist.append(similars[0][0])
+
+	
+		all_1_euc_dist = []
+
+		print('Trn matrix for just to calc. part/denom of the cosine similarity')
+		trn_vector_matrix_big = []
+		for y in range(0, len(trained_X)):
+			trn_vector_matrix_big.append(self.crea_vectors_01(getattr(event_trained, tserie_type)[label], wlist_trn , y))
+		#print(*trn_vector_matrix_big, sep='\n')
+
+		trn_vector_matrix_big = numpy.array(trn_vector_matrix_big)
+
+		print('Vector Matrix for Train:')
+		trn_vector_matrix = []
+		for y in range(0, len(trained_X)):
+			trn_vector_matrix.append(self.crea_vectors_01(getattr(event_trained, tserie_type)[label], wlist_trntst , y))
+		#print(*trn_vector_matrix, sep='\n')
+
+		trn_vector_matrix = numpy.array(trn_vector_matrix)
+
+
+		print('\nVector Matrix for Test:')
+		tst_vector_matrix = []
+		for y in range(0, len(test_X)):
+			tst_vector_matrix.append(self.crea_vectors_01(getattr(event_test, tserie_type)[label], wlist_trntst, y))
+		#print(*tst_vector_matrix, sep='\n')
+		tst_vector_matrix = numpy.array(tst_vector_matrix)
+
+		
+
+		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix_big)
+		#print('Calc dot products beforehand, trn:',trn_dot_prod)
+		trn_vector_matrix_big = None #it was too big, free memory !!!
+
+		trn_elem_sum = [np.sum(v) for v in trn_vector_matrix]
+		#print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
+
+		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
+		#print('Calc dot products beforehand, tst:', tst_dot_prod)
+
+
+		tst_elem_sum = [np.sum(v) for v in tst_vector_matrix]
+		#print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
+		
+		for i in range(0, len(test_X)):
+			
+			euc_dist_l = []
+			tst_vector_matrix_i = tst_vector_matrix[i]
+			tst_dot_prod_i = tst_dot_prod[i]
+			tst_elem_sum_i = tst_elem_sum[i]
+
+			for y in range(0, len(trained_X)):
+
+				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix_i, tst_dot_prod_i, tst_elem_sum_i))
+
+			all_1_euc_dist.append(euc_dist_l)
+
+
+		print('k is:', k)
+		for k_index in range(1,k):
+			print('k is:', k)
+			print('Len of Test_X:', len(test_X))
+			for seq_len in range(0, len(test_X)): #for all frame lengths
+
+				# m x n matrix became (m-1)x(n-1)
+				print('Cos Sim. Matrix for length:', seq_len)
+				
+				euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
+				#print('Distances for sequences:', euc_dist_matrix, sep='\n')
+				
+
+				if seq_len not in self.prediction_results:
+						self.prediction_results[seq_len] = []
+
+				for tst_i in range(0, len(test_X[seq_len:])):
+					predictions = self.get_predictions_sim(euc_dist_matrix[tst_i], trained_X[seq_len:], k_index)
+					
+					if len(predictions) != 0:
+						actual = test_X[seq_len:][tst_i]
+
+						self.prediction_results[seq_len].append((actual, self.weighted_pred(predictions)))
+
+						#self.prediction_results[seq_len].append((actual, numpy.mean(predictions)))
+						#print('Actual:',actual, 'predictions:', predictions, 'raw_errors:', raw_errors)
+					else:
+						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
+
+			#print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
+			self.print_dict(self.prediction_results, 'trn01_'+ tserie_type+'-k'+str(k_index))
+			print('Trn01 Calc RMSE:', tserie_type)
+			self.print_dict(self.calc_rmse(self.prediction_results), 'trn01_'+ tserie_type+'k:'+str(k_index))
+			self.prediction_results = {}
+
+	def find_similar_tserie(self, w, wlist, tserie_dict):
+		'''
+		Return most similar tserie of w based on word time series
+
+		'''
+
+		mostcossim = 0
+		leastcossim = 1
+		mostcandw = ''
+		mincandw = ''
+		wtserie = numpy.array(tserie_dict[w])
+		print('wtserie:',w,':',tserie_dict[w])
+		for k_w, ctserie in tserie_dict.items():
+			if w != k_w:
+				tempcossim = self.cos_sim(wtserie,np.array(ctserie))
+				if tempcossim > mostcossim:
+					mostcossim = tempcossim
+					mostcandw = k_w
+					print('more similar:',k_w,':', mostcossim,':',ctserie)
+
+				if tempcossim < leastcossim:
+					leastcossim = tempcossim
+					mincandw = k_w
+					print('less similar:', k_w,':', leastcossim,':', ctserie)
+
+
+
+		return [(mostcandw, mostcossim), (mincandw,leastcossim)]
+
+
 
 
 	def calc_by_vectors_tfidf(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, k=1, std_elim=0):
@@ -1576,7 +1827,7 @@ class SingleWordAnalysis():
 		for name, event in self.events_dict.items():
 			for l in labels:
 				for w in w_list:
-					if w not in getattr(event, tserie_type)[l]:
+					if (w in event.words[l]) and (w not in getattr(event, tserie_type)[l]):
 						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
 					else:
 						pass
@@ -1593,12 +1844,15 @@ class SingleWordAnalysis():
 
 		print('\nNormalized, smoothed and normalized_by_highest:\n')
 		
-		if std_elim > 0:
-			w_list = self.get_train_words_aboveNstd(w_list, event_trained.normalized_w_tseries[label], std_elim) #get_train_words_aboveNstd
+		# if std_elim > 0:
+		# 	w_list = self.get_train_words_aboveNstd(w_list, event_trained.normalized_w_tseries[label], std_elim) #get_train_words_aboveNstd
 		
 		#w_list = w_list
 		# return
 		# exit()
+
+		t0 = time.time() #measure run time!
+
 
 		all_1_euc_dist = []
 
@@ -1625,23 +1879,26 @@ class SingleWordAnalysis():
 		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
 		#print('Calc dot products beforehand, trn:',trn_dot_prod)
 
-		trn_elem_sum = numpy.array([np.sum(v) for v in trn_vector_matrix])
+		trn_elem_sum = [np.sum(v) for v in trn_vector_matrix]
 		#print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
 
 		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
 		#print('Calc dot products beforehand, tst:', tst_dot_prod)
 
 
-		tst_elem_sum = numpy.array([np.sum(v) for v in tst_vector_matrix])
+		tst_elem_sum = [np.sum(v) for v in tst_vector_matrix]
 		#print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
 		
 		for i in range(0, len(test_X)):
 			
 			euc_dist_l = []
+			tst_vector_matrix_i = tst_vector_matrix[i]
+			tst_dot_prod_i = tst_dot_prod[i]
+			tst_elem_sum_i = tst_elem_sum[i]
 
 			for y in range(0, len(trained_X)):
 
-				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix[i], tst_dot_prod[i], tst_elem_sum[i]))
+				euc_dist_l.append(self.cos_dist2(trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix_i, tst_dot_prod_i, tst_elem_sum_i))
 
 			all_1_euc_dist.append(euc_dist_l)			
 
@@ -1677,6 +1934,182 @@ class SingleWordAnalysis():
 			self.print_dict(self.calc_rmse(self.prediction_results), 'tfidf_'+ tserie_type+'k:'+str(k_index))
 			self.prediction_results = {}
 
+		print('inside run time of calc_by_vectors_tfidf:', t0-time.time())
+
+	def calc_by_vectors_tfidf2(self, w_lists, labels, events, minuteForFrame, dayCount, tserie_type, k=1, std_elim=0):
+		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
+		"""
+		  -First label should be before for now.
+		  -Since the X axes is same we do not take it into account
+		  -First event list is training second event list is test
+		  -
+
+		  Questions:
+		     1- Should I normalize scores for trained and test lists
+		     2- In dot product should we add the similarities as we were doing for euclidean distance ?
+		     3- The train set is smoothed, normalized, etc. But should we do the same for the test, how more realistic ? 
+
+		  To Do:
+		  	1- Make the cumulative distance/similarity calculation a seperate function.
+		  	2- Make the error calculations in a seperate function.
+		  	3- Try by deleting user names
+		  	4- user based analysis ? threat or any other feature can be identified by looking to the textual history of user as well.
+		  	   - Classify users according the quality, continuity of the information they give. When try to predict,
+		  	     you can identify this users(type) relevance.
+		  	   - use most informative users, measure their affect
+		  	5- Spelling correction can be one according the user as well.
+		  	6- use all events as training except 1, and use it as test, some sort of 10 fold cross validation.
+		  	7- Change the w_list, it should come from the test set.
+		  	8- delete non-informative ones, rt, @ : maybe informative but are we sure about information ?
+		  	9- Train and test set should allow to have different days back.
+		  	10- Differentiate between similarity and distance metrics. similarity accept max, distance accepts min of the scores. 
+		"""
+		#tserie_type = 'smoothed_w_tseries'
+		#tserie_type = 'normalized_w_tseries'
+		#tserie_type = 'normalized_w_byhighest'
+		label = labels[0]
+		all_1_euc_dist = []
+
+		wlist_trn = w_lists[0] # just to use to calculate - a part of the cosine similarity
+		wlist_trntst = w_lists[1]
+		
+		for name, event in self.events_dict.items():
+			for l in labels:
+				for w in wlist_trn:
+					if (w in event.words[l]) and (w not in getattr(event, tserie_type)[l]):
+						word_t_series = event.calc_tseries(w, l, minuteForFrame, dayCount) # calc. relevant freq, t_series
+					else:
+						pass
+
+		event_trained, event_test = self.structure_train_test_events(events[0], events[1], tserie_type, labels, wlist_trn)
+		print('Training & Test Events:', event_trained.name, '...', event_test.name)
+
+		len_tserie_X_trained = len(getattr(event_trained, tserie_type)[l][wlist_trn[0]]) 
+		len_tserie_X_test = len(getattr(event_test, tserie_type)[l][wlist_trn[0]])
+		trained_X = event_trained.tweet_tseries[label][0][:len_tserie_X_trained] # get it from tweet time series. It is same for all events.
+		test_X = event_test.tweet_tseries[label][0][:len_tserie_X_test]
+		
+		self.calc_mean_median(events[0])
+
+		print('\nNormalized, smoothed and normalized_by_highest:\n')
+		
+		# if std_elim > 0:
+		# 	w_list = self.get_train_words_aboveNstd(w_list, event_trained.normalized_w_tseries[label], std_elim) #get_train_words_aboveNstd
+		
+		#w_list = w_list
+		# return
+		# exit()
+		t0 = time.time() # calc method run time
+		all_1_euc_dist = []
+
+		# print('Trn matrix for just to calc. part/denom of the cosine similarity')
+		# trn_vector_matrix_big = []
+		# for y in range(0, len(trained_X)):
+		# 	trn_vector_matrix_big.append(self.crea_vectors_01(getattr(event_trained, tserie_type)[label], wlist_trn , y))
+		# #print(*trn_vector_matrix_big, sep='\n')
+
+		# trn_vector_matrix_big = numpy.array(trn_vector_matrix_big)
+
+		trn_vector_matrix = []
+		for y in range(0, len(trained_X)):
+			trn_vector_matrix.append(self.crea_vectors_value(getattr(event_trained, tserie_type)[label], wlist_trn, y))
+		#print('Ten Raw Matrix:', trn_vector_matrix)
+		
+		trn_vector_matrix = numpy.array(trn_vector_matrix)
+		trn_vector_matrix, approx_idf_array = self.calc_tfidf_from_matrix(trn_vector_matrix)
+		#print('Tf-Idf Matrix for Train:',trn_vector_matrix)
+		#print('approx_idf_array:', approx_idf_array)
+
+		print('Shape trn_vector_matrix:', trn_vector_matrix.shape)
+		print('Len of wlist_train & approx_idf_array(equal?):', len(wlist_trn), len(approx_idf_array))
+		small_approx_idf_array = []
+		w_occ = []
+		for i in range(0, len(wlist_trn)):
+			if wlist_trn[i] in wlist_trntst:
+				small_approx_idf_array.append(approx_idf_array[i])
+				w_occ.append(1)
+			else:
+				w_occ.append(0)
+		print('\nLen of wlist_trntst & small_approx_idf_array(equal?):', len(wlist_trntst), len(small_approx_idf_array))
+		print('\nLen(should be same as trntst words) & W_occ list(1 occ, 0 not occ.):',len(w_occ), w_occ)
+		
+		
+		tst_vector_matrix = []
+		for y in range(0, len(test_X)):
+			tst_vector_matrix.append(self.crea_vectors_value(getattr(event_test, tserie_type)[label], wlist_trntst, y))
+		#print('\nVector Matrix for Test, tfidf:', tst_vector_matrix)
+		tst_vector_matrix = numpy.array(tst_vector_matrix)
+		tst_vector_matrix = self.calc_tfidf_from_matrix_test(tst_vector_matrix, small_approx_idf_array)
+		#print('Tf-Idf Matrix for Test, tfidf:', tst_vector_matrix)
+
+		
+		trn_dot_prod = self.get_dot_prod_array(trn_vector_matrix)
+		#print('Calc dot products beforehand, trn:',trn_dot_prod)
+
+		trn_elem_sum = [np.sum(v) for v in trn_vector_matrix]
+		#print('Calc sum of the elements beforehand, trn:', trn_elem_sum)
+
+		w_occ_np = numpy.array(w_occ)
+		w_occ_npbool = numpy.array(w_occ_np, dtype=bool)
+		small_trn_vector_matrix = trn_vector_matrix[:,w_occ_npbool]
+		print('Shape of small_trn_vector_matrix:', small_trn_vector_matrix.shape)
+		trn_vector_matrix = None # free the space!
+
+		tst_dot_prod = self.get_dot_prod_array(tst_vector_matrix)
+		#print('Calc dot products beforehand, tst:', tst_dot_prod)
+
+
+		tst_elem_sum = [np.sum(v) for v in tst_vector_matrix]
+		#print('Calc sum of the elements beforehand, tst:', tst_elem_sum)
+		
+
+
+		for i in range(0, len(test_X)):
+			
+			euc_dist_l = []
+			tst_vector_matrix_i = tst_vector_matrix[i]
+			tst_dot_prod_i = tst_dot_prod[i]
+			tst_elem_sum_i = tst_elem_sum[i]
+
+			for y in range(0, len(trained_X)):
+
+				euc_dist_l.append(self.cos_dist2(small_trn_vector_matrix[y], trn_dot_prod[y], trn_elem_sum[y],  tst_vector_matrix_i, tst_dot_prod_i, tst_elem_sum_i))
+
+			all_1_euc_dist.append(euc_dist_l)			
+
+		for k_index in range(1,k):
+			for seq_len in range(0, len(test_X)): #for all frame lengths
+
+				# m x n matrix became (m-1)x(n-1)
+				#print('Cos Sim. Matrix for length:', seq_len)
+				
+				euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
+				#print('Distances for sequences:', euc_dist_matrix, sep='\n')
+				
+
+				if seq_len not in self.prediction_results:
+						self.prediction_results[seq_len] = []
+
+				for tst_i in range(0, len(test_X[seq_len:])):
+					predictions = self.get_predictions_sim(euc_dist_matrix[tst_i], trained_X[seq_len:], k_index)
+					
+					if len(predictions) != 0:
+						actual = test_X[seq_len:][tst_i]
+
+						self.prediction_results[seq_len].append((actual, self.weighted_pred(predictions)))
+
+						#self.prediction_results[seq_len].append((actual, numpy.mean(predictions)))
+						#print('Actual:',actual, 'predictions:', predictions, 'raw_errors:', raw_errors)
+					else:
+						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
+
+			print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
+			self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k'+str(k_index))
+			print('Tf-IDF Calc RMSE:', tserie_type)
+			self.print_dict(self.calc_rmse(self.prediction_results), 'tfidf_'+ tserie_type+'k:'+str(k_index))
+			self.prediction_results = {}
+		print('inside run time of calc_by_vectors_tfidf2:', t0-time.time())
+
 	def weighted_pred(self, predictions):
 
 		actual = predictions[0]
@@ -1699,7 +2132,7 @@ class SingleWordAnalysis():
 		for m in mtrx:
 			dot_prdct.append(np.sqrt(np.dot(m,m)))
 
-		return numpy.array(dot_prdct)
+		return dot_prdct
 
 	def calc_tfidf_from_matrix_test(self, mtrx, approx_idf):
 		'''
@@ -1724,7 +2157,7 @@ class SingleWordAnalysis():
 		for t in range(len(mtrx)):
 			mtrx[t] = mtrx[t]*idf_array #product every line of the matrix with the idf array
 
-		print('matrix after division tfidf:', mtrx)
+		print('Test matrix after division tfidf:', *mtrx, sep='\n')
 			# for w in range(len(mtrx[0])):
 			# 	mtrx[t][w] = mtrx[t][w] * idf_array[w]
 
@@ -1749,14 +2182,14 @@ class SingleWordAnalysis():
 		all_doc_count = len(mtrx) # every row represent a doc
 		print('all doc count:', all_doc_count)
 		idf_array = self.calc_w_idf(all_doc_count, doc_count_in_w_occ)
-		print('Idf values:', idf_array)
+		print('Idf values:', *idf_array, end=', ')
 
 		#idf_array = numpy.array([idf if idf > 0 else 0.00001 for idf in idf_array])
-		print('matrix in tf:', mtrx)
+		print('\nLen & matrix in tf:', mtrx.shape, mtrx)
 		for t in range(len(mtrx)):
 			mtrx[t] = mtrx[t]*idf_array #product every line of the matrix with the idf array
 
-		print('matrix after division tfidf:', mtrx)
+		print('Train matrix after division tfidf:', *mtrx, sep='\n')
 			# for w in range(len(mtrx[0])):
 			# 	mtrx[t][w] = mtrx[t][w] * idf_array[w]
 
@@ -1768,8 +2201,8 @@ class SingleWordAnalysis():
 
 		'''
 
-		doc_count_in_w_occ_array = numpy.array([c if c > 0 else 1 for c in doc_count_in_w_occ_array])		
-		return numpy.log(total_docs*(1/doc_count_in_w_occ_array))
+		doc_count_in_w_occ_array_sm = numpy.array([c if c > 0 else 1 for c in doc_count_in_w_occ_array])
+		return numpy.log(total_docs*(1/doc_count_in_w_occ_array_sm))
 		# idf_array = numpy.array([0.0]*len(doc_count_in_w_occ_array))
 
 		# for occ_count_index in range(len(doc_count_in_w_occ_array)):
@@ -1781,20 +2214,20 @@ class SingleWordAnalysis():
 	def calc_word_occ_per_doc(self, mtrx):
 		'''
 
-		Return numpy array that have for every word document counts in which this word occur.
+		Return l' that have for every word document counts in which this word occur.
 		The order of the words remain as it is in the matrix columns.
 
 		Precondition: each matrix row contain a time frame, 0th, 1th, etc. elem in the matrix.
 					  each row contains a vector of word occurrence values/freq.
 
 		'''
-		doc_count_in_w_occ = numpy.array([0.0]* len(mtrx[0]))
+		doc_count_in_w_occ = [0.0]* len(mtrx[0])
 
 		for w_value in range(len(mtrx[0])):
 
 			for t in range(len(mtrx)):
 				if mtrx[t][w_value] > 0:
-					doc_count_in_w_occ[w_value] = doc_count_in_w_occ[w_value] + 1
+					doc_count_in_w_occ[w_value] += 1
 
 		return doc_count_in_w_occ
 
@@ -1821,7 +2254,7 @@ class SingleWordAnalysis():
 		return vector
 
 
-	def cos_dist(self, vtrn, vtst):
+	def cos_sim(self, vtrn, vtst):
 		'''() ->
 
 		Return Cosine distance between vectors
@@ -1829,11 +2262,16 @@ class SingleWordAnalysis():
 		'''
 		#print('In the method, len of vectors:', len(vtrn), len(vtst))
 		#print('Sum of elements, trn, tst:', sum(vtrn), sum(vtst))
-		if sum(vtrn) == 0 or sum(vtst) == 0:
-			return 0
-		cos_sim = np.dot(vtrn, vtst) / (np.sqrt(np.dot(vtrn, vtrn)) * np.sqrt(np.dot(vtst, vtst))) 
-		#print('cos sim:', cos_sim)
-		return cos_sim
+		if isinstance(vtrn, numpy.ndarray) and isinstance(vtst, numpy.ndarray):
+			if np.sum(vtrn) == 0 or np.sum(vtst) == 0:
+				return 0
+			cossim = np.dot(vtrn, vtst) / (np.sqrt(np.dot(vtrn, vtrn)) * np.sqrt(np.dot(vtst, vtst)))
+		else:
+			if sum(vtrn) == 0 or sum(vtst) == 0:
+				return 0
+			cossim = sum([a*b for a, b in zip(vtrn, vtst)]) / (math.sqrt(sum([a*b for a, b in zip(vtrn, vtrn)])) * math.sqrt(sum([a*b for a, b in zip(vtst, vtst)]))) 
+
+		return cossim
 
 	def cos_dist2(self, vtrn, vtrn_dotted_sqrted, vtrn_summed, vtst, vtst_dotted_sqrted, vtst_summed):
 		''' () ->
@@ -2065,7 +2503,7 @@ class SingleWordAnalysis():
 
 	def structure_train_test_events(self, train, test, tserie_type, labels, w_list):
 		'Call time serie calculation methods according to single or blend events'
-		if type(train) == type(list()):
+		if type(train) == type(list()) and len(train) > 1:
 			event_trained = BlendEvent([self.events_dict[name] for name in train])
 			
 			for l in labels:
@@ -2073,11 +2511,13 @@ class SingleWordAnalysis():
 					if w not in getattr(event_trained, tserie_type)[l]:
 						word_t_series = event_trained.calc_tseries(w, l) # calc. relevant freq, t_series
 						#print('Word and its tserie:', w, word_t_series)
+		elif type(train) == type(list()) and len(train) == 1:
+			event_trained = self.events_dict[train[0]]
 
 		else:
 			event_trained = self.events_dict[train]
 
-		if type(test) == type(list()):
+		if type(test) == type(list()) and len(test) > 1:
 			event_test = BlendEvent([self.events_dict[name] for name in test])
 			
 			for l in labels:
@@ -2085,6 +2525,10 @@ class SingleWordAnalysis():
 					if w not in getattr(event_test, tserie_type)[l]:
 						word_t_series = event_test.calc_tseries(w, l) # calc. relevant freq, t_series
 						#print('Word and its tserie:', w, word_t_series)
+
+		elif type(test) == type(list()) and len(test) == 1:
+			event_test = self.events_dict[test[0]]
+
 		else:
 			event_test = self.events_dict[test]
 
@@ -2853,7 +3297,32 @@ class SingleWordAnalysis():
 		for w, c in words1.most_common():
 			if words1[w] > n:
 				wlist.append(w)
-				print(w+':'+str(words1[w]), end=', ')
+				print(w+':'+str(words1[w]))
+
+		print('\n')
+		return wlist
+
+	def get_TrnTstIntersect_words(self, n, labels, train_events, test_events):
+		'''
+
+		least_wc is applicable just for train words!
+		'''
+
+		l = labels[0]
+		words1 = Counter()
+		words2 = Counter()
+
+		for ename in train_events:
+			words1 += self.events_dict[ename].words[l]
+
+		for ename in test_events:
+			words2 += self.events_dict[ename].words[l]
+
+		wlist = []
+		for w, c in words1.most_common():
+			if words1[w] > n and words2[w] > 0:
+				wlist.append(w)
+				print(w+':'+str(words1[w]))
 
 		print('\n')
 		return wlist
