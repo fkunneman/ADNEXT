@@ -20,7 +20,7 @@ from joblib import Parallel, delayed
 # from numpy import *
 # from datetime import *
 # from pytz import *
-
+ 
 from collections import defaultdict
 
 from matplotlib import pyplot
@@ -98,23 +98,38 @@ class Event:
 			for t in self.tweets[label]:
 				twseq = t.get_wordsequence()
 				for w in list(set(twseq)):
-					wchange = ''
+					wchange = '' # keep new form
+					worg = '' #keep old form of a word
 					if '@' in w:
 						self.words[label]['username'] += 1
+						worg = w
 						wchange = 'username'
-					elif w in ['ajax','az','psv','vvv']:
+					elif w in ['ajax','az','psv','vvv', 'feyenoord']:
 						self.words[label]['teamname'] += 1
+						worg = w
 						wchange = 'teamname'
+					elif w == 'retweet':
+						self.words[label]['rt'] += 1
+						worg = w
+						wchange = 'rt'
 					else:
 						self.words[label][w] += 1
 						continue # not to do remove-insert for normal words
 					
 					if wchange != '':
-						twseq[twseq.index(w_old)] = wchange
-						print('Tweet changed to(unigram, username or teamname):', twseq)
+						for i in range(0, len(twseq)): #change all occurences
+						
+							if twseq[i] == worg:
+								twseq[i] = wchange
+								# if i > 0:
+								# 	print('twchange:w_ind:',i,w, ':to:',wchange,':rslt:', twseq[i-1:i+2])
+								# else:
+								#  	print('twchange',i,w, ':to:',wchange,':rslt:', twseq[i:i+2])
 					else:
 						print('wchange Should not be empty!!..Exit()')
 						exit()
+				if 'retweet' in twseq:
+					print('retweet in it:',twseq)		
 
 
 	def count_all_bigrams(self, label_list):
@@ -125,7 +140,9 @@ class Event:
 				for bigram in self.get_bigrams(twseq):
 					self.words[label][bigram] += 1
 					twseq.append(bigram) # add this new feature to the tweet.
-					print('Tweet changed to(bigram added to end of it):', twseq)
+					#print('bigram:', twseq[-2:])
+
+
 
 	def get_bigrams(self, tweet):
 		bigrams = []
@@ -133,7 +150,7 @@ class Event:
 		if len(tweet) > 1:
 			for i in range(0, len(tweet)-1):
 
-				if ('@' not in tweet[i]+tweet[i+1]) or (tweet[i]+'_'+tweet[i+1] not in ['fc_twente', 'fc_utrecht', 'fc_groningen', 'afc_ajax']) :
+				if ('@' not in tweet[i]+tweet[i+1]) or (tweet[i]+'_'+tweet[i+1] not in ['fc_twente', 'fc_utrecht', 'fc_groningen', 'afc_ajax', 'afc_teamname']) :
 					bigrams.append(tweet[i]+'_'+tweet[i+1])
 
 				elif '@' in tweet[i] and '@' in tweet[i+1]:
@@ -142,18 +159,19 @@ class Event:
 				elif ('@' in tweet[i]) and ('@' not in tweet[i+1]):
 					bigrams.append('username'+'_'+ tweet[i+1])
 
-				elif ('@' not in tweet[i]) and ('@' in tweet[i+1])
+				elif ('@' not in tweet[i]) and ('@' in tweet[i+1]):
 					bigrams.append(tweet[i] + '_' + 'username')
 
 				elif (tweet[i]+'_'+tweet[i+1]) in ['fc_twente', 'fc_utrecht', 'fc_groningen', 'afc_ajax']:
 					tweet[i] = 'teamname'
 					tweet.remove(tweet[i+1])
 					bigrams.append('teamname'+'_'+tweet[i+1])
-					print('Tweet changed to(bigram, fc_.. team name normalized and a new bigram created):', 'teamname'+'_'+tweet[i+1])
+					#print('fc_ norm & new bigram', 'teamname'+'_'+tweet[i+1])
 
 					
 					
 		return bigrams
+
 
 
 	def count_for_word(self, label, w):
@@ -1841,8 +1859,6 @@ class SingleWordAnalysis():
 		test_X = event_test.tweet_tseries[label][0][:len_tserie_X_test]
 		
 		self.calc_mean_median(events[0])
-
-		print('\nNormalized, smoothed and normalized_by_highest:\n')
 		
 		# if std_elim > 0:
 		# 	w_list = self.get_train_words_aboveNstd(w_list, event_trained.normalized_w_tseries[label], std_elim) #get_train_words_aboveNstd
@@ -3297,7 +3313,7 @@ class SingleWordAnalysis():
 		for w, c in words1.most_common():
 			if words1[w] > n:
 				wlist.append(w)
-				print(w+':'+str(words1[w]))
+				#print(w+':'+str(words1[w]))
 
 		print('\n')
 		return wlist
@@ -3322,7 +3338,7 @@ class SingleWordAnalysis():
 		for w, c in words1.most_common():
 			if words1[w] > n and words2[w] > 0:
 				wlist.append(w)
-				print(w+':'+str(words1[w]))
+				#print(w+':'+str(words1[w]))
 
 		print('\n')
 		return wlist
