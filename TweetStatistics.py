@@ -29,15 +29,12 @@ args = parser.parse_args()
 
 indexno = args.eventno
 w_count_threshold = args.wcount
-print('args.eventno', indexno)
-print('word counts', w_count_threshold)
-exit()
 minueTimeFrame = args.minframe
 daycountback = args.dayback
 k = args.k
 
 print('Process Information(indexno, minueTimeFrame, daycountback, wcount, k):', indexno, minueTimeFrame, daycountback, w_count_threshold, k)
-print('Note about the process:', 'a bit teamname normalization? and checking if the normalizations and bigrams works in terms of timeseries ')
+print('Note about the process:', 'Dev set trails')
 
 #tweets_file_big_temp = "/vol/bigdata/users/fkunneman/exp/DIR13/data/tweets_converted.txt"
 if getpass.getuser() == 'ali-hurriyetoglu':
@@ -164,23 +161,37 @@ def test_by_index_trn01(trn_events, tst_event, least_wc, ts_type, k=1):
   
   w_list = swa.get_train_words(least_wc, labels, trn_events)
   w_list2 = swa.get_TrnTstIntersect_words(least_wc, labels, trn_events, tst_event)
-  print('Wtrain and Wtrain-test Length:',len(w_list), len(w_list2))
+  print('Wtrain and Wtrain-test Length, wthreshold:',len(w_list), len(w_list2), least_wc)
   
-  swa.calc_by_vectors2([w_list,w_list2], labels, [trn_events, tst_event], minueTimeFrame, daycountback, ts_type, k)
+  swa.calc_by_vectors2([w_list,w_list2], labels, [trn_events, tst_event], minueTimeFrame, daycountback, ts_type, least_wc, k)
     
 
-def test_by_index_tfidf(trn_indexes, tst_indexno, least_wc, ts_type, k=1):
+def test_by_index_tfidf(trn_events, tst_event, least_wc, ts_type, k=1):
 
-    w_list = swa.get_train_words(least_wc, labels, train_events)
-    w_list2 = swa.get_TrnTstIntersect_words(least_wc, labels, train_events, test_event)
-    print('Wtrain and Wtrain-test Length:',len(w_list), len(w_list2))
+    w_list = swa.get_train_words(least_wc, labels, trn_events)
+    w_list2 = swa.get_TrnTstIntersect_words(least_wc, labels, trn_events, tst_event)
+    print('Wtrain and Wtrain-test Length, wthreshold:',len(w_list), len(w_list2), least_wc)
   
-    swa.calc_by_vectors_tfidf2([w_list, w_list2], labels, [train_events, test_event], minueTimeFrame, daycountback, ts_type,k)
+    swa.calc_by_vectors_tfidf2([w_list, w_list2], labels, [trn_events, tst_event], minueTimeFrame, daycountback, ts_type, least_wc, k)
 
 def get_tweets_of_timeframe():
   for i in range(0,170):
     print('\n----------------------range is:', i, i+1)
     print(*swa.get_event_tweets_from_to('before', all_events_list[indexno][0], i+1, i), sep='\n')
+
+
+def get_rand(num, rang):
+  '''(int, int) -> list
+   - num: number of random integers
+   - rang: 0-range of the random numbers
+
+   Returns a list of random numbers in the range of 0-rang, length is num!
+
+  '''
+  rands = []
+  for i in range(num):
+      rands.append(randrange(60))
+  return rands
 
 #exit()
 #test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries')
@@ -189,45 +200,41 @@ def get_tweets_of_timeframe():
 
 
 edev_indexlist = [21, 55, 52, 35, 16, 27, 13, 39, 40]
-trnevents = [l[0] for l in events_list_for_all if l not in edev_indexlist]
-print('len of trne:', len(trnevents), trnevents)
-
+edev_list = [events_list_for_all[i] for i in edev_indexlist]
+trnevents = [l[0] for l in events_list_for_all if l not in edev_list]
+print('\nlen of all events:', len(events_list_for_all),'\n', events_list_for_all)
+print('\nlen of trne:', len(trnevents),'\n', trnevents)
+print('\n len of dev-e indexes:', len(edev_indexlist),'\n', edev_indexlist)
+print('\n len of dev-events:',len(edev_list), edev_list)
 
 for tstype in ['normalized_w_tseries', 'smoothed_w_tseries']:
-  for wcthreshold in [499, 399, 299, 199, 99, 49, 29, 19, 9]: # should be sorted for a good performance at the beginning.
-    for eindex in edev_indexlist:
+  for wcthreshold in [499, 399, 299, 199, 99, 49, 29, 19]: # should be sorted for a good performance at the beginning.
+    for e in edev_list:
 
-      tstevent = events_list_for_all[eindex]
-      print('Test Event:', tstevent)
+      print('***********************************************************************')
+      print('Test Event, word threshold, tstype:', e, wcthreshold, tstype)
+      print('***********************************************************************')
       
-      test_by_index_tfidf(trnevents, tstevent, wcthreshold, tstype, 16)
-      test_by_index_trn01(trnevents, tstevent, wcthreshold, tstype, 16)
+      test_by_index_tfidf(trnevents, e, wcthreshold, tstype, 16)
+      test_by_index_trn01(trnevents, e, wcthreshold, tstype, 16)
       
-
-
-
-
-
-
-
-
 
 exit()
 
   # Get parameters from command line
 
-      test_by_index_tfidf(indexno, w_count_threshold,'normalized_w_tseries', 16)
-      print('Results of normalized tfidf')
+test_by_index_tfidf(indexno, w_count_threshold,'normalized_w_tseries', 16)
+print('Results of normalized tfidf')
 
-      test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 16)
-      print('Results of smoothed tfidf')
+test_by_index_tfidf(indexno, w_count_threshold,'smoothed_w_tseries', 16)
+print('Results of smoothed tfidf')
 
-      test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 16)
-      print('Results of normalized binary')
+test_by_index_trn01(indexno, w_count_threshold, 'normalized_w_tseries', 16)
+print('Results of normalized binary')
 
 
-      test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 16)
-      print('Results of smoothed binary')
+test_by_index_trn01(indexno, w_count_threshold, 'smoothed_w_tseries', 16)
+print('Results of smoothed binary')
 
 
 exit()
@@ -297,6 +304,7 @@ test_by_index(indexno, 50)
 # utrfey_f11 : 1267
 # twepsv_s11 : 3103
 # feyaz_s11 : 851
+#[['ajautr_f12'], ['ajapsv_s12'], ['psvtwe_s12'], ['aztwe_s11'], ['ajaaz_f12'], ['ajapsv_f12'], ['utrfey_f11'], ['twepsv_s11'], ['feyaz_s11']]
 
 #swa.calc_euc_dist_w_list_normalized_random(w_list, labels, [train_events, test_events], minueTimeFrame, daycountback)
 #swa.calc_euc_dist_w_list_normalized(w_list, labels, [test_events,train_events], minueTimeFrame, daycountback)

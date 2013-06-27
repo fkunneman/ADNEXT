@@ -390,7 +390,7 @@ class BlendEvent(Event):
 
 	def __init__(self, events_l):
 		self.events_list = events_l
-		self.name = [e.name for e in events_l]
+		self.name = ' '.join([e.name for e in events_l])
 		self.place = [e.place for e in events_l]
 
 		self.time = {e.name:e.time for e in events_l}
@@ -433,7 +433,7 @@ class BlendEvent(Event):
 			for w, tserie in e.w_tseries[l].items():
 				if w not in self.w_tseries[l]:
 					self.w_tseries[l][w] = [0] * len(tserie)
-					print('Blend tserie created for:', w, self.words[l][w])
+					#print('Blend tserie created for:', w, self.words[l][w])
 				self.w_tseries[l][w] = [a+b for a, b in zip(self.w_tseries[l][w], tserie)]
 				
 
@@ -444,10 +444,25 @@ class BlendEvent(Event):
 		self.w_mean_list = {l:{}}
 		self.w_stdev_list = {l:{}}
 
+	def update_object(self, w, l):
+		'''
+			Add time serie of this word to the blend object by traversing all blended objects to get this word's value.
+		''' 
+		
+		for e in self.events_list:
+			for w, tserie in e.w_tseries[l].items():
+				if w not in self.w_tseries[l]:
+					self.w_tseries[l][w] = [0] * len(tserie)
+					print('In blend Obj added:',w)
+					#print('Blend tserie created for:', w, self.words[l][w])
+				self.w_tseries[l][w] = [a+b for a, b in zip(self.w_tseries[l][w], tserie)]
+				print('In blend Obj updated:',w)
+
 	def calc_tseries(self, w, label):
 
 		if w not in self.w_tseries[label]:
-			print('Not in self.w_tseries[label]', w)
+			self.update_object(w, label) # Add time serie of this word to the blend object by traversing all blended objects to get this word's value.
+			print('Not in self.w_tseries,updated:', w,':', self.words[label][w])
 
 		try:
 			self.normalized_w_tseries[label][w] = self.normalize_tserie_by_tserie(self.w_tseries[label][w], self.tweet_tseries[label][1])
@@ -468,7 +483,8 @@ class BlendEvent(Event):
 			self.w_mean_list[label][w] = [self.word_freq[label][w]] * len(self.smoothed_w_tseries[label][w])
 			self.w_stdev_list[label][w] = [numpy.std(self.smoothed_w_tseries[label][w])] * len(self.smoothed_w_tseries[label][w])
 		except:
-			pass
+			print('Error, the word should have been in relevant objects, Exit!. word is:', w)
+			exit()
 
 		# running average make the lists shorter
 		#cut from back, to have a graph from the zero point of the event.
@@ -523,6 +539,7 @@ class SingleWordAnalysis():
 		# self.count_words()  self.calc_words_freq()  self.calc_words_relative_freq()
 
 		self.events_dict = {}
+		self.blend_events_dict = {}
 
 	
 		
@@ -581,8 +598,6 @@ class SingleWordAnalysis():
 			print(name+':'+str(len(event.tweets[label_list[0]])), end = ', ')
 			event.count_all_words(label_list)
 			event.count_all_bigrams(label_list)
-
-		print('\n\nAll tweet count:(Test, Train)', tweet_count_test, tweet_count_train)
 
 	def get_ngrams(self):
 		'''
@@ -1465,7 +1480,7 @@ class SingleWordAnalysis():
 		self.print_dict(self.prediction_results)
 		self.print_dict(self.calc_rmse(self.prediction_results))
 
-	def calc_by_vectors(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, k=1):
+	def calc_by_vectors(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, wthres, k=1):
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
 		"""
 		  -First label should be before for now.
@@ -1614,7 +1629,7 @@ class SingleWordAnalysis():
 			self.print_dict(self.calc_rmse(self.prediction_results), 'trn01_'+ tserie_type+'k:'+str(k_index))
 			self.prediction_results = {}
 
-	def calc_by_vectors2(self, w_lists, labels, events, minuteForFrame, dayCount, tserie_type, k=1): # this use
+	def calc_by_vectors2(self, w_lists, labels, events, minuteForFrame, dayCount, tserie_type, wthres, k=1): # this use
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
 		"""
 		  -First label should be before for now.
@@ -1687,7 +1702,7 @@ class SingleWordAnalysis():
 	
 		all_1_euc_dist = []
 
-		print('Trn matrix for just to calc. part/denom of the cosine similarity')
+		#print('Trn matrix for just to calc. part/denom of the cosine similarity')
 		trn_vector_matrix_big = []
 		for y in range(0, len(trained_X)):
 			trn_vector_matrix_big.append(self.crea_vectors_01(getattr(event_trained, tserie_type)[label], wlist_trn , y))
@@ -1695,7 +1710,7 @@ class SingleWordAnalysis():
 
 		trn_vector_matrix_big = numpy.array(trn_vector_matrix_big)
 
-		print('Vector Matrix for Train:')
+		#print('Vector Matrix for Train:')
 		trn_vector_matrix = []
 		for y in range(0, len(trained_X)):
 			trn_vector_matrix.append(self.crea_vectors_01(getattr(event_trained, tserie_type)[label], wlist_trntst , y))
@@ -1704,7 +1719,7 @@ class SingleWordAnalysis():
 		trn_vector_matrix = numpy.array(trn_vector_matrix)
 
 
-		print('\nVector Matrix for Test:')
+		#print('\nVector Matrix for Test:')
 		tst_vector_matrix = []
 		for y in range(0, len(test_X)):
 			tst_vector_matrix.append(self.crea_vectors_01(getattr(event_test, tserie_type)[label], wlist_trntst, y))
@@ -1741,14 +1756,14 @@ class SingleWordAnalysis():
 			all_1_euc_dist.append(euc_dist_l)
 
 
-		print('k is:', k)
+		#print('k is:', k)
 		for k_index in range(1,k):
-			print('k is:', k)
-			print('Len of Test_X:', len(test_X))
+			#print('k is:', k)
+			print('Len Test_X:', len(test_X))
 			for seq_len in range(0, len(test_X)): #for all frame lengths
 
 				# m x n matrix became (m-1)x(n-1)
-				print('Cos Sim. Matrix for length:', seq_len)
+				#print('Cos Sim. Matrix for length:', seq_len)
 				
 				euc_dist_matrix = self.calc_dist_for_seq(all_1_euc_dist, seq_len) # calc. euc. dist. from one-to-one distances.
 				#print('Distances for sequences:', euc_dist_matrix, sep='\n')
@@ -1768,12 +1783,12 @@ class SingleWordAnalysis():
 						#self.prediction_results[seq_len].append((actual, numpy.mean(predictions)))
 						#print('Actual:',actual, 'predictions:', predictions, 'raw_errors:', raw_errors)
 					else:
-						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
+						print('No Tweets,no prediction!Seq.len&actual:', seq_len, test_X[seq_len:][tst_i])
 
 			#print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
-			self.print_dict(self.prediction_results, 'trn01_'+ tserie_type+'-k'+str(k_index))
-			print('Trn01 Calc RMSE:', tserie_type)
-			self.print_dict(self.calc_rmse(self.prediction_results), 'trn01_'+ tserie_type+'k:'+str(k_index))
+			# self.print_dict(self.prediction_results, 'trn01_'+ tserie_type+'-k'+str(k_index))
+			#print('Trn01 Calc RMSE:', tserie_type)
+			self.print_dict(self.calc_rmse(self.prediction_results), event_test.name + '-trn01_'+ tserie_type+'-wthres:'+str(wthres)+' -k:'+str(k_index))
 			self.prediction_results = {}
 
 	def find_similar_tserie(self, w, wlist, tserie_dict):
@@ -1808,7 +1823,7 @@ class SingleWordAnalysis():
 
 
 
-	def calc_by_vectors_tfidf(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, k=1, std_elim=0):
+	def calc_by_vectors_tfidf(self, w_list, labels, events, minuteForFrame, dayCount, tserie_type, wthres, k=1):
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
 		"""
 		  -First label should be before for now.
@@ -1945,14 +1960,14 @@ class SingleWordAnalysis():
 						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
 
 			print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
-			self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k'+str(k_index))
+			# self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k'+str(k_index))
 			print('Tf-IDF Calc RMSE:', tserie_type)
 			self.print_dict(self.calc_rmse(self.prediction_results), 'tfidf_'+ tserie_type+'k:'+str(k_index))
 			self.prediction_results = {}
 
 		print('inside run time of calc_by_vectors_tfidf:', t0-time.time())
 
-	def calc_by_vectors_tfidf2(self, w_lists, labels, events, minuteForFrame, dayCount, tserie_type, k=1, std_elim=0):
+	def calc_by_vectors_tfidf2(self, w_lists, labels, events, minuteForFrame, dayCount, tserie_type, wthres, k=1):
 		'First event is training, the second test.Later adapt it to fist n-1 training, n. is test'
 		"""
 		  -First label should be before for now.
@@ -1998,7 +2013,7 @@ class SingleWordAnalysis():
 						pass
 
 		event_trained, event_test = self.structure_train_test_events(events[0], events[1], tserie_type, labels, wlist_trn)
-		print('Training & Test Events:', event_trained.name, '...', event_test.name)
+		print('Training & Test Events:', event_trained.name[:35], '...', event_test.name)
 
 		len_tserie_X_trained = len(getattr(event_trained, tserie_type)[l][wlist_trn[0]]) 
 		len_tserie_X_test = len(getattr(event_test, tserie_type)[l][wlist_trn[0]])
@@ -2047,7 +2062,7 @@ class SingleWordAnalysis():
 			else:
 				w_occ.append(0)
 		print('\nLen of wlist_trntst & small_approx_idf_array(equal?):', len(wlist_trntst), len(small_approx_idf_array))
-		print('\nLen(should be same as trntst words) & W_occ list(1 occ, 0 not occ.):',len(w_occ), w_occ)
+		print('\nLen(should be same as trntst words) & W_occ list(1 occ, 0 not occ.):',len(w_occ))
 		
 		
 		tst_vector_matrix = []
@@ -2117,12 +2132,12 @@ class SingleWordAnalysis():
 						#self.prediction_results[seq_len].append((actual, numpy.mean(predictions)))
 						#print('Actual:',actual, 'predictions:', predictions, 'raw_errors:', raw_errors)
 					else:
-						print('No Tweets to predict anything ! Seq. len & actual:', seq_len, test_X[seq_len:][tst_i])
+						print('No Tweets no prediction! Seq.len&actual:', seq_len, test_X[seq_len:][tst_i])
 
-			print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
-			self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k'+str(k_index))
-			print('Tf-IDF Calc RMSE:', tserie_type)
-			self.print_dict(self.calc_rmse(self.prediction_results), 'tfidf_'+ tserie_type+'k:'+str(k_index))
+			#print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
+			# self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k:'+str(k_index))
+			#print('Tf-IDF Calc RMSE:', tserie_type)
+			self.print_dict(self.calc_rmse(self.prediction_results), event_test.name+'-tfidf_'+tserie_type+'-wthres:'+str(wthres)+' k:'+str(k_index))
 			self.prediction_results = {}
 		print('inside run time of calc_by_vectors_tfidf2:', t0-time.time())
 
@@ -2161,19 +2176,19 @@ class SingleWordAnalysis():
 		'''
 
 		doc_count_in_w_occ = self.calc_word_occ_per_doc(mtrx)
-		print('doc counts in which words occur:')
-		print(*doc_count_in_w_occ, sep='\n')
+		print('len of doc counts in which words occur:', len(doc_count_in_w_occ))
+		#print(*doc_count_in_w_occ, sep='\n')
 		all_doc_count = len(mtrx) # every row represent a doc
 		print('all doc count:', all_doc_count)
 		idf_array = approx_idf
-		print('Idf values:', idf_array)
+		print('len of Idf values:', len(idf_array))
 
 		#idf_array = numpy.array([idf if idf > 0 else 0.00001 for idf in idf_array])
-		print('matrix in tf:', mtrx)
+		print('shape of matrix in tf:', mtrx.shape)
 		for t in range(len(mtrx)):
 			mtrx[t] = mtrx[t]*idf_array #product every line of the matrix with the idf array
 
-		print('Test matrix after division tfidf:', *mtrx, sep='\n')
+		print('Shape of Test matrix after division tfidf:', mtrx.shape, sep='\n')
 			# for w in range(len(mtrx[0])):
 			# 	mtrx[t][w] = mtrx[t][w] * idf_array[w]
 
@@ -2193,19 +2208,19 @@ class SingleWordAnalysis():
 		'''
 
 		doc_count_in_w_occ = self.calc_word_occ_per_doc(mtrx)
-		print('doc counts in which words occur:')
-		print(*doc_count_in_w_occ, sep='\n')
+		print('len of doc counts in which words occur:', len(doc_count_in_w_occ))
+		#print(*doc_count_in_w_occ, sep=',')
 		all_doc_count = len(mtrx) # every row represent a doc
 		print('all doc count:', all_doc_count)
 		idf_array = self.calc_w_idf(all_doc_count, doc_count_in_w_occ)
-		print('Idf values:', *idf_array, end=', ')
+		print('len of Idf values:', len(idf_array))
 
 		#idf_array = numpy.array([idf if idf > 0 else 0.00001 for idf in idf_array])
-		print('\nLen & matrix in tf:', mtrx.shape, mtrx)
+		print('\nLen & matrix in tf:', mtrx.shape)
 		for t in range(len(mtrx)):
 			mtrx[t] = mtrx[t]*idf_array #product every line of the matrix with the idf array
 
-		print('Train matrix after division tfidf:', *mtrx, sep='\n')
+		print('Train matrix after division tfidf:', mtrx.shape, sep='\n')
 			# for w in range(len(mtrx[0])):
 			# 	mtrx[t][w] = mtrx[t][w] * idf_array[w]
 
@@ -2519,8 +2534,17 @@ class SingleWordAnalysis():
 
 	def structure_train_test_events(self, train, test, tserie_type, labels, w_list):
 		'Call time serie calculation methods according to single or blend events'
+		blendexists = True
 		if type(train) == type(list()) and len(train) > 1:
-			event_trained = BlendEvent([self.events_dict[name] for name in train])
+
+			if ' '.join(train) in self.blend_events_dict:
+				event_trained = self.blend_events_dict[' '.join(train)]
+				print('Existing Blend obj used for train:\n', event_trained.name[1:35])
+			else:
+				event_trained = BlendEvent([self.events_dict[name] for name in train])
+				self.blend_events_dict[event_trained.name] = event_trained
+				print('New Blend Obj created for train:', event_trained.name[1:35])
+
 			
 			for l in labels:
 				for w in w_list:
@@ -2534,8 +2558,15 @@ class SingleWordAnalysis():
 			event_trained = self.events_dict[train]
 
 		if type(test) == type(list()) and len(test) > 1:
-			event_test = BlendEvent([self.events_dict[name] for name in test])
 			
+			if ' '.join(test) in self.blend_events_dict:
+				event_test = self.blend_events_dict[' '.join(test)]
+				print('Existing Blend obj used for test:\n', event_trained.name[1:35])
+			else:
+				event_test = BlendEvent([self.events_dict[name] for name in test])
+				self.blend_events_dict[event_trained.name] = event_test
+				print('New Blend Obj created for test:\n', event_test.name[1:35])
+
 			for l in labels:
 				for w in w_list:
 					if w not in getattr(event_test, tserie_type)[l]:
@@ -2754,7 +2785,7 @@ class SingleWordAnalysis():
 
 		print('Event name in Median Calc:')
 		for name in train_events:
-			print(name, end=', ')
+			print(name[:4], end=',')
 			e = self.events_dict[name]
 			e_tserie = (e.tweet_tseries[label][0], e.tweet_tseries[label][1])
 
@@ -2779,9 +2810,9 @@ class SingleWordAnalysis():
 			#print('Median Temp:', median)
 			i +=1
 
-		print('median tweet count is:', median_tweet_count)
-		print('sum tweet count, median taken from:', sum_tweets)
-		print('median hour:', median)
+		print('mdn t. count:', median_tweet_count)
+		print('sum t. count, mdn taken from:', sum_tweets)
+		print('mdn hour:', median)
 
 		self.mean_of_tweets = mean
 		self.median_of_tweets = median
