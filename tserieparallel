@@ -5,49 +5,45 @@ echo '----Script Begins----'
 wcthreshold=$1
 echo $wc_threshold
 
-for h in {1..18}
+for h in {1..12}
 do
 
-for i in {0..10}
-do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount $wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
-done
-
-wait
+python3.3 TweetStatistics.py --minframe $(($h*60)) --dayback 8 > out$((h*60))mdevset &
 
 done
 wait
 
-echo 'Second Part Begins'
-# ---- second part ----
+# echo 'Second Part Begins'
+# # ---- second part ----
 
-for h in {1..18}
-do
+# for h in {1..18}
+# do
 
-for i in {11..20}
-do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount $wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
-done
+# for i in {11..20}
+# do
+# python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount $wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
 
-wait
+# done
 
-done
-wait
+# wait
 
-echo '3. Part Begins'
-# ---- second part ----
+# done
+# wait
 
-for h in {1..18}
-do
+# echo '3. Part Begins'
+# # ---- second part ----
 
-for i in {21..30}
-do
-python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount $wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
-done
+# for h in {1..18}
+# do
 
-wait
+# for i in {21..30}
+# do
+# python3.3 TweetStatistics.py --eventno $i --minframe $(($h*60)) --dayback 8 --wcount $wcthreshold > out$((h*60))m8d${wcthreshold}w${i}e &
+# done
 
-done
-wait
+# wait
 
-echo 'Third and Last part Starts'
+# done
+# wait
+
+# echo 'Third and Last part Starts'
