@@ -63,7 +63,7 @@ def extract_sliding_window_instances(tweets_tfz,window,slider):
     window = [0,0+window]
     while window[1] <= highest_tfz:
         windowtweets = []
-        if tfz_instances.has_key(window[1]):        
+        if tfz_instances.has_key(window[1]):
             for tfz in range(window[0],window[1]):
                 windowtweets.extend(tfz_instances[tfz])
             if len(windowtweets) > 0:

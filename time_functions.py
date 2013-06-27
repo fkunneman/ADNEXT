@@ -1,6 +1,7 @@
 
 from __future__ import division
 import re
+import codecs
 import datetime
 from collections import defaultdict
 
@@ -22,26 +23,22 @@ def return_datetime(date,time = False,setting = "eu"):
 
 def timerel(time1,time2,unit):
     """Return the difference in time in a given time unit between two datetime objects.""" 
-    dif = time1 - time2
     if unit == "day":
-        zeropoint = datetime.datetime(time1.year,time1.month,time1.day,0,0,0)
-        difzero = time1 - zeropoint
-        dif += difzero
-        day = int(dif.days)
-        if dif.seconds > difzero.seconds: 
-            day += 1
+        day = (time1.date() - time2.date()).days
         return day
-    elif unit == "hour":
-        hours = (int(dif.days) * 24) + (int(dif.seconds) / 3600)
-        return hours
-    elif unit == "minute":   
-        minutes = (int(dif.days) * 1440) + int(dif.seconds / 60)
-        return minutes
+    else:
+        dif = time1 - time2
+        if unit == "hour":
+            hours = (int(dif.days) * 24) + (int(dif.seconds) / 3600)
+            return hours
+        if unit == "minute":   
+            minutes = (int(dif.days) * 1440) + int(dif.seconds / 60)
+            return minutes
         
 def generate_event_time_hash(events,delimiter="\t"):
     """Based on an eventfile, generate a dictionary with events as keys and their start/end time as value."""
     event_time = {}
-    eventfile_open = open(events)
+    eventfile_open = codecs.open(events,"r","utf-8")
     for event in eventfile_open:
         tokens = event.strip().split(delimiter)
         event_name = tokens[0]
@@ -58,7 +55,7 @@ def generate_event_time_hash(events,delimiter="\t"):
 
 def extract_sliding_window_instances(tweets_tfz,window,slider):
     #make tfz hash
-    tfz_instances = defaultdict(list)
+    tfz_instances = defaultdict(list)            
     windows = []
     for tweet in tweets_tfz:
         tfz_instances[tweet[1]].append(tweet[0][0])
@@ -66,12 +63,11 @@ def extract_sliding_window_instances(tweets_tfz,window,slider):
     window = [0,0+window]
     while window[1] <= highest_tfz:
         windowtweets = []
-        if tfz_instances.has_key(window[1]):
-            for tfz in range(window[0]+1,window[1]+1):
+        if tfz_instances.has_key(window[1]):        
+            for tfz in range(window[0],window[1]):
                 windowtweets.extend(tfz_instances[tfz])
-            windows.append((windowtweets,window[1]))
+            if len(windowtweets) > 0:
+                windows.append((windowtweets,window[1]))
         window[0] += slider
         window[1] += slider
     return windows
-
-
