@@ -74,6 +74,37 @@ class Tweetsfeatures():
 			else:
 				current_tweet.add_sequence(tags)
 
+	def set_tweets_oneline(self,ht=0,u=0):
+		"extract sequences per tweet out of the file"
+		"""
+		will make different types of sequences, words, lemma's and postags
+		result is a list of tweet objects
+		the different types can be extracted independent from each other from a tweet object
+		different sorts of tokens can be left out of the sequences:
+			- sw-stopwords (based on a list from snowball, can be extended in this def)
+			- p-punctuation
+			- ht-hashtags
+			- u-urls
+		by default nothing is removed
+		specify '1' for each category to choose for removal
+		"""
+		tweets = codecs.open(self.frogged_file,"r","utf-8").readlines()
+		
+		hashtag = re.compile(r"#")
+		url = re.compile(r"http:")
+		conv = re.compile(r"^@")
+		
+		for line in tweets:
+			tokens = line.split("\t")
+			tweet = Tweetsfeatures.Tweet(tokens,"one_column")
+			words = tokens[5].split(" ") 
+			for word in words:
+				if (ht and hashtag.search(word)) or (u and url.search(word)):
+					continue
+				else:
+					tweet.wordsequence.append(word.lower().strip())		
+			self.tweets.append(tweet)
+
 	def tweets_2_lcsinput(self, path, bucketsize, classfile, metafile):
 		bucket_i = 0
 		dirnum = 1
@@ -373,6 +404,34 @@ class Tweetsfeatures():
 			self.lemmasequence = []
 			self.possequence = [] 
 			self.features = []
+
+		def __init__(self,token,form):
+			if form == "one_column":
+				self.event = token[0]
+				self.user = token[2]
+				
+				date = token[3]
+				parse_date = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+				structured_date = parse_date.search(date)
+
+				time = token[4]
+				parse_time = re.compile(r"(\d{2}):(\d{2})")
+				structured_time = parse_time.search(time)
+				try:
+					year = int(structured_date.groups(0)[0])
+					month = int(structured_date.groups(0)[1])
+					day = int(structured_date.groups(0)[2])
+					hour = int(structured_time.groups(0)[0])
+					minute = int(structured_time.groups(0)[1])
+					self.time = datetime.datetime(year,month,day,hour,minute,0)
+				except AttributeError:
+					self.time = None
+					print("Time feature error, in tweet number:" + str(time) + token[0])
+				
+				self.wordsequence = []
+				self.lemmasequence = []
+				self.possequence = [] 
+				self.features = []
 		
 		def add_sequence(self,token):
 			self.add_word(token)
@@ -382,6 +441,9 @@ class Tweetsfeatures():
 		def add_word(self,token):
 			word = token[2]
 			self.wordsequence.append(word.lower())
+
+		def delete_word(self, token):
+			pass
 
 		def add_lemma(self,token):
 			lemma = token[3]
