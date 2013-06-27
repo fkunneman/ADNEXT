@@ -32,6 +32,7 @@ for event in events:
 # Process tweets
 for tweetinfo in tweets:
     tweetid = tweetinfo[0]
+    print tweetid
     if not tweetid in ids:
         ids.append(tweetid)
         tweet = tweetinfo[1]

@@ -6,16 +6,18 @@ import re
 import nltk
 import sys
 from collections import defaultdict
-import tweetsfeatures
+from tweetsfeatures_tks import Tweetsfeatures
 
 frogged_tweets = sys.argv[1]
-path = sys.argv[2]
-prefix = sys.argv[3]
-classfile = sys.argv[4]
-metafile = sys.argv[5]
+eventfile = sys.argv[2]
+path = sys.argv[3]
+prefix = sys.argv[4]
+classfile = sys.argv[5]
+metafile = sys.argv[6]
 
-collect = tweetsfeatures.Tweetsfeatures(frogged_tweets)
-collect.set_tweets(p=1)
+collect = Tweetsfeatures(frogged_tweets)
+collect.set_tweets(p=1,u=1)
+collect.set_timelabel_firstlayer(eventfile)
 collect.tweets_2_lcsinput(path,prefix,classfile,metafile)
 
 filenum = 0
