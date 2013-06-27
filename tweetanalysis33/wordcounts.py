@@ -453,10 +453,10 @@ class BlendEvent(Event):
 			for w, tserie in e.w_tseries[l].items():
 				if w not in self.w_tseries[l]:
 					self.w_tseries[l][w] = [0] * len(tserie)
-					print('In blend Obj added:',w)
+					#print('In blend Obj added:',w)
 					#print('Blend tserie created for:', w, self.words[l][w])
 				self.w_tseries[l][w] = [a+b for a, b in zip(self.w_tseries[l][w], tserie)]
-				print('In blend Obj updated:',w)
+				#print('blend Obj update:',w)
 
 	def calc_tseries(self, w, label):
 
