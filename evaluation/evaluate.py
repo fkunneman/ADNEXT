@@ -29,21 +29,14 @@ args = parser.parse_args()
 
 evaluation = Evalset(args.i)
 
-depth = int(args.d) * -1
-dir_scores = defaultdict(list)
-for i,f in enumerate(args.l):
-    cats = f.split("/")
-    if depth < -1:
-        dir_scores[cats[depth]].append(f)
-    else:
-        dir_scores[cats[-1]].append(f)
-
 #if args.v:
 #    evaluation.set_vocabulary(args.v)
-
-
-
 if args.w:
+    depth = int(args.d) * -1
+    dir_scores = defaultdict(list)
+    for i,f in enumerate(args.l):
+        cats = f.split("/")
+        dir_scores[cats[depth]].append(f)
     window_size = int(args.w[0])
     slider = int(args.w[1])
     threshold = int(args.w[2])
@@ -55,7 +48,7 @@ else:
         labelfiles = args.l
         observationfiles = args.c
         for i,l in enumerate(labelfiles):
-            evaluation.set_instances_lcs(l,observationfiles[i])
+            evaluation.set_instances_lcs(l,observationfiles[i],"normal")
         evaluation.print_results(outfile)
         
         if args.fp:
@@ -69,7 +62,6 @@ else:
         metafiles = args.l
         for m in metafiles:
             evaluation.set_instances_meta(m,args.w)
-        
         
     elif args.i == "sparsebin":
         exit()

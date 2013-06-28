@@ -40,11 +40,10 @@ if args.vocab:
     vocabulary_read.close()
 else:
     vocabulary=False
-classifier_args=[classifier,arguments,args.p,args.s,args.tl]
 
 def classify(traininglines,testlines,directory=False):
     cl=Classifier(traininglines,testlines,directory,vocabulary)
-    cl.classify(classifier_args)
+    cl.classify(classifier,arguments,args.p,args.s,args.tl)
     
     #if algorithm=="lcs":
     #    cl_dir=args.d[0]
@@ -59,8 +58,9 @@ def classify(traininglines,testlines,directory=False):
 
 if validation=="test":
     test_instances=codecs.open(args.t,"r","utf-8")
-    classify(instances,test_instances.readlines())
-    test_instance.close()
+    directory="/".join(args.t.split("/")[:-1]) + "/"
+    classify(instances,test_instances.readlines(),directory)
+    test_instances.close()
 
 elif validation=="looe":
     params=args.l

@@ -462,22 +462,21 @@ class Evalset():
                     #st_dev = round(math.sqrt(st_dev / len(entries)),2)
                     out.write(str(mean) + "\t")
 
-    def set_instances_lcs(self,classificationfile,evaluationtype,threshold = False):
+    def set_instances_lcs(self,labelfile,classificationfile,evaluationtype,threshold = False):
          
-        #labels = open(labelfile)
-        #for line in labels:
-        #    tokens = line.split(" ")
-        #    filename = tokens[0]
-        #    label = tokens[1].strip()
-        #    instance = Evalset.Instance()
-        #    instance.set_label(label)
-        #    instance.set_name(filename)
-        #    self.name_instance[filename] = instance
-        #    self.instances.append(instance) 
+        labels = open(labelfile)
+        for line in labels:
+            tokens = line.split(" ")
+            filename = tokens[0]
+            label = tokens[1].strip()
+            instance = Evalset.Instance()
+            instance.set_label(label)
+            instance.set_name(filename)
+            self.name_instance[filename] = instance
+            self.instances.append(instance) 
    
         classifications = codecs.open(classificationfile,"r","utf-8")
         for line in classifications.readlines():
-         
             tokens = line.split("  ")
             filename = tokens[0].strip()
             instance = self.name_instance[filename]
