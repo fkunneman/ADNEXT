@@ -8,7 +8,7 @@ echo $wc_threshold
 for h in {1..12}
 do
 
-python3.3 TweetStatistics.py --minframe $(($h*60)) --dayback 8 > out$((h*60))mdevset &
+python3.3 TweetStatistics.py --minframe $(($h*60)) --dayback 8 > out/out$((h*60))mdevset &
 
 done
 wait
