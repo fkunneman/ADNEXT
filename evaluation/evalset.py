@@ -2,7 +2,7 @@
 
 from __future__ import division
 import re
-import proy_evaluation 
+from pynlpl import evaluation
 import time_functions
 from collections import defaultdict
 import datetime
@@ -489,7 +489,7 @@ class Evalset():
                     if instance.classification[0] == "before":
                         instance.set_classification((classification,score))
                 else:
-                    instance.set_classification((classification,score))
+                    instance.set_classification(classification)
                     if classification != instance.label:
                         instance.set_fp()
                     instance.set_score(score)
@@ -575,7 +575,7 @@ class Evalset():
                 fp_instances[i] = i.score
         
         for index,instance in enumerate(sorted(fp_instances, key=fp_instances.get, reverse=True)[:top_n]):
-            fileread = open(files + instance.name,"r").readlines()    
+            fileread = open(files + instance.fname,"r").readlines()    
             words = []
             for line in fileread:
                 term = line.strip()
@@ -716,8 +716,10 @@ class Evalset():
     
         out_write = open(outfile,"w")
         rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
-        ce = proy_evaluation.ClassEvaluation()
+        print "ce"
+        ce = evaluation.ClassEvaluation()
         for instance in self.instances:
+            print instance.label,instance.classification
             ce.append(instance.label,instance.classification)
         for label in sorted(list(set(ce.goals))):
             if not label == "":

@@ -49,7 +49,7 @@ else:
         observationfiles = args.c
         for i,l in enumerate(labelfiles):
             evaluation.set_instances_lcs(l,observationfiles[i],"normal")
-        evaluation.print_results(outfile)
+        evaluation.print_results(args.o)
         
         if args.fp:
             c = raw_input("Please specify the class for which false positives should be extracted...\n")
