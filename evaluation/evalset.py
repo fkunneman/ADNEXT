@@ -696,12 +696,13 @@ class Evalset():
             "Is x a sequence? We say it is if it has a __getitem__ method."
             return hasattr(x, '__getitem__')
 
-        def print_table_aligned(table, header=None, sep=' ', numfmt='%g'):
+        def print_table_aligned(table, out_file, header=None, sep=' ', numfmt='%g'):
             """Print a list of lists as a table, so that columns line up nicely.
             header, if specified, will be printed as the first row.
             numfmt is the format for all numbers; you might want e.g. '%6.2f'.
             (If you want different formats in differnt columns, don't use print_table.)
             sep is the separator between columns."""
+            out=open(out_file,"w")
             justs = [if_(isnumber(x), 'rjust', 'ljust') for x in table[0]]
             if header:
                 table = [header] + table
@@ -712,22 +713,22 @@ class Evalset():
             for row in table:
                 for (j, size, x) in zip(justs, sizes, row):
                     print getattr(str(x), j)(size), sep,
+                    #out.write(getattr(str(x), j)(size) sep + "\n")
                 print
-    
         out_write = open(outfile,"w")
-        rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
-        print "ce"
+        out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
+        #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         ce = evaluation.ClassEvaluation()
         for instance in self.instances:
-            print instance.label,instance.classification
             ce.append(instance.label,instance.classification)
         for label in sorted(list(set(ce.goals))):
             if not label == "":
                 table = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
                 table.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
                 table.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
-                rows.append(table)
-        print_table_aligned(rows)
+                #rows.append(table)
+                out_write.write("\t".join(table) + "\n")
+        #print_table_aligned(rows,outfile)
             
     def calculate_interannotator_agreement(self):
         annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(int)))

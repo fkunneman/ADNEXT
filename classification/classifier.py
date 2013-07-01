@@ -268,7 +268,7 @@ class Classifier():
             os.system("mv " + classification_dir + "test " + self.directory)
             os.system("mv " + classification_dir + "stoplist.txt " + self.directory)
             os.system("mv " + classification_dir + "keeplist.txt " + self.directory)
-            os.system("cp -r " + classification_dir + "index " + self.directory)
+            os.system("mv " + classification_dir + "index " + self.directory)
         
         try:
             classification_dir=args[0]

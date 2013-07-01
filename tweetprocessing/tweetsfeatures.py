@@ -284,7 +284,11 @@ class Tweetsfeatures():
             for i,feature in enumerate(t.features):
                 parts=feature.split("_")
                 for term in blacklist:
-                    if term in parts:
+                    match=False
+                    for p in parts:
+                        if re.search(term,p,re.IGNORECASE):
+                            match=True
+                    if match:
                         removed_features.append(i)
                         break
             for offset,index in enumerate(removed_features):
@@ -298,7 +302,11 @@ class Tweetsfeatures():
             for i,feature in enumerate(t.features):
                 parts=feature.split("_")
                 for term in blacklist:
-                    if term in parts:
+                    match=False
+                    for p in parts:
+                        if re.search(term,p,re.IGNORECASE):
+                            match=True
+                    if match:
                         removed_features.append(i)
                         break
             for offset,index in enumerate(removed_features):

@@ -16,7 +16,7 @@ parser.add_argument('-m', action='store', required=False, help = "meta-file")
 parser.add_argument('--multi', action='store_true', help = "confirm when the meta-file contains instances for multiple testsets")
 parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn"], help="specify the input type of label (and classification) files")
 #parser.add_argument('-e', action='store', required=False, nargs='+', help = "eventfiles (needed to calculate the time to event for sorting tweets in time)")
-parser.add_argument('-fp', action='store_true', help = "choose whether a ranked list of the most confident false positive instances is written to a file")
+parser.add_argument('-fp', action='store', required = False, nargs = '+', help = "To extract a ranked list of the most confident false positive instances, specify a file name, the class to which the false positives apply, the number of instances and the directory with tweet files")
 parser.add_argument('-w', action='store', required = False, nargs = '+', help = "to classify in time windows,specify the window size, slider (in terms of hours) and threshold after which to score; this option presumes a metafile with time-from-zero values")
 parser.add_argument('-d', action='store', default = 1, help = "Define the depth of a distinct testset in terms of the path of scorefiles; [Default = 1]  (in the case of the testset \'bla\' and the paths \'bla/score1.txt\' and \'bla/score2.txt\', give two as the depth and the results for the different scorefiles are outputted in the same row)")
 #parser.add_argument('-v', action='store_true', help = "to store a vocabulary dictionary, specify the filename")
@@ -50,13 +50,8 @@ else:
         for i,l in enumerate(labelfiles):
             evaluation.set_instances_lcs(l,observationfiles[i],"normal")
         evaluation.print_results(args.o)
-        
         if args.fp:
-            c = raw_input("Please specify the class for which false positives should be extracted...\n")
-            freq = int(raw_input("Please choose the number of instances to write...\n"))
-            files = raw_input("Please specify the directory with instance files...\n")
-            out = raw_input("Please give the file to write the instances to...\n")
-            evaluation.extract_top_fp(out,c,freq,files)
+            evaluation.extract_top_fp(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
 
     elif args.i == "meta":
         metafiles = args.l

@@ -8,8 +8,12 @@ parser = argparse.ArgumentParser(description = "Program that can be used to chan
 parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
 parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
-parser.add_argument('-e', action = 'store', required = False, help = "An extra file name (needed for time deletion and the keepfile for extraction.")
+parser.add_argument('-e', action = 'store', required = False, help = "An extra file name (needed for time deletion and the keepfile for extraction).")
 parser.add_argument('-a', action = 'store', choices = ["add","replace","delete","extract","add_time"], help = "Choose the action to perform.")
+parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace or delete")
+parser.add_argument('-c', action = 'store', required = False, help = "give the column as argument for add, replace (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
+parser.add_argument('--extract', action = 'store', required = False, help = "[EXTRACT] specify the number of lines to extract")
+parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
 
 args = parser.parse_args() 
 infile = args.i
@@ -20,32 +24,18 @@ extra = args.e
 
 lineconvert = lineconverter.Lineconverter(infile,delimiter)
 if action == "add":
-    extra = raw_input("Please give the string to add to each line...\n")
-    place = raw_input("Please specify the column before which the string should be added as a new field (for addition behind the last column, give \'back\')...\n")
-    lineconvert.add_string(extra,place)
+    if args.c:
+        place = int(args.c)
+    else:
+        place = "back"
+    lineconvert.add_string(args.s,place)
 
 elif action == "replace":
-    def repl():
-        replace = raw_input("Please give the replacing text...\n")
-        typ = raw_input("fixed column or match? (c/m)\n")
-        if typ == "c":
-            column = int(raw_input("Please give the column to replace...\n"))
-            match = raw_input("Please give the values that need to be replaced (seperate by a \',\' without spaces in the case of several matches, only typing ENTER will lead to a replacement of the given column in every line)...\n")
-            matchlist = match.split(",")
-            lineconvert.replace_string(replace,c = column,m = match) 
-        else:
-            match = raw_input("Please give the values that need to be replaced (seperate by a \',\' without spaces in the case of several matches, only typing ENTER will lead to a replacement of the given column in every line)...\n")
-            matchlist = match.split(",")
-            lineconvert.replace_string(replace,m = match) 
-        again = raw_input("Do you want to replace another type of field? (y/n) \n")
-        if again == "y":
-            repl()
-        elif again == "n":
-            print "writing to file..."
-        else:
-            print "no \"y\" specified, writing to file..."
-    
-    repl()
+    if args.c:
+        column = int(c)
+        lineconvert.replace_string(args.s,c = column,m = args.replace) 
+    else:
+        lineconvert.replace_string(args.s,args.replace)
 
 elif action == "add_time":
     datecolumn = int(raw_input("Please specify the column in which the date is given...\n"))
@@ -56,20 +46,19 @@ elif action == "add_time":
     lineconvert.add_time(hours,datecolumn,timecolumn,addition,datetype)
 
 elif action == "delete":
-    string_deleted = raw_input("Specify the string to be deleted in each line\n")
-    lineconvert.delete_string(string_deleted)    
+    lineconvert.delete_string(args.s)
 
 elif action == "extract":
-    size = int(raw_input("Please give the number of lines to extract...\n"))
-    keep_out = codecs.open(extra,"w","utf-8")
+    size = int(args.extract)
     extracted_lines = lineconvert.extract_sample(size)
     for line in extracted_lines:
         outfile.write(line + "\n")
     outfile.close()
-    for line in lineconvert.lines:
-        keep_out.write(line + "\n")
-    keep_out.close()
-    
+    if args.e:
+        keep_out = codecs.open(args.e,"w","utf-8")
+        for line in lineconvert.lines:
+            keep_out.write(line + "\n")
+        keep_out.close()
     exit()
     
 for line in lineconvert.lines:
