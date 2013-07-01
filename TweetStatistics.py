@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description = "calculate and find similarity of
 parser.add_argument("--eventno", type=int, nargs='*', help="index of the event")
 parser.add_argument("--minframe", type=int, help="frame length in minutes")
 parser.add_argument("--dayback", type=int, help="How many days to go back")
-parser.add_argument("--wcount", type=int, nargs= '*', help="threshold for word counts")
+parser.add_argument("--wcount", type=int, help="threshold for word counts")
 parser.add_argument("-k", type=int, default= 1, help="how many nearest neighbors will be taken into account")
 args = parser.parse_args() 
 
