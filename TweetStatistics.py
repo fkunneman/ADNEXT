@@ -212,7 +212,7 @@ print('\n len of dev-events:',len(edev_list), edev_list)
 for e in edev_list:
 
   print('***********************************************************************')
-  print('Test Event, word threshold, tstype:', e, wcthreshold, tstype)
+  print('Test Event, word threshold, tstype:', e, w_count_threshold , smoothed_w_tseries)
   print('***********************************************************************')
       
   test_by_index_tfidf(trnevents, e, w_count_threshold, 'smoothed_w_tseries', 16)
