@@ -29,13 +29,13 @@ class Classifier():
         self.directory=directory
         self.vocabulary=vocabulary
 
-    def classify(self,algorithm, args, prune=False, select=False, timelabels=False):
+    def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):
         if algorithm=="knn":
-            self.perform_knn(args,prune,select,timelabels)
+            self.perform_knn(arguments,prune,select,timelabels)
         elif algorithm=="lcs":
-            self.perform_lcs(args,prune,select,timelabels)
+            self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="ibt":
-            self.informed_baseline_date(args)
+            self.informed_baseline_date(arguments)
 
     #def set_directory(self,directory):
     #    self.directory=directory
@@ -279,7 +279,7 @@ class Classifier():
 
         if select:
             self.select_features(int(select),int(prune),"lcs")
-            
+        
         train=codecs.open(classification_dir + "train","w","utf-8")
         for i in self.training:
             train.write(i)
@@ -288,10 +288,11 @@ class Classifier():
         for t in self.test:
             test.write(t)
         test.close()
-        stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
-        for feature in self.stoplist:
-            stoplist.write(feature + "\n")
-        stoplist.close()
+        if prune or select:
+            stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
+            for feature in self.stoplist:
+                stoplist.write(feature + "\n")
+            stoplist.close()
         performer()
         
         if timelabels:

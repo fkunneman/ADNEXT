@@ -117,6 +117,7 @@ class Tweetsfeatures():
         self.tweets=templist
     
     def normalize(self,cat):
+        """Normalize diverse word types like url's and usernames to one standard form"""
         if cat=="url":
             find=re.compile("http://")
             replace="URL"
@@ -176,6 +177,10 @@ class Tweetsfeatures():
             t.set_features(features)
   
     def add_char_ngrams(self,raw_file,id_col=1,n=3):
+        """
+        add character ngrams to the featurespace of each tweet, based on a raw untokenized file 
+        (in order to take into account spaces and punctuation)
+        """
         
         def make_char_ngrams(text,n):
             ngrams=[]
@@ -279,7 +284,11 @@ class Tweetsfeatures():
             for i,feature in enumerate(t.features):
                 parts=feature.split("_")
                 for term in blacklist:
-                    if term in parts:
+                    match=False
+                    for p in parts:
+                        if re.search(term,p,re.IGNORECASE):
+                            match=True
+                    if match:
                         removed_features.append(i)
                         break
             for offset,index in enumerate(removed_features):
@@ -293,7 +302,11 @@ class Tweetsfeatures():
             for i,feature in enumerate(t.features):
                 parts=feature.split("_")
                 for term in blacklist:
-                    if term in parts:
+                    match=False
+                    for p in parts:
+                        if re.search(term,p,re.IGNORECASE):
+                            match=True
+                    if match:
                         removed_features.append(i)
                         break
             for offset,index in enumerate(removed_features):
@@ -370,6 +383,7 @@ class Tweetsfeatures():
                             t.set_label=tweet_event_time
 
     def set_meta(self):
+        """for each tweet, combine their metadata into one list"""
         for t in self.tweets:
             t.set_meta()
 
@@ -546,30 +560,6 @@ class Tweetsfeatures():
         if metafile:            
             meta_out.close()
     
-
-    def features2sparse(self,outfile):
-        """Write the features to a file in the sparse format."""
-        out=open(outfile,"w")
-        self.generate_feature_indexes()
-                
-        for t in self.tweets:
-            frequency=defaultdict(int)
-            index_value={}
-            datastring=""
-            for feature in t.features:
-                frequency[feature] += 1
-            for feature in frequency.keys():
-                index=self.feature_index[feature]
-                index_value[index]=frequency[feature]
-            indexes=sorted(index_value.keys())
-            for index in indexes:
-                index_frequency=index_value[index]
-                datastring=datastring + "(" + str(index) + "," + str(index_frequency) + ") "
-            datastring=datastring + t.label + "\n"
-            out.write(datastring)
-
-        out.close()
-        
     #Standard subfunctions
     def get_wordsequences(self):
         wordsequences=[]

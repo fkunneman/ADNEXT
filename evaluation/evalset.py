@@ -2,7 +2,7 @@
 
 from __future__ import division
 import re
-import proy_evaluation 
+from pynlpl import evaluation
 import time_functions
 from collections import defaultdict
 import datetime
@@ -462,22 +462,21 @@ class Evalset():
                     #st_dev = round(math.sqrt(st_dev / len(entries)),2)
                     out.write(str(mean) + "\t")
 
-    def set_instances_lcs(self,classificationfile,evaluationtype,threshold = False):
+    def set_instances_lcs(self,labelfile,classificationfile,evaluationtype,threshold = False):
          
-        #labels = open(labelfile)
-        #for line in labels:
-        #    tokens = line.split(" ")
-        #    filename = tokens[0]
-        #    label = tokens[1].strip()
-        #    instance = Evalset.Instance()
-        #    instance.set_label(label)
-        #    instance.set_name(filename)
-        #    self.name_instance[filename] = instance
-        #    self.instances.append(instance) 
+        labels = open(labelfile)
+        for line in labels:
+            tokens = line.split(" ")
+            filename = tokens[0]
+            label = tokens[1].strip()
+            instance = Evalset.Instance()
+            instance.set_label(label)
+            instance.set_name(filename)
+            self.name_instance[filename] = instance
+            self.instances.append(instance) 
    
         classifications = codecs.open(classificationfile,"r","utf-8")
         for line in classifications.readlines():
-         
             tokens = line.split("  ")
             filename = tokens[0].strip()
             instance = self.name_instance[filename]
@@ -490,7 +489,7 @@ class Evalset():
                     if instance.classification[0] == "before":
                         instance.set_classification((classification,score))
                 else:
-                    instance.set_classification((classification,score))
+                    instance.set_classification(classification)
                     if classification != instance.label:
                         instance.set_fp()
                     instance.set_score(score)
@@ -576,7 +575,7 @@ class Evalset():
                 fp_instances[i] = i.score
         
         for index,instance in enumerate(sorted(fp_instances, key=fp_instances.get, reverse=True)[:top_n]):
-            fileread = open(files + instance.name,"r").readlines()    
+            fileread = open(files + instance.fname,"r").readlines()    
             words = []
             for line in fileread:
                 term = line.strip()
@@ -697,12 +696,13 @@ class Evalset():
             "Is x a sequence? We say it is if it has a __getitem__ method."
             return hasattr(x, '__getitem__')
 
-        def print_table_aligned(table, header=None, sep=' ', numfmt='%g'):
+        def print_table_aligned(table, out_file, header=None, sep=' ', numfmt='%g'):
             """Print a list of lists as a table, so that columns line up nicely.
             header, if specified, will be printed as the first row.
             numfmt is the format for all numbers; you might want e.g. '%6.2f'.
             (If you want different formats in differnt columns, don't use print_table.)
             sep is the separator between columns."""
+            out=open(out_file,"w")
             justs = [if_(isnumber(x), 'rjust', 'ljust') for x in table[0]]
             if header:
                 table = [header] + table
@@ -713,11 +713,12 @@ class Evalset():
             for row in table:
                 for (j, size, x) in zip(justs, sizes, row):
                     print getattr(str(x), j)(size), sep,
+                    #out.write(getattr(str(x), j)(size) sep + "\n")
                 print
-    
         out_write = open(outfile,"w")
-        rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
-        ce = proy_evaluation.ClassEvaluation()
+        out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
+        #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
+        ce = evaluation.ClassEvaluation()
         for instance in self.instances:
             ce.append(instance.label,instance.classification)
         for label in sorted(list(set(ce.goals))):
@@ -725,8 +726,9 @@ class Evalset():
                 table = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
                 table.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
                 table.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
-                rows.append(table)
-        print_table_aligned(rows)
+                #rows.append(table)
+                out_write.write("\t".join(table) + "\n")
+        #print_table_aligned(rows,outfile)
             
     def calculate_interannotator_agreement(self):
         annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(int)))
