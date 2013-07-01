@@ -4,11 +4,11 @@ echo '----Script Begins----'
 
 wcthreshold=$1
 echo $wc_threshold
+array=(299,199,99,49,29,19)
 
-for h in {1..12}
+for wc in "${array[@]}"
 do
-
-python3.3 TweetStatistics.py --minframe $(($h*60)) --dayback 8 > out/out$((h*60))mdevset &
+python3.3 TweetStatistics.py --minframe 60 --dayback 8 --wcount $wc > out/out60mdevset$wc &
 
 done
 wait
@@ -47,3 +47,11 @@ wait
 # wait
 
 # echo 'Third and Last part Starts'
+
+#!/bin/bash
+# declare an array called array and define 3 vales
+array=( one two three )
+for i in "${array[@]}"
+do
+	echo $i
+done
