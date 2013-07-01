@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description = "calculate and find similarity of
 parser.add_argument("--eventno", type=int, nargs='*', help="index of the event")
 parser.add_argument("--minframe", type=int, help="frame length in minutes")
 parser.add_argument("--dayback", type=int, help="How many days to go back")
-parser.add_argument("--wcount", type=int, help="threshold for word counts")
+parser.add_argument("--wcount", type=int, nargs='?', help="threshold for word counts")
 parser.add_argument("-k", type=int, default= 1, help="how many nearest neighbors will be taken into account")
 args = parser.parse_args() 
 
@@ -209,6 +209,22 @@ print('\nlen of trne:', len(trnevents),'\n', trnevents)
 print('\n len of dev-e indexes:', len(edev_indexlist),'\n', edev_indexlist)
 print('\n len of dev-events:',len(edev_list), edev_list)
 
+
+
+for tstype in ['normalized_w_tseries', 'smoothed_w_tseries']:
+  for wcthreshold in [249, 149]: # should be sorted for a good performance at the beginning.
+    for e in edev_list:
+
+      print('***********************************************************************')
+      print('Test Event, word threshold, tstype:', e, wcthreshold, tstype)
+      print('***********************************************************************')
+      
+      test_by_index_tfidf(trnevents, e, wcthreshold, tstype, 16)
+      test_by_index_trn01(trnevents, e, wcthreshold, tstype, 16)
+      
+
+exit()
+
 for e in edev_list:
 
   print('***********************************************************************')
@@ -221,19 +237,6 @@ for e in edev_list:
 
 exit()
 
-for tstype in ['normalized_w_tseries', 'smoothed_w_tseries']:
-  for wcthreshold in [499, 399, 299, 199, 99, 49, 29, 19]: # should be sorted for a good performance at the beginning.
-    for e in edev_list:
-
-      print('***********************************************************************')
-      print('Test Event, word threshold, tstype:', e, wcthreshold, tstype)
-      print('***********************************************************************')
-      
-      test_by_index_tfidf(trnevents, e, wcthreshold, tstype, 16)
-      test_by_index_trn01(trnevents, e, wcthreshold, tstype, 16)
-      
-
-exit()
 
   # Get parameters from command line
 
