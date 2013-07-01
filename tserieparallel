@@ -4,7 +4,7 @@ echo '----Script Begins----'
 
 wcthreshold=$1
 echo $wc_threshold
-array=(299,199,99,49,29,19)
+array=(299 199 99 49 29 19)
 
 for wc in "${array[@]}"
 do
