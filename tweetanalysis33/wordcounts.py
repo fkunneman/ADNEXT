@@ -1784,9 +1784,9 @@ class SingleWordAnalysis():
 					else:
 						print('No Tweets,no prediction!Seq.len&actual:', seq_len, test_X[seq_len:][tst_i])
 
-			#print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
-			# self.print_dict(self.prediction_results, 'trn01_'+ tserie_type+'-k'+str(k_index))
-			#print('Trn01 Calc RMSE:', tserie_type)
+			print('Trn01 Prediction Results(tserie_type, k):', tserie_type, k)
+			self.print_dict(self.prediction_results, event_test.name + '-trn01_'+ tserie_type+'-wthres:'+str(wthres)+' -k:'+str(k_index))
+			print('Trn01 Calc RMSE:', tserie_type)
 			self.print_dict(self.calc_rmse(self.prediction_results), event_test.name + '-trn01_'+ tserie_type+'-wthres:'+str(wthres)+' -k:'+str(k_index))
 			self.prediction_results = {}
 
@@ -2133,9 +2133,9 @@ class SingleWordAnalysis():
 					else:
 						print('No Tweets no prediction! Seq.len&actual:', seq_len, test_X[seq_len:][tst_i])
 
-			#print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
-			# self.print_dict(self.prediction_results, 'tfidf_'+ tserie_type+'-k:'+str(k_index))
-			#print('Tf-IDF Calc RMSE:', tserie_type)
+			print('Tf-IDF Prediction Results(tserie_type, k):', tserie_type, k)
+			self.print_dict(self.prediction_results, event_test.name+'-tfidf_'+tserie_type+'-wthres:'+str(wthres)+' k:'+str(k_index))
+			print('Tf-IDF Calc RMSE:', tserie_type)
 			self.print_dict(self.calc_rmse(self.prediction_results), event_test.name+'-tfidf_'+tserie_type+'-wthres:'+str(wthres)+' k:'+str(k_index))
 			self.prediction_results = {}
 		print('inside run time of calc_by_vectors_tfidf2:', t0-time.time())

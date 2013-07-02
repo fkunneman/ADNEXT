@@ -213,8 +213,8 @@ print('Test event is:',events_list_for_all[indexno])
 if indexno not in edev_indexlist:
   for tstype in ['normalized_w_tseries', 'smoothed_w_tseries']:
 
-    test_by_index_tfidf(trnevents, events_list_for_all[indexno][0], w_count_threshold, tstype, 16)
-    test_by_index_trn01(trnevents, events_list_for_all[indexno][0], w_count_threshold, tstype, 16)
+    test_by_index_tfidf(trnevents, events_list_for_all[indexno], w_count_threshold, tstype, 16)
+    test_by_index_trn01(trnevents, events_list_for_all[indexno], w_count_threshold, tstype, 16)
 
 
 exit()
