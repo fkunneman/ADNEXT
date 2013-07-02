@@ -7,14 +7,39 @@ echo $wc_threshold
 array=(299 199 99 49 29 19)
 
 
-for h in {1..12}
+# -----------------------------------------
+for i in {0..12}
 do
-
-python3.3 TweetStatistics.py --minframe $(($h*60)) --dayback 8 > out/out$((h*60))m149w249w &
-
+python3.3 TweetStatistics.py --eventno $i --minframe 120 --dayback 8 --wcount 299 > out/out120m8d299w${i}e &
 done
-
 wait
+
+for i in {13..29}
+do
+python3.3 TweetStatistics.py --eventno $i --minframe 120 --dayback 8 --wcount 299 > out/out120m8d299w${i}e &
+done
+wait
+
+for i in {30..44}
+do
+python3.3 TweetStatistics.py --eventno $i --minframe 120 --dayback 8 --wcount 299 > out/out120m8d299w${i}e &
+done
+wait
+
+for i in {45..59}
+do
+python3.3 TweetStatistics.py --eventno $i --minframe 120 --dayback 8 --wcount 299 > out/out120m8d299w${i}e &
+done
+wait
+# -----------------------------------------
+
+# -----------------------------------------
+# for h in {1..12}
+# do
+# python3.3 TweetStatistics.py --minframe $(($h*60)) --dayback 8 > out/out$((h*60))m149w249w &
+# done
+# wait
+# -----------------------------------------
 
 
 
