@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description = "calculate and find similarity of
 parser.add_argument("--eventno", type=int, nargs='*', help="index of the event")
 parser.add_argument("--minframe", type=int, help="frame length in minutes")
 parser.add_argument("--dayback", type=int, help="How many days to go back")
-parser.add_argument("--wcount", type=int, nargs= '*', help="threshold for word counts")
+parser.add_argument("--wcount", type=int, nargs='?', help="threshold for word counts")
 parser.add_argument("-k", type=int, default= 1, help="how many nearest neighbors will be taken into account")
 args = parser.parse_args() 
 
@@ -180,6 +180,7 @@ def get_tweets_of_timeframe():
     print(*swa.get_event_tweets_from_to('before', all_events_list[indexno][0], i+1, i), sep='\n')
 
 
+
 def get_rand(num, rang):
   '''(int, int) -> list
    - num: number of random integers
@@ -199,6 +200,7 @@ def get_rand(num, rang):
 #test_by_index_tfidf(indexno, w_count_threshold, 'normalized_w_tseries')
 
 
+
 edev_indexlist = [21, 55, 52, 35, 16, 27, 13, 39, 40]
 edev_list = [events_list_for_all[i] for i in edev_indexlist]
 trnevents = [l[0] for l in events_list_for_all if l not in edev_list]
@@ -207,8 +209,10 @@ print('\nlen of trne:', len(trnevents),'\n', trnevents)
 print('\n len of dev-e indexes:', len(edev_indexlist),'\n', edev_indexlist)
 print('\n len of dev-events:',len(edev_list), edev_list)
 
+
+
 for tstype in ['normalized_w_tseries', 'smoothed_w_tseries']:
-  for wcthreshold in [499, 399, 299, 199, 99, 49, 29, 19]: # should be sorted for a good performance at the beginning.
+  for wcthreshold in [249, 149]: # should be sorted for a good performance at the beginning.
     for e in edev_list:
 
       print('***********************************************************************')
@@ -220,6 +224,19 @@ for tstype in ['normalized_w_tseries', 'smoothed_w_tseries']:
       
 
 exit()
+
+for e in edev_list:
+
+  print('***********************************************************************')
+  print('Test Event, word threshold, tstype:', e, w_count_threshold , "smoothed_w_tseries")
+  print('***********************************************************************')
+      
+  test_by_index_tfidf(trnevents, e, w_count_threshold, 'smoothed_w_tseries', 16)
+  test_by_index_trn01(trnevents, e, w_count_threshold, 'smoothed_w_tseries', 16)
+
+
+exit()
+
 
   # Get parameters from command line
 
