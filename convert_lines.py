@@ -63,10 +63,13 @@ elif action == "extract":
     exit()
     
 if args.excel:
+    outname = args.o.split("/")[-1].split(".")[0]
     book = Workbook()
-    tab = book.sheet_by_index(0)
+    tab = book.add_sheet(outname)
     for i,line in enumerate(lineconvert.lines):
-        tab.row(i) = line.strip().split(args.d)
+        columns = line.split(args.d)
+        for j,col in enumerate(columns):
+            tab.write(i,j,col)
     book.save(args.o)
         
 else:
