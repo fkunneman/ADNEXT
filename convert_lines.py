@@ -3,6 +3,7 @@
 import lineconverter
 import codecs
 import argparse
+import gen_functions
 from xlwt import *
 
 parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
@@ -63,13 +64,19 @@ elif action == "extract":
     exit()
     
 if args.excel:
+    if len(lineconvert.lines) > 65535:
+        chunk_len = 65534
+        chunks = gen_functions.make_chunks(lineconvert.lines,chunk_len)
+    else:
+        chunks = [lineconvert.lines]
     outname = args.o.split("/")[-1].split(".")[0]
     book = Workbook()
-    tab = book.add_sheet(outname)
-    for i,line in enumerate(lineconvert.lines):
-        columns = line.split(args.d)
-        for j,col in enumerate(columns):
-            tab.write(i,j,col)
+    for x,chunk in enumerate(chunks):
+        tab = book.add_sheet(outname + "_" + str(x))
+        for i,line in enumerate(chunk):
+            columns = line.split(args.d)
+            for j,col in enumerate(columns):
+                tab.write(i,j,col)
     book.save(args.o)
         
 else:

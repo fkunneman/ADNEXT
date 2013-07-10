@@ -8,6 +8,7 @@ import datetime
 from collections import defaultdict
 import multiprocessing
 import time_functions
+import gen_functions
 import operator
 
 class Tweetsfeatures():
@@ -392,17 +393,17 @@ class Tweetsfeatures():
         outparts=codecs.open(classfile,"w","utf-8")
         outmeta=codecs.open(metafile,"w","utf-8")
         
-        def make_chunks(instances):
-            chunks=[]
-            chunk_size=int(len(instances) / 16)
-            i=0
-            j=0
-            while i < 15:
-                chunks.append(instances[j:(j+chunk_size)])
-                j += chunk_size
-                i += 1
-            chunks.append(instances[j:])
-            return chunks
+        # def make_chunks(instances):
+        #     chunks=[]
+
+        #     i=0
+        #     j=0
+        #     while i < 15:
+        #         chunks.append(instances[j:(j+chunk_size)])
+        #         j += chunk_size
+        #         i += 1
+        #     chunks.append(instances[j:])
+        #     return chunks
                     
         def filewriter(tweets,lab,tfz=False, qp=False,qm=False):
             i=0
@@ -480,7 +481,8 @@ class Tweetsfeatures():
                     p.start()
 
             except AttributeError:
-                tweet_chunks=make_chunks(self.tweets)
+                chunk_size=int(len(instances) / 16)
+                tweet_chunks=gen_functions.make_chunks(self.tweets,chunk_size)
                 for i in range(16):
                     p=multiprocessing.Process(target=filewriter,args=[tweet_chunks[i],str(i),False,q,r])
                     p.start()
@@ -501,7 +503,8 @@ class Tweetsfeatures():
                     filewriter(self.event_tweets[event],event,True)
                    
             else:
-                tweet_chunks=make_chunks(self.tweets)
+                chunk_size=int(len(instances) / 16)
+                tweet_chunks=gen_functions.make_chunks(self.tweets,chunk_size)
                 for i in range(16):
                     filewriter(tweets_chunks[i],str(i))
             
