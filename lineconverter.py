@@ -4,6 +4,7 @@ import re
 import datetime
 import random
 
+
 # Class to convert the lines in a file in a number of ways and/or make a filtering of these.
 class Lineconverter():
 
@@ -110,3 +111,4 @@ class Lineconverter():
             del self.lines[index]
                                  
         return extracted
+        

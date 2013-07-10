@@ -3,21 +3,22 @@
 import lineconverter
 import codecs
 import argparse
+from xlwt import *
 
 parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
 parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
 parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
 parser.add_argument('-e', action = 'store', required = False, help = "An extra file name (needed for time deletion and the keepfile for extraction).")
-parser.add_argument('-a', action = 'store', choices = ["add","replace","delete","extract","add_time"], help = "Choose the action to perform.")
+parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","extract","add_time"], help = "Choose the action to perform.")
 parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace or delete")
 parser.add_argument('-c', action = 'store', required = False, help = "give the column as argument for add, replace (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
 parser.add_argument('--extract', action = 'store', required = False, help = "[EXTRACT] specify the number of lines to extract")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
+parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
 
 args = parser.parse_args() 
 infile = args.i
-outfile = codecs.open(args.o,"w","utf-8")
 delimiter = args.d
 action = args.a
 extra = args.e
@@ -61,8 +62,15 @@ elif action == "extract":
         keep_out.close()
     exit()
     
-for line in lineconvert.lines:
-    outfile.write(line + "\n")
-
-outfile.close()
-
+if args.excel:
+    book = Workbook()
+    tab = book.sheet_by_index(0)
+    for i,line in enumerate(lineconvert.lines):
+        tab.row(i) = line.strip().split(args.d)
+    book.save(args.o)
+        
+else:
+    outfile = codecs.open(args.o,"w","utf-8")
+    for line in lineconvert.lines:
+        outfile.write(line + "\n")
+    outfile.close()
