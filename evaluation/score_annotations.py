@@ -1,25 +1,36 @@
 #!/usr/bin/env python
 
 import argparse
-from evalset import Evalset
+import gen_functions
+import annotation_calcs
+import xlwt
 
-parser = argparse.ArgumentParser(description = "Program to process a file containing tweets with Frog en write output")
+parser = argparse.ArgumentParser(description = "Program to read in annotations and output precision and cohen's kappa, and optionally a precision-at-curve")
 
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")
-parser.add_argument('-o', action = 'store', required = True, help = "the output file (for the positive precision score and cohens kappa")
-parser.add_argument('-p', action='store', help = "[OPTIONAL] specify an output file for a precision at curve")
-parser.add_argument('-d', action='store_true', help = "choose for a prudent scoring (annotations with doubt are not taken as positive)")
+parser.add_argument('-f', action = 'store', default = "excel", help = "specify the format of the input file (default is excel)")
+#parser.add_argument('-o', action = 'store', required = False, help = "the output file (for the positive precision score and cohens kappa)")
+parser.add_argument('--header', action = 'store_true', help = "specify if the exceltab(s) contain a header")
+#parser.add_argument('-c', action = 'store', nargs = '+', default = [0], help = "[OPTIONAL] if specific columns in a file need to be processed, specify them (one integer denotes every column from this point onwards)")
+#parser.add_argument('-d', action='store_true', help = "choose for a prudent scoring (annotations with doubt are not taken as positive)")
+parser.add_argument('-p', action='store', required = False, nargs = '+', help = "[OPTIONAL] for a precision-at-curve, specify the index in the give order of excel sheets (just 0 for txt) and the name of the output file")
+parser.add_argument('-s', action = 'store', nargs = '+', required = False, help = "[EXCEL] specify indexes of the excel sheets to be processed")
 
 args = parser.parse_args()
-infile = args.i
-outfile = open(args.o,"w")
-precision_at = args.p
+# outfile = open(args.o,"w")
+#precision_at = args.p
 
-evaluation = Evalset()
-evaluation.set_instances_annotation(infile)
-iaa = evaluation.calculate_interannotator_agreement()
-scores = evaluation.return_precisions_annotations(doubt = args.d,plot = precision_at)
-outfile.write("\nCohen's Kappa: " + str(iaa) + "\n\n")
-for score in scores:
-    outfile.write("Precision for " + str(score[0]) + " positive: " + str(score[1]) + "\n")
+# retrieve annotation sets
+annotation_values = gen_functions.excel2lines(args.i,args.s,args.header)
+
+# calculate and output scores
+for i,sheet in enumerate(annotation_values):
+    if args.p and int(args.p[0]) == i: 
+        precision = annotation_calcs.calculate_precision(sheet,args.p[1])
+    else:
+        precision = annotation_calcs.calculate_precision(sheet)
+    for entry in precision:
+        print "Precision " + str(entry[0]) + ":",entry[1]
+    cohens_kappa = annotation_calcs.calculate_cohens_kappa(sheet)
+    print "Cohen's Kappa:",cohens_kappa
     
