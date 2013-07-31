@@ -127,12 +127,12 @@ for i in range(len(tweets_chunks)):
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
 while True:
-    l = q.get()
-    frogged_tweets.append(l)
-    #print l
-    if l == "":
+    if q.empty():
         break
     else:
+        l = q.get()
+        frogged_tweets.append(l)
+    #print l
         outfile.write(l)
         print len(frogged_tweets)
 
