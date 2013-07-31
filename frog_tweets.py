@@ -76,9 +76,15 @@ def frogger(t,o,i):
         outfields = []
         for column in column_sequence:
             if column:
-                outfields.append(tokens[int(column)])    
+                try:
+                    outfields.append(tokens[int(column)])
+                except IndexError:
+                    continue
 
-        text = outfields[-1]
+        try:
+            text = outfields[-1]
+        except IndexError:
+            continue
         if man_class:
             outstring = man_class
         else:
@@ -120,11 +126,11 @@ else:
 for i in range(len(tweets_chunks)):
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
-while len(frogged_tweets) < len(tweets):
+while True:
     l = q.get()
     frogged_tweets.append(l)
+    print l
     outfile.write(l)
-    print len(tweets)
     print len(frogged_tweets)
 
 outfile.close()

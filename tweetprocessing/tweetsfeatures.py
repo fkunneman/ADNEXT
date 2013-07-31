@@ -392,18 +392,6 @@ class Tweetsfeatures():
         """Write the features of a tweet to separate files to be processed by the LCS balanced Winnow classifier."""
         outparts=codecs.open(classfile,"w","utf-8")
         outmeta=codecs.open(metafile,"w","utf-8")
-        
-        # def make_chunks(instances):
-        #     chunks=[]
-
-        #     i=0
-        #     j=0
-        #     while i < 15:
-        #         chunks.append(instances[j:(j+chunk_size)])
-        #         j += chunk_size
-        #         i += 1
-        #     chunks.append(instances[j:])
-        #     return chunks
                     
         def filewriter(tweets,lab,tfz=False, qp=False,qm=False):
             i=0
