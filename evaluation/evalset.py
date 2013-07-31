@@ -495,10 +495,10 @@ class Evalset():
                     instance.set_score(score)
         classifications.close()
        
-    def set_instances_annotation(self,infile):
-        readfile = open(infile,"r").readlines()
-        for line in readfile:
-            self.instances.append(line.strip())
+    # def set_instances_annotation(self,infile):
+    #     readfile = open(infile,"r").readlines()
+    #     for line in readfile:
+    #         self.instances.append(line.strip())
     
     def set_instances_knn(self,classification_file,instances,hidden=False):
         classifications_nn = defaultdict(list)
@@ -672,49 +672,7 @@ class Evalset():
         
                  
     def print_results(self,outfile):
-    
-        def if_(test, result, alternative):
-            """Like C++ and Java's (test ? result : alternative), except
-            both result and alternative are always evaluated. However, if
-            either evaluates to a function, it is applied to the empty arglist,
-            so you can delay execution by putting it in a lambda.
-            >>> if_(2 + 2 == 4, 'ok', lambda: expensive_computation())
-            'ok'
-            """
-            if test:
-                if callable(result): return result()
-                return result
-            else:
-                if callable(alternative): return alternative()
-                return alternative
 
-        def isnumber(x):
-            "Is x a number? We say it is if it has a __int__ method."
-            return hasattr(x, '__int__')
-
-        def issequence(x):
-            "Is x a sequence? We say it is if it has a __getitem__ method."
-            return hasattr(x, '__getitem__')
-
-        def print_table_aligned(table, out_file, header=None, sep=' ', numfmt='%g'):
-            """Print a list of lists as a table, so that columns line up nicely.
-            header, if specified, will be printed as the first row.
-            numfmt is the format for all numbers; you might want e.g. '%6.2f'.
-            (If you want different formats in differnt columns, don't use print_table.)
-            sep is the separator between columns."""
-            out=open(out_file,"w")
-            justs = [if_(isnumber(x), 'rjust', 'ljust') for x in table[0]]
-            if header:
-                table = [header] + table
-            table = [[if_(isnumber(x), lambda: numfmt % x, x)  for x in row]
-                     for row in table]
-            maxlen = lambda seq: max(map(len, seq))
-            sizes = map(maxlen, zip(*[map(str, row) for row in table]))
-            for row in table:
-                for (j, size, x) in zip(justs, sizes, row):
-                    print getattr(str(x), j)(size), sep,
-                    #out.write(getattr(str(x), j)(size) sep + "\n")
-                print
         out_write = open(outfile,"w")
         out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
         #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
@@ -728,87 +686,6 @@ class Evalset():
                 table.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
                 #rows.append(table)
                 out_write.write("\t".join(table) + "\n")
-        #print_table_aligned(rows,outfile)
-            
-    def calculate_interannotator_agreement(self):
-        annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(int)))
-        annotator_scores = defaultdict(lambda : defaultdict(int))
-        for line in self.instances:
-            annotations = line.split("\t")
-            for i,annotation in enumerate(annotations):
-                annotator_scores[i][annotation] += 1
-                j = i
-                while j+1 < len(annotations):
-                    if annotation != annotations[j+1]:
-                        annotator_couples[i][j+1]["odd"] += 1
-                    else:
-                        annotator_couples[i][j+1]["match"] += 1
-                    j += 1    
-        
-        cohens_kappas = []
-        for annotator_1 in annotator_couples.keys():
-            for annotator_2 in annotator_couples[annotator_1].keys():
-                agreement = annotator_couples[annotator_1][annotator_2]["match"] / len(self.instances)
-                random = 0
-                for answer in annotator_scores[annotator_1].keys():
-                    percent_1 = annotator_scores[annotator_1][answer] / len(self.instances)
-                    percent_2 = annotator_scores[annotator_2][answer] / len(self.instances)
-                    random += (percent_1 * percent_2)
-                ck = (agreement - random) / (1 - random)
-                cohens_kappas.append(ck)    
-        
-        cohens_kappa = sum(cohens_kappas) / len(cohens_kappas)
-        return round(cohens_kappa,2)
-
-    def return_precisions_annotations(self,doubt,plot = False):
-        majority_judgements = defaultdict(list)
-        precisions = []
-        precision_strengths = defaultdict(int)
-        for line in self.instances:
-            scores = line.split("\t")
-            num_positive = 0
-            for score in scores:
-                if score == "1":
-                    num_positive += 1
-                elif score == "2" and not doubt:
-                    num_positive += 1
-            percentage = num_positive / len(scores)
-            majority = int(len(scores) / 2) + 1 
-            if percentage >= 0.5:
-                for i in range(majority,len(scores)+1):
-                    if i <= num_positive:
-                        precision_strengths[i] += 1
-                        majority_judgements[i].append(1)
-                    else:
-                        majority_judgements[i].append(0)
-            else:
-                for i in range(majority,len(scores)+1):
-                    majority_judgements[i].append(0) 
-                            
-        for ps in sorted(precision_strengths.keys()):
-            precision_score = precision_strengths[ps] / len(self.instances)
-            precisions.append((ps,precision_score))
-        
-        if plot:
-            for strength in sorted(majority_judgements.keys()):
-                rank = []
-                precision = []
-                seen = 0
-                correct = 0
-                for judgement in majority_judgements[strength]:
-                    seen += 1
-                    if judgement == 1:
-                        correct += 1 
-                    rank.append(seen)
-                    precision.append(correct/seen)
-                plt.plot(rank,precision)
-            
-            plt.legend(majority_judgements.keys())
-            plt.ylabel("precision at rank")
-            plt.xlabel("rank")
-            plt.savefig(plot)
-        
-        return precisions
 
     class Instance():
         

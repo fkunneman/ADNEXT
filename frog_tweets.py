@@ -8,6 +8,7 @@ import argparse
 import multiprocessing
 import os
 from random import randint
+import gen_functions
 
 """
 Script to process a file containing tweets with Frog en output it in a file.
@@ -106,27 +107,20 @@ print "Processing tweets."
 q = multiprocessing.Queue()
 frogged_tweets = []
 if parralel:
-    tweets_chunks = []
     chunk_size = int(len(tweets) / 16)
+    tweets_chunks = gen_functions.make_chunks(tweets,chunk_size)
     print chunk_size
-    i = 0
-    j = 0
-    while i < 15:
-        tweets_chunks.append(tweets[j:(j+chunk_size)])
-        j += chunk_size
-        i += 1
-    tweets_chunks.append(tweets[j:])
     for i in range(16):
         p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
         p.start()
-    while len(frogged_tweets) < len(tweets):
-        l = q.get()
-        frogged_tweets.append(l)
-        outfile.write(l)
-        print len(frogged_tweets)
-    
 else:
     frogger(tweets,q,0)
+
+while len(frogged_tweets) < len(tweets):
+    l = q.get()
+    frogged_tweets.append(l)
+    outfile.write(l)
+    print len(frogged_tweets)
 
 outfile.close()
 
