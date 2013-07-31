@@ -114,7 +114,7 @@ def frogger(t,o,i):
     
     print "Chunk " + str(i) + " done."
     l = o.get()
-    print len(l)
+    print len(l.split("\n"))
     outfile.write(l)
 
 print "Processing tweets."
