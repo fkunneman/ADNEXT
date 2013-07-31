@@ -129,9 +129,12 @@ for i in range(len(tweets_chunks)):
 while True:
     l = q.get()
     frogged_tweets.append(l)
-    print l
-    outfile.write(l)
-    print len(frogged_tweets)
+    #print l
+    if l == "":
+        break
+    else:
+        outfile.write(l)
+        print len(frogged_tweets)
 
 outfile.close()
 
