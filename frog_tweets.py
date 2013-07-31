@@ -48,10 +48,15 @@ punct = args.punct
 man_class = args.man
  
 if args.header:
-    tweets = infile.readlines()[1:]
+    pre_tweets = infile.readlines()[1:]
 else:
-    tweets = infile.readlines()
+    pre_tweets = infile.readlines()
 infile.close()
+tweets = []
+for tweet in pre_tweets:
+    if tweet != "":
+        tweets.append(tweet.strip())
+
 column_sequence = [labelcolumn,idcolumn,usercolumn,datecolumn,timecolumn,textcolumn]
 
 #if needed, generate a list of event hashtags
@@ -67,7 +72,6 @@ if eventlist:
 def frogger(t,o,i):
     fc = pynlpl.clients.frogclient.FrogClient('localhost',port)
     for tweet in t:
-        tweet = tweet.strip()
         tokens = tweet.split(delimiter)
         outfields = []
         for column in column_sequence:
