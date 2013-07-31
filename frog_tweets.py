@@ -124,6 +124,7 @@ while len(frogged_tweets) < len(tweets):
     l = q.get()
     frogged_tweets.append(l)
     outfile.write(l)
+    print len(tweets)
     print len(frogged_tweets)
 
 outfile.close()
