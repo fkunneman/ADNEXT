@@ -113,6 +113,9 @@ def frogger(t,o,i):
         o.put(outstring)
     
     print "Chunk " + str(i) + " done."
+    l = o.get()
+    print len(l)
+    outfile.write(l)
 
 print "Processing tweets."
 q = multiprocessing.Queue()
@@ -126,15 +129,16 @@ else:
 for i in range(len(tweets_chunks)):
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
-while True:
-    if q.empty():
-        break
-    else:
-        l = q.get()
-        frogged_tweets.append(l)
-    #print l
-        outfile.write(l)
-        print len(frogged_tweets)
+
+# j = 0
+# while True:
+#     if q.qsize() > chunk_size:
+#         j +=1
+#         l = q.get()
+#         frogged_tweets.append(l)
+#         outfile.write(l)
+#         print len(frogged_tweets)
+#         if 
 
 outfile.close()
 
