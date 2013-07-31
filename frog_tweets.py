@@ -110,12 +110,12 @@ if parralel:
     chunk_size = int(len(tweets) / 16)
     tweets_chunks = gen_functions.make_chunks(tweets,chunk_size)
     print chunk_size
-    for i in range(16):
-        p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
-        p.start()
 else:
-    frogger(tweets,q,0)
-
+    tweets_chunks = [tweets]
+    
+for i in range(len(tweets_chunks)):
+    p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
+    p.start()
 while len(frogged_tweets) < len(tweets):
     l = q.get()
     frogged_tweets.append(l)
