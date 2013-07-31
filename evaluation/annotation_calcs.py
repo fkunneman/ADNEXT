@@ -86,5 +86,27 @@ def calculate_cohens_kappa(lines):
     cohens_kappa = round(sum(cohens_kappas) / len(cohens_kappas),2)
     return cohens_kappa
 
-def calculate_
-
+#function that returns krippendorff's alpha with a nominal distance metric
+#input is an array (items) of arrays (values)
+def calculate_krippendorffs_alpha(lines):
+    #calculate the value that is used for multiplication in both the observed agreement and expected agreement
+    num_items = len(lines)
+    num_coders = len(lines[0])
+    multiplier = 1 / (num_items*num_coders*(num_coders-1))
+    #calculate observed agreement
+    item_agreements = 0
+    #for each item
+    for item in lines:
+        item_agreement = 0
+        annotation_counts = defaultdict(int)
+        #count frequency of each annotation
+        for annotation in item:
+            annotation_counts(annotation) += 1
+        for annotation_value_a in annotation_counts.keys():
+            for annotation_value_b in annotation_counts.keys():
+                if annotation_value_a != annotation_value_b:
+                    item_agreement += annotation_counts[annotation_value_a] * annotation_counts[annotation_value_b]
+        item_agreements += item_agreement
+        DO = item_agreements*multiplier
+    #calculate expected agreement
+    

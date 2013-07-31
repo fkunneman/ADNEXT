@@ -67,6 +67,7 @@ if eventlist:
 def frogger(t,o,i):
     fc = pynlpl.clients.frogclient.FrogClient('localhost',port)
     for tweet in t:
+        tweet = tweet.strip()
         tokens = tweet.split(delimiter)
         outfields = []
         for column in column_sequence:
@@ -109,7 +110,6 @@ frogged_tweets = []
 if parralel:
     chunk_size = int(len(tweets) / 16)
     tweets_chunks = gen_functions.make_chunks(tweets,chunk_size)
-    print chunk_size
 else:
     tweets_chunks = [tweets]
     
