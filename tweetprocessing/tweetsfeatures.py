@@ -390,8 +390,8 @@ class Tweetsfeatures():
 
     def features2standard(self, path, prefix, dirsize, classfile, metafile, aggregate=False, parralel=False):
         """Write the features of a tweet to separate files to be processed by the LCS balanced Winnow classifier."""
-        outparts=codecs.open(classfile,"w","utf-8")
-        outmeta=codecs.open(metafile,"w","utf-8")
+        outparts=codecs.open(classfile,"a","utf-8")
+        outmeta=codecs.open(metafile,"a","utf-8")
                     
         def filewriter(tweets,lab,tfz=False, qp=False,qm=False):
             i=0

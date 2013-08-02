@@ -121,7 +121,7 @@ def calculate_krippendorffs_alpha(lines):
     multiplier = 1 / (num_items*num_coders*((num_items*num_coders)-1))
     DE = agreement*multiplier
     #calculate and return Krippendorffs Alpha
-    KA = 1-(DO/DE)
+    KA = round(1-(DO/DE),2)
     return KA         
 
 def calculate_fscore(lines,index_1,index_2):
@@ -136,6 +136,6 @@ def calculate_mutual_fscore(lines):
     for i in range(num_coders):
         for j in range(i+1,num_coders):
             fscores.append(calculate_fscore(lines,i,j))
-    mutual_fscore = sum(fscores)/len(fscores)
+    mutual_fscore = round(sum(fscores)/len(fscores),2)
     return mutual_fscore
 
