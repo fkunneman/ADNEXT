@@ -97,16 +97,19 @@ class Tweetsfeatures():
         
         for line in tweets:
             tokens=line.split("\t")
-            tweet=Tweetsfeatures.Tweet(tokens,"one_line")
-            words=tokens[5].split(" ") 
-            for word in words:
-                if (ht and hashtag.search(word)) or (u and url.search(word)):
-                    continue
-                else:
-                    if lower:
-                        word=word.lower()
-                    tweet.wordsequence.append(word.strip())        
-            self.tweets.append(tweet)
+            if len(tokens) >= 5:
+                tweet=Tweetsfeatures.Tweet(tokens,"one_line")
+                words=tokens[5].split(" ") 
+                for word in words:
+                    if (ht and hashtag.search(word)) or (u and url.search(word)):
+                        continue
+                    else:
+                        if lower:
+                            word=word.lower()
+                        tweet.wordsequence.append(word.strip())        
+                self.tweets.append(tweet)
+            else: 
+                continue
 
     def filter_label(self,label):
         """Remove tweets with a certain label."""
@@ -590,21 +593,17 @@ class Tweetsfeatures():
         
         def __init__(self,token,form):
             if form=="one_line":
-                try:
-                    self.label=token[0]
-                    self.event=token[0]
-                    self.id=str(token[1])
-                    self.user=token[2]
-                    self.date=str(token[3])
-                    self.time=str(token[4])
-                    self.tte="-"
-                    self.wordsequence=[]
-                    self.lemmasequence=[]
-                    self.possequence=[]
-                    self.features=[]
-                except IndexError:
-                    print token
-                    exit()
+                self.label=token[0]
+                self.event=token[0]
+                self.id=str(token[1])
+                self.user=token[2]
+                self.date=str(token[3])
+                self.time=str(token[4])
+                self.tte="-"
+                self.wordsequence=[]
+                self.lemmasequence=[]
+                self.possequence=[]
+                self.features=[]
 
         def add_sequence(self,token):
             self.add_word(token)
