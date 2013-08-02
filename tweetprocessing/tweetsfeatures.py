@@ -590,17 +590,21 @@ class Tweetsfeatures():
         
         def __init__(self,token,form):
             if form=="one_line":
-                self.label=token[0]
-                self.event=token[0]
-                self.id=str(token[1])
-                self.user=token[2]
-                self.date=str(token[3])
-                self.time=str(token[4])
-                self.tte="-"
-                self.wordsequence=[]
-                self.lemmasequence=[]
-                self.possequence=[]
-                self.features=[]
+                try:
+                    self.label=token[0]
+                    self.event=token[0]
+                    self.id=str(token[1])
+                    self.user=token[2]
+                    self.date=str(token[3])
+                    self.time=str(token[4])
+                    self.tte="-"
+                    self.wordsequence=[]
+                    self.lemmasequence=[]
+                    self.possequence=[]
+                    self.features=[]
+                except IndexError:
+                    print token
+                    exit()
 
         def add_sequence(self,token):
             self.add_word(token)
