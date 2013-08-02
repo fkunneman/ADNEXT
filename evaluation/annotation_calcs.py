@@ -3,6 +3,7 @@
 from __future__ import division
 import matplotlib.pyplot as plt
 from collections import defaultdict
+from pynlpl import evaluation
 
 def calculate_precision(lines,plot = False):
     majority_judgements = defaultdict(list)
@@ -121,5 +122,20 @@ def calculate_krippendorffs_alpha(lines):
     DE = agreement*multiplier
     #calculate and return Krippendorffs Alpha
     KA = 1-(DO/DE)
-    return KA            
+    return KA         
+
+def calculate_fscore(lines,index_1,index_2):
+    ce = evaluation.ClassEvaluation()    
+    for item in lines:
+        ce.append(item[index_1],item[index_2])
+    return round(ce.fscore(cls=1),2)
+
+def calculate_mutual_fscore(lines):
+    num_coders = len(lines[0])
+    fscores = []
+    for i in range(num_coders):
+        for j in range(i+1,num_coders):
+            fscores.append(calculate_fscore(lines,i,j))
+    mutual_fscore = sum(fscores)/len(fscores)
+    return mutual_fscore
 

@@ -13,6 +13,7 @@ parser.add_argument('-f', action = 'store', default = "excel", help = "specify t
 parser.add_argument('--header', action = 'store_true', help = "specify if the exceltab(s) contain a header")
 parser.add_argument('--ck', action = 'store_true', help = "specify to calculate cohen's kappa")
 parser.add_argument('--ka', action = 'store_true', help = "specify to calculate krippendorff's alpha")
+parser.add_argument('--fs', action = 'store_true', help = "specify to calculate mutual F-score")
 #parser.add_argument('-c', action = 'store', nargs = '+', default = [0], help = "[OPTIONAL] if specific columns in a file need to be processed, specify them (one integer denotes every column from this point onwards)")
 #parser.add_argument('-d', action='store_true', help = "choose for a prudent scoring (annotations with doubt are not taken as positive)")
 parser.add_argument('-p', action='store', required = False, nargs = '+', help = "[OPTIONAL] for a precision-at-curve, specify the index in the giveN order of excel sheets (just 0 for txt) and the name of the output file")
@@ -39,5 +40,9 @@ for i,sheet in enumerate(annotation_values):
     if args.ka:
         krippendorff = annotation_calcs.calculate_krippendorffs_alpha(sheet)
         print "Krippendorff's Alpha:",krippendorff
-        
+    if args.fs:
+        mutual_fscore = annotation_calcs.calculate_mutual_fscore(sheet)
+        print "Mutual F-score:",mutual_fscore
+
+
     
