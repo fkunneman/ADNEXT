@@ -10,7 +10,8 @@ parser.add_argument('-d', action = 'store', required = True, help = "the directo
 parser.add_argument('-l', action = 'store', required = True, help = "the label linked to the hashtag")
 parser.add_argument('-b', action = 'store', required = True, help = "the directory for background tweets")
 parser.add_argument('-f', action = 'store', required = True, help = "the directory in which lcs files are stored")
-parser.add_argument('-i', action = 'store', required = False, help = "the input file (if starting from tweets or frogged tweets), application of \'tweets_2_features.py\' is implied")  
+parser.add_argument('-i', action = 'store', required = False, help = "the input file (if starting from tweets or frogged tweets), application of \'tweets_2_features.py\' is implied")
+parser.add_argument('--target', action = 'store', required = False, help = "if the target hashtag is different from the training hashtag, specify it in here")  
 parser.add_argument('--frog', action = 'store', required = False, help = "to frog, specify the port of the Frog server")
 parser.add_argument('--classify', action = 'store', required = False, help = "to perform classification (and prepare training and test), give the directory in which classification is performed; without this parameter, only evaluation will be performed")
 
@@ -20,6 +21,10 @@ background_dir = args.b
 label = args.l
 directory = args.d
 label_parts = directory + "parts.txt"
+if args.target:
+    target = args.target
+else:
+    target = label
 
 #frog the tweets
 if args.i:
@@ -41,19 +46,19 @@ if args.i:
 if args.classify:
     print "setting test..."
     #set test in background tweets
-    meta_grep = directory + "meta_" + label + "_bg.txt"
+    meta_grep = directory + "meta_" + target + "_bg.txt"
     new_parts = directory + "parts_test_total.txt"
     background_parts = directory + "parts_test_background.txt"
-    background_label_parts = directory + "parts_test_" + label + ".txt"
+    background_label_parts = directory + "parts_test_" + target + ".txt"
     #print meta_grep, new_parts, background_parts, background_label_parts
     #print "grep \#" + label + " " + background_dir + "meta.txt > " + meta_grep
     #print "python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + label
     #print "grep " + label + " " + new_parts + " > " + background_label_parts
     #print "grep -v " + label + " " + new_parts + " > " + background_parts
-    os.system("grep \#" + label + " " + background_dir + "meta.txt > " + meta_grep)
-    os.system("python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + label)
-    os.system("grep " + label + " " + new_parts + " > " + background_label_parts)
-    os.system("grep -v " + label + " " + new_parts + " > " + background_parts)
+    os.system("grep \#" + target + " " + background_dir + "meta.txt > " + meta_grep)
+    os.system("python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + target)
+    os.system("grep " + target + " " + new_parts + " > " + background_label_parts)
+    os.system("grep -v " + target + " " + new_parts + " > " + background_parts)
     
     #draw train sample from background tweets
     print "setting train..."
@@ -91,9 +96,9 @@ if args.classify:
 
 #perform evaluation
 print "evaluating..."
-results = directory + "results_" + label + ".txt"
-fp = directory + "fp_" + label + ".txt"
-os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 500 " + args.f)
+results = directory + "results_" + target + ".txt"
+fp = directory + "fp_" + target + ".txt"
+os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + target + " 500 " + args.f)
 #extract top features
 print "extracting top features..."
 top_features = directory + "top_features_" + label + ".txt"
