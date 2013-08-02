@@ -7,7 +7,7 @@ def make_chunks(lines,num_chunks=16):
     size = len(lines)/num_chunks
     i=0
     #remains = len(lines)
-    for j in range(num_chunks-1)
+    for j in range(num_chunks-1):
         chunks.append(lines[i:(i+size)])
         i += size
     chunks.append(lines[i:])
