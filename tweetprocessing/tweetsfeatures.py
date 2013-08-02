@@ -472,12 +472,11 @@ class Tweetsfeatures():
                     p.start()
 
             except AttributeError:
-                chunk_size=int(len(instances) / 16)
-                tweet_chunks=gen_functions.make_chunks(self.tweets,chunk_size)
+                num_instances=len(self.tweets)
+                tweet_chunks=gen_functions.make_chunks(self.tweets)
                 for i in range(16):
                     p=multiprocessing.Process(target=filewriter,args=[tweet_chunks[i],str(i),False,q,r])
                     p.start()
-                num_instances=len(self.tweets)
 
             while len(qwrites) < num_instances:
                 l=q.get()
@@ -489,11 +488,11 @@ class Tweetsfeatures():
                 outmeta.write(l)
             
         else:
-            if self.event_tweets:
+            try:
                 for event in self.event_tweets.keys():
                     filewriter(self.event_tweets[event],event,True)
                    
-            else:
+            except AttributeError:
                 chunk_size=int(len(instances) / 16)
                 tweet_chunks=gen_functions.make_chunks(self.tweets,chunk_size)
                 for i in range(16):

@@ -118,8 +118,7 @@ print "Processing tweets."
 q = multiprocessing.Queue()
 frogged_tweets = []
 if parralel:
-    chunk_size = int(len(tweets) / 16)
-    tweets_chunks = gen_functions.make_chunks(tweets,chunk_size)
+    tweets_chunks = gen_functions.make_chunks(tweets)
 else:
     tweets_chunks = [tweets]
     
