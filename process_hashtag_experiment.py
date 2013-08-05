@@ -56,9 +56,9 @@ if args.classify:
     #print "grep " + label + " " + new_parts + " > " + background_label_parts
     #print "grep -v " + label + " " + new_parts + " > " + background_parts
     os.system("grep \#" + target + " " + background_dir + "meta.txt > " + meta_grep)
-    os.system("python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + target)
-    os.system("grep " + target + " " + new_parts + " > " + background_label_parts)
-    os.system("grep -v " + target + " " + new_parts + " > " + background_parts)
+    os.system("python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + label)
+    os.system("grep " + label + " " + new_parts + " > " + background_label_parts)
+    os.system("grep -v " + label + " " + new_parts + " > " + background_parts)
     
     #draw train sample from background tweets
     print "setting train..."
@@ -98,7 +98,7 @@ if args.classify:
 print "evaluating..."
 results = directory + "results_" + target + ".txt"
 fp = directory + "fp_" + target + ".txt"
-os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + target + " 500 " + args.f)
+os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 500 " + args.f)
 #extract top features
 print "extracting top features..."
 top_features = directory + "top_features_" + label + ".txt"
