@@ -104,7 +104,7 @@ print "extracting top features..."
 top_features = directory + "top_features_" + label + ".txt"
 top_features_sorted = directory + "top_features_" + label + "_sorted.txt"
 os.system("tail -n +7 " + directory + "data/" + label + "_3.mitp > " + top_features)
-os.system("campyon -k 1,2 -D \\t -Z 2 " + top_features + " | head -500 > " + top_features_sorted)
+os.system("campyon -k 1,2 -T -Z 2 " + top_features + " | head -500 > " + top_features_sorted)
 #extract training sample
 print "extracting training sample..."
 sample = directory + "sample_" + label + ".txt"
