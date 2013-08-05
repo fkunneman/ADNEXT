@@ -23,6 +23,7 @@ infile = args.i
 delimiter = args.d
 action = args.a
 extra = args.e
+outfile = codecs.open(args.o,"w","utf-8")
 
 lineconvert = lineconverter.Lineconverter(infile,delimiter)
 if action == "add":
@@ -64,6 +65,7 @@ elif action == "extract":
     exit()
     
 if args.excel:
+    outfile.close()
     if len(lineconvert.lines) > 65535:
         num_chunks = int(len(lineconvert.lines) / 65534)
         chunks = gen_functions.make_chunks(lineconvert.lines,num_chunks)
@@ -80,7 +82,6 @@ if args.excel:
     book.save(args.o)
         
 else:
-    outfile = codecs.open(args.o,"w","utf-8")
     for line in lineconvert.lines:
         outfile.write(line + "\n")
     outfile.close()
