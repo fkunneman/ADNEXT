@@ -492,6 +492,9 @@ class Evalset():
                     instance.set_classification(classification)
                     if classification != instance.label:
                         instance.set_fp()
+                        instance.set_fn()
+                    else:
+                        instance.set_tp() 
                     instance.set_score(score)
         classifications.close()
        
@@ -565,15 +568,15 @@ class Evalset():
             instance.set_tfz(tokens[4])
             self.name_instance[filename] = instance
             self.instances.append(instance) 
-            
-    
-    def extract_top_fp(self,outfile,classification,top_n,files):
+             
+    def extract_top(self,outfile,classification,top_n,files):
         out_write = open(outfile,"w")
-        fp_instances = defaultdict(int)
+        instances = defaultdict(int)
         for i in self.instances:
-            if (i.fp and i.classification == classification):
-                fp_instances[i] = i.score
-        
+            if i.classification == classification:
+                if i.fp:
+                    instances[i] = i.score
+
         for index,instance in enumerate(sorted(fp_instances, key=fp_instances.get, reverse=True)[:top_n]):
             fileread = open(files + instance.fname,"r").readlines()    
             words = []
@@ -700,6 +703,8 @@ class Evalset():
             self.time_to_event = 0
             self.score = 0
             self.fp = False
+            self.tp = False
+            self.fn = False
             self.past_window = []
     
         def set_name(self,name):
@@ -728,6 +733,12 @@ class Evalset():
 
         def set_fp(self):
             self.fp = True
+
+        def set_tp(self):
+            self.tp = True
+
+        def set_fn(self):
+            self.fn = True
             
         def set_time(self,time):
             self.time_to_event = time

@@ -180,7 +180,7 @@ class Tweetsfeatures():
                 features.extend(make_ngrams(t.get_possequence(),n))
             t.set_features(features)
   
-    def add_char_ngrams(self,raw_file,id_col=1,n=3):
+    def add_char_ngrams(self,raw_file,ignore = False,id_col=1,n=3):
         """
         add character ngrams to the featurespace of each tweet, based on a raw untokenized file 
         (in order to take into account spaces and punctuation)
@@ -193,16 +193,44 @@ class Tweetsfeatures():
                 ngrams.append(text[index-n,index])
                 index += 1
             return ngrams
-        
-        #make a hashmap for tweet_ids
+
+        def rm_string(inputstring,rmstrings):
+            new_strings = []
+            inputstrings = [inputstring]
+            for rmstring in rmstrings:
+                keep_inputstring = []
+                for inputstring in inputstrings:
+                    new_inputstrings = [inputstring]
+                    while re.search(rmstring,new_inputstrings[-1]):
+                        new_inputstrings_rear = [new_inputstrings[-1][:new_inputstrings[-1].index(rmstring)]] + [new_inputstrings[-1][new_inputstrings[-1].index(rmstring)+len(rmstring):]]
+                        if len(new_inputstrings) > 1:
+                            new_inputstrings = new_inputstrings[:-1] + new_inputstrings_rear
+                        else:
+                            new_inputstrings = new_inputstrings_rear
+                    keep_inputstring.extend(new_inputstrings)
+                inputstrings = keep_inputstring
+            return inputstrings
+
+        #make a dictionary for tweet_ids
+        tid_tweet = {}
         for t in self.tweets:
-            tid = t.id
+            tid_tweet[t.id] = t
             
-        
+        #make list of raw tweets        
         infile=codecs.open(raw_file,"r","utf-8")
         for line in infile.readlines():
             tokens=line.split("\t")
             tweet_id=tokens[id_col]
+            tweet = tid_tweet[tweet_id]
+            text = tokens[-1]
+            if ignore:
+                text = rm_string(text,ignore)
+            else:
+                text = [text]
+            
+
+
+
             instance=""
             for t in self.tweets:
                 if t.id==tweet_id:
@@ -211,6 +239,8 @@ class Tweetsfeatures():
             char_ngrams=make_char_ngrams(text,n)
             instance.features.extend(char_ngrams)
         infile.close()
+
+
   
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an event reference or RT"""
@@ -553,6 +583,15 @@ class Tweetsfeatures():
         if metafile:            
             meta_out.close()
     
+    #turn the tweets into one big document
+    def features_2_bigdoc(self,outfile):
+        outwrite = codecs.open(outfile,"w","utf-8")
+        document = []
+        for tweet in self.tweets:
+            document.extend(tweet.features)
+        outwrite.write(" ".join(document))
+        outwrite.close() 
+
     #Standard subfunctions
     def get_wordsequences(self):
         wordsequences=[]
@@ -592,7 +631,7 @@ class Tweetsfeatures():
         
         def __init__(self,token,form):
             if form=="one_line":
-                self.label=token[0]
+                #self.label=token[0]
                 self.event=token[0]
                 self.id=str(token[1])
                 self.user=token[2]
