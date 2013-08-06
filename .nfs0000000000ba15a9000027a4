@@ -1,5 +1,0 @@
-00000004ms  INFO nl.ru.cs.phasar.lcsgui.Main LCS Version: 3.8, © Phasar bv
-01237623ms  INFO nl.ru.cs.phasar.lcsgui.LCSCore$2 fomp background
-01240336ms  INFO nl.ru.cs.phasar.lcsgui.LCSCore$2 fomp cynisme
-01266064ms  INFO nl.ru.cs.phasar.lcsgui.task.ThresholdTaskImpl class: cynisme: got threshold: 0.4954063147306442, fbeta = 0.9992738
-01266066ms  INFO nl.ru.cs.phasar.lcsgui.task.ThresholdTaskImpl class: background: got threshold: -0.0397987887263298, fbeta = 0.99601877
