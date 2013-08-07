@@ -7,6 +7,8 @@ from collections import defaultdict
 
 parser = argparse.ArgumentParser(description = "Script to calculate the cosine similarity for a given set of text files")
 parser.add_argument('-i', action = 'store', required = True, nargs='+', help = "the input files (with features divided by spaces")  
+args = parser.parse_args()
+
 
 if len(args.i) < 2:
     print "less than the minimum of 2 files was inputted, aborting program..."
