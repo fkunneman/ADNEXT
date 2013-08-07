@@ -21,7 +21,10 @@ indexvector = []
 for doc in args.i:
     name = doc.split("/")[-1]
     docread = codecs.open(doc,"r","utf-8")
-    print len(docread.readlines())
+    vector = docread.read().split(" ")
+    indexvector.extend(vector)
+    vectors[name] = vector
+    docread.close()
 
     #vectors[name] =     
 

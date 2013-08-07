@@ -6,7 +6,7 @@ import xlrd
 
 def make_chunks(lines,num_chunks=16):
     chunks=[]
-    size = len(lines)/num_chunks
+    size = int(len(lines)/num_chunks)
     i=0
     #remains = len(lines)
     for j in range(num_chunks-1):
