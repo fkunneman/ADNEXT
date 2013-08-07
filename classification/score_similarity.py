@@ -53,8 +53,8 @@ print "scoring similarities..."
 docnames = vectors.keys()
 for i,docname in enumerate(docnames):
     while i < len(docnames):
-        for j in docnames[i+i]:
-            print i,j
+        for j in docnames[i+i:]:
+            print docname,j
 
     i += 1        
 
