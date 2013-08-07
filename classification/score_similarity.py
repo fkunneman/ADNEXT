@@ -52,14 +52,8 @@ for docname in feature_freqs.keys():
 print "scoring similarities..."
 docnames = vectors.keys()
 for i,docname in enumerate(docnames):
+    vector1 = vectors[docname]
     for j in docnames[i+1:]:
-        print docname,j
+        vector2 = vectors[j]
+        print "cosine similarity",docname,"-",j,":",gen_functions.calculate_cosine_similarity(vector1,vector2)
 
-
-
-# scoring similarity
-
-
-#fdaf
-#feature_index dictionary
-#for 
