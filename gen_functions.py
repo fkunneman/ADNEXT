@@ -73,6 +73,7 @@ def calculate_cosine_similarity(vector1,vector2):
         mag2.append(m2)
         dotpr.append(dp)
 
-    cosine_similarity = sum(dotpr) / math.sqrt(sum(mag1)) * math.sqrt(sum(mag2))
+    #print mag1
+    cosine_similarity = sum(dotpr) / (math.sqrt(sum(mag1)) * math.sqrt(sum(mag2)))
 
     return cosine_similarity
