@@ -180,7 +180,7 @@ class Tweetsfeatures():
                 features.extend(make_ngrams(t.get_possequence(),n))
             t.set_features(features)
   
-    def add_char_ngrams(self,raw_file,ignore = False,id_col=1,n=3):
+    def add_char_ngrams(self,raw_file,n,ignore = False):
         """
         add character ngrams to the featurespace of each tweet, based on a raw untokenized file 
         (in order to take into account spaces and punctuation)
@@ -188,10 +188,11 @@ class Tweetsfeatures():
         
         def make_char_ngrams(text,n):
             ngrams=[]
-            index=n
-            while index < len(text):
-                ngrams.append(text[index-n,index])
-                index += 1
+            for string in text:
+                index=n
+                while index < len(text):
+                    ngrams.append(text[index-n,index])
+                    index += 1
             return ngrams
 
         def rm_string(inputstring,rmstrings):
@@ -220,27 +221,16 @@ class Tweetsfeatures():
         infile=codecs.open(raw_file,"r","utf-8")
         for line in infile.readlines():
             tokens=line.split("\t")
-            tweet_id=tokens[id_col]
+            tweet_id=tokens[1]
             tweet = tid_tweet[tweet_id]
             text = tokens[-1]
             if ignore:
                 text = rm_string(text,ignore)
             else:
                 text = [text]
-            
-
-
-
-            instance=""
-            for t in self.tweets:
-                if t.id==tweet_id:
-                    instance=t
-            text=tokens[-1]
-            char_ngrams=make_char_ngrams(text,n)
-            instance.features.extend(char_ngrams)
+            for n_val in n:
+                tweet.features.extend(make_char_ngrams(text,n_val))
         infile.close()
-
-
   
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an event reference or RT"""
