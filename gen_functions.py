@@ -61,26 +61,31 @@ def calculate_cosine_similarity(vector1,vector2):
         print str(len(vector1)) + " " + str(len(vector2)) 
         print "Cosine distance: no equal number of dimensions, terminating process."
 
-    mag1 = []
-    mag2 = []
-    dotpr = []
+    mag1 = 0
+    mag2 = 0
+    dotpr = 0
     for i,term_1 in enumerate(vector1):
         term_2 = vector2[i]
 #        print term_1,term_2
         m1 = int(term_1) * int(term_1)
         m2 = int(term_2) * int(term_2)
         dp = int(term_1) * int(term_2)
-        print m1,m2,dp
-        mag1.append(m1)
-        mag2.append(m2)
-        dotpr.append(dp)
+#        print m1,m2,dp
+        mag1 += m1
+        mag2 += m2
+        dotpr += dp
 
     #print mag1
-    #print "sum dotpr",sum(dotpr)
-    #print "sum mag1",sum(mag1)
-    #print "sum mag2",sum(mag2)
-    #print "sqrt sum mag1",math.sqrt(sum(mag1))
-    #print "sqrt sum mag2",math.sqrt(sum(mag2))
-    cosine_similarity = sum(dotpr) / (math.sqrt(sum(mag1)) * math.sqrt(sum(mag2)))
+#    print "\nsum dotpr",sum(dotpr)
+#    print "sum mag1",sum(mag1)
+#    print "sum mag2",sum(mag2)
+#    print "sqrt sum mag1",math.sqrt(sum(mag1))
+#    print "sqrt sum mag2",math.sqrt(sum(mag2))
+#    print "mag multiply",math.sqrt(sum(mag1)) * math.sqrt(sum(mag2))
+    #sdp = sum(dotpr)
+    #sqm1 = math.sqrt(sum(mag1))
+    #sqm2 = math.sqrt(sum(mag2))
+    cosine_similarity = dotpr / (int(math.sqrt(mag1))*int(math.sqrt(mag2)))
 
     return cosine_similarity
+
