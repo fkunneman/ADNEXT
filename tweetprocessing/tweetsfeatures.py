@@ -624,7 +624,7 @@ class Tweetsfeatures():
         
         def __init__(self,token,form):
             if form=="one_line":
-                #self.label=token[0]
+                self.label=token[0]
                 self.event=token[0]
                 self.id=str(token[1])
                 self.user=token[2]
