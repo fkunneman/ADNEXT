@@ -216,14 +216,17 @@ class Tweetsfeatures():
         tid_tweet = {}
         for t in self.tweets:
             tid_tweet[t.id] = t
+            print "dict",t.id
             
         #make list of raw tweets        
         infile=codecs.open(raw_file,"r","utf-8")
         for line in infile.readlines():
             tokens=line.split("\t")
             tweet_id=tokens[1]
+            print "try",tweet_id
             try:
                 tweet = tid_tweet[tweet_id]
+                print "check"
                 text = tokens[-1]
                 if ignore:
                     text = rm_string(text,ignore)
