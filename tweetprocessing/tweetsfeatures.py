@@ -230,7 +230,7 @@ class Tweetsfeatures():
                 else:
                     text = [text]
                 for n_val in n:
-                    tweet.features.extend(make_char_ngrams(text,int(n_val))
+                    tweet.features.extend(make_char_ngrams(text,int(n_val)))
             except KeyError:
                 continue
         infile.close()
