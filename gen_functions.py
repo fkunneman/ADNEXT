@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+from __future__ import division
+import math
 import xlrd
 
 def make_chunks(lines,num_chunks=16):
@@ -54,3 +56,24 @@ def excel2lines(file_name,sheet_indexes,header = False):
 
     return lines
  
+def calculate_cosine_similarity(vector1,vector2):
+    if len(vector1) != len(vector2):
+        print str(len(vector1)) + " " + str(len(vector2)) 
+        print "Cosine distance: no equal number of dimensions, terminating process."
+
+    mag1 = []
+    mag2 = []
+    dotpr = []
+    for i in enumerate(vector1):
+        term_1 = vector1[i]
+        term_2 = vector2[i]
+        m1 = int(term_1) * int(term_1)
+        m2 = int(term_2) * int(term_2)
+        dp = int(term_1) * int(term_2)
+        mag1.append(m1)
+        mag2.append(m2)
+        dotpr.append(dp)
+
+    cosine_similarity = sum(dotpr) / math.sqrt(sum(mag1)) * math.sqrt(sum(mag2))
+
+    return cosine_similarity
