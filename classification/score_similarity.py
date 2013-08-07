@@ -18,6 +18,7 @@ vectors = defaultdict(list)
 indexvector = []
 
 # make file-vectors
+print "extracting vectors..."
 for doc in args.i:
     name = doc.split("/")[-1]
     docread = codecs.open(doc,"r","utf-8")
@@ -26,7 +27,15 @@ for doc in args.i:
     vectors[name] = vector
     docread.close()
 
-    #vectors[name] =     
+
+# make feature-index dictionary
+print "making feature-index dictionary"
+feature_index = {}
+unique_features = list(set(indexvector))     
+for i,feature in enumerate(unique_features):
+    feature_index[feature] = i
+
+# scoring similarity
 
 #fdaf
 #feature_index dictionary

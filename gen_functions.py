@@ -64,8 +64,7 @@ def calculate_cosine_similarity(vector1,vector2):
     mag1 = []
     mag2 = []
     dotpr = []
-    for i in enumerate(vector1):
-        term_1 = vector1[i]
+    for i,term_1 in enumerate(vector1):
         term_2 = vector2[i]
         m1 = int(term_1) * int(term_1)
         m2 = int(term_2) * int(term_2)
