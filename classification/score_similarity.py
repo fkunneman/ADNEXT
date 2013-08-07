@@ -14,28 +14,47 @@ if len(args.i) < 2:
     print "less than the minimum of 2 files was inputted, aborting program..."
     exit()
 
+feature_freqs = defaultdict(lambda : defaultdict(int))
 vectors = defaultdict(list)
 indexvector = []
 
 # make file-vectors
-print "extracting vectors..."
+print "extracting word frequencies..."
 for doc in args.i:
     name = doc.split("/")[-1]
     docread = codecs.open(doc,"r","utf-8")
-    vector = docread.read().split(" ")
-    indexvector.extend(vector)
-    vectors[name] = vector
+    terms = docread.read().split(" ")
+    indexvector.extend(terms)
+    feature_freqs = defaultdict(int)
+    for term in terms:
+        feature_freqs[term] += 1
+    feature_freqs[name] = feature_freqs
     docread.close()
 
-
 # make feature-index dictionary
-print "making feature-index dictionary"
+print "making feature-index dictionary..."
 feature_index = {}
 unique_features = list(set(indexvector))     
 for i,feature in enumerate(unique_features):
     feature_index[feature] = i
 
+# making vectors
+print "making vectors..."
+for docname in feature_freqs.keys():
+    feature_freq = feature_freqs[docname]
+    vector = [0] * len(feature_index.keys())
+    for feature in feature_freq.keys():
+        frequency = feature_freq[feature]
+        index = feature_index[feature]
+        vector[index] = frequency
+    vectors[docname] = vector
+
+
+
+
+
 # scoring similarity
+
 
 #fdaf
 #feature_index dictionary
