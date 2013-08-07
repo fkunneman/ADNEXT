@@ -190,8 +190,8 @@ class Tweetsfeatures():
             ngrams=[]
             for string in text:
                 index=n
-                while index < len(text):
-                    ngrams.append(text[index-n,index])
+                while index < len(string):
+                    ngrams.append(string[index-n:index])
                     index += 1
             return ngrams
 
