@@ -222,14 +222,17 @@ class Tweetsfeatures():
         for line in infile.readlines():
             tokens=line.split("\t")
             tweet_id=tokens[1]
-            tweet = tid_tweet[tweet_id]
-            text = tokens[-1]
-            if ignore:
-                text = rm_string(text,ignore)
-            else:
-                text = [text]
-            for n_val in n:
-                tweet.features.extend(make_char_ngrams(text,n_val))
+            try:
+                tweet = tid_tweet[tweet_id]
+                text = tokens[-1]
+                if ignore:
+                    text = rm_string(text,ignore)
+                else:
+                    text = [text]
+                for n_val in n:
+                    tweet.features.extend(make_char_ngrams(text,n_val))
+            except KeyError:
+                continue
         infile.close()
   
     def filter_tweets(self,blacklist):
