@@ -25,10 +25,10 @@ for doc in args.i:
     docread = codecs.open(doc,"r","utf-8")
     terms = docread.read().split(" ")
     indexvector.extend(terms)
-    feature_freqs = defaultdict(int)
+    feature_freq = defaultdict(int)
     for term in terms:
-        feature_freqs[term] += 1
-    feature_freqs[name] = feature_freqs
+        feature_freq[term] += 1
+    feature_freqs[name] = feature_freq
     docread.close()
 
 # make feature-index dictionary
@@ -49,7 +49,14 @@ for docname in feature_freqs.keys():
         vector[index] = frequency
     vectors[docname] = vector
 
+print "scoring similarities..."
+docnames = vectors.keys()
+for i,docname in enumerate(docnames):
+    while i < len(docnames):
+        for j in docnames[i+i]:
+            print i,j
 
+    i += 1        
 
 
 
