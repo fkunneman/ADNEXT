@@ -51,6 +51,7 @@ for docname in feature_freqs.keys():
 
 print "scoring similarities..."
 docnames = vectors.keys()
+print docnames
 for i,docname in enumerate(docnames):
     while i < len(docnames):
         for j in docnames[i+i:]:
