@@ -19,7 +19,7 @@ vectors = defaultdict(list)
 indexvector = []
 
 # make file-vectors
-print "extracting word frequencies..."
+print "extracting feature frequencies..."
 for doc in args.i:
     name = doc.split("/")[-1]
     docread = codecs.open(doc,"r","utf-8")
