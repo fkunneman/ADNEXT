@@ -648,13 +648,14 @@ class Tweetsfeatures():
                 self.date=str(token[3])
                 self.time=str(token[4])
                 self.tte="-"
-                self.wordsequence=[]
-                self.lemmasequence=[]
-                self.possequence=[]
-                self.features=[]
             elif form == "text":
                 self.label=token[0]
+                self.event=token[0]
                 self.id=str(token[1])
+            self.wordsequence=[]
+            self.lemmasequence=[]
+            self.possequence=[]
+            self.features=[]
 
         def add_sequence(self,token):
             self.add_word(token)
