@@ -694,8 +694,11 @@ class Tweetsfeatures():
             try:
                 self.meta=[self.id,self.event,self.label,self.tte,self.tfz,self.date,self.time,self.user]
             except AttributeError:
-                self.meta=[self.id,self.event,self.label,self.date,self.time,self.user]
-            
+                try:
+                    self.meta=[self.id,self.event,self.label,self.date,self.time,self.user]
+                except AttributeError:
+                    self.meta=[self.id,self.label]
+
         def get_label(self): return self.label
 
         def get_datetime(self):
