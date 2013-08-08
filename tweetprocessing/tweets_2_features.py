@@ -27,6 +27,7 @@ parser.add_argument('-a', action = 'store', required = False, nargs = '+', help 
 parser.add_argument('-o', action = 'store', required = True, choices = ["sparse","sparsebin","lcs","big"], help = "specify the output type")
 parser.add_argument('-w', action = 'store', required = True, nargs = '+', help = "specify the target to write output to; for sparse(bin) and big specify the outfile, the vocabulary file and optionally the metafile and a \'1\' to give the time of a tweet with a given hashtag after the first occurence in time; for lcs give respectively the directory, prefix, dirsize, partsfile and metafile")
 parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done")
+parser.add_argument('--text', action= 'store_true', help = "if the inputted tweets do not contain metadata, indicate by this parameter")
 
 args = parser.parse_args() 
 infile = args.i
@@ -47,7 +48,10 @@ tf = Tweetsfeatures(infile)
 if input_type == "term":
     tf.set_tweets()
 elif input_type == "tweet":
-    tf.set_tweets_one_line(lower = args.lo)
+    if args.text:
+        tf.set_tweets_one_line(lower = args.lo,info_type="text")
+    else:
+        tf.set_tweets_one_line(lower = args.lo)
 
 if remove_instances:
     tf.filter_tweets(remove_instances)
