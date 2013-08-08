@@ -19,7 +19,7 @@ class Lineconverter():
             self.lines.append(line.strip())
         self.delimiter = delimiter
 
-    # Add the same string to the back and front of each line (argument [place] can be 'front' or 'back')
+    # Add the same string to the back or front of each line (argument [place] can be 'front' or 'back')
     def add_string(self,string,place):
         newlines = []
         for line in self.lines:
@@ -31,6 +31,16 @@ class Lineconverter():
             newline = self.delimiter.join(tokens)
             newlines.append(newline)
         
+        self.lines = newlines
+
+    # Add an id to the start of lines by enumeration
+    def add_id(self):
+        newlines = []
+        
+        for i,line in enumerate(self.lines):
+            newline = str(i) + "\t" + line
+            newlines.append(newline)
+
         self.lines = newlines
 
     # replace a specified field ([column]) in a line with a new string ([replace]) if it matches one of the 
