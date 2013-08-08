@@ -263,7 +263,7 @@ class Tweetsfeatures():
         print "freq tweets before", len(self.tweets)
         templist = []
         for t in self.tweets:
-            if t.wordsequence[-1] == hashtag:
+            if re.search(t.wordsequence[-1],hashtag,re.IGNORECASE):
                 templist.append(t)
 
         self.tweets = templist
