@@ -180,7 +180,7 @@ class Tweetsfeatures():
                 features.extend(make_ngrams(t.get_possequence(),n))
             t.set_features(features)
   
-    def add_char_ngrams(self,raw_file,n,ignore = False):
+    def add_char_ngrams(self,raw_file,n,id_col = 1,ignore = False,):
         """
         add character ngrams to the featurespace of each tweet, based on a raw untokenized file 
         (in order to take into account spaces and punctuation)
@@ -221,7 +221,7 @@ class Tweetsfeatures():
         infile=codecs.open(raw_file,"r","utf-8")
         for line in infile.readlines():
             tokens=line.split("\t")
-            tweet_id=tokens[1]
+            tweet_id=tokens[id_col]
             try:
                 tweet = tid_tweet[tweet_id]
                 text = tokens[-1]

@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description = "Script to generate instances wit
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
 parser.add_argument('-e', action = 'store', required = False, help = "[OPTIONAL] to link tweets to event time, specify a file with events")
 parser.add_argument('-n', action = 'store', nargs = '+', required = True, help = "the word n-grams that will be generated (for uni- and trigrams give \'1 3\')")
-parser.add_argument('-cn', action = 'store', nargs = '+', required = False, help = "to include character n-grams, give a file with raw (un-frogged) tweets and after this specify the values of \'n\' (anything goes)")
+parser.add_argument('-cn', action = 'store', nargs = '+', required = False, help = "to include character n-grams, give a file with raw (un-frogged) tweets and after this specify the column of the tweet id and the values of \'n\' (anything goes)")
 parser.add_argument('-t', action = 'store', required = True, choices = ["term","tweet"], help = "the type of input (\'term\' refers to one term per line, \'tweet\' refers to a total tweet per line)")  
 parser.add_argument('-rf', action = 'store_true', required = False, help = "[OPTIONAL] choose to remove features if they have a reference to one of the given events (only works in combination with \'-e\')")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, help = "[OPTIONAL] choose to remove features given after this parameter")
@@ -70,7 +70,7 @@ for n in ngrams:
     tf.add_ngrams(n=int(n))
 
 if args.cn:
-    tf.add_char_ngrams(args.cn[0],args.cn[1:],args.rb)
+    tf.add_char_ngrams(args.cn[0],args.cn[2:],args.cn[1],args.rb)
 
 if events:
     tf.set_events(events,args.a)
