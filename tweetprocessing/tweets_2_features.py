@@ -56,6 +56,9 @@ elif input_type == "tweet":
 if remove_instances:
     tf.filter_tweets(remove_instances)
 
+if args.re:
+    tf.filter_tweets_reflexive_hashtag(args.re)
+
 if remove_instances_window:
     event_file = remove_instances_window[0]
     window_size = int(remove_instances_window[1])

@@ -258,12 +258,22 @@ class Tweetsfeatures():
         print "freq tweets after", len(self.tweets)
 
     def filter_tweets_reflexive_hashtag(self,hashtag):
-        """filter tweets from this container if they do not contain a given hashtag at the end"""
+        """filter tweets from this container if they do not contain a given hashtag at the end (may still proceed other hashtags or a url"""
         print "filtering to tweets with",hashtag,"at the end"
         print "freq tweets before", len(self.tweets)
         templist = []
+
+        def has_endhashtag(sequence):
+            for h in hashtag:
+                if re.match(sequence[-1],h,re.IGNORECASE):
+                    return True
+            if re.search(sequence[-1],"http://") or re.search(sequence[-1],"#"):
+                has_endhashtag(sequence[:-1])
+            else:
+                return False
+
         for t in self.tweets:
-            if re.search(t.wordsequence[-1],hashtag,re.IGNORECASE):
+            if has_endhashtag(t.wordsequence)
                 templist.append(t)
 
         self.tweets = templist
