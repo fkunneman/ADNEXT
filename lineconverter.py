@@ -52,7 +52,7 @@ class Lineconverter():
             if c:
                 if tokens[c] in m or len(m) == 0:
                     new_tokens = tokens
-                    new_tokens[column] = replace
+                    new_tokens[c] = replace
                     newline = self.delimiter.join(new_tokens)
                     newlines.append(newline)
                 else:
