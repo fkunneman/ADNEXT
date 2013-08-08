@@ -16,6 +16,7 @@ parser.add_argument('-t', action = 'store', required = True, choices = ["term","
 parser.add_argument('-rf', action = 'store_true', required = False, help = "[OPTIONAL] choose to remove features if they have a reference to one of the given events (only works in combination with \'-e\')")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, help = "[OPTIONAL] choose to remove features given after this parameter")
 parser.add_argument('-ri', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] remove instances if they contain one of the given words") 
+parser.add_argument('-re', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] remove instances if the do not end with a given hashtag (the given hashtag may still be followed by a URL or other hashtags)")
 parser.add_argument('-rw', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] to remove instances based on their temporal distance related to an event, give a file with the event, the size of the time window (before and after the event instances are removed) and the timeunit ('hour' or 'day')")
 parser.add_argument('-rp', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] to filter tweets before or after a point in time, specify the point in time and \'before\' or \'after\' respectively")
 parser.add_argument('-ur', action = 'store_true', default = False, help = "[OPTIONAL] choose whether url's are normalized")
