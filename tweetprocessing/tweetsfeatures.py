@@ -265,9 +265,14 @@ class Tweetsfeatures():
 
         def has_endhashtag(sequence):
             for h in hashtag:
-                if re.match(sequence[-1],h,re.IGNORECASE):
-                    return True
-            if re.search(sequence[-1],"http://") or re.search(sequence[-1],"#"):
+		if sequence[-1] == ".":
+                    return False
+                try:
+                    if re.match(sequence[-1],h,re.IGNORECASE):
+                        return True
+                except:
+                    return False             
+            if re.search("http://",sequence[-1]) or re.search("#",sequence[-1]):
                 has_endhashtag(sequence[:-1])
             else:
                 return False
