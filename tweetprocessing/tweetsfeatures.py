@@ -548,8 +548,7 @@ class Tweetsfeatures():
                     filewriter(self.event_tweets[event],event,True)
                    
             except AttributeError:
-                chunk_size=int(len(self.tweets) / 16)
-                tweet_chunks=gen_functions.make_chunks(self.tweets,chunk_size)
+                tweet_chunks=gen_functions.make_chunks(self.tweets,16)
                 for i in range(16):
                     filewriter(tweets_chunks[i],str(i))
             
