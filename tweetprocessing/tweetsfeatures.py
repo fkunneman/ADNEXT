@@ -273,7 +273,7 @@ class Tweetsfeatures():
                 return False
 
         for t in self.tweets:
-            if has_endhashtag(t.wordsequence)
+            if has_endhashtag(t.wordsequence):
                 templist.append(t)
 
         self.tweets = templist
