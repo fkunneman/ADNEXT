@@ -35,8 +35,11 @@ if action == "add":
 
 elif action == "replace":
     if args.c:
-        column = int(c)
-        lineconvert.replace_string(args.s,c = column,m = args.replace) 
+        column = int(args.c)
+        if args.replace:
+            lineconvert.replace_string(args.s,c = column,m = args.replace)
+        else:
+            lineconvert.replace_string(args.s,c = column)
     else:
         lineconvert.replace_string(args.s,args.replace)
 
