@@ -642,7 +642,6 @@ class Tweetsfeatures():
                 self.features=[]
             elif form == "text":
                 self.id=str(token[0])
-                self.
 
         def add_sequence(self,token):
             self.add_word(token)
