@@ -264,9 +264,9 @@ class Tweetsfeatures():
         templist = []
 
         def has_endhashtag(sequence):
+            if sequence[-1] == ".":
+                return False
             for h in hashtag:
-		if sequence[-1] == ".":
-                    return False
                 try:
                     if re.match(sequence[-1],h,re.IGNORECASE):
                         return True

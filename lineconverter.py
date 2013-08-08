@@ -36,7 +36,7 @@ class Lineconverter():
     # Add an id to the start of lines by enumeration
     def add_id(self):
         newlines = []
-        
+
         for i,line in enumerate(self.lines):
             newline = str(i) + "\t" + line
             newlines.append(newline)
