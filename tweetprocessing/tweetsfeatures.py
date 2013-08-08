@@ -257,6 +257,18 @@ class Tweetsfeatures():
         self.tweets=templist
         print "freq tweets after", len(self.tweets)
 
+    def filter_tweets_reflexive_hashtag(self,hashtag):
+        """filter tweets from this container if they do not contain a given hashtag at the end"""
+        print "filtering to tweets with",hashtag,"at the end"
+        print "freq tweets before", len(self.tweets)
+        templist = []
+        for t in self.tweets:
+            if t.wordsequence[-1] == hashtag:
+                templist.append(t)
+
+        self.tweets = templist
+        print "freq tweets after", len(self.tweets)
+
     def filter_tweets_timewindow(self,windowsize,timeunit):
         """Filter tweets that do not fall within the specified timewindow before and after the event they refer to 
             (given in eventtime, as list with lines formatted as [eventname]\t[eventdate]\t[eventtime]\t[eventdate_end]etc."""
