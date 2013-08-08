@@ -79,7 +79,7 @@ class Tweetsfeatures():
             else:
                 current_tweet.add_sequence(tags)
 
-    def set_tweets_one_line(self,ht=False,u=False,lower=False):
+    def set_tweets_one_line(self,ht=False,u=False,lower=False,info_type = "meta"):
         """
         Instantiate tweetobjects with meta-information and a sequence of words.
         Presumes a file with format 2.
@@ -97,19 +97,24 @@ class Tweetsfeatures():
         
         for line in tweets:
             tokens=line.split("\t")
-            if len(tokens) >= 5:
-                tweet=Tweetsfeatures.Tweet(tokens,"one_line")
-                words=tokens[5].split(" ") 
-                for word in words:
-                    if (ht and hashtag.search(word)) or (u and url.search(word)):
-                        continue
-                    else:
-                        if lower:
-                            word=word.lower()
-                        tweet.wordsequence.append(word.strip())        
-                self.tweets.append(tweet)
-            else: 
-                continue
+            if info_type == "meta":
+                if len(tokens) >= 5:
+                    tweet=Tweetsfeatures.Tweet(tokens,"one_line")
+                    words=tokens[5].split(" ") 
+                else: 
+                    continue
+            elif info_type == "text":
+                tweet=Tweetsfeatures.Tweet(tokens,"text")
+                words=tokens[1].split(" ")
+            for word in words:
+                if (ht and hashtag.search(word)) or (u and url.search(word)):
+                    continue
+                else:
+                    if lower:
+                        word=word.lower()
+                    tweet.wordsequence.append(word.strip())        
+            self.tweets.append(tweet)
+
 
     def filter_label(self,label):
         """Remove tweets with a certain label."""
@@ -635,6 +640,9 @@ class Tweetsfeatures():
                 self.lemmasequence=[]
                 self.possequence=[]
                 self.features=[]
+            elif form == "text":
+                self.id=str(token[0])
+                self.
 
         def add_sequence(self,token):
             self.add_word(token)
