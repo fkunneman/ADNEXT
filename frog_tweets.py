@@ -127,13 +127,15 @@ for i in range(len(tweets_chunks)):
     p.start()
 
 #j = 0
-while len(frogged_tweets) <= len(tweets):
+while True:
     #if q.qsize() > chunk_size:
     #    j +=1
     l = q.get()
     frogged_tweets.append(l)
     outfile.write(l)
     print len(frogged_tweets)
+    if len(frogged_tweets) == len(tweets):
+        break
 
 outfile.close()
 
