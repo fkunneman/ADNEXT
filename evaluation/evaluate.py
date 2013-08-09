@@ -52,10 +52,10 @@ else:
         evaluation.print_results(args.o)
         if args.fp:
             evaluation.extract_top(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
-        if args.tp:
-            evaluation.extract_top(args.tp[])
-        if args.fn:
-            evaluation.extract_top()
+        #if args.tp:
+        #    evaluation.extract_top()
+        #if args.fn:
+        #    evaluation.extract_top()
 
     elif args.i == "meta":
         metafiles = args.l
