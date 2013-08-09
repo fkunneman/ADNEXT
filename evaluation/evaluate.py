@@ -51,7 +51,11 @@ else:
             evaluation.set_instances_lcs(l,observationfiles[i],"normal")
         evaluation.print_results(args.o)
         if args.fp:
-            evaluation.extract_top_fp(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
+            evaluation.extract_top(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
+        if args.tp:
+            evaluation.extract_top(args.tp[])
+        if args.fn:
+            evaluation.extract_top()
 
     elif args.i == "meta":
         metafiles = args.l
