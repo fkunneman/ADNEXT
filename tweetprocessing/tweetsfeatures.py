@@ -196,7 +196,10 @@ class Tweetsfeatures():
             for string in text:
                 index=n
                 while index < len(string):
-                    ngrams.append(string[index-n:index])
+                    char_gram = string[index-n:index]
+                    char_ngram = re.sub(" ","_",char_ngram)
+                    if len(char_ngram) == n: 
+                        ngrams.append(char_ngram)
                     index += 1
             return ngrams
 
