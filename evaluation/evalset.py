@@ -577,7 +577,7 @@ class Evalset():
                 if i.fp:
                     instances[i] = i.score
 
-        for index,instance in enumerate(sorted(fp_instances, key=fp_instances.get, reverse=True)[:top_n]):
+        for index,instance in enumerate(sorted(instances, key=instances.get, reverse=True)[:top_n]):
             fileread = open(files + instance.fname,"r").readlines()    
             words = []
             for line in fileread:
