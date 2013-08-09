@@ -45,12 +45,12 @@ class Lineconverter():
 
     # replace a specified field ([column]) in a line with a new string ([replace]) if it matches one of the 
     #    strings in [match] (when [match] == [], any string is replaced)
-    def replace_string(self,replace,c = False,m = []):
+    def replace_string(self,replace,c,m = []):
         newlines = []
         for line in self.lines:
             tokens = line.split(self.delimiter)
-            if c:
-                if tokens[c] in m or len(m) == 0:
+            if type(c) == int:
+		if len(m) == 0 or tokens[c] in m:
                     new_tokens = tokens
                     new_tokens[c] = replace
                     newline = self.delimiter.join(new_tokens)
