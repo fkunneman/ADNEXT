@@ -105,7 +105,7 @@ class Tweetsfeatures():
                     continue
             elif info_type == "text":
                 tweet=Tweetsfeatures.Tweet(tokens,"text")
-                words=tokens[1].split(" ")
+                words=tokens[2].split(" ")
             for word in words:
                 if (ht and hashtag.search(word)) or (u and url.search(word)):
                     continue
