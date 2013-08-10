@@ -105,7 +105,10 @@ class Tweetsfeatures():
                     continue
             elif info_type == "text":
                 tweet=Tweetsfeatures.Tweet(tokens,"text")
-                words=tokens[2].split(" ")
+                try:
+                    words=tokens[2].split(" ")
+                except IndexError:
+                    continue
             for word in words:
                 if (ht and hashtag.search(word)) or (u and url.search(word)):
                     continue
@@ -162,8 +165,8 @@ class Tweetsfeatures():
             else:
                 temp_lines=[]
                 temp_lines.extend(sequence)
-                temp_lines.append("<s>")
-                temp_lines.insert(0,"<s>")
+#                temp_lines.append("<s>")
+#                temp_lines.insert(0,"<s>")
                 if n==2:
                     for i,token in enumerate(temp_lines[:len(temp_lines)-1]):
                         bigram="_".join([token,temp_lines[i+1]])
@@ -196,7 +199,7 @@ class Tweetsfeatures():
             for string in text:
                 index=n
                 while index < len(string):
-                    char_gram = string[index-n:index]
+                    char_ngram = string[index-n:index]
                     char_ngram = re.sub(" ","_",char_ngram)
                     if len(char_ngram) == n: 
                         ngrams.append(char_ngram)

@@ -582,8 +582,9 @@ class Evalset():
             words = []
             for line in fileread:
                 term = line.strip()
-                if not re.search("_",term):
-                    words.append(term)
+                words.append(term)
+                if re.search("_",term):
+                    break
             text = " ".join(words)
             out_write.write(str(instance.score) + "\t" + text + "\n")    
         out_write.close()
