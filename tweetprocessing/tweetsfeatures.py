@@ -106,7 +106,7 @@ class Tweetsfeatures():
             elif info_type == "text":
                 tweet=Tweetsfeatures.Tweet(tokens,"text")
                 try:
-                    words=tokens[2].split(" ")
+                    words=tokens[2].split(" ")[1:]
                 except IndexError:
                     continue
             for word in words:
