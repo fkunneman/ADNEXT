@@ -98,7 +98,7 @@ if args.classify:
 print "evaluating..."
 results = directory + "results_" + target + ".txt"
 fp = directory + "fp_" + target + ".txt"
-os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 500 " + args.f)
+os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 250 " + args.f)
 #extract top features
 print "extracting top features..."
 top_features = directory + "top_features_" + label + ".txt"
@@ -108,6 +108,6 @@ os.system("campyon -k 1,2 -T -Z 2 " + top_features + " | head -500 > " + top_fea
 #extract training sample
 print "extracting training sample..."
 sample = directory + "sample_" + label + ".txt"
-os.system("python ~/ADNEXT/convert_lines.py -i " + directory + "meta.txt -o " + sample + " -a extract --extract 500")
+os.system("python ~/ADNEXT/convert_lines.py -i " + directory + "meta.txt -o " + sample + " -a extract --extract 250")
 os.system("campyon -k 8 -T " + sample + " > " + directory + "sample_" + label + "_text.txt")
 
