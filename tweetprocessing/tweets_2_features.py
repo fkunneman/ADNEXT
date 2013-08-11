@@ -28,6 +28,7 @@ parser.add_argument('-o', action = 'store', required = True, choices = ["sparse"
 parser.add_argument('-w', action = 'store', required = True, nargs = '+', help = "specify the target to write output to; for sparse(bin) and big specify the outfile, the vocabulary file and optionally the metafile and a \'1\' to give the time of a tweet with a given hashtag after the first occurence in time; for lcs give respectively the directory, prefix, dirsize, partsfile and metafile")
 parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done")
 parser.add_argument('--text', action= 'store_true', help = "if the inputted tweets do not contain metadata, indicate by this parameter")
+parser.add_argument('--eos', action = 'store_true', help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed (the marker will be added to previous word)")
 
 args = parser.parse_args() 
 infile = args.i
@@ -87,7 +88,7 @@ if remove_features:
     tf.remove_eventmention()
 
 if args.rb:
-    tf.remove_blacklist(args.rb)
+    tf.remove_blacklist(args.rb,args.eos)
 
 if time_labels:
     time_unit = time_labels[0]

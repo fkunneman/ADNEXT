@@ -362,7 +362,7 @@ class Tweetsfeatures():
                 index -= offset
                 del(t.features[index])
 
-    def remove_blacklist(self,blacklist,eos = False):
+    def remove_blacklist(self,blacklist,eos):
         """Remove a feature if it contains a word in the blacklist."""
         for t in self.tweets:
             removed_features=[]
