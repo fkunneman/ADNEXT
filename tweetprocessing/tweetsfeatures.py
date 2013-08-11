@@ -188,7 +188,7 @@ class Tweetsfeatures():
                 features.extend(make_ngrams(t.get_possequence(),n))
             t.set_features(features)
   
-    def add_char_ngrams(self,raw_file,n,id_col = 1,ignore = False,):
+    def add_char_ngrams(self,raw_file,n,id_col = 1,text = False,ignore = False,):
         """
         add character ngrams to the featurespace of each tweet, based on a raw untokenized file 
         (in order to take into account spaces and punctuation)
@@ -236,6 +236,8 @@ class Tweetsfeatures():
             try:
                 tweet = tid_tweet[tweet_id]
                 text = tokens[-1]
+                if text:
+                    text = " ".join(text.split(" ")[1:])
                 if ignore:
                     text = rm_string(text,ignore)
                 else:

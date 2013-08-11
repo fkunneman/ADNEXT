@@ -78,7 +78,7 @@ for n in ngrams:
     tf.add_ngrams(n=int(n))
 
 if args.cn:
-    tf.add_char_ngrams(args.cn[0],args.cn[2:],int(args.cn[1]),args.rb)
+    tf.add_char_ngrams(args.cn[0],args.cn[2:],int(args.cn[1]),args.text,args.rb)
 
 if events:
     tf.set_events(events,args.a)
