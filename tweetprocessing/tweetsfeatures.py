@@ -378,7 +378,7 @@ class Tweetsfeatures():
                         break
             if eos:
                 offset = 0
-                for index in removed_features
+                for index in removed_features:
                     index -= offset
                     if re.search("_<s>",t.features[index]):
                         pre_last_feature = t.features[index-1]
@@ -397,11 +397,6 @@ class Tweetsfeatures():
                 for offset,index in enumerate(removed_features):
                     index -= offset
                     del(t.features[index])
-
-    def restore_endofsentence(self):
-        for t in self.tweets:
-            for i,f in enumerate(t.features):
-                if re.search("<s>_")
 
     def generate_tfz(self,agg=False):
         """
