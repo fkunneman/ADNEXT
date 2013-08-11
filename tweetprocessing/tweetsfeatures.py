@@ -165,8 +165,8 @@ class Tweetsfeatures():
             else:
                 temp_lines=[]
                 temp_lines.extend(sequence)
-#                temp_lines.append("<s>")
-#                temp_lines.insert(0,"<s>")
+                temp_lines.append("<s>")
+                temp_lines.insert(0,"<s>")
                 if n==2:
                     for i,token in enumerate(temp_lines[:len(temp_lines)-1]):
                         bigram="_".join([token,temp_lines[i+1]])
@@ -377,6 +377,11 @@ class Tweetsfeatures():
             for offset,index in enumerate(removed_features):
                 index -= offset
                 del(t.features[index])
+
+    def restore_endofsentence(self):
+        for t in self.tweets:
+            for i,f in enumerate(t.features):
+                if re.search("<s>_")
 
     def generate_tfz(self,agg=False):
         """
