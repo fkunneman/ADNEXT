@@ -10,12 +10,9 @@ class Lineconverter():
 
     # Give the file with lines and the standard delimiter between fields on a line (also if there is 
     #    only one field)
-    def __init__(self,infile,delimiter):
+    def __init__(self,lines,delimiter):
         self.lines = []
-        infile = codecs.open(infile,"r","utf-8")
-        infile_lines = infile.readlines()
-        infile.close()
-        for line in infile_lines:
+        for line in lines:
             self.lines.append(line.strip())
         self.delimiter = delimiter
 

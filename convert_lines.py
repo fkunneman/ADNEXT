@@ -19,13 +19,15 @@ parser.add_argument('--replace', action = 'store', required = False, nargs='+', 
 parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
 
 args = parser.parse_args() 
-infile = args.i
+infile = codecs.open(args.i,"r","utf-8")
+lines = infile.readlines()
+infile.close()
 delimiter = args.d
 action = args.a
 extra = args.e
 outfile = codecs.open(args.o,"w","utf-8")
 
-lineconvert = lineconverter.Lineconverter(infile,delimiter)
+lineconvert = lineconverter.Lineconverter(lines,delimiter)
 if action == "add":
     if args.c:
         place = int(args.c)
