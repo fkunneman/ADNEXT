@@ -3,6 +3,7 @@
 from __future__ import division
 import math
 import xlrd
+import re
 
 def make_chunks(lines,num_chunks=16):
     chunks=[]
@@ -89,3 +90,26 @@ def calculate_cosine_similarity(vector1,vector2):
 
     return cosine_similarity
 
+def has_endhashtag(sequence,hashtags):
+#    print sequence
+    print hashtags
+    if len(sequence) == 0:
+       return False
+    if sequence[-1] == ".":
+#        print "dot-false"
+        return False
+    for h in hashtags:
+        try:
+            #print sequence[-1],h,len(sequence[-1].strip()),len(h.strip())
+            if re.match(sequence[-1],h,re.IGNORECASE):
+                #print "true"
+                return True
+        except:
+#            print "charfalse"
+            return False
+    if re.search("URL",sequence[-1]) or re.search("#",sequence[-1]):
+#        print "markerproceed"
+        has_endhashtag(sequence[:-1],hashtags)
+    else:
+#        print "empty stop"
+        return False

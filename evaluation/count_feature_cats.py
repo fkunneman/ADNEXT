@@ -23,13 +23,15 @@ for line in feature_cats_open.readlines():
         feature_cats[i].append(feature)
 feature_cats_open.close()
 
-for featcat in feature_cats.keys().sorted()
+for featcat in sorted(feature_cats.keys()):
     print featcat
+
+exit()
 
 text_file_open = codecs.open(args.i[0],"read","utf-8")
 textcolumn = int(args.i[1])
 for line in text_file_open.readlines():
     tokens = line.strip().split("\t")
     text = tokens[textcolumn]
-    for word in text.split(" "):
-        for  
+#    for word in text.split(" "):
+#        for  

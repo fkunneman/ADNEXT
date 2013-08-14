@@ -5,6 +5,7 @@ import argparse
 import codecs
 from collections import defaultdict
 import lineconverter
+from gen_functions import has_endhashtag
 
 parser = argparse.ArgumentParser(description = "")
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
@@ -20,13 +21,16 @@ infile.close()
 outfile = codecs.open(args.o,"w","utf-8")
 
 label_hash = defaultdict(list)
-label_column = int(lc)
-text_column = int(tc)
+label_column = int(args.lc)
+text_column = int(args.tc)
 for line in lines:
-    tokens = line.split(" ")
+    tokens = line.split("\t")
+    #print tokens
     label = tokens[label_column]
     text = tokens[text_column]
-    label_hash[label].append(text)
+    wordsequence = text.strip().split(" ")
+    if has_endhashtag(wordsequence,["#" + label]):
+        label_hash[label].append(text)
 
 sample_size = int(args.s)
 num_samples = 0

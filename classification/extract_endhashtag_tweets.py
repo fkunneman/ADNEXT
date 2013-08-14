@@ -16,14 +16,14 @@ inlines = infile.readlines()
 infile.close()
 outfile = codecs.open(args.o,"w","utf-8")
 
-def has_endhashtag(sequence):
+def has_endhashtag(sequence,hashtags):
 #    print sequence
     if len(sequence) == 0:
        return False
     if sequence[-1] == ".":
 #        print "dot-false"
         return False
-    for h in args.ht:
+    for h in hashtags:
         try:
             #print sequence[-1],h,len(sequence[-1].strip()),len(h.strip())
             if re.match(sequence[-1],h,re.IGNORECASE):
@@ -47,7 +47,7 @@ for line in inlines:
 #            print text
             wordsequence = text.strip().split(" ")
 #            print has_endhashtag(wordsequence)
-            if has_endhashtag(wordsequence):
+            if has_endhashtag(wordsequence,args.ht):
 #                print "yes"
                 outfile.write(line)
                 continue
