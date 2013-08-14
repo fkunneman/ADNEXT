@@ -40,9 +40,9 @@ for line in text_file_open.readlines():
     for i,entry in enumerate(occurences):
         if entry:
             if cat == "":
-                cat = str(i)
+                cat = args.m[i]
             else: 
-                cat = cat + "&" + str(i)
+                cat = cat + "&" + args.m[i]
 
     feature_cat_frequencies[cat] += 1
 
