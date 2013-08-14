@@ -46,6 +46,6 @@ for line in text_file_open.readlines():
 
     feature_cat_frequencies[cat] += 1
 
-print feature_cat_frequencies
-
-
+for t in feature_cat_frequencies:
+    percentage = feature_cat_frequencies[t] / len(text_fiel_open.readlines())
+    print t,percentage
