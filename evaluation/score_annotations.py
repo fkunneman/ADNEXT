@@ -43,6 +43,3 @@ for i,sheet in enumerate(annotation_values):
     if args.fs:
         mutual_fscore = annotation_calcs.calculate_mutual_fscore(sheet)
         print "Mutual F-score:",mutual_fscore
-
-
-    
