@@ -12,7 +12,7 @@ parser.add_argument('-m', action = 'store', required = True, nargs='+', help = "
 
 args = parser.parse_args()
 
-feature_cat_frequencies = defaultdict(list)
+feature_cat_frequencies = defaultdict(int)
 
 # generate a dictionary with lists of feature categories
 feature_cats_open = codecs.open(args.f,"read","utf-8") 
@@ -22,16 +22,30 @@ for line in feature_cats_open.readlines():
     for i,feature in enumerate(tokens):
         feature_cats[i].append(feature)
 feature_cats_open.close()
-
-for featcat in sorted(feature_cats.keys()):
-    print featcat
-
-exit()
+sorted_featurecats = sorted(feature_cats.keys())
 
 text_file_open = codecs.open(args.i[0],"read","utf-8")
 textcolumn = int(args.i[1])
 for line in text_file_open.readlines():
     tokens = line.strip().split("\t")
     text = tokens[textcolumn]
-#    for word in text.split(" "):
-#        for  
+    occurences = []
+    for i in range(len(sorted_featurecats)):
+        occurences.append(0)
+    for word in text.split(" "):
+        for featurecat in sorted_featurecats:
+            if word in feature_cats[featurecat]:
+                occurences[featurecat] = 1
+    cat = ""
+    for i,entry in enumerate(occurences):
+        if entry:
+            if cat == "":
+                cat = str(i)
+            else: 
+                cat = cat + "&" + str(i)
+
+    feature_cat_frequencies[cat] += 1
+
+print feature_cat_frequencies
+
+
