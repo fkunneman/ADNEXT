@@ -31,6 +31,7 @@ parser.add_argument('--punct', action = 'store_true', default = False, help = "c
 parser.add_argument('--parralel', action = 'store_true', default = False, help = "choose if the file should be processed in parralel (recommended for big files).")
 parser.add_argument('--events', action = 'store', required = False, help = "if the event of a tweet should be given as a label, give a file containing the events")
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
+parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
 
 args = parser.parse_args() 
 if args.i[-2:] == "gz":
@@ -85,6 +86,11 @@ def frogger(t,o,i):
     fc = pynlpl.clients.frogclient.FrogClient('localhost',port)
     for tweet in t:
         tokens = tweet.split(delimiter)
+        if args.txtdelim:
+            tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
+            tokens = tokens[:column_sequence[-1]+1]
+            print tokens
+            exit() 
         outfields = []
         for column in column_sequence:
             if column:
