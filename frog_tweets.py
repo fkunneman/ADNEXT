@@ -90,7 +90,7 @@ def frogger(t,o,i):
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
             tokens = tokens[:column_sequence[-1]+1]
             print tokens
-            exit() 
+        exit() 
         outfields = []
         for column in column_sequence:
             if column:
