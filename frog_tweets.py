@@ -8,6 +8,7 @@ import argparse
 import multiprocessing
 import os
 from random import randint
+import gzip
 import gen_functions
 
 """
@@ -32,7 +33,18 @@ parser.add_argument('--events', action = 'store', required = False, help = "if t
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
 
 args = parser.parse_args() 
-infile = codecs.open(args.i,"r","utf-8")
+if args.i[-2:] == "gz":
+    infile = gzip.open(args.i,"rb")
+    # content = zf.read()
+    # zf.close()
+    # print content
+    # zf = zipfile.ZipFile(args.i,"r")
+    # for filename in zf.namelist()[:3]:
+    #     if filename[-2:] == "gz":
+    #         ex = zf.extract(filename)
+
+else:
+    infile = codecs.open(args.i,"r","utf-8")
 outfile = codecs.open(args.w,"w","utf-8")
 port = int(args.p)
 delimiter = args.d
