@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import division
+import math
 import argparse
 import codecs
 from collections import defaultdict
@@ -26,7 +28,9 @@ sorted_featurecats = sorted(feature_cats.keys())
 
 text_file_open = codecs.open(args.i[0],"read","utf-8")
 textcolumn = int(args.i[1])
-for line in text_file_open.readlines():
+lines = text_file_open.readlines()
+text_file_open.close()
+for line in lines:
     tokens = line.strip().split("\t")
     text = tokens[textcolumn]
     occurences = []
@@ -47,5 +51,4 @@ for line in text_file_open.readlines():
     feature_cat_frequencies[cat] += 1
 
 for t in feature_cat_frequencies:
-    percentage = feature_cat_frequencies[t] / len(text_fiel_open.readlines())
-    print t,percentage
+    print t,feature_cat_frequencies[t]

@@ -645,7 +645,7 @@ class Tweetsfeatures():
     def features_2_lda(self,outfile):
         out = codecs.open(outfile,"w","utf-8")
         for tweet in self.tweets:
-            line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + "\t" + " ".join(tweet.features) + "\n"
+            line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + "\t" + " ".join(tweet.wordsequence) + "\n"
             out.write(line)
         out.close()
 

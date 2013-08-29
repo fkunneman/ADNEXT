@@ -49,10 +49,10 @@ else:
 outfile = codecs.open(args.w,"w","utf-8")
 port = int(args.p)
 delimiter = args.d
-textcolumn = args.text
-usercolumn = args.user
-datecolumn = args.date
-timecolumn = args.time
+textcolumn = int(args.text)
+usercolumn = int(args.user)
+datecolumn = int(args.date)
+timecolumn = int(args.time)
 idcolumn = args.id
 labelcolumn = args.label
 parralel = args.parralel
@@ -89,13 +89,11 @@ def frogger(t,o,i):
         if args.txtdelim:
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
             tokens = tokens[:column_sequence[-1]+1]
-            print tokens
-        exit() 
         outfields = []
         for column in column_sequence:
             if column:
                 try:
-                    outfields.append(tokens[int(column)])
+                    outfields.append(tokens[column])
                 except IndexError:
                     continue
 
@@ -129,7 +127,7 @@ def frogger(t,o,i):
 
         outstring = outstring + "\n"
         o.put(outstring)
-    
+        exit()
     print "Chunk " + str(i) + " done."
 
 print "Processing tweets."
@@ -140,7 +138,8 @@ if parralel:
 else:
     tweets_chunks = [tweets]
     
-for i in range(len(tweets_chunks)):
+#for i in range(len(tweets_chunks)):
+for i in range(1):
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
 
