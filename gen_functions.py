@@ -42,7 +42,7 @@ def excel2lines(file_name,sheet_indexes,header = False):
             for value in sheet.row_values(rownum):
                 try:
                     if int(value) in range(2):
-                        values.append(int(value))
+                        values.append(value)
                 except ValueError:
                     continue
             if num_annotators:
