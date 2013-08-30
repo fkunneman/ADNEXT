@@ -57,8 +57,10 @@ elif action == "add_id":
     lineconvert.add_id()
 
 elif action == "delete":
+    print "num lines before delete:",len(linecovert.lines)
     column = int(args.c)
     lineconvert.delete_string(args.s, column)
+    print "num lines after delete",len(lineconvert.lines)
 
 elif action == "extract":
     size = int(args.extract)

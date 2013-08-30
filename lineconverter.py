@@ -66,9 +66,8 @@ class Lineconverter():
         newlines = []
         for line in self.lines:
             tokens = line.split(self.delimiter)
-            if re.search(string,tokens[column]):
-                tokens[column] = re.sub(string,"",tokens[column])
-            newlines.append(self.delimiter.join(tokens))
+            if not re.search(string,tokens[column]):
+                newlines.append(line)
         self.lines = newlines
 
     # for lines with temporal characteristics (especially describing an event), add an amount of hours to the date and time, and either append the new date and time to the line, or replace the current ones
