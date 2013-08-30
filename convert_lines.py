@@ -57,7 +57,7 @@ elif action == "add_id":
     lineconvert.add_id()
 
 elif action == "delete":
-    print "num lines before delete:",len(linecovert.lines)
+    print "num lines before delete:",len(lineconvert.lines)
     column = int(args.c)
     lineconvert.delete_string(args.s, column)
     print "num lines after delete",len(lineconvert.lines)

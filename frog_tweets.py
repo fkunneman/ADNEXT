@@ -127,7 +127,6 @@ def frogger(t,o,i):
 
         outstring = outstring + "\n"
         o.put(outstring)
-        exit()
     print "Chunk " + str(i) + " done."
 
 print "Processing tweets."
@@ -138,8 +137,7 @@ if parralel:
 else:
     tweets_chunks = [tweets]
     
-#for i in range(len(tweets_chunks)):
-for i in range(1):
+for i in range(len(tweets_chunks)):
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
 
