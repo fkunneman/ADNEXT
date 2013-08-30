@@ -627,7 +627,7 @@ class Tweetsfeatures():
         self.generate_feature_indexes(vocabulary_file)
         if threshold:
             for event in self.event_tweets.keys():
-                generate_dataline(event_tweets[event],event)
+                generate_dataline(self.event_tweets[event],event)
 
         out.close() 
         if metafile:            
