@@ -62,13 +62,13 @@ class Lineconverter():
                 newlines.append(newline)    
         self.lines = newlines
     
-    def delete_string(self,string):
+    def delete_string(self,string, column):
         newlines = []
         for line in self.lines:
-            newline = line
-            if re.search(string,line):
-                newline = re.sub(string,"",line)
-            newlines.append(newline)
+            tokens = line.split(self.delimiter)
+            if re.search(string,tokens[column]):
+                tokens[column] = re.sub(string,"",tokens[column])
+            newlines.append(self.delimiter.join(tokens))
         self.lines = newlines
 
     # for lines with temporal characteristics (especially describing an event), add an amount of hours to the date and time, and either append the new date and time to the line, or replace the current ones
