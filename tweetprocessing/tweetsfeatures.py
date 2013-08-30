@@ -620,7 +620,7 @@ class Tweetsfeatures():
                 datastring=datastring + metatweet.label + "\n"
                 out.write(datastring)
                 if metafile:
-                    metastring="\t".join(self.meta) + "\t" + " ".join(metatweet.wordsequence) + "\n"
+                    metastring="\t".join(t.meta) + "\t" + " ".join(metatweet.wordsequence) + "\n"
                     meta_out.write(metastring)
             print event,"done"
 
