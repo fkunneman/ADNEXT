@@ -25,6 +25,7 @@ class Classifier():
         #        self.metatest.append(x[1])
         #else:
         self.training=trainlist
+	print self.training
         self.test=testlist
         self.directory=directory
         self.vocabulary=vocabulary

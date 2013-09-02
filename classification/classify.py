@@ -87,7 +87,7 @@ elif validation=="looe":
             for i,instance in enumerate(instances[:start]):
                 training.append([instances[i],metaread[i]])
         else:
-            end=eventbound[i+1][1]
+            end=event_bounds[i+1][1]
             test=[]
             for i,instance in enumerate(instances[start:end]):
                 test.append([instances[start+i],metaread[start+i]])
@@ -104,7 +104,7 @@ elif validation=="looe":
             if re.search(" ",event):
                 event="_".join(event.split(" "))
             print event
-            d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + args.a + "/" + event + "/all_to_one/"
+            d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event + "/all_to_one/"
             if not os.path.exists(d):
                 if not os.path.exists("/".join(d.split("/")[:-2])):
                     if not os.path.exists("/".join(d.split("/")[:-1])):
