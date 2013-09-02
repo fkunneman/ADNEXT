@@ -65,8 +65,8 @@ class Classifier():
         
         for i,f in enumerate(ranked_list[:boundary]):
             old_index=f
-            if timelabels: 
-                new_index=i+len(timelabel_set)+1
+            if time_labels: 
+                new_index=i+len(time_label_set)+1
             else:
                 new_index=i+1
             feature_info=self.vocabulary[old_index]
@@ -83,7 +83,7 @@ class Classifier():
             token_features=tokens[:-1]
             if timelabels:
                 tl=self.metatraining[i].split("\t")[4]
-                tli=timelabel_vocab[tl]
+                tli=time_label_vocab[tl]
                 new_features.append(tli)
             for token in token_features:
                 feature_index=int(token)
@@ -100,12 +100,12 @@ class Classifier():
             new_features=[]
             tokens=instance.split(",")
             token_features=tokens[:-1]
-            if timelabels:
+            if time_labels:
                 tl=self.metatest[i].split("\t")[4]
                 try:
-                    tli=timelabel_vocab[tl]
+                    tli=time_label_vocab[tl]
                 except KeyError:
-                    tle=timelabel_vocab["-"]
+                    tle=time_label_vocab["-"]
                 new_features.append(tli)
             for token in token_features:
                 feature_index=int(token)
