@@ -69,9 +69,9 @@ class Classifier():
                 new_index=i+len(time_label_set)+1
             else:
                 new_index=i+1
-            feature_info=self.vocabulary[old_index]
-            feature_info.append(value_dict[old_index])
-            new_vocabulary[new_index]=feature_info
+            feature_info=self.vocabulary[old_index].strip().split("\t")
+            feature_info.append(str(value_dict[old_index]))
+            new_vocabulary[new_index]="\t".join(feature_info[1:]) + "\n"
             feature_status[old_index]=new_index
         self.vocabulary=new_vocabulary
         for f in ranked_list[boundary:]:
