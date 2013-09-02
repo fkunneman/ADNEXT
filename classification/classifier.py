@@ -25,7 +25,6 @@ class Classifier():
         #        self.metatest.append(x[1])
         #else:
         self.training=trainlist
-	print self.training
         self.test=testlist
         self.directory=directory
         self.vocabulary=vocabulary
@@ -126,7 +125,7 @@ class Classifier():
         feature_freq=defaultdict(int)
         if classifier == "knn":
             for instance in self.training:
-                features=instance.split(",")[:-1]
+                features=instance[:-1]
                 for feature in features:
                     feature_freq[int(feature)] += 1
         elif classifier == "lcs":
