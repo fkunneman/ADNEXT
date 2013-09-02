@@ -125,7 +125,7 @@ class Classifier():
         feature_freq=defaultdict(int)
         if classifier == "knn":
             for instance in self.training:
-                features=instance[:-1]
+                features=instance[0].split(",")[:-1]
                 for feature in features:
                     feature_freq[int(feature)] += 1
         elif classifier == "lcs":
