@@ -27,7 +27,7 @@ class Classifier():
         self.training=trainlist
         self.test=testlist
         self.directory=directory
-        self.vocabulary=vocabulary
+        self.feature_info=vocabulary
 
     def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):
         if algorithm=="knn":
@@ -40,16 +40,16 @@ class Classifier():
     #def set_directory(self,directory):
     #    self.directory=directory
     
-    #def set_vocabulary(self,vocabularylines):
-    #    self.vocabulary={}
-    #    for line in vocabularylines:
+    #def set_feature_info(self,feature_infolines):
+    #    self.feature_info={}
+    #    for line in feature_infolines:
     #        tokens=line.split("\t")
-    #        self.vocabulary[int(tokens[0])]=[tokens[1].strip()]
+    #        self.feature_info[int(tokens[0])]=[tokens[1].strip()]
     
     def adjust_index_space(self,ranked_list,value_dict,boundary,time_labels=False):
         
-        #create new vocabulary
-        new_vocabulary={}
+        #create new feature_info
+        new_feature_info={}
         feature_status={}        
 
         if time_labels:
@@ -60,7 +60,7 @@ class Classifier():
                 time_label[tl] += 1
             time_label_set=list(set(time_label.keys())) 
             for i,tl in enumerate(time_label_set):
-                new_vocabulary[i+1]=[tl,0,0]
+                new_feature_info[i+1]=[tl,0,0]
                 time_label_vocab[tl]=i+1
         
         for i,f in enumerate(ranked_list[:boundary]):
@@ -69,11 +69,11 @@ class Classifier():
                 new_index=i+len(time_label_set)+1
             else:
                 new_index=i+1
-            feature_info=self.vocabulary[old_index].strip().split("\t")
-            feature_info.append(str(value_dict[old_index]))
-            new_vocabulary[new_index]="\t".join(feature_info)
+            feature_tokens=self.feature_info[old_index]
+            feature_tokens.append(value_dict[old_index])
+            new_feature_info[new_index]=feature_tokens
             feature_status[old_index]=new_index
-        self.vocabulary=new_vocabulary
+        self.feature_info=new_feature_info
         for f in ranked_list[boundary:]:
             feature_status[f]=False
         #adjust instances
@@ -146,9 +146,9 @@ class Classifier():
                 break
         
         if classifier == "knn":
-            #generate new indexes and make a new vocabulary 
+            #generate new indexes and make a new feature_info 
             self.adjust_index_space(sorted_feature_freq,feature_freq,boundary)
-            print "num features after pruning: ", len(self.vocabulary.keys())
+            print "num features after pruning: ", len(self.feature_info.keys())
         elif classifier == "lcs":
             #generate stoplist
             self.stoplist=[]
@@ -207,8 +207,9 @@ class Classifier():
             return infogain
             
         if classifier == "knn":
-            for f in self.vocabulary.keys(): #compute for each feature
-                frequency=int(self.vocabulary[f][1])
+            for f in self.feature_info.keys(): #compute for each feature
+                frequency=int(self.feature_info[f][2])
+                print self.feature_info[f],frequency
                 ig=compute_infogain(f,frequency)
                 feature_infogain[f]=ig
         elif classifier == "lcs":
@@ -250,8 +251,8 @@ class Classifier():
             self.adjust_index_space(selected_features,feature_weights,num_features,timelabels)
             if timelabels:
                 weightout=codecs.open(self.directory + "weights","w","utf-8")
-                for i in sorted(self.vocabulary.keys()):
-                    weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str( self.vocabulary[i][-1]) + "\n")
+                for i in sorted(self.feature_info.keys()):
+                    weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str( self.feature_info[i][-1]) + "\n")
         elif classifier == "lcs":
             self.stoplist.extend(selected_features[num_features:])
 
@@ -333,33 +334,33 @@ class Classifier():
         test=self.directory + "test"
         trainingout=open(train,"w")
         testout=open(test,"w")
-        vocabulary=codecs.open(self.directory + "vocabulary","w","utf-8")
+        feature_info=codecs.open(self.directory + "feature_info","w","utf-8")
         for instance in self.training:
             trainingout.write(instance)
         for instance in self.test:
             testout.write(instance)
-        for feature_index in sorted(self.vocabulary.keys()):
-            info=self.vocabulary[feature_index][0]
-            for field in self.vocabulary[feature_index][1:]:
+        for feature_index in sorted(self.feature_info.keys()):
+            info=self.feature_info[feature_index][0]
+            for field in self.feature_info[feature_index][1:]:
                 info=info + "\t" + str(field)
-            vocabulary.write(str(feature_index) + "\t" + info + "\n")
+            feature_info.write(str(feature_index) + "\t" + info + "\n")
         if timelabels:
             weight=self.directory + "weights"
             weightout=codecs.open(weight,"w","utf-8")
-            for i in sorted(self.vocabulary.keys()):
-                weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str(self.vocabulary[i][-1]) + "\n")
+            for i in sorted(self.feature_info.keys()):
+                weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str(self.feature_info[i][-1]) + "\n")
             weightout.close()
         trainingout.close()
         testout.close()
-        vocabulary.close()
+        feature_info.close()
         print "performing knn..."
         for k in klist:
             print "k=",k
             classification=self.directory + "classification" + k + " .txt"
             if timelabels:
-                os.system("stimbl -n " + str(len(self.vocabulary)+1) + " -f " + train + " -W " + weight + " -v -D -i -m 3 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -D -i -m 3 -k " + k + " < " + test + " > " + classification) 
             else:
-                os.system("stimbl -n " + str(len(self.vocabulary)+1) + " -f " + train + " -v -D -i -m 3 -w 2 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -D -i -m 3 -w 2 -k " + k + " < " + test + " > " + classification) 
 
     def informed_baseline_date(self,args):
         

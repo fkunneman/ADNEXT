@@ -36,8 +36,12 @@ classifier=args.c
 arguments=args.a
 if args.vocab:
     vocabulary_read=codecs.open(args.vocab,"r","utf-8")
-    vocabulary=list(vocabulary_read.readlines())
+    vocabulary_list=list(vocabulary_read.readlines())
     vocabulary_read.close()
+    vocabulary = []
+    for entry in vocabulary_list:
+        tokens = entry.strip().split("\t")
+        vocabulary.append(tokens)
 else:
     vocabulary=False
 
