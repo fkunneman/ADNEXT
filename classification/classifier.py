@@ -79,7 +79,7 @@ class Classifier():
         #adjust instances
         for i,instance in enumerate(self.training):
             new_features=[]
-            tokens=instance.split(",")
+            tokens=instance[0].split(",")
             token_features=tokens[:-1]
             if timelabels:
                 tl=self.metatraining[i].split("\t")[4]
@@ -98,7 +98,7 @@ class Classifier():
             
         for i,instance in enumerate(self.test): 
             new_features=[]
-            tokens=instance.split(",")
+            tokens=instance[0].split(",")
             token_features=tokens[:-1]
             if time_labels:
                 tl=self.metatest[i].split("\t")[4]
