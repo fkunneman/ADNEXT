@@ -71,7 +71,7 @@ class Classifier():
                 new_index=i+1
             feature_info=self.vocabulary[old_index].strip().split("\t")
             feature_info.append(str(value_dict[old_index]))
-            new_vocabulary[new_index]="\t".join(feature_info[1:]) + "\n"
+            new_vocabulary[new_index]=feature_info[1:]
             feature_status[old_index]=new_index
         self.vocabulary=new_vocabulary
         for f in ranked_list[boundary:]:
@@ -81,7 +81,7 @@ class Classifier():
             new_features=[]
             tokens=instance[0].split(",")
             token_features=tokens[:-1]
-            if timelabels:
+            if time_labels:
                 tl=self.metatraining[i].split("\t")[4]
                 tli=time_label_vocab[tl]
                 new_features.append(tli)
@@ -208,7 +208,7 @@ class Classifier():
             
         if classifier == "knn":
             for f in self.vocabulary.keys(): #compute for each feature
-                frequency=self.vocabulary[f][1]
+                frequency=int(self.vocabulary[f][1])
                 ig=compute_infogain(f,frequency)
                 feature_infogain[f]=ig
         elif classifier == "lcs":
