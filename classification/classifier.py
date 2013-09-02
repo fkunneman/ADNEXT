@@ -209,7 +209,6 @@ class Classifier():
         if classifier == "knn":
             for f in self.feature_info.keys(): #compute for each feature
                 frequency=int(self.feature_info[f][2])
-                print self.feature_info[f],frequency
                 ig=compute_infogain(f,frequency)
                 feature_infogain[f]=ig
         elif classifier == "lcs":
@@ -334,16 +333,16 @@ class Classifier():
         test=self.directory + "test"
         trainingout=open(train,"w")
         testout=open(test,"w")
-        feature_info=codecs.open(self.directory + "feature_info","w","utf-8")
+        feature_info_out=codecs.open(self.directory + "vocabulary","w","utf-8")
         for instance in self.training:
-            trainingout.write(instance)
+            trainingout.write(instance[0])
         for instance in self.test:
-            testout.write(instance)
+            testout.write(instance[0])
         for feature_index in sorted(self.feature_info.keys()):
-            info=self.feature_info[feature_index][0]
+            info=str(self.feature_info[feature_index][0])
             for field in self.feature_info[feature_index][1:]:
-                info=info + "\t" + str(field)
-            feature_info.write(str(feature_index) + "\t" + info + "\n")
+                info=info + "\t" + unicode(field)
+            feature_info_out.write(str(feature_index) + "\t" + info + "\n")
         if timelabels:
             weight=self.directory + "weights"
             weightout=codecs.open(weight,"w","utf-8")
@@ -352,7 +351,7 @@ class Classifier():
             weightout.close()
         trainingout.close()
         testout.close()
-        feature_info.close()
+        feature_info_out.close()
         print "performing knn..."
         for k in klist:
             print "k=",k
