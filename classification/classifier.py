@@ -71,7 +71,7 @@ class Classifier():
                 new_index=i+1
             feature_info=self.vocabulary[old_index].strip().split("\t")
             feature_info.append(str(value_dict[old_index]))
-            new_vocabulary[new_index]=feature_info[1:]
+            new_vocabulary[new_index]="\t".join(feature_info)
             feature_status[old_index]=new_index
         self.vocabulary=new_vocabulary
         for f in ranked_list[boundary:]:
@@ -82,7 +82,7 @@ class Classifier():
             tokens=instance[0].split(",")
             token_features=tokens[:-1]
             if time_labels:
-                tl=self.metatraining[i].split("\t")[4]
+                tl=instance[1].split("\t")[4]
                 tli=time_label_vocab[tl]
                 new_features.append(tli)
             for token in token_features:
@@ -92,9 +92,9 @@ class Classifier():
                     new_features.append(new_index)
             
             if len(new_features) == 0:
-                self.training[i]=tokens[-1]
+                self.training[i]=[tokens[-1],instance[1]]
             else:
-                self.training[i]=",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1]
+                self.training[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
             
         for i,instance in enumerate(self.test): 
             new_features=[]
@@ -116,9 +116,9 @@ class Classifier():
                 except KeyError:
                     continue
             if len(new_features) == 0:
-                self.test[i]=tokens[-1]
+                self.test[i]=[tokens[-1],instance[1]]
             else:   
-                self.test[i]=",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1]
+                self.test[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
 
     def prune_features(self,minimum_threshold,classifier):
         #generate feature-frequency dict
@@ -163,7 +163,7 @@ class Classifier():
         feature_freq=defaultdict(int)
         if classifier == "knn":
             for instance in self.training:
-                tokens=instance.split(",")
+                tokens=instance[0].split(",")
                 features=tokens[:-1]
                 label=tokens[-1]
                 label_freq[label] += 1
