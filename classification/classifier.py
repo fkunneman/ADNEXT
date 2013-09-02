@@ -55,8 +55,8 @@ class Classifier():
         if time_labels:
             time_label_vocab={}
             time_label=defaultdict(int)
-            for x in self.meta_training:
-                tl=x.split("\t")[4]
+            for instance in self.training:
+                tl=instance[1].split("\t")[4]
                 time_label[tl] += 1
             time_label_set=list(set(time_label.keys())) 
             for i,tl in enumerate(time_label_set):
@@ -101,7 +101,7 @@ class Classifier():
             tokens=instance[0].split(",")
             token_features=tokens[:-1]
             if time_labels:
-                tl=self.metatest[i].split("\t")[4]
+                tl=instance[1].split("\t")[4]
                 try:
                     tli=time_label_vocab[tl]
                 except KeyError:
