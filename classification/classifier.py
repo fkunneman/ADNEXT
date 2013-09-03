@@ -46,45 +46,47 @@ class Classifier():
     #        tokens=line.split("\t")
     #        self.feature_info[int(tokens[0])]=[tokens[1].strip()]
     
-    def adjust_index_space(self,ranked_list,value_dict,boundary,time_labels=False):
-        #create new feature_info
+    def adjust_index_space(self,ranked_list,value_dict,boundary):
+        #create new feature_info dictionary
         new_feature_info={}
         feature_status={}        
 
-        if time_labels:
-            time_label_vocab={}
-            time_label=defaultdict(int)
-            for instance in self.training:
-                tl=instance[1].split("\t")[4]
-                print instance[1],tl
-                time_label[tl] += 1
-            time_label_set=list(set(time_label.keys())) 
-            for i,tl in enumerate(time_label_set):
-                new_feature_info[i+1]=[tl,0,0]
-                time_label_vocab[tl]=i+1
+        # if time_labels:
+        #     time_label_vocab={}
+        #     time_label=defaultdict(int)
+        #     for instance in self.training:
+        #         tl=instance[1].split("\t")[3]
+        #         time_label[tl] += 1
+        #     time_label_set=list(set(time_label.keys())) 
+        #     for i,tl in enumerate(time_label_set):
+        #         new_feature_info[i+1]=[tl,0,0]
+        #         time_label_vocab[tl]=i+1
         
+        #assign new feature_info indexes based on the ranked list
         for i,f in enumerate(ranked_list[:boundary]):
-            old_index=f
-            if time_labels: 
-                new_index=i+len(time_label_set)+1
-            else:
-                new_index=i+1
-            feature_tokens=self.feature_info[old_index]
-            feature_tokens.append(value_dict[old_index])
-            new_feature_info[new_index]=feature_tokens
-            feature_status[old_index]=new_index
+            # if time_labels: 
+            #     new_index=i+len(time_label_set)+1
+            # else:
+            new_index=i+1
+            #feature_tokens=self.feature_info[old_index]
+            #feature_tokens.append(value_dict[old_index])
+            new_feature_info[new_index]=self.feature_info[f] + value_dict[f]
+            feature_status[f]=new_index
         self.feature_info=new_feature_info
+        #set status of all pruned features to False
         for f in ranked_list[boundary:]:
             feature_status[f]=False
+
         #adjust instances
-        for i,instance in enumerate(self.training):
+        index = 0
+        for instance in self.training:
             new_features=[]
             tokens=instance[0].split(",")
             token_features=tokens[:-1]
-            if time_labels:
-                tl=instance[1].split("\t")[4]
-                tli=time_label_vocab[tl]
-                new_features.append(tli)
+            # if time_labels:
+            #     tl=instance[1].split("\t")[3]
+            #     tli=time_label_vocab[tl]
+            #     new_features.append(tli)
             for token in token_features:
                 feature_index=int(token)
                 if feature_status[feature_index]:
@@ -92,21 +94,25 @@ class Classifier():
                     new_features.append(new_index)
             
             if len(new_features) == 0:
-                self.training[i]=[tokens[-1],instance[1]]
+                print "before train",new_features,self.train[index],self.train[index+1]
+                self.training.pop(index)
+                print "after train",self.train[index]
             else:
                 self.training[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
+                index += 1
             
-        for i,instance in enumerate(self.test): 
+        index = 0
+        for instance in self.test: 
             new_features=[]
             tokens=instance[0].split(",")
             token_features=tokens[:-1]
-            if time_labels:
-                tl=instance[1].split("\t")[4]
-                try:
-                    tli=time_label_vocab[tl]
-                except KeyError:
-                    tle=time_label_vocab["-"]
-                new_features.append(tli)
+            # if time_labels:
+            #     tl=instance[1].split("\t")[4]
+            #     try:
+            #         tli=time_label_vocab[tl]
+            #     except KeyError:
+            #         tle=time_label_vocab["-"]
+            #     new_features.append(tli)
             for token in token_features:
                 feature_index=int(token)
                 try: 
@@ -116,9 +122,12 @@ class Classifier():
                 except KeyError:
                     continue
             if len(new_features) == 0:
-                self.test[i]=[tokens[-1],instance[1]]
+                print "before test",new_features,self.test[index],self.test[index+1]
+                self.test.pop(index)
+                print "after test",self.test[index]
             else:   
                 self.test[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
+                index += 1
 
     def prune_features(self,minimum_threshold,classifier):
         #generate feature_frequency dict
@@ -242,16 +251,16 @@ class Classifier():
 
         return feature_infogain
 
-    def select_features(self,num_features,prune,classifier,timelabels):
+    def select_features(self,num_features,prune,classifier):
         #make a file of the instances and perform infogain weighting (based on timbl)
         feature_weights=self.infogain(classifier,prune)
         selected_features=sorted(feature_weights, key=feature_weights.get, reverse=True)    
         if classifier == "knn":
-            self.adjust_index_space(selected_features,feature_weights,num_features,timelabels)
-            if timelabels:
-                weightout=codecs.open(self.directory + "weights","w","utf-8")
-                for i in sorted(self.feature_info.keys()):
-                    weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str( self.feature_info[i][-1]) + "\n")
+            self.adjust_index_space(selected_features,feature_weights,num_features)
+            # if timelabels:
+            #     weightout=codecs.open(self.directory + "weights","w","utf-8")
+            #     for i in sorted(self.feature_info.keys()):
+            #         weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str( self.feature_info[i][-1]) + "\n")
         elif classifier == "lcs":
             self.stoplist.extend(selected_features[num_features:])
 
@@ -328,7 +337,23 @@ class Classifier():
         if select:
             print "selecting features..."
             self.select_features(int(select),int(prune),"knn",timelabels)
-            
+        
+        #if set on, add timelabels as features to instances
+        if timelabels:
+            new_feature_info = []
+            time_label_vocab={}
+            time_label=defaultdict(int)
+            #generate a list of all time labels
+            for instance in self.training:
+                tl=instance[1].split("\t")[3]
+                time_label[tl] += 1
+            time_label_set=list(set(time_label.keys()))
+            #make a new feature_info_dict starting with the timelabels as features  
+            # for i,tl in enumerate(time_label_set):
+            #     feature_info[i+1]=[tl,0,0]
+            #     time_label_vocab[tl]=i+1    
+            print self.feature_info
+
         train=self.directory + "train"
         test=self.directory + "test"
         trainingout=open(train,"w")
