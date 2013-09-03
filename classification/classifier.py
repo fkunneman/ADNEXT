@@ -47,7 +47,6 @@ class Classifier():
     #        self.feature_info[int(tokens[0])]=[tokens[1].strip()]
     
     def adjust_index_space(self,ranked_list,value_dict,boundary,time_labels=False):
-        
         #create new feature_info
         new_feature_info={}
         feature_status={}        
@@ -57,6 +56,7 @@ class Classifier():
             time_label=defaultdict(int)
             for instance in self.training:
                 tl=instance[1].split("\t")[4]
+                print tl
                 time_label[tl] += 1
             time_label_set=list(set(time_label.keys())) 
             for i,tl in enumerate(time_label_set):
@@ -121,7 +121,7 @@ class Classifier():
                 self.test[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
 
     def prune_features(self,minimum_threshold,classifier):
-        #generate feature-frequency dict
+        #generate feature_frequency dict
         feature_freq=defaultdict(int)
         if classifier == "knn":
             for instance in self.training:
