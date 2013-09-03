@@ -56,7 +56,7 @@ class Classifier():
             time_label=defaultdict(int)
             for instance in self.training:
                 tl=instance[1].split("\t")[4]
-                print tl
+                print instance[1],tl
                 time_label[tl] += 1
             time_label_set=list(set(time_label.keys())) 
             for i,tl in enumerate(time_label_set):
