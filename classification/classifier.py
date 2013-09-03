@@ -70,7 +70,7 @@ class Classifier():
             new_index=i+1
             #feature_tokens=self.feature_info[old_index]
             #feature_tokens.append(value_dict[old_index])
-            new_feature_info[new_index]=self.feature_info[f] + value_dict[f]
+            new_feature_info[new_index]=self.feature_info[f] + [value_dict[f]]
             feature_status[f]=new_index
         self.feature_info=new_feature_info
         #set status of all pruned features to False
@@ -79,7 +79,8 @@ class Classifier():
 
         #adjust instances
         index = 0
-        for instance in self.training:
+        while index < len(self.training):
+            instance = self.training[index]
             new_features=[]
             tokens=instance[0].split(",")
             token_features=tokens[:-1]
@@ -94,9 +95,9 @@ class Classifier():
                     new_features.append(new_index)
             
             if len(new_features) == 0:
-                print "before train",new_features,self.train[index],self.train[index+1]
+                print "before train",new_features,self.training[index],self.training[index+1]
                 self.training.pop(index)
-                print "after train",self.train[index]
+                print "after train",self.training[index]
             else:
                 self.training[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
                 index += 1
