@@ -38,14 +38,12 @@ if args.vocab:
     vocabulary_read=codecs.open(args.vocab,"r","utf-8")
     vocabulary_list=list(vocabulary_read.readlines())
     vocabulary_read.close()
-    vocabulary = []
+    vocabulary = {}
     for entry in vocabulary_list:
         tokens = entry.strip().split("\t")
-        vocabulary.append(tokens)
+        vocabulary[tokens[0] = tokens[1]
 else:
     vocabulary=False
-print vocabulary[:50]
-exit()
 
 def classify(instance_dict,directory=False):
     traininglines = instance_dict["training"]
