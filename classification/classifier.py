@@ -337,6 +337,8 @@ class Classifier():
             #generate a list of all time labels
             for instance in self.training:
                 timelabel = instance["meta"][3]
+                if timelabel == "-":
+                    print instance                    
                 timelabel_list.append(timelabel)
             time_label_set=set(timelabel_list)
             #make a new feature_info_dict starting with the timelabels as features  
@@ -344,6 +346,7 @@ class Classifier():
             #     feature_info[i+1]=[tl,0,0]
             #     time_label_vocab[tl]=i+1    
             print time_label_set
+        exit()
 
         train=self.directory + "train"
         test=self.directory + "test"
