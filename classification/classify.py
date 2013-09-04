@@ -50,7 +50,6 @@ def classify(instance_dict,directory=False):
     testlines = instance_dict["test"]
     cl=Classifier(traininglines,testlines,directory,vocabulary)
     cl.classify(classifier,arguments,args.p,args.s,args.tl)
-    
     #if algorithm=="lcs":
     #    cl_dir=args.d[0]
     #    file_dir=args.d[1]
@@ -95,7 +94,7 @@ elif validation=="looe":
             training=[]
             for i in range(len(instances[:start])):
                 values = instances[i].strip().split(",")
-                meta_values = metaread[start+i].strip().split("\t")
+                meta_values = metaread[i].strip().split("\t")
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 training.append(instance)
         else:
@@ -109,7 +108,7 @@ elif validation=="looe":
             training=[]
             for i in range(len(instances)):
                 values = instances[i].strip().split(",")
-                meta_values = metaread[start+i].strip().split("\t")
+                meta_values = metaread[i].strip().split("\t")
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 training.append(instance)
             del training[start:end]
