@@ -26,9 +26,9 @@ class Classifier():
         #else:
         self.training=trainlist
         self.test=testlist
+        print self.training[:50]
         self.directory=directory
         self.feature_info=vocabulary
-        print self.feature_info[:1500]
         exit()
 
     def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):

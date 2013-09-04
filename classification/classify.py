@@ -45,7 +45,9 @@ if args.vocab:
 else:
     vocabulary=False
 
-def classify(traininglines,testlines,directory=False):
+def classify(instance_dict,directory=False):
+    traininglines = instance_dict["training"]
+    testlines = instance_dict["test"]
     cl=Classifier(traininglines,testlines,directory,vocabulary)
     cl.classify(classifier,arguments,args.p,args.s,args.tl)
     
@@ -67,44 +69,56 @@ if validation=="test":
     test_instances.close()
 
 elif validation=="looe":
-    params=args.l
-    meta=codecs.open(params[1],"r","utf-8")
+    parameters=args.l
+    meta=codecs.open(parameters[1],"r","utf-8")
     metaread=meta.readlines()
-    event_column=int(params[2])
-    event_train_test=defaultdict(list)
+    event_column=int(parameters[2])
+    event_train_test=defaultdict(lambda : defaultdict(list))
     event_bounds=[]
     event=""
-    for n,instance in enumerate(metaread):
+    for i,instance in enumerate(metaread):
         tokens=instance.split("\t")
         instance_event=tokens[event_column]
         if instance_event != event:
-            event_bounds.append((instance_event,n))
+            event_bounds.append((instance_event,i))
             event=instance_event
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
         start=event_bound[1]
         if i==len(event_bounds)-1:
             test=[]
-            for i,instance in enumerate(instances[start:]):
-                test.append([instances[start+i],metaread[start+i]])
+            for i in range(len(instances[start:])):
+                values = instances[start+i].strip().split(",")
+                meta_values = metaread[start+i].strip().split("\t")
+                instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                test.append(instance)
             training=[]
-            for i,instance in enumerate(instances[:start]):
-                training.append([instances[i],metaread[i]])
+            for i in range(len(instances[:start])):
+                values = instances[i].strip().split(",")
+                meta_values = metaread[start+i].strip().split("\t")
+                instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                training.append(instance)
         else:
             end=event_bounds[i+1][1]
             test=[]
-            for i,instance in enumerate(instances[start:end]):
-                test.append([instances[start+i],metaread[start+i]])
+            for i in range(len(instances[start:end])):
+                values = instances[start+i].strip().split(",")
+                meta_values = metaread[start+i].strip().split("\t")
+                instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                test.append(instance)
             training=[]
-            for i,instance in enumerate(instances):
-                training.append([instances[i],metaread[i]])
+            for i in range(len(instances)):
+                values = instances[i].strip().split(",")
+                meta_values = metaread[start+i].strip().split("\t")
+                instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                training.append(instance)
             del training[start:end]
-        event_train_test[event]=[training,test]
+        event_train_test[event] = {"training" : training, "test":test}
         
-    if params[0]=="regular":
+    if parameters[0]=="regular":
         for event in event_train_test.keys():
-            training=event_train_test[event][0]
-            test=event_train_test[event][1]
+            # training=event_train_test[event][0]
+            # test=event_train_test[event][1]
             if re.search(" ",event):
                 event="_".join(event.split(" "))
             print event
@@ -116,20 +130,20 @@ elif validation=="looe":
                     os.system("mkdir " + "/".join(d.split("/")[:-2]))
                 os.system("mkdir " + d)
             if args.parralel:
-                p=multiprocessing.Process(target=classify,args=[training,test,d])
+                p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
                 p.start()
             else:
-                classify(training,test,d)
+                classify(event_train_test[event],d)
     
     else:
-        domain_events=codecs.open(params[3],"r","utf-8")
+        domain_events=codecs.open(parameters[3],"r","utf-8")
         domain_event_hash=defaultdict(list)
         for line in domain_events.readlines():
             tokens=line.strip().split("\t")
             domain_event_hash[tokens[0]].append(tokens[1])
         domain_events.close()
 
-        if params[0]=="outer_domain":
+        if parameters[0]=="outer_domain":
             domains=domain_event_hash.keys()
             for i,domain in enumerate(domains):
                 print domain
@@ -157,7 +171,7 @@ elif validation=="looe":
                     else:
                         classify(training,test,d)
                         
-        elif params[0]=="inner_domain":
+        elif parameters[0]=="inner_domain":
             domains=domain_event_hash.keys()
             for i,domain in enumerate(domains):
                 print domain

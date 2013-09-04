@@ -591,7 +591,7 @@ class Tweetsfeatures():
                 feature_frequency[feature] += 1
         
         for i,feature in enumerate(feature_frequency.keys()):
-             self.feature_index[feature]=i
+             self.feature_index[feature]=i+1
              vocabulary_out.write(str(i) + "\t" + feature + "\n")
 
     def features2sparsebinary(self,out_file,vocabulary_file,metafile=False,threshold=False, aggregate=False):
