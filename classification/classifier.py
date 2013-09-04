@@ -333,7 +333,7 @@ class Classifier():
         if timelabels:
             new_feature_info = []
             time_label_vocab={}
-            time_count=defaultdict(int)
+            timelabel_list = []
             #generate a list of all time labels
             for instance in self.training:
                 timelabel = instance["meta"][3]
