@@ -41,10 +41,10 @@ if args.vocab:
     vocabulary = []
     for entry in vocabulary_list:
         tokens = entry.strip().split("\t")
-        print tokens
         vocabulary.append(tokens)
 else:
     vocabulary=False
+print vocabulary[:50]
 exit()
 
 def classify(instance_dict,directory=False):
