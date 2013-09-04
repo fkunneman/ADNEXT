@@ -89,7 +89,6 @@ class Classifier():
                 #print "after train",self.training[index]
             else:
                 self.training[index]["features"]=["%s" % el for el in sorted(new_features)]
-                print self.training[index]
                 index += 1
             
         index = 0
@@ -325,7 +324,7 @@ class Classifier():
             self.prune_features(int(prune),"knn")          
         if select:
             print "selecting features..."
-            self.select_features(int(select),int(prune),"knn",timelabels)
+            self.select_features(int(select),int(prune),"knn")
         
         #if set on, add timelabels as features to instances
         if timelabels:
