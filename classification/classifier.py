@@ -329,6 +329,7 @@ class Classifier():
             self.select_features(int(select),int(prune),"knn")
         print "after selection",len(self.training),len(self.test)
 
+        print self.feature_info
         #if set on, add timelabels as features to instances
         if timelabels:
             new_feature_info = []
@@ -336,10 +337,9 @@ class Classifier():
             timelabel_list = []
             #generate a list of all time labels
             for instance in self.training:
-                timelabel = instance["meta"][3]
-                if timelabel == "-":
-                    print instance                    
-                timelabel_list.append(timelabel)
+                if instance["label"] == "before":
+                    timelabel = instance["meta"][3]
+                    timelabel_list.append(timelabel)
             time_label_set=set(timelabel_list)
             #make a new feature_info_dict starting with the timelabels as features  
             # for i,tl in enumerate(time_label_set):
