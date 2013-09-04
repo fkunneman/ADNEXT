@@ -41,7 +41,7 @@ if args.vocab:
     vocabulary = {}
     for entry in vocabulary_list:
         tokens = entry.strip().split("\t")
-        vocabulary[tokens[0] = tokens[1]
+        vocabulary[tokens[0]] = [tokens[1]]
 else:
     vocabulary=False
 

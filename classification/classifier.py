@@ -108,13 +108,14 @@ class Classifier():
                     new_index=feature_status[feature]
                     new_features.append(new_index)
             #print 'new',new_features            
-
+            print "before",len(features),"after",len(new_features)
             if len(new_features) == 0:
                 #print "before train",new_features,self.training[index],self.training[index+1]
                 self.training.pop(index)
                 #print "after train",self.training[index]
             else:
                 self.training[index]["features"]=["%s" % el for el in sorted(new_features)]
+                print self.training[index]
                 index += 1
             
         index = 0
@@ -133,7 +134,7 @@ class Classifier():
             for feature in features:
                 #feature_index=int(token)
                 try: 
-                    if feature_status[feature_index]:
+                    if feature_status[feature]:
                         new_index=feature_status[feature]
                         new_features.append(new_index)
                 except KeyError:
@@ -354,11 +355,15 @@ class Classifier():
             performer()
 
     def perform_knn(self,klist,prune,select,timelabels):
-        
+
+#        print "traininglength", len(self.training), "testlength",len(self.test)        
         if prune:
             print "pruning features..."
             self.prune_features(int(prune),"knn")
-            
+
+#        print "trlen after", len(self.training), "testlen after", len(self.test)
+#        print self.training[:50]
+#        print self.test[-50:]            
         exit()
         if select:
             print "selecting features..."
