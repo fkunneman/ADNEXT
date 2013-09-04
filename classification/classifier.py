@@ -82,7 +82,6 @@ class Classifier():
                     new_index=feature_status[feature]
                     new_features.append(new_index)
             #print 'new',new_features            
-            print "before",len(features),"after",len(new_features)
             if len(new_features) == 0:
                 #print "before train",new_features,self.training[index],self.training[index+1]
                 self.training.pop(index)
@@ -318,24 +317,28 @@ class Classifier():
             performer()
 
     def perform_knn(self,klist,prune,select,timelabels):
-    
+        
+        print "before prune",len(self.training),len(self.test)
         if prune:
             print "pruning features..."
-            self.prune_features(int(prune),"knn")          
+            self.prune_features(int(prune),"knn")
+        print "after prune",len(self.training),len(self.test)
+        print "before selection",len(self.training),len(self.test)
         if select:
             print "selecting features..."
             self.select_features(int(select),int(prune),"knn")
-        
+        print "after selection",len(self.training),len(self.test)
+
         #if set on, add timelabels as features to instances
         if timelabels:
             new_feature_info = []
             time_label_vocab={}
-            time_label=defaultdict(int)
+            time_count=defaultdict(int)
             #generate a list of all time labels
             for instance in self.training:
-                tl=instance[1].split("\t")[3]
-                time_label[tl] += 1
-            time_label_set=list(set(time_label.keys()))
+                timelabel = instance["meta"][3]
+                timelabel_list.append(timelabel)
+            time_label_set=set(timelabel_list)
             #make a new feature_info_dict starting with the timelabels as features  
             # for i,tl in enumerate(time_label_set):
             #     feature_info[i+1]=[tl,0,0]
