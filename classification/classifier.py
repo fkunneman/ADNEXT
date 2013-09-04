@@ -28,6 +28,8 @@ class Classifier():
         self.test=testlist
         self.directory=directory
         self.feature_info=vocabulary
+        print self.feature_info[:1500]
+        exit()
 
     def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):
         if algorithm=="knn":
@@ -47,6 +49,10 @@ class Classifier():
     #        self.feature_info[int(tokens[0])]=[tokens[1].strip()]
     
     def adjust_index_space(self,ranked_list,value_dict,boundary):
+        print "len_ffreq_adjust",len(value_dict.keys())
+        print 'bound',boundary
+        print "freq_1400",value_dict['1400']
+#        print "1400",ranked_list.index('1400')
         #create new feature_info dictionary
         new_feature_info={}
         feature_status={}        
@@ -68,17 +74,25 @@ class Classifier():
             #     new_index=i+len(time_label_set)+1
             # else:
             new_index=i+1
+            if f == '1400':
+                print "check index"
             #feature_tokens=self.feature_info[old_index]
             #feature_tokens.append(value_dict[old_index])
-            new_feature_info[new_index]=self.feature_info[f] + [value_dict[f]]
+            new_feature_info[new_index]=self.feature_info[int(f)] + [value_dict[f]]
             feature_status[f]=new_index
         self.feature_info=new_feature_info
         #set status of all pruned features to False
         for f in ranked_list[boundary:]:
+#            print f
+            if f == '1400':
+                print "check False"
             feature_status[f]=False
+
+#	print "false check", feature_status[1400]
 
         #adjust instances
         index = 0
+        print "adjust",len(self.training)
         while index < len(self.training):
             instance = self.training[index]
             new_features=[]
@@ -88,16 +102,20 @@ class Classifier():
             #     tl=instance[1].split("\t")[3]
             #     tli=time_label_vocab[tl]
             #     new_features.append(tli)
+            #print 'old',token_features
             for token in token_features:
-                feature_index=int(token)
-                if feature_status[feature_index]:
-                    new_index=feature_status[feature_index]
+                #feature_index=int(token)
+                if token == '1400':
+                    print token_features,index
+                if feature_status[token]:
+                    new_index=feature_status[token]
                     new_features.append(new_index)
-            
+            #print 'new',new_features            
+
             if len(new_features) == 0:
-                print "before train",new_features,self.training[index],self.training[index+1]
+#                print "before train",new_features,self.training[index],self.training[index+1]
                 self.training.pop(index)
-                print "after train",self.training[index]
+#                print "after train",self.training[index]
             else:
                 self.training[i]=[",".join(["%s" % el for el in sorted(new_features)]) + "," + tokens[-1],instance[1]]
                 index += 1
@@ -134,10 +152,19 @@ class Classifier():
         #generate feature_frequency dict
         feature_freq=defaultdict(int)
         if classifier == "knn":
+            print "prune",len(self.training)
             for instance in self.training:
                 features=instance[0].split(",")[:-1]
+#                print instance[0].split(',')[-1]
+#		print instance[0], features                 
+#                print features
                 for feature in features:
-                    feature_freq[int(feature)] += 1
+                    if feature == '1400':
+                        print "found",features
+                    feature_freq[feature] += 1
+            print "ffreq",feature_freq[1400]
+#            print feature_freq
+            print "len_ffreq",len(feature_freq.keys())
         elif classifier == "lcs":
             for instance in self.training:
                 tokens=instance.split(" ")
