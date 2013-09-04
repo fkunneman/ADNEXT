@@ -12,18 +12,6 @@ import math
 class Classifier():
 
     def __init__(self,trainlist,testlist,directory=False, vocabulary=False):
-        #if type(trainlist[0]).__name__ == 'list':
-        #    self.training=[]
-        #    self.meta_training=[]
-        #    self.test=[]
-        #    self.meta_test=[]
-        #    for i,x in enumerate(trainlist):
-        #        self.training.append(x[0])
-        #        self.meta_training.append(x[1])
-        #    for i,x in enumerate(testlist):
-        #        self.test.append(x[0])
-        #        self.metatest.append(x[1])
-        #else:
         self.training=trainlist
         self.test=testlist
         self.directory=directory
@@ -36,22 +24,8 @@ class Classifier():
             self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="ibt":
             self.informed_baseline_date(arguments)
-
-    #def set_directory(self,directory):
-    #    self.directory=directory
-    
-    #def set_feature_info(self,feature_infolines):
-    #    self.feature_info={}
-    #    for line in feature_infolines:
-    #        tokens=line.split("\t")
-    #        self.feature_info[int(tokens[0])]=[tokens[1].strip()]
     
     def adjust_index_space(self,ranked_list,value_dict,boundary):
-        #print "len_ffreq_adjust",len(value_dict.keys())
-        #print 'bound',boundary
-        #print "freq_1400",value_dict['1400']
-#        print "1400",ranked_list.index('1400')
-        #create new feature_info dictionary
         new_feature_info={}
         feature_status={}        
 
@@ -153,16 +127,8 @@ class Classifier():
         if classifier == "knn":
             for instance in self.training:
                 features=instance["features"]
-#                print instance[0].split(',')[-1]
-#		print instance[0], features                 
-#                print features
                 for feature in features:
-                    #if feature == '1400':
-                    #    print "found",features
                     feature_freq[feature] += 1
-            #print "ffreq",feature_freq[1400]
-#            print feature_freq
-            #print "len_ffreq",len(feature_freq.keys())
         elif classifier == "lcs":
             for instance in self.training:
                 tokens=instance.split(" ")
@@ -179,7 +145,6 @@ class Classifier():
             if feature_freq[f] <= minimum_threshold:
                 boundary=i
                 break
-        
         if classifier == "knn":
             #generate new indexes and make a new feature_info 
             self.adjust_index_space(sorted_feature_freq,feature_freq,boundary)
@@ -198,12 +163,11 @@ class Classifier():
         feature_freq=defaultdict(int)
         if classifier == "knn":
             for instance in self.training:
-                tokens=instance[0].split(",")
-                features=tokens[:-1]
-                label=tokens[-1]
+                features=instance["features"]
+                label=instance["label"]
                 label_freq[label] += 1
                 for feature in features:
-                    label_feature_freq[label][int(feature)] += 1
+                    label_feature_freq[label][feature] += 1
         elif classifier == "lcs":
             print "counting features..."
             for instance in self.training:
@@ -242,10 +206,10 @@ class Classifier():
             return infogain
             
         if classifier == "knn":
-            for f in self.feature_info.keys(): #compute for each feature
-                frequency=int(self.feature_info[f][2])
-                ig=compute_infogain(f,frequency)
-                feature_infogain[f]=ig
+            for feature in self.feature_info.keys(): #compute for each feature
+                frequency=int(self.feature_info[feature][2])
+                ig=compute_infogain(feature,frequency)
+                feature_infogain[feature]=ig
         elif classifier == "lcs":
             print "pruning features..."
             ranked_feature_freq=sorted(feature_freq, key=feature_freq.get, reverse=True)
@@ -270,10 +234,10 @@ class Classifier():
             print "num features left:",boundary
             self.stoplist.extend(ranked_feature_freq[boundary:])
             print "selecting features..."
-            for f in ranked_feature_freq[:boundary]:
-                frequency=feature_freq[f]
-                ig=compute_infogain(f,frequency)
-                feature_infogain[f]=ig
+            for feature in ranked_feature_freq[:boundary]:
+                frequency=feature_freq[feature]
+                ig=compute_infogain(feature,frequency)
+                feature_infogain[feature]=ig
 
         return feature_infogain
 
@@ -355,16 +319,10 @@ class Classifier():
             performer()
 
     def perform_knn(self,klist,prune,select,timelabels):
-
-#        print "traininglength", len(self.training), "testlength",len(self.test)        
+    
         if prune:
             print "pruning features..."
-            self.prune_features(int(prune),"knn")
-
-#        print "trlen after", len(self.training), "testlen after", len(self.test)
-#        print self.training[:50]
-#        print self.test[-50:]            
-        exit()
+            self.prune_features(int(prune),"knn")          
         if select:
             print "selecting features..."
             self.select_features(int(select),int(prune),"knn",timelabels)
@@ -383,7 +341,7 @@ class Classifier():
             # for i,tl in enumerate(time_label_set):
             #     feature_info[i+1]=[tl,0,0]
             #     time_label_vocab[tl]=i+1    
-            print self.feature_info
+            print time_label_set
 
         train=self.directory + "train"
         test=self.directory + "test"
