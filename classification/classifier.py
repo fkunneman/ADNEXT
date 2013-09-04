@@ -332,7 +332,6 @@ class Classifier():
         print self.feature_info
         #if set on, add timelabels as features to instances
         if timelabels:
-            new_feature_info = []
             time_label_vocab={}
             timelabel_list = []
             #generate a list of all time labels
@@ -341,36 +340,41 @@ class Classifier():
                     timelabel = instance["meta"][3]
                     timelabel_list.append(timelabel)
             time_label_set=set(timelabel_list)
-            #make a new feature_info_dict starting with the timelabels as features  
-            # for i,tl in enumerate(time_label_set):
-            #     feature_info[i+1]=[tl,0,0]
-            #     time_label_vocab[tl]=i+1    
-            print time_label_set
-        exit()
+            #make a new feature_info_dict ending with the timelabels as features  
+            num_feats = len(self.feature_info.keys())
+            for i,tl in enumerate(time_label_set):
+                tl_index = str(num_feats+i)
+                feature_info[tl_index]=[tl,0,0]
+                time_label_vocab[tl]=tl_index
+            #add the timelabel to each set of features
+            for instance in self.training:
+                if instance["label"] == "before":
+                    timelabel = instance["meta"][3]
+                    instance["features"].append(time_label_vocab[timelabel])
+            for instance in self.test:
+                if instance["label"] == "before":
+                    timelabel = instance["meta"][3]
+                    instance["features"].append(time_label_vocab[timelabel])
+            #output a weightfile with feature weights
+            weightout=codecs.open(self.directory + "weights","w","utf-8")
+            for feature in sorted(self.feature_info.keys()):
+                weightout.write(":" + feature + " STIMBLWEIGHT=" + str(self.feature_info[feature][-1]) + "\n")
+            weightout.close()
 
-        train=self.directory + "train"
-        test=self.directory + "test"
-        trainingout=open(train,"w")
-        testout=open(test,"w")
+        trainingout=open(self.directory + "train","w")
+        testout=open(self.directory + "test","w")
         feature_info_out=codecs.open(self.directory + "vocabulary","w","utf-8")
         for instance in self.training:
-            trainingout.write(instance[0])
+            trainingout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
         for instance in self.test:
-            testout.write(instance[0])
-        for feature_index in sorted(self.feature_info.keys()):
-            info=str(self.feature_info[feature_index][0])
-            for field in self.feature_info[feature_index][1:]:
-                info=info + "\t" + unicode(field)
-            feature_info_out.write(str(feature_index) + "\t" + info + "\n")
-        if timelabels:
-            weight=self.directory + "weights"
-            weightout=codecs.open(weight,"w","utf-8")
-            for i in sorted(self.feature_info.keys()):
-                weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str(self.feature_info[i][-1]) + "\n")
-            weightout.close()
+            testout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
+        for feature in sorted(self.feature_info.keys()):
+            feature_info_out.write(feature + "\t" + "\t".join(feature_info[feature]) + "\n")
         trainingout.close()
         testout.close()
         feature_info_out.close()
+        exit()
+
         print "performing knn..."
         for k in klist:
             print "k=",k
