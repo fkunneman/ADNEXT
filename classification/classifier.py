@@ -196,17 +196,17 @@ class Classifier():
             probs1=[]
             probs0=[]
             for label in label_freq.keys():
-                probs1.append(label_feature_freq[label][f] / frequency)
-                probs0.append((label_freq[label]-label_feature_freq[label][f]) / inverse_frequency)
+                probs1.append(label_feature_freq[label][feature] / frequency)
+                probs0.append((label_freq[label]-label_feature_freq[label][feature]) / inverse_frequency)
             entropy1=(-sum([p * math.log(p,2) for p in probs1 if p!=0])) * p1
             entropy0=(-sum([p * math.log(p,2) for p in probs0 if p!=0])) * p0
-            entropy_after=entropy1 + entropy0 #class entropy of instances with f
+            entropy_after=entropy1 + entropy0 #class entropy of instances with the feature
             infogain=entropy_before-entropy_after #infogain score
             return infogain
             
         if classifier == "knn":
             for feature in self.feature_info.keys(): #compute for each feature
-                frequency=int(self.feature_info[feature][2])
+                frequency=int(self.feature_info[feature][1])
                 ig=compute_infogain(feature,frequency)
                 feature_infogain[feature]=ig
         elif classifier == "lcs":
