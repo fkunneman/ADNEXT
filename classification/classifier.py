@@ -321,7 +321,7 @@ class Classifier():
         for instance in self.test:
             testout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
         sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
-        for feature in sorted(self.feature_info.keys()):
+        for numeric_feature in sorted_features:
             feature = str(numeric_feature)
             feature_info_out.write(feature + "\t" + "\t".join(self.feature_info[feature]) + "\n")
         trainingout.close()
