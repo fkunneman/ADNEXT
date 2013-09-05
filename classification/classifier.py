@@ -290,7 +290,7 @@ class Classifier():
             num_feats = len(self.feature_info.keys())
             for i,tl in enumerate(time_label_set):
                 tl_index = str(num_feats+i)
-                self.feature_info[tl_index]=[tl,0,0]
+                self.feature_info[tl_index]=[tl,"0","0"]
                 time_label_vocab[tl]=tl_index
             #add the timelabel to each set of features
             for instance in self.training:
@@ -317,7 +317,6 @@ class Classifier():
             testout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
         for feature in sorted(self.feature_info.keys()):
             feature = str(numeric_feature)
-            print self.feature_info[feature]
             feature_info_out.write(feature + "\t" + "\t".join(self.feature_info[feature]) + "\n")
         trainingout.close()
         testout.close()
