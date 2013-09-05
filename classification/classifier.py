@@ -303,7 +303,7 @@ class Classifier():
             #output a weightfile with feature weights
             weightout=codecs.open(self.directory + "weights","w","utf-8")
             sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
-            for numeric_feature in sorted_feature:
+            for numeric_feature in sorted_features:
                 feature = str(numeric_feature)
                 weightout.write(":" + feature + " STIMBLWEIGHT=" + str(self.feature_info[feature][-1]) + "\n")
             weightout.close()
