@@ -106,9 +106,9 @@ elif validation=="looe":
         
     if parameters[0]=="regular":
         for event in event_train_test.keys():
-            if re.search(" ",event):
-                event_write="_".join(event.split(" "))
-            print event
+            event_write = event
+            if re.search(" ",event_write):
+                event_write="_".join(event_write.split(" "))
             d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
             if not os.path.exists(d):
                 if not os.path.exists("/".join(d.split("/")[:-2])):
