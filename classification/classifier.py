@@ -268,18 +268,13 @@ class Classifier():
 
     def perform_knn(self,klist,prune,select,timelabels):
         
-        print "before prune",len(self.training),len(self.test)
         if prune:
             print "pruning features..."
             self.prune_features(int(prune),"knn")
-        print "after prune",len(self.training),len(self.test)
-        print "before selection",len(self.training),len(self.test)
         if select:
             print "selecting features..."
             self.select_features(int(select),int(prune),"knn")
-        print "after selection",len(self.training),len(self.test)
 
-        print self.feature_info
         #if set on, add timelabels as features to instances
         if timelabels:
             time_label_vocab={}
@@ -323,7 +318,6 @@ class Classifier():
         trainingout.close()
         testout.close()
         feature_info_out.close()
-        exit()
 
         print "performing knn..."
         for k in klist:
