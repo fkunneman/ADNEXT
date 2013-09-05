@@ -28,64 +28,29 @@ class Classifier():
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
         feature_status={}        
-
-        # if time_labels:
-        #     time_label_vocab={}
-        #     time_label=defaultdict(int)
-        #     for instance in self.training:
-        #         tl=instance[1].split("\t")[3]
-        #         time_label[tl] += 1
-        #     time_label_set=list(set(time_label.keys())) 
-        #     for i,tl in enumerate(time_label_set):
-        #         new_feature_info[i+1]=[tl,0,0]
-        #         time_label_vocab[tl]=i+1
         
         #assign new feature_info indexes based on the ranked list
         for i,old_index in enumerate(ranked_list[:boundary]):
-            # if time_labels: 
-            #     new_index=i+len(time_label_set)+1
-            # else:
             new_index=str(i+1)
-            #if f == '1400':
-            #    print "check index"
-            #feature_tokens=self.feature_info[old_index]
-            #feature_tokens.append(value_dict[old_index])
             new_feature_info[new_index]=self.feature_info[old_index] + [value_dict[old_index]]
             feature_status[old_index]=new_index
         self.feature_info=new_feature_info
         #set status of all pruned features to False
         for feature_index in ranked_list[boundary:]:
-#            print f
-            #if f == '1400':
-            #    print "check False"
             feature_status[feature_index]=False
-
-#	print "false check", feature_status[1400]
 
         #adjust instances
         index = 0
-        #print "adjust",len(self.training)
         while index < len(self.training):
             instance = self.training[index]
             new_features=[]
             features = instance["features"]
-            # if time_labels:
-            #     tl=instance[1].split("\t")[3]
-            #     tli=time_label_vocab[tl]
-            #     new_features.append(tli)
-            #print 'old',token_features
             for feature in features:
-                #feature_index=int(token)
-                #if token == '1400':
-                #    print token_features,index
                 if feature_status[feature]:
                     new_index=feature_status[feature]
                     new_features.append(new_index)
-            #print 'new',new_features            
             if len(new_features) == 0:
-                #print "before train",new_features,self.training[index],self.training[index+1]
                 self.training.pop(index)
-                #print "after train",self.training[index]
             else:
                 self.training[index]["features"]=["%s" % el for el in sorted(new_features)]
                 index += 1
@@ -95,16 +60,7 @@ class Classifier():
             instance = self.test[index]
             new_features=[]
             features=instance["features"]
-            #token_features=tokens[:-1]
-            # if time_labels:
-            #     tl=instance[1].split("\t")[4]
-            #     try:
-            #         tli=time_label_vocab[tl]
-            #     except KeyError:
-            #         tle=time_label_vocab["-"]
-            #     new_features.append(tli)
             for feature in features:
-                #feature_index=int(token)
                 try: 
                     if feature_status[feature]:
                         new_index=feature_status[feature]
@@ -112,9 +68,7 @@ class Classifier():
                 except KeyError:
                     continue
             if len(new_features) == 0:
-                #print "before test",new_features,self.test[index],self.test[index+1]
                 self.test.pop(index)
-                #print "after test",self.test[index]
             else:   
                 self.test[index]["features"]=["%s" % el for el in sorted(new_features)]
                 index += 1
@@ -245,10 +199,6 @@ class Classifier():
         selected_features=sorted(feature_weights, key=feature_weights.get, reverse=True)    
         if classifier == "knn":
             self.adjust_index_space(selected_features,feature_weights,num_features)
-            # if timelabels:
-            #     weightout=codecs.open(self.directory + "weights","w","utf-8")
-            #     for i in sorted(self.feature_info.keys()):
-            #         weightout.write(":" + str(i) + " STIMBLWEIGHT=" + str( self.feature_info[i][-1]) + "\n")
         elif classifier == "lcs":
             self.stoplist.extend(selected_features[num_features:])
 
@@ -386,8 +336,7 @@ class Classifier():
 
     def informed_baseline_date(self,args):
         
-        future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgen|morgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond|januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december|nog.+(dagen|slapen))")
-        
+        future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgen|morgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond|januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december|nog.+(dagen|slapen))")       
         today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)")
         tomorrow=re.compile(r"morgen(avond|middag|ochtend)?")
         day_after_t=re.compile(r"overmorgen")
