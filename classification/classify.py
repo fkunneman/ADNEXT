@@ -50,16 +50,6 @@ def classify(instance_dict,directory=False):
     testlines = instance_dict["test"]
     cl=Classifier(traininglines,testlines,directory,vocabulary)
     cl.classify(classifier,arguments,args.p,args.s,args.tl)
-    #if algorithm=="lcs":
-    #    cl_dir=args.d[0]
-    #    file_dir=args.d[1]
-    #    cl.perform_lcs(cl_dir,file_dir,args.p,args.s,args.tl)
-        
-    #elif algorithm=="knn":
-    #    cl.perform_knn(args.k,args.p,args.s,args.tl)
-    
-    #elif algorithm=="ibt":
-    #    cl.informed_baseline_date(args.b)
 
 if validation=="test":
     test_instances=codecs.open(args.t,"r","utf-8")
@@ -81,6 +71,7 @@ elif validation=="looe":
         if instance_event != event:
             event_bounds.append((instance_event,i))
             event=instance_event
+            print event            
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
         start=event_bound[1]
@@ -116,8 +107,6 @@ elif validation=="looe":
         
     if parameters[0]=="regular":
         for event in event_train_test.keys():
-            # training=event_train_test[event][0]
-            # test=event_train_test[event][1]
             if re.search(" ",event):
                 event="_".join(event.split(" "))
             print event
