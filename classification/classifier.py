@@ -302,14 +302,17 @@ class Classifier():
                     timelabel = instance["meta"][3]
                     instance["features"].append(time_label_vocab[timelabel])
             #output a weightfile with feature weights
-            weightout=codecs.open(self.directory + "weights","w","utf-8")
+            weight = self.directory + "weights"
+            weightout=codecs.open(weight,"w","utf-8")
             for numeric_feature in sorted_features:
                 feature = str(numeric_feature)
                 weightout.write(":" + feature + " STIMBLWEIGHT=" + str(self.feature_info[feature][-1]) + "\n")
             weightout.close()
 
-        trainingout=open(self.directory + "train","w")
-        testout=open(self.directory + "test","w")
+        train = self.directory + "train"
+        test = self.directory + "test"
+        trainingout=open(train,"w")
+        testout=open(test,"w")
         feature_info_out=codecs.open(self.directory + "vocabulary","w","utf-8")
         for instance in self.training:
             trainingout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")

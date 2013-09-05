@@ -22,8 +22,6 @@ parser.add_argument('-c', action='store', required=True, choices=["lcs","knn","i
 parser.add_argument('-a', action='store', required=False, nargs='+', help="the arguments needed for the chosen algorithm:\n\n[LCS] specify respectively the directory in which classification is performed (make sure the config file and optionally a data-directory with indexes are present in this directory) and the directory in which files are stored\n[KNN] specify value(s) of k (the classifier will be ran for each value of k)\n[IBT] for the informed baseline time, choose to set the system to dummy by filling in \"dummy\"")
 parser.add_argument('-p', action='store', required=False, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
 parser.add_argument('-s', action='store', required=False, help="[OPTIONAL] to select features based on their infogain, specify the number of features to select") 
-#parser.add_argument('-k', action='store', required=False, nargs='+', help="[KNN] for knn specify value(s) of k")
-#parser.add_argument('-b', action='store_true', required=False, help="[BASELINE] choose to set the baseline to dummy")
 parser.add_argument('--tl', action='store_true', required=False, help="[OPTIONAL] set \'tl\' in order to have second stage or hidden timelabel classification")
 parser.add_argument('--parralel', action='store_true', required=False, help="choose whether distinct train and test sets are ran in parrallel")
 
@@ -73,6 +71,7 @@ elif validation=="looe":
             event=instance_event      
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
+        print event
         start=event_bound[1]
         if i==len(event_bounds)-1:
             test=[]
