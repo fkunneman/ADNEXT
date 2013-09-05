@@ -64,7 +64,7 @@ class Classifier():
             for feature in features:
                 try: 
                     if feature_status[feature]:
-                        new_index=feature_status[feature]
+                        new_index=int(feature_status[feature])
                         new_features.append(new_index)
                 except KeyError:
                     continue
@@ -333,9 +333,9 @@ class Classifier():
             print "k=",k
             classification=self.directory + "classification" + k + " .txt"
             if timelabels:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -D -m 1 -d 2 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -i -D -m 1 -d 1 -k " + k + " < " + test + " > " + classification) 
             else:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -D -m 1 -d 2 -w 2 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -i -D -m 1 -d 1 -w 2 -k " + k + " < " + test + " > " + classification) 
 
     def informed_baseline_date(self,args):
         
