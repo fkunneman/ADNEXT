@@ -47,12 +47,13 @@ class Classifier():
             features = instance["features"]
             for feature in features:
                 if feature_status[feature]:
-                    new_index=feature_status[feature]
+                    new_index=int(feature_status[feature])
                     new_features.append(new_index)
             if len(new_features) == 0:
                 self.training.pop(index)
             else:
-                self.training[index]["features"]=["%s" % el for el in sorted(new_features)]
+                new_features_str = [str(feature) for feature in sorted(new_features)]
+                self.training[index]["features"]=new_features_str
                 index += 1
             
         index = 0
@@ -70,7 +71,8 @@ class Classifier():
             if len(new_features) == 0:
                 self.test.pop(index)
             else:   
-                self.test[index]["features"]=["%s" % el for el in sorted(new_features)]
+                new_features_str = [str(feature) for feature in sorted(new_features)]
+                self.test[index]["features"]=new_features_str
                 index += 1
 
     def prune_features(self,minimum_threshold,classifier):
@@ -331,9 +333,9 @@ class Classifier():
             print "k=",k
             classification=self.directory + "classification" + k + " .txt"
             if timelabels:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -D -i -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -D -m 1 -d 2 -k " + k + " < " + test + " > " + classification) 
             else:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -D -i -w 2 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -D -m 1 -d 2 -w 2 -k " + k + " < " + test + " > " + classification) 
 
     def informed_baseline_date(self,args):
         
