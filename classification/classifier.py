@@ -275,6 +275,7 @@ class Classifier():
             print "selecting features..."
             self.select_features(int(select),int(prune),"knn")
 
+        sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
         #if set on, add timelabels as features to instances
         if timelabels:
             time_label_vocab={}
@@ -302,7 +303,6 @@ class Classifier():
                     instance["features"].append(time_label_vocab[timelabel])
             #output a weightfile with feature weights
             weightout=codecs.open(self.directory + "weights","w","utf-8")
-            sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
             for numeric_feature in sorted_features:
                 feature = str(numeric_feature)
                 weightout.write(":" + feature + " STIMBLWEIGHT=" + str(self.feature_info[feature][-1]) + "\n")
@@ -316,6 +316,8 @@ class Classifier():
         for instance in self.test:
             testout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
         for feature in sorted(self.feature_info.keys()):
+            feature = str(numeric_feature)
+            print self.feature_info[feature]
             feature_info_out.write(feature + "\t" + "\t".join(self.feature_info[feature]) + "\n")
         trainingout.close()
         testout.close()
