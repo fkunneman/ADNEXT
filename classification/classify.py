@@ -70,8 +70,7 @@ elif validation=="looe":
         instance_event=tokens[event_column]
         if instance_event != event:
             event_bounds.append((instance_event,i))
-            event=instance_event
-            print event            
+            event=instance_event      
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
         start=event_bound[1]
@@ -108,9 +107,9 @@ elif validation=="looe":
     if parameters[0]=="regular":
         for event in event_train_test.keys():
             if re.search(" ",event):
-                event="_".join(event.split(" "))
+                event_write="_".join(event.split(" "))
             print event
-            d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event + "/all_to_one/"
+            d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
             if not os.path.exists(d):
                 if not os.path.exists("/".join(d.split("/")[:-2])):
                     if not os.path.exists("/".join(d.split("/")[:-1])):
