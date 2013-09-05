@@ -32,7 +32,7 @@ class Classifier():
         #assign new feature_info indexes based on the ranked list
         for i,old_index in enumerate(ranked_list[:boundary]):
             new_index=str(i+1)
-            new_feature_info[new_index]=self.feature_info[old_index] + [value_dict[old_index]]
+            new_feature_info[new_index]=self.feature_info[old_index] + [str(value_dict[old_index])]
             feature_status[old_index]=new_index
         self.feature_info=new_feature_info
         #set status of all pruned features to False
@@ -302,7 +302,9 @@ class Classifier():
                     instance["features"].append(time_label_vocab[timelabel])
             #output a weightfile with feature weights
             weightout=codecs.open(self.directory + "weights","w","utf-8")
-            for feature in sorted(self.feature_info.keys()):
+            sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
+            for numeric_feature in sorted_feature:
+                feature = str(numeric_feature)
                 weightout.write(":" + feature + " STIMBLWEIGHT=" + str(self.feature_info[feature][-1]) + "\n")
             weightout.close()
 
