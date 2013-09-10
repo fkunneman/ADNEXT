@@ -13,26 +13,28 @@ import math
 
 class Evalset():
 
-    def __init__(self,instancefile,metafile=False,vocabfile=False):
-        # self.input_type = input_type
-        instances = codecs.open(instancefile,"r","utf-8")
-        self.instances = instances.readlines()
-        instances.close()
-        self.name_instance = {}
-        self.testset_instances = defaultdict(list)
-        self.time_buckets = defaultdict(list)
+    def __init__(self,input_type):
+        self.input_type = input_type
+        # instances = codecs.open(instancefile,"r","utf-8")
+        self.instances = []
+        # instances.close()
+        # self.name_instance = {}
+        # self.testset_instances = defaultdict(list)
+        # self.time_buckets = defaultdict(list)
 
-    def set_meta(self,metafile,metadict,lcs=False):
+    def set_meta(self,metafile,metadict):
         meta = codecs.open(metafile,"r","utf-8")
-        if lcs:
+        if self.input_type == "lcs":
             self.name_instance = {}
         for line in meta.readlines():
             instance = Evalset.Instance()
-            tokens = line.strip.split("\t")
+            tokens = line.strip().split("\t")
             for meta in metadict.keys():
                 instance.dict[meta] = tokens[metadict[meta]]
-
-
+            if self.input_type = "lcs":
+                self.name_instance[tokens[metadict["name"]]] = instance
+            self.instances.append(instance)
+        meta.close()
         #         instance.set_name(tokens[0])
         #         instance.set_id(tokens[1])
         #         instance.set_event(tokens[2])
@@ -59,7 +61,111 @@ class Evalset():
         #         self.instances.append(instance)
         #         if multiple:
         #             self.testset_instances[instance.event].append(instance)
-        meta.close()
+
+    def set_instances_lcs(self,labelfile,classificationfile,evaluationtype,threshold = False):         
+        labels = open(labelfile)
+        for line in labels:
+            tokens = line.split(" ")
+            filename = tokens[0]
+            label = tokens[1].strip()
+            instance = Evalset.Instance()
+            instance.set_label(label)
+            instance.set_name(filename)
+            self.name_instance[filename] = instance
+            self.instances.append(instance) 
+   
+        classifications = codecs.open(classificationfile,"r","utf-8")
+        for line in classifications.readlines():
+            tokens = line.split("  ")
+            filename = tokens[0].strip()
+            instance = self.name_instance[filename]
+            scores = tokens[1]
+            classification_score = scores.split(" ")[0].split(":")
+            if not (threshold and re.search(r"\?",classification_score[0])):  
+                classification = re.sub("\?","",classification_score[0])
+                score = float(classification_score[1])
+                if evaluationtype == "timelabel":
+                    if instance.classification[0] == "before":
+                        instance.set_classification((classification,score))
+                else:
+                    instance.set_classification(classification)
+                    if classification != instance.label:
+                        instance.set_fp()
+                        instance.set_fn()
+                    else:
+                        instance.set_tp() 
+                    instance.set_score(score)
+        classifications.close()
+    
+    def set_instances_knn(self,classification_file,hidden=False):
+        #extract information
+        classifications_nn = defaultdict(list)
+        classifications = []
+        nn = []
+        test = ""
+        for line in classification_file:
+            if re.search("==",line):
+                classifications.append(line)
+                if not test == "":
+                    classifications_nn[test] = nn
+                nn = []
+                test = line
+            else:
+                nn.append(line)
+        classifications_nn[test] = nn
+        if len(classifications) != len(instances):
+            print "classification and meta do not align, exiting program..."
+            exit()
+        #set classification
+        for i,line in enumerate(classifications):
+            instance = instances[i]
+            tokens = line.split("==")[1].split("  ")[1].split(" ")
+            if instance.label == tokens[0]:
+                classification = tokens[1]
+                neighbours = classifications_nn[line]
+                label_scores = defaultdict(list)
+                if hidden and classification in hidden:
+                    timelabel_freq = defaultdict(int)
+                    score_timelabel = defaultdict(list)
+                    for neighbour in neighbours:
+                        neighbour_tokens = neighbour.split(" ")[1].split(",")
+                        label = neighbour_tokens[-1]
+                        score = float(neighbour.split("  ")[1])
+                        label_scores[label].append(score)
+                        if label in hidden:
+                            timelabel_index = neighbour_tokens[0]
+                            timelabel = self.vocabulary[timelabel_index]
+                            timelabel_freq[timelabel] += 1
+                            score_timelabel[score].append(timelabel)
+                    
+                    timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
+                    score_rank = sorted(score_timelabel.keys(),reverse = True)
+                    selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
+                    instance.set_classification(selected_tl)
+                else:
+                    for neighbour in neighbours:
+                        label = neighbour.split(" ")[1].split(",")[-1]
+                        score = float(neighbour.split("  ")[1])
+                        label_score[label].append(score)
+                    highest_score = sorted(label_score[classification],reverse=True)[0]
+                    instance.set_classification((classification,highest_score))
+            else:
+                print "error: no label match; exiting program"
+                exit()
+
+    def set_instances_sparse_meta(self,infile):
+        readfile = open(infile,"r").readlines()
+        for line in readfile:
+            tokens = line.strip().split("\t")
+            instance = Evalset.Instance()
+            instance.set_name(tokens[0])
+            instance.set_event(tokens[1])
+            instance.set_label(tokens[2])
+            instance.set_classification(tokens[3])
+            instance.set_tfz(tokens[4])
+            self.name_instance[filename] = instance
+            self.instances.append(instance) 
+
 
     def set_vocabulary(self,vocabfile):
         self.vocabulary = {}
@@ -466,110 +572,7 @@ class Evalset():
                     #st_dev = round(math.sqrt(st_dev / len(entries)),2)
                     out.write(str(mean) + "\t")
 
-    def set_instances_lcs(self,labelfile,classificationfile,evaluationtype,threshold = False):
-         
-        labels = open(labelfile)
-        for line in labels:
-            tokens = line.split(" ")
-            filename = tokens[0]
-            label = tokens[1].strip()
-            instance = Evalset.Instance()
-            instance.set_label(label)
-            instance.set_name(filename)
-            self.name_instance[filename] = instance
-            self.instances.append(instance) 
-   
-        classifications = codecs.open(classificationfile,"r","utf-8")
-        for line in classifications.readlines():
-            tokens = line.split("  ")
-            filename = tokens[0].strip()
-            instance = self.name_instance[filename]
-            scores = tokens[1]
-            classification_score = scores.split(" ")[0].split(":")
-            if not (threshold and re.search(r"\?",classification_score[0])):  
-                classification = re.sub("\?","",classification_score[0])
-                score = float(classification_score[1])
-                if evaluationtype == "timelabel":
-                    if instance.classification[0] == "before":
-                        instance.set_classification((classification,score))
-                else:
-                    instance.set_classification(classification)
-                    if classification != instance.label:
-                        instance.set_fp()
-                        instance.set_fn()
-                    else:
-                        instance.set_tp() 
-                    instance.set_score(score)
-        classifications.close()
-    
-    def set_instances_knn(self,classification_file,meta_file,hidden=False):
-        #extract information
-        classifications_nn = defaultdict(list)
-        classifications = []
-        nn = []
-        test = ""
-        for line in classification_file:
-            if re.search("==",line):
-                classifications.append(line)
-                if not test == "":
-                    classifications_nn[test] = nn
-                nn = []
-                test = line
-            else:
-                nn.append(line)
-        classifications_nn[test] = nn
-        if len(classifications) != len(instances):
-            print "classification and meta do not align, exiting program..."
-            exit()
-        #set classification
-        for i,line in enumerate(classifications):
-            instance = instances[i]
-            tokens = line.split("==")[1].split("  ")[1].split(" ")
-            if instance.label == tokens[0]:
-                classification = tokens[1]
-                neighbours = classifications_nn[line]
-                label_scores = defaultdict(list)
-                if hidden and classification in hidden:
-                    timelabel_freq = defaultdict(int)
-                    score_timelabel = defaultdict(list)
-                    for neighbour in neighbours:
-                        neighbour_tokens = neighbour.split(" ")[1].split(",")
-                        label = neighbour_tokens[-1]
-                        score = float(neighbour.split("  ")[1])
-                        label_scores[label].append(score)
-                        if label in hidden:
-                            timelabel_index = neighbour_tokens[0]
-                            timelabel = self.vocabulary[timelabel_index]
-                            timelabel_freq[timelabel] += 1
-                            score_timelabel[score].append(timelabel)
-                    
-                    timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
-                    score_rank = sorted(score_timelabel.keys(),reverse = True)
-                    selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
-                    instance.set_classification(selected_tl)
-                else:
-                    for neighbour in neighbours:
-                        label = neighbour.split(" ")[1].split(",")[-1]
-                        score = float(neighbour.split("  ")[1])
-                        label_score[label].append(score)
-                    highest_score = sorted(label_score[classification],reverse=True)[0]
-                    instance.set_classification((classification,highest_score))
-            else:
-                print "error: no label match; exiting program"
-                exit()
 
-    def set_instances_sparse_meta(self,infile):
-        readfile = open(infile,"r").readlines()
-        for line in readfile:
-            tokens = line.strip().split("\t")
-            instance = Evalset.Instance()
-            instance.set_name(tokens[0])
-            instance.set_event(tokens[1])
-            instance.set_label(tokens[2])
-            instance.set_classification(tokens[3])
-            instance.set_tfz(tokens[4])
-            self.name_instance[filename] = instance
-            self.instances.append(instance) 
              
     def extract_top(self,outfile,classification,top_n,files):
         out_write = open(outfile,"w")
