@@ -13,55 +13,62 @@ import math
 
 class Evalset():
 
-    def __init__(self,input_type):
-        self.input_type = input_type
-        self.instances = []
+    def __init__(self,instancefile,metafile=False,vocabfile=False):
+        # self.input_type = input_type
+        instances = codecs.open(instancefile,"r","utf-8")
+        self.instances = instances.readlines()
+        instances.close()
         self.name_instance = {}
         self.testset_instances = defaultdict(list)
         self.time_buckets = defaultdict(list)
 
-    def set_meta(self,metafile,multiple=False):
+    def set_meta(self,metafile,metadict,lcs=False):
         meta = codecs.open(metafile,"r","utf-8")
-        if self.input_type == "lcs":
-            for line in meta.readlines():
-                instance = Evalset.Instance()
-                tokens = line.split("\t")
-                instance.set_name(tokens[0])
-                instance.set_id(tokens[1])
-                instance.set_event(tokens[2])
-                instance.set_label(tokens[3])
-                instance.set_tfz(int(tokens[5]))
-                instance.set_timelabel(tokens[4])
-                instance.set_date(tokens[6])
-                instance.set_time(tokens[7])
-                self.name_instance[tokens[0]] = instance
-                self.instances.append(instance)
-                if multiple:
-                    self.testset_instances[instance.event].append(instance)
-        else:
-            for line in meta.readlines():
-                instance = Evalset.Instance()
-                tokens = line.split("\t")
-                instance.set_id(tokens[0])
-                instance.set_event(tokens[1])
-                instance.set_label(tokens[2])
-                instance.set_tfz(int(tokens[3]))
-                instance.set_timelabel(tokens[4])
-                instance.set_date(tokens[5])
-                instance.set_time(tokens[6])
-                self.instances.append(instance)
-                if multiple:
-                    self.testset_instances[instance.event].append(instance)
+        if lcs:
+            self.name_instance = {}
+        for line in meta.readlines():
+            instance = Evalset.Instance()
+            tokens = line.strip.split("\t")
+            for meta in metadict.keys():
+                instance.dict[meta] = tokens[metadict[meta]]
+
+
+        #         instance.set_name(tokens[0])
+        #         instance.set_id(tokens[1])
+        #         instance.set_event(tokens[2])
+        #         instance.set_label(tokens[3])
+        #         instance.set_tfz(int(tokens[5]))
+        #         instance.set_timelabel(tokens[4])
+        #         instance.set_date(tokens[6])
+        #         instance.set_time(tokens[7])
+        #         self.name_instance[tokens[0]] = instance
+        #         self.instances.append(instance)
+        #         if multiple:
+        #             self.testset_instances[instance.event].append(instance)
+        # else:
+        #     for line in meta.readlines():
+        #         instance = Evalset.Instance()
+        #         tokens = line.split("\t")
+        #         instance.set_id(tokens[0])
+        #         instance.set_event(tokens[1])
+        #         instance.set_label(tokens[2])
+        #         instance.set_tfz(int(tokens[3]))
+        #         instance.set_timelabel(tokens[4])
+        #         instance.set_date(tokens[5])
+        #         instance.set_time(tokens[6])
+        #         self.instances.append(instance)
+        #         if multiple:
+        #             self.testset_instances[instance.event].append(instance)
         meta.close()
 
     def set_vocabulary(self,vocabfile):
         self.vocabulary = {}
-        vocabread = codecs.open(vocabfile,"r","utf-8")
-        vocabularylines = vocabread.readlines()
-        vocabread.close()
+        vocab_read = codecs.open(vocabfile,"r","utf-8")
+        vocabularylines = vocab_read.readlines()
+        vocab_read.close()
         for line in vocabularylines:
-            tokens = line.split("\t")
-            self.vocabulary[int(tokens[0])] = tokens[1].strip()
+            tokens = line.strip().split("\t")
+            self.vocabulary[tokens[0]] = tokens[1]
 
     def calculate_rmse(self,instances,plotfile = False):
         outcomes = []
@@ -76,7 +83,8 @@ class Evalset():
         fab = 0
         before = 0
         for instance in instances:
-            target = str(instance.label)
+            target = instance.label
+            target_tl = str(instance.timelabel)
             prediction = str(instance.classification)
             outcome = [str(instance.tfz),target,prediction]
             if target == "-" or target == "early":
@@ -89,7 +97,6 @@ class Evalset():
                     outcome.extend(["ab","ab"])
                     ab += 1
                 else:
-                  #  if plotfile:
                         
                     es += 1
                     target = int(target)
@@ -125,9 +132,7 @@ class Evalset():
         outcomes.extend([rmse,responsiveness,len(instances),mrse])
         return outcomes
 
-
-        
-    def extract_timelabel(self,timelabel_freq,timelabel_rank,dissim_timelabel,dissim_rank):
+    def extract_timelabel(self,timelabel_freq,timelabel_rank,score_timelabel,score_rank):
         
         def select_highest_score_tl(rank_ds,ds_tl,tl):
             for ds in rank_ds:
@@ -135,14 +140,15 @@ class Evalset():
                     return ds
         
         if len(timelabel_rank) == 1:
-            return (timelabel_rank[0],dissim_rank[0])
+            return (timelabel_rank[0],score_rank[0])
         elif timelabel_freq[timelabel_rank[0]] > timelabel_freq[timelabel_rank[1]]:
-            dissim = select_highest_score_tl(dissim_rank,dissim_timelabel,timelabel_rank[0])
-            return (timelabel_rank[0],dissim)
+            score = select_highest_score_tl(score_rank,score_timelabel,timelabel_rank[0])
+            return (timelabel_rank[0],score)
         else: #there is no majority class
             selected = []
             majoritybound = 0
             majorityfreq = timelabel_freq[timelabel_rank[0]]
+            #generate a list of the most frequent classes
             for i,tl in enumerate(timelabel_rank[1:]):
                 if timelabel_freq[tl] < majorityfreq:
                     majoritybound = i+2
@@ -150,28 +156,28 @@ class Evalset():
                 if i+2 == len(timelabel_rank):
                     majoritybound = i+2
             majority_timelabels = timelabel_rank[:majoritybound]
-            dissim_bound = 0
-            dissim_highest = dissim_rank[0]
+            score_bound = 0
+            score_highest = score_rank[0]
             
-            for i,dr in enumerate(dissim_rank):
-                if dr < dissim_highest:
-                    dissim_bound = i
+            for i,sr in enumerate(score_rank):
+                if sr < score_highest:
+                    score_bound = i
                     break
-                if i+1 == len(dissim_rank):
-                    dissim_bound = i+1
-            for dissim in dissim_rank[:dissim_bound]:
-                timelabels = dissim_timelabel[dissim]
+                if i+1 == len(score_rank):
+                    score_bound = i+1
+            for score in score_rank[:score_bound]:
+                timelabels = score_timelabel[score]
                 for timelabel in timelabels:
                     if timelabel in majority_timelabels:
                         selected.append(timelabel)
              
             selected = list(set(selected))
             if len(selected) == 0:
-                selected = self.extract_timelabel(timelabel_freq,timelabel_rank,dissim_timelabel,dissim_rank[dissim_bound:])
+                selected = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank[score_bound:])
                 return selected
             elif len(selected) == 1:
-                dissim = select_highest_score_tl(dissim_rank,dissim_timelabel,selected[0])
-                return (selected[0], round(dissim,4))
+                score = select_highest_score_tl(score_rank,score_timelabel,selected[0])
+                return (selected[0], round(score,4))
             elif len(selected) > 1:
                 sum_selected = 0
                 for s in selected:
@@ -180,13 +186,11 @@ class Evalset():
                     else:
                         sum_selected += int(s)
                 mean = int(sum_selected / len(selected))
-                dissim = select_highest_score_tl(dissim_rank,dissim_timelabel,selected[0])
-                return (mean, round(dissim,4))
-
+                score = select_highest_score_tl(score_rank,score_timelabel,selected[0])
+                return (mean, round(score,4))
 
     def evaluate_window(self,event_scores,windowsize,slider,threshold,outfile,output = "rmse",hidden = False,plot = False,filt = False,eventfile=False):
-        print "window"
-
+        
         if eventfile:
             event_time = time_functions.generate_event_time_hash(eventfile)
 
@@ -194,7 +198,7 @@ class Evalset():
         out_dict = {}
         if output == "fscore":
             out_dict = defaultdict(lambda: defaultdict(list))
-        #walk through metadict events
+        #walk through events
         for event in self.testset_instances.keys():
             event_file = re.sub(" ","_",event)
             print event_file
@@ -497,13 +501,9 @@ class Evalset():
                         instance.set_tp() 
                     instance.set_score(score)
         classifications.close()
-       
-    # def set_instances_annotation(self,infile):
-    #     readfile = open(infile,"r").readlines()
-    #     for line in readfile:
-    #         self.instances.append(line.strip())
     
-    def set_instances_knn(self,classification_file,instances,hidden=False):
+    def set_instances_knn(self,classification_file,meta_file,hidden=False):
+        #extract information
         classifications_nn = defaultdict(list)
         classifications = []
         nn = []
@@ -521,37 +521,39 @@ class Evalset():
         if len(classifications) != len(instances):
             print "classification and meta do not align, exiting program..."
             exit()
+        #set classification
         for i,line in enumerate(classifications):
             instance = instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
             if instance.label == tokens[0]:
                 classification = tokens[1]
-                nns = classifications_nn[line]
-                label_dissim = defaultdict(list)
+                neighbours = classifications_nn[line]
+                label_scores = defaultdict(list)
                 if hidden and classification in hidden:
                     timelabel_freq = defaultdict(int)
-                    dissim_timelabel = defaultdict(list)
-                    for nn in nns:
-                        label = nn.split(" ")[1].split(",")[-1]
-                        dissim = float(nn.split("  ")[1])
-                        label_dissim[label].append(dissim)
+                    score_timelabel = defaultdict(list)
+                    for neighbour in neighbours:
+                        neighbour_tokens = neighbour.split(" ")[1].split(",")
+                        label = neighbour_tokens[-1]
+                        score = float(neighbour.split("  ")[1])
+                        label_scores[label].append(score)
                         if label in hidden:
-                            timelabel_index = nn.split(" ")[1].split(",")[0]
+                            timelabel_index = neighbour_tokens[0]
                             timelabel = self.vocabulary[timelabel_index]
                             timelabel_freq[timelabel] += 1
-                            dissim_timelabel[dissim].append(timelabel)
+                            score_timelabel[score].append(timelabel)
                     
                     timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
-                    dissim_rank = sorted(dissim_timelabel.keys(),reverse = True)
-                    selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,dissim_timelabel,dissim_rank)
+                    score_rank = sorted(score_timelabel.keys(),reverse = True)
+                    selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
                     instance.set_classification(selected_tl)
                 else:
-                    for nn in nns:
-                        label = nn.split(" ")[1].split(",")[-1]
-                        dissim = float(nn.split("  ")[1])
-                        label_dissim[label].append(dissim)
-                    highest_dissim = sorted(label_dissim[classification],reverse=True)[0]
-                    instance.set_classification((classification,highest_dissim))
+                    for neighbour in neighbours:
+                        label = neighbour.split(" ")[1].split(",")[-1]
+                        score = float(neighbour.split("  ")[1])
+                        label_score[label].append(score)
+                    highest_score = sorted(label_score[classification],reverse=True)[0]
+                    instance.set_classification((classification,highest_score))
             else:
                 print "error: no label match; exiting program"
                 exit()
@@ -707,6 +709,7 @@ class Evalset():
             self.tp = False
             self.fn = False
             self.past_window = []
+            self.dict = {}
     
         def set_name(self,name):
             self.fname = name
