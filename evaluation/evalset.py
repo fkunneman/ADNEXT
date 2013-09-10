@@ -99,11 +99,12 @@ class Evalset():
     
     def set_instances_knn(self,classification_file,hidden=False):
         #extract information
+        cl_open = open(classification_file)
         classifications_nn = defaultdict(list)
         classifications = []
         nn = []
         test = ""
-        for line in classification_file:
+        for line in cl_open.readlines():
             if re.search("==",line):
                 classifications.append(line)
                 if not test == "":
@@ -113,6 +114,7 @@ class Evalset():
             else:
                 nn.append(line)
         classifications_nn[test] = nn
+        cl_open.close()
         if len(classifications) != len(self.instances):
             print len(classifications),len(self.instances),"classification and meta do not align, exiting program..."
             exit()
