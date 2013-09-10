@@ -29,9 +29,9 @@ class Evalset():
         for line in meta.readlines():
             instance = Evalset.Instance()
             tokens = line.strip().split("\t")
-            for meta in metadict.keys():
-                instance.dict[meta] = tokens[metadict[meta]]
-            if self.input_type = "lcs":
+            for meta_info in metadict.keys():
+                instance.dict[meta_info] = tokens[metadict[meta_info]]
+            if self.input_type == "lcs":
                 self.name_instance[tokens[metadict["name"]]] = instance
             self.instances.append(instance)
         meta.close()
