@@ -113,8 +113,8 @@ class Evalset():
             else:
                 nn.append(line)
         classifications_nn[test] = nn
-        if len(classifications) != len(instances):
-            print "classification and meta do not align, exiting program..."
+        if len(classifications) != len(self.instances):
+            print len(classifications),len(self.instances),"classification and meta do not align, exiting program..."
             exit()
         #set classification
         for i,line in enumerate(classifications):
