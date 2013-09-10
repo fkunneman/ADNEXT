@@ -32,6 +32,7 @@ args = parser.parse_args()
 
 if args.v:
     evaluation_seqs = [len(args.l),len(args.m),len(args.v)]
+    print evaluation_seqs
 else:
     evaluation_seqs = [len(args.l),len(args.m)]
 if not max(evaluation_seqs) == min(evaluation_seqs):
