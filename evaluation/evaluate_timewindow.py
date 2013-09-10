@@ -37,7 +37,7 @@ if not max(evaluation_seqs) == min(evaluation_seqs):
     print "no equal amount of evaluation sequences, aborting program..."
     exit()
 
-event_time = time_functions.generate_event_time_hash(eventfile)
+event_time = time_functions.generate_event_time_hash(args.e)
 
 metadict = {}
 i = 0
