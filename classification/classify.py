@@ -63,12 +63,18 @@ elif validation=="looe":
     event_train_test=defaultdict(lambda : defaultdict(list))
     event_bounds=[]
     event=""
+    meta=[]
     for i,instance in enumerate(metaread):
         tokens=instance.split("\t")
         instance_event=tokens[event_column]
         if instance_event != event:
             event_bounds.append((instance_event,i))
-            event=instance_event      
+            event=instance_event
+            if len(meta) > 0:
+                event_train_test[event]["meta"] = meta
+                meta = [] 
+        meta.append(instance)
+
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
         print event
@@ -101,7 +107,8 @@ elif validation=="looe":
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 training.append(instance)
             del training[start:end]
-        event_train_test[event] = {"training" : training, "test":test}
+        event_train_test[event]["training"] = training
+        event_train_test[event]["test"] = test
         
     if parameters[0]=="regular":
         for event in event_train_test.keys():
