@@ -22,6 +22,8 @@ class Evalset():
         # self.testset_instances = defaultdict(list)
         # self.time_buckets = defaultdict(list)
 
+
+
     def set_meta(self,metafile,metadict):
         meta = codecs.open(metafile,"r","utf-8")
         if self.input_type == "lcs":
@@ -97,7 +99,7 @@ class Evalset():
                     instance.set_score(score)
         classifications.close()
     
-    def set_instances_knn(self,classification_file,hidden=False):
+    def set_instances_knn(self,classification_file,hidden=False,vocabulary=False):
         #extract information
         cl_open = open(classification_file)
         classifications_nn = defaultdict(list)
@@ -122,7 +124,7 @@ class Evalset():
         for i,line in enumerate(classifications):
             instance = self.instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
-            if instance["label"] == tokens[0]:
+            if instance.dict["label"] == tokens[0]:
                 classification = tokens[1]
                 neighbours = classifications_nn[line]
                 label_scores = defaultdict(list)
