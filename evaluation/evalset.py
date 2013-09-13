@@ -22,7 +22,13 @@ class Evalset():
         # self.testset_instances = defaultdict(list)
         # self.time_buckets = defaultdict(list)
 
-
+    def set_vocabulary(self,vocabfile):
+        self.vocabulary = {}
+        vocab = codecs.open(vocabfile,"r","utf-8")
+        for line in vocab.readlines():
+            tokens = line.strip().split("\t")
+            self.vocabulary[tokens[0]] = tokens[1]
+        vocab_read.close()
 
     def set_meta(self,metafile,metadict):
         meta = codecs.open(metafile,"r","utf-8")
@@ -106,6 +112,8 @@ class Evalset():
         classifications = []
         nn = []
         test = ""
+        if vocabulary:
+            self.set_vocabulary(vocabulary)
         for line in cl_open.readlines():
             if re.search("==",line):
                 classifications.append(line)
@@ -169,16 +177,6 @@ class Evalset():
             instance.set_tfz(tokens[4])
             self.name_instance[filename] = instance
             self.instances.append(instance) 
-
-
-    def set_vocabulary(self,vocabfile):
-        self.vocabulary = {}
-        vocab_read = codecs.open(vocabfile,"r","utf-8")
-        vocabularylines = vocab_read.readlines()
-        vocab_read.close()
-        for line in vocabularylines:
-            tokens = line.strip().split("\t")
-            self.vocabulary[tokens[0]] = tokens[1]
 
     def calculate_rmse(self,instances,plotfile = False):
         outcomes = []
