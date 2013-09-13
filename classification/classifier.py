@@ -318,7 +318,7 @@ class Classifier():
         meta = self.directory + "meta"
         trainingout=open(train,"w")
         testout=open(test,"w")
-        metaout=open(meta,"w")
+        metaout=codecs.open(meta,"w","utf-8")
         feature_info_out=codecs.open(self.directory + "vocabulary","w","utf-8")
         for instance in self.training:
             trainingout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")

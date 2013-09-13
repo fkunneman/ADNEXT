@@ -127,6 +127,7 @@ elif validation=="looe":
                 os.system("mkdir " + d)
             if args.parralel:
                 print event
+                print len(event_train_test[event]["meta"])
                 p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
                 p.start()
             else:
