@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Ignore compiled Python files
 *.pyc
 
@@ -12,3 +13,7 @@ dist
 pattern/web/cache/tmp/
 web/cache/tmp/
 test/pattern_unittest_db
+=======
+*.pyc
+*.py~
+>>>>>>> e3934acbce5ba4326fddabba2ab9df8e3b56bcad
