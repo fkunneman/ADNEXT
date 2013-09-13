@@ -128,8 +128,11 @@ elif validation=="looe":
             if args.parralel:
                 print event
                 print len(event_train_test[event]["meta"])
-                p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
-                p.start()
+                try:
+                    p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
+                    p.start()
+                except OSError:
+                    classify(event_train_test[event],d)
             else:
                 classify(event_train_test[event],d)
     
