@@ -70,11 +70,12 @@ elif validation=="looe":
         instance_event=tokens[event_column]
         if instance_event != event:
             event_bounds.append((instance_event,i))
-            event=instance_event
-            print meta
-            if len(meta) > 0:
+            print len(meta)
+            # if len(meta) > 0:
+            if not event == "":
                 event_train_test[event]["meta"] = meta
-                meta = [] 
+            event=instance_event
+            meta = [] 
         meta.append(instance)
 
     for i,event_bound in enumerate(event_bounds):
