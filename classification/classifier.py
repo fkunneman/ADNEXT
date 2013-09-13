@@ -340,9 +340,9 @@ class Classifier():
             print "k=",k
             classification=self.directory + "classification" + k + " .txt"
             if timelabels:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -i -D -m 1 -d 1 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -v -i -D -m 3 -d 1 -k " + k + " < " + test + " > " + classification) 
             else:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -i -D -m 1 -d 1 -w 2 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -v -i -D -m 3 -d 1 -w 2 -k " + k + " < " + test + " > " + classification) 
 
     def informed_baseline_date(self,args):
         
