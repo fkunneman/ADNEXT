@@ -51,7 +51,7 @@ for i,t in enumerate(args.l):
     evaluation = Evalset(args.i)
     evaluation.set_meta(args.m[i],metadict)
     if args.i == "knn":
-        evaluation.set_instances_knn(args.l[i],"before")
+        evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v)
     if args.v:
         evaluation.set_vocabulary(args.v[i])
     windows = time_functions.extract_sliding_window_instances(evaluation.instances,windowsize,slider)
