@@ -158,8 +158,8 @@ class Evalset():
                     for neighbour in neighbours:
                         label = neighbour.split(" ")[1].split(",")[-1]
                         score = float(neighbour.split("  ")[1])
-                        label_score[label].append(score)
-                    highest_score = sorted(label_score[classification],reverse=True)[0]
+                        label_scores[label].append(score)
+                    highest_score = sorted(label_scores[classification],reverse=True)[0]
                     instance.set_classification((classification,highest_score))
             else:
                 print "error: no label match; exiting program"
