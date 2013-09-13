@@ -120,7 +120,7 @@ class Evalset():
             exit()
         #set classification
         for i,line in enumerate(classifications):
-            instance = instances[i]
+            instance = self.instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
             if instance.label == tokens[0]:
                 classification = tokens[1]
