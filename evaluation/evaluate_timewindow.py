@@ -28,6 +28,9 @@ parser.add_argument('--metadict',action='store',required=True,nargs='+', help = 
 
 args = parser.parse_args()
 
+windowsize = int(args.size)
+slider = int(args.slider)
+
 if args.v:
     evaluation_seqs = [len(args.l),len(args.m),len(args.v)]
     print evaluation_seqs
@@ -47,6 +50,7 @@ while i < len(args.metadict):
 
 #for each evaluation set
 for i,t in enumerate(args.l):
+    print t
     #set instances
     evaluation = Evalset(args.i)
     evaluation.set_meta(args.m[i],metadict)
@@ -55,5 +59,4 @@ for i,t in enumerate(args.l):
 #    if args.v:
 #        evaluation.set_vocabulary(args.v[i])
     windows = time_functions.extract_sliding_window_instances(evaluation.instances,windowsize,slider)
-
 

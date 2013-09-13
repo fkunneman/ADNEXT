@@ -116,6 +116,7 @@ class Evalset():
             self.set_vocabulary(vocabulary)
         for line in cl_open.readlines():
             if re.search("==",line):
+                print line
                 classifications.append(line)
                 if not test == "":
                     classifications_nn[test] = nn
@@ -289,6 +290,7 @@ class Evalset():
             elif len(selected) > 1:
                 sum_selected = 0
                 for s in selected:
+                    print s
                     if s == "early":
                         sum_selected += -22
                     else:

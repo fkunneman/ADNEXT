@@ -58,7 +58,7 @@ def extract_sliding_window_instances(tweets_tfz,window,slider):
     tfz_instances = defaultdict(list)            
     windows = []
     for tweet in tweets_tfz:
-        tfz_instances[tweet.dict["tfz"]].append(tweet)
+        tfz_instances[int(tweet.dict["tfz"])].append(tweet)
     highest_tfz = sorted(tfz_instances.keys())[-1]
     window = [0,0+window]
     while window[1] <= highest_tfz:
