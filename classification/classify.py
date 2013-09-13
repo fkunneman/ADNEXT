@@ -71,6 +71,7 @@ elif validation=="looe":
         if instance_event != event:
             event_bounds.append((instance_event,i))
             event=instance_event
+            print meta
             if len(meta) > 0:
                 event_train_test[event]["meta"] = meta
                 meta = [] 
@@ -124,6 +125,7 @@ elif validation=="looe":
                     os.system("mkdir " + "/".join(d.split("/")[:-2]))
                 os.system("mkdir " + d)
             if args.parralel:
+                print event
                 p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
                 p.start()
             else:
