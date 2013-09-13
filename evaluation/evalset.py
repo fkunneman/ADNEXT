@@ -122,7 +122,7 @@ class Evalset():
         for i,line in enumerate(classifications):
             instance = self.instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
-            if instance.label == tokens[0]:
+            if instance["label"] == tokens[0]:
                 classification = tokens[1]
                 neighbours = classifications_nn[line]
                 label_scores = defaultdict(list)
