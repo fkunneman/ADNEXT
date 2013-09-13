@@ -28,7 +28,7 @@ class Evalset():
         for line in vocab.readlines():
             tokens = line.strip().split("\t")
             self.vocabulary[tokens[0]] = tokens[1]
-        vocab_read.close()
+        vocab.close()
 
     def set_meta(self,metafile,metadict):
         meta = codecs.open(metafile,"r","utf-8")
