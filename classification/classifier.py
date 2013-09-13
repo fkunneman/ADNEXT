@@ -11,9 +11,10 @@ import math
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,directory=False, vocabulary=False):
+    def __init__(self,trainlist,testlist,metalist,directory=False, vocabulary=False):
         self.training=trainlist
         self.test=testlist
+        self.meta=metalist
         self.directory=directory
         self.feature_info=vocabulary
 
@@ -70,6 +71,7 @@ class Classifier():
                     continue
             if len(new_features) == 0:
                 self.test.pop(index)
+                self.meta.pop(index)
             else:   
                 new_features_str = [str(feature) for feature in sorted(new_features)]
                 self.test[index]["features"]=new_features_str
@@ -313,19 +315,24 @@ class Classifier():
 
         train = self.directory + "train"
         test = self.directory + "test"
+        meta = self.directory + "meta"
         trainingout=open(train,"w")
         testout=open(test,"w")
+        metaout=open(meta,"w")
         feature_info_out=codecs.open(self.directory + "vocabulary","w","utf-8")
         for instance in self.training:
             trainingout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
         for instance in self.test:
             testout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
+        for line in self.meta:
+            metaout.write(line)
         sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
         for numeric_feature in sorted_features:
             feature = str(numeric_feature)
             feature_info_out.write(feature + "\t" + "\t".join(self.feature_info[feature]) + "\n")
         trainingout.close()
         testout.close()
+        metaout.close()
         feature_info_out.close()
 
         print "performing knn..."

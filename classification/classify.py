@@ -46,7 +46,8 @@ else:
 def classify(instance_dict,directory=False):
     traininglines = instance_dict["training"]
     testlines = instance_dict["test"]
-    cl=Classifier(traininglines,testlines,directory,vocabulary)
+    metalines = instance_dict["meta"]
+    cl=Classifier(traininglines,testlines,metalines,directory,vocabulary)
     cl.classify(classifier,arguments,args.p,args.s,args.tl)
 
 if validation=="test":
