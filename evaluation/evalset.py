@@ -132,38 +132,38 @@ class Evalset():
         for i,line in enumerate(classifications):
             instance = self.instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
-            if instance.dict["label"] == tokens[0]:
-                classification = tokens[1]
-                neighbours = classifications_nn[line]
-                label_scores = defaultdict(list)
-                if hidden and classification in hidden:
-                    timelabel_freq = defaultdict(int)
-                    score_timelabel = defaultdict(list)
-                    for neighbour in neighbours:
-                        neighbour_tokens = neighbour.split(" ")[1].split(",")
-                        label = neighbour_tokens[-1]
-                        score = float(neighbour.split("  ")[1])
-                        label_scores[label].append(score)
-                        if label in hidden:
-                            timelabel_index = neighbour_tokens[-2]
-                            timelabel = self.vocabulary[timelabel_index]
-                            timelabel_freq[timelabel] += 1
-                            score_timelabel[score].append(timelabel)
-                    
-                    timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
-                    score_rank = sorted(score_timelabel.keys(),reverse = True)
-                    selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
-                    instance.set_classification(selected_tl)
-                else:
-                    for neighbour in neighbours:
-                        label = neighbour.split(" ")[1].split(",")[-1]
-                        score = float(neighbour.split("  ")[1])
-                        label_scores[label].append(score)
-                    highest_score = sorted(label_scores[classification],reverse=True)[0]
-                    instance.set_classification((classification,highest_score))
-            else:
+            if not instance.dict["label"] == tokens[0]:
                 print "error: no label match; exiting program"
                 exit()
+            classification = tokens[1]
+            neighbours = classifications_nn[line]
+            label_scores = defaultdict(list)
+            if hidden and classification in hidden:
+                timelabel_freq = defaultdict(int)
+                score_timelabel = defaultdict(list)
+                for neighbour in neighbours:
+                    neighbour_tokens = neighbour.split(" ")[1].split(",")
+                    label = neighbour_tokens[-1]
+                    score = float(neighbour.split("  ")[1])
+                    label_scores[label].append(score)
+                    if label in hidden:
+                        timelabel_index = neighbour_tokens[-2]
+                        timelabel = self.vocabulary[timelabel_index]
+                        timelabel_freq[timelabel] += 1
+                        score_timelabel[score].append(timelabel)
+                
+                timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
+                score_rank = sorted(score_timelabel.keys(),reverse = True)
+                selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
+                instance.set_classification(selected_tl)
+            else:
+                for neighbour in neighbours:
+                    label = neighbour.split(" ")[1].split(",")[-1]
+                    score = float(neighbour.split("  ")[1])
+                    label_scores[label].append(score)
+                highest_score = sorted(label_scores[classification],reverse=True)[0]
+                instance.set_classification((classification,highest_score))
+
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
@@ -172,19 +172,27 @@ class Evalset():
             tfz_instances[int(instance.dict["tfz"])].append(instance)
         highest_tfz = sorted(tfz_instances.keys())[-1]
         slider = [0,0+window]
-        tfz_set = set(tfz_instances.keys())
+        tfz_set = tfz_instances.keys()
         windows = []
+        seen_instances = 0
         while slider[1] <= highest_tfz:
             windowtweets = []
             slider_range = range(slider[0],slider[1]+1)
-            if len(set(slider_range).intersection(tfz_set)) > 0:        
+            if slider[0] == 0:
                 for tfz in slider_range:
+                    instances = tfz_instances[tfz]
+                    seen_instances += len(instances)
                     windowtweets.extend(tfz_instances[tfz])
-                window = self.Window(windowtweets)
-                windows.append(window)
+            elif slider[1] in tfz_set:
+                for tfz in slider_range: 
+                    windowtweets.extend(tfz_instances[tfz])
+                    if tfz == slider[1]:
+                        seen_instances += len(tfz_instances[tfz])        
+            window = self.Window(windowtweets,seen_instances)
+            windows.append(window)
             slider[0] += incre
             slider[1] += incre
-        return windows
+        self.windows = windows
 
     def set_instances_sparse_meta(self,infile):
         readfile = open(infile,"r").readlines()
@@ -784,11 +792,12 @@ class Evalset():
     
     class Window():
 
-        def __init__(self,instances):
+        def __init__(self,instances,seen):
             self.instances = instances
             self.label = instances[-1].dict["timelabel"]
             self.start = instances[0].dict["tfz"]
             self.end = instances[-1].dict["tfz"]
+            self.seen = seen
             self.classification = False
 
         def set_classification(self,classification):

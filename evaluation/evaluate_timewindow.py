@@ -56,6 +56,134 @@ for i,t in enumerate(args.l):
     evaluation.set_meta(args.m[i],metadict)
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
-    windows = evaluation.extract_sliding_window_instances(windowsize,slider)
-#    for inst in windows:
-#        print inst.instances[0].dict["tfz"], inst.instances[1].dict["tfz"]
+    evaluation.extract_sliding_window_instances(windowsize,slider)
+    
+    for window in evaluation.windows:
+        if window.seen < args.threshold:
+            window.set_classification("abstain")
+        else:
+
+            # # if self.input_type == "meta":
+            # estimations = defaultdict(int)
+            
+            # #     for instance in window[0]:
+            # #         try:
+            #             # if not instance.classification[0] == "nt":
+            # for instance in window.instances:
+            #     estimations[instance.classification[0]] += 1
+            #         # except IndexError:
+            #         #     continue
+            # if len(estimations) == 0:
+            #     window.set_classification("abstain")
+            # else:
+            #     ranked_estimations = sorted(estimations,key = estimations.get,reverse=True)
+                # majority = ranked_estimations[0]
+                # if len(ranked_estimations) == 1 or estimations[majority] > estimations[ranked_estimations[1]]:
+                #     if majority == "early":
+                #         testwindow.set_classification("abstain")
+                #     else:
+                #         testwindow.set_classification(majority)
+                # else:
+                #     testwindow.set_classification("abstain")
+        
+            predictions = defaultdict(int)
+            predictions_days = defaultdict(int)
+            score_prediction = defaultdict(list)                
+            #check for majority
+            for instance in window.instances:
+                # try:
+                if instance.classification[0] in ["early","during","after"]:
+                    predictions[instance.classification[0]] += 1
+                else:
+                    predictions["tte"] += 1
+                    predictions_days[instance.classification[0]] += 1
+                    score_prediction[instance.classification[1]].append(instance.classification[0])
+                # except IndexError:
+                #     print "window IE",instance.classification
+                    #continue
+                                            
+            majority_rank = sorted(predictions,key = predictions.get,reverse=True)
+            if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
+                tte_rank = sorted(predictions_other,key=predictions_other.get,reverse=True)
+                score_rank = sorted(score_prediction.keys(),reverse=True)
+                estimation = self.extract_timelabel(predictions_other,tte_rank,score_prediction,score_rank)
+                window.set_classification(estimation[0])
+            else:
+                window.set_classification("abstain")
+        end()
+    #     testwindows.append(testwindow)
+    # if plot:
+    #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
+    #     evaluation = self.calculate_rmse(testwindows,plotfile)
+#     evaluation = self.calculate_rmse(testwindows)
+#     if self.input_type == "meta":
+#         out_dict[event] = evaluation[-4:]
+#     elif self.input_type == "knn":
+#         out_dict[event + "_" + validation + "_" + k] = evaluation[-4:]
+#     elif self.input_type == "lcs":
+#         out_dict[event + "_" + validation] = evaluation[-4:]
+
+# elif output == "fscore":
+#     print "fscore"
+#     ce = proy_evaluation.ClassEvaluation()
+#     for window in windows:
+#         testwindow = Evalset.Instance()
+#         testwindow.set_tfz(window[1])
+#         label = (window[0][-1].label)
+#         if label == "during" or label == "after":
+#             label = "late"
+#         else:
+#             if window[0][-1].timelabel == "early":
+#                 label = "early"
+#             else:
+#                 label = "before"
+#         if self.input_type == "meta":
+#             estimations = defaultdict(int)
+#             for instance in window[0]:
+#                 try:
+#                     if not instance.classification[0] == "nt":
+#                         estimations[instance.classification[0]] += 1
+#                 except IndexError:
+#                     continue
+#             ranked_estimations = sorted(estimations,key = estimations.get,reverse=True)
+#             if len(ranked_estimations) == 0:
+#                 classification = "late"
+#             else:
+#                 majority = ranked_estimations[0]
+#                 if len(ranked_estimations) == 1 or estimations[majority] > estimations[ranked_estimations[1]]:
+#                     if majority == "early":
+#                         classification = "early"
+#                     else:
+#                         classification = "before"
+#                 else:
+#                     classification = "late"
+            
+#         else:
+#             predictions = defaultdict(int)
+#             predictions_other = defaultdict(int)
+#             score_prediction = defaultdict(list)
+#             #check for majority
+            
+#             for instance in window[0]:
+#                 try:
+#                     if instance.classification == "early":
+#                         print instance.classification[0]
+#                     if instance.classification[0] in ["early","during","after"]:
+#                         predictions[instance.classification[0]] += 1
+#                     else:
+#                         predictions["before"] += 1
+#                 except IndexError:
+#                     continue
+#             majority_rank = sorted(predictions,key = predictions.get,reverse=True)
+#             if majority_rank[0] == "before" or predictions["before"] == predictions[majority_rank[0]]:
+#                 classification = "before"
+#             else:
+#                 if majority_rank[0] == "early" or predictions["early"] == predictions[majority_rank[0]]:
+#                     classification = "early"
+#                 else:
+#                     classification = "late"
+#         ce.append(label,classification)
+#     for label in sorted(list(set(ce.goals))):
+#         out_dict[label]["precision"].append(round(ce.precision(cls=label),2))
+#         out_dict[label]["recall"].append(round(ce.recall(cls=label),2))
+#         out_dict[label]["f1"].append(round(ce.fscore(cls=label),2))
