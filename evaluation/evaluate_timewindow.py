@@ -110,7 +110,7 @@ for i,t in enumerate(args.l):
                 window.set_classification(estimation[0])
             else:
                 window.set_classification("abstain")
-        end()
+    exit()
     #     testwindows.append(testwindow)
     # if plot:
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
