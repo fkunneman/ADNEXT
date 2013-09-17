@@ -179,7 +179,7 @@ class Evalset():
             windowtweets = []
             slider_range = range(slider[0],slider[1]+1)
             if slider[0] == 0:
-                print "ja",tfz
+                print "ja",slider[0]                
                 for tfz in slider_range:
                     print tfz_instances[tfz]
                     instances = tfz_instances[tfz]
