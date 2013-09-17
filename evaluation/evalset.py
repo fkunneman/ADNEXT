@@ -164,7 +164,6 @@ class Evalset():
                 highest_score = sorted(label_scores[classification],reverse=True)[0]
                 instance.set_classification((classification,highest_score))
 
-
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
         tfz_instances = defaultdict(list)            
@@ -196,80 +195,92 @@ class Evalset():
             slider[1] += incre
         self.windows = windows
 
-    def set_instances_sparse_meta(self,infile):
-        readfile = open(infile,"r").readlines()
-        for line in readfile:
-            tokens = line.strip().split("\t")
-            instance = Evalset.Instance()
-            instance.set_name(tokens[0])
-            instance.set_event(tokens[1])
-            instance.set_label(tokens[2])
-            instance.set_classification(tokens[3])
-            instance.set_tfz(tokens[4])
-            self.name_instance[filename] = instance
-            self.instances.append(instance) 
+    # def set_instances_sparse_meta(self,infile):
+    #     readfile = open(infile,"r").readlines()
+    #     for line in readfile:
+    #         tokens = line.strip().split("\t")
+    #         instance = Evalset.Instance()
+    #         instance.set_name(tokens[0])
+    #         instance.set_event(tokens[1])
+    #         instance.set_label(tokens[2])
+    #         instance.set_classification(tokens[3])
+    #         instance.set_tfz(tokens[4])
+    #         self.name_instance[filename] = instance
+    #         self.instances.append(instance) 
 
-    def calculate_rmse(self,instances,plotfile = False):
-        outcomes = []
-        if plotfile:
-            plot_out = open(plotfile,"w")
-        sse = 0
-        rsse = 0
-        scores = 0
-        fes = 0
-        ab = 0
-        es = 0
-        fab = 0
-        before = 0
-        for instance in instances:
-            target = instance.label
-            target_tl = str(instance.timelabel)
-            prediction = str(instance.classification)
-            outcome = [str(instance.tfz),target,prediction]
+    def calculate_rmse(self):
+        # outcomes = []
+        # if plotfile:
+        #     plot_out = open(plotfile,"w")
+        # sse = 0
+        # rsse = 0
+        # scores = 0
+        # fes = 0
+        # ab = 0
+        # es = 0
+        # fab = 0
+        # before = 0
+        correct_abstain_vals = (0,0)
+        responsiveness_vals = (0,0)
+        rmse_vals = (0,0)
+        for window in self.windows:
+            target = window.label
+            # target_tl = str(instance.timelabel)
+            prediction = window.classification
+            # outcome = [str(instance.tfz),target,prediction]
             if target == "-" or target == "early":
-                outcome.extend(["ab","ab"])
-                ab += 1
-                fes += 1
-            else:
-                before += 1
+                correct_abstain_vals[0] += 1
                 if prediction == "abstain":
-                    outcome.extend(["ab","ab"])
-                    ab += 1
+                    correct_abstain_vals[1] += 1
+                # outcome.extend(["ab","ab"])
+                # ab += 1
+                # fes += 1
+            else:
+                responsiveness_vals[0] += 1
+                rmse_vals[0] += 1
+                #before += 1
+                if prediction == "abstain":
+                    continue
+#                    outcome.extend(["ab","ab"])
+#                    ab += 1
                 else:
-                        
-                    es += 1
+                    # es += 1
+                    responsiveness_vals[1] += 1
                     target = int(target)
                     prediction = int(prediction)
                     dif = target - prediction
-                    if plotfile:
-                        if dif < 0:
-                            dif = dif * -1
-                        plot_out.write(str(instance.tfz*-1) + "\t" + str(dif) + "\n")
+                    # if plotfile:
+                    #     if dif < 0:
+                    #         dif = dif * -1
+                    #     plot_out.write(str(instance.tfz*-1) + "\t" + str(dif) + "\n")
                     se = dif * dif
-                    if se == 0:
-                        rse = 0
-                    else:
-                        rse = round(se / (se-target),2)
-                    scores += 1
-                    sse += se
-                    rsse += rse
-                    outcome.extend([str(se),str(rse)])
+                    # if se == 0:
+                    #     rse = 0
+                    # else:
+                    #     rse = round(se / (se-target),2)
+                    # scores += 1
+                    rmse_vals[1] += se
+                    # rsse += rse
+                    # outcome.extend([str(se),str(rse)])
                     
-            outcomes.append(outcome)
-        if plotfile:
-            plot_out.close()
-        if scores > 0:
-            rmse = round(math.sqrt(sse / scores),1)
-            mrse = round((rsse/scores),2)
-            fabs = round(fab/es,2)
-        else:
-            rmse = "-"
-            mrse = "-"
-            fabs = "-"
-        #fes_percent = round(fes/ab,2)
-        responsiveness = round((scores/before),2)
-        outcomes.extend([rmse,responsiveness,len(instances),mrse])
-        return outcomes
+        #     outcomes.append(outcome)
+        # if plotfile:
+        #     plot_out.close()
+        # if scores > 0:
+        correct_abstain = round(correct_abstain_vals[1]/correct_abstain_vals[0],2)
+        responsiveness = round(responsiveness_vals[1]/responsiveness_vals[0],2)  
+        rmse = round(math.sqrt(rmse_vals[1] / rmse_vals[0]]),1)
+
+        # mrse = round((rsse/scores),2)
+        # fabs = round(fab/es,2)
+    # else:
+    #     rmse = "-"
+    #     mrse = "-"
+    #     fabs = "-"
+    #fes_percent = round(fes/ab,2)
+        # responsiveness = round((scores/before),2)
+        # outcomes.extend([rmse,responsiveness,len(instances),mrse])
+        return (rmse,responsiveness,correct_abstain)
 
     def extract_timelabel(self,timelabel_freq,timelabel_rank,score_timelabel,score_rank):
         

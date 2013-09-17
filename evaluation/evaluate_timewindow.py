@@ -115,13 +115,14 @@ for i,t in enumerate(args.l):
     # if plot:
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
     #     evaluation = self.calculate_rmse(testwindows,plotfile)
-#     evaluation = self.calculate_rmse(testwindows)
-#     if self.input_type == "meta":
-#         out_dict[event] = evaluation[-4:]
-#     elif self.input_type == "knn":
-#         out_dict[event + "_" + validation + "_" + k] = evaluation[-4:]
-#     elif self.input_type == "lcs":
-#         out_dict[event + "_" + validation] = evaluation[-4:]
+    rmse = self.calculate_rmse()
+    print rmse
+    # if self.input_type == "meta":
+    #     out_dict[event] = evaluation[-4:]
+    # elif self.input_type == "knn":
+    # out_dict[event + "_" + validation + "_" + k] = evaluation[-4:]
+    # elif self.input_type == "lcs":
+    #     out_dict[event + "_" + validation] = evaluation[-4:]
 
 # elif output == "fscore":
 #     print "fscore"
