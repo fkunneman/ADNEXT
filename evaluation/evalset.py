@@ -111,19 +111,19 @@ class Evalset():
         classifications_nn = defaultdict(list)
         classifications = []
         nn = []
-        # test = ""
+        test = ""
         if vocabulary:
             self.set_vocabulary(vocabulary)
         for line in cl_open.readlines():
             if re.search("==",line):
                 classifications.append(line)
-                # if not test == "":
-                #     classifications_nn[test] = nn
-                # nn = []
-                # test = line
-            # else:
-            #     nn.append(line)
-        # classifications_nn[test] = nn
+                if not test == "":
+                    classifications_nn[test] = nn
+                nn = []
+                test = line
+            else:
+                nn.append(line)
+        classifications_nn[test] = nn
         cl_open.close()
         if len(classifications) != len(self.instances):
             print len(classifications),len(self.instances),"classification and meta do not align, exiting program..."
@@ -132,24 +132,25 @@ class Evalset():
         for i,line in enumerate(classifications):
             instance = self.instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
-            print tokens
-            if instance.dict["label"] == tokens[0]:
-                classification = tokens[1]
-                neighbours = classifications_nn[line]
-                label_scores = defaultdict(list)
-                if hidden and classification in hidden:
-                    timelabel_freq = defaultdict(int)
-                    score_timelabel = defaultdict(list)
-                    for neighbour in neighbours:
-                        neighbour_tokens = neighbour.split(" ")[1].split(",")
-                        label = neighbour_tokens[-1]
-                        score = float(neighbour.split("  ")[1])
-                        label_scores[label].append(score)
-                        if label in hidden:
-                            timelabel_index = neighbour_tokens[0]
-                            timelabel = self.vocabulary[timelabel_index]
-                            timelabel_freq[timelabel] += 1
-                            score_timelabel[score].append(timelabel)
+            if not instance.dict["label"] == tokens[0]:
+                print "error: no label match; exiting program"
+                exit()
+            classification = tokens[1]
+            neighbours = classifications_nn[line]
+            label_scores = defaultdict(list)
+            if hidden and classification in hidden:
+                timelabel_freq = defaultdict(int)
+                score_timelabel = defaultdict(list)
+                for neighbour in neighbours:
+                    neighbour_tokens = neighbour.split(" ")[1].split(",")
+                    label = neighbour_tokens[-1]
+                    score = float(neighbour.split("  ")[1])
+                    label_scores[label].append(score)
+                    if label in hidden:
+                        timelabel_index = neighbour_tokens[0]
+                        timelabel = self.vocabulary[timelabel_index]
+                        timelabel_freq[timelabel] += 1
+                        score_timelabel[score].append(timelabel)
                     
                     timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
                     score_rank = sorted(score_timelabel.keys(),reverse = True)
@@ -162,9 +163,6 @@ class Evalset():
                         label_scores[label].append(score)
                     highest_score = sorted(label_scores[classification],reverse=True)[0]
                     instance.set_classification((classification,highest_score))
-            else:
-                print "error: no label match; exiting program"
-                exit()
 
     def set_instances_sparse_meta(self,infile):
         readfile = open(infile,"r").readlines()
