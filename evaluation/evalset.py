@@ -269,7 +269,7 @@ class Evalset():
         # if scores > 0:
         correct_abstain = round(correct_abstain_vals[1]/correct_abstain_vals[0],2)
         responsiveness = round(responsiveness_vals[1]/responsiveness_vals[0],2)  
-        rmse = round(math.sqrt(rmse_vals[1] / rmse_vals[0]]),1)
+        rmse = round(math.sqrt(rmse_vals[1] / rmse_vals[0]),1)
 
         # mrse = round((rsse/scores),2)
         # fabs = round(fab/es,2)
