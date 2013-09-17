@@ -165,6 +165,27 @@ class Evalset():
                 print "error: no label match; exiting program"
                 exit()
 
+    def extract_sliding_window_instances(self,window,slider):
+        #make tfz hash
+        tfz_instances = defaultdict(list)            
+        for instance in self.instances:
+            tfz_instances[int(instance.dict["tfz"])].append(instance)
+        highest_tfz = sorted(tfz_instances.keys())[-1]
+        slider = [0,0+window]
+        tfz_set = set(tfz_instances.keys())
+        windows = []
+        while slider[1] <= highest_tfz:
+            windowtweets = []
+            slider_range = range(slider[0],slider[1]+1)
+            if len(set(slider_range).intersection(tfz_set))) > 0:        
+                for tfz in slider_range:
+                    windowtweets.extend(tfz_instances[tfz])
+                window = self.Window(windowtweets)
+                windows.append(window)
+            window[0] += slider
+            window[1] += slider
+        return windows
+
     def set_instances_sparse_meta(self,infile):
         readfile = open(infile,"r").readlines()
         for line in readfile:
@@ -289,7 +310,6 @@ class Evalset():
             elif len(selected) > 1:
                 sum_selected = 0
                 for s in selected:
-                    print s
                     if s == "early":
                         sum_selected += -22
                     else:
@@ -762,3 +782,15 @@ class Evalset():
         def set_time(self,time):
             self.time = time
     
+    class Window():
+
+        def __init__(self,instances):
+            self.instances = instances
+            self.label = instances[-1].dict["timelabel"]
+            self.start = instances[0].dict["tfz"]
+            self.end = instances[-1].dict["tfz"]
+            self.classification = False
+
+        def set_classification(self,classification):
+            self.classification = classification
+
