@@ -188,6 +188,7 @@ class Evalset():
                     windowtweets.extend(tfz_instances[tfz])
                     if tfz == slider[1]:
                         seen_instances += len(tfz_instances[tfz])        
+            print windowtweets            
             window = self.Window(windowtweets,seen_instances)
             windows.append(window)
             slider[0] += incre
