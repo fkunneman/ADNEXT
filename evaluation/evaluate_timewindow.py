@@ -57,4 +57,5 @@ for i,t in enumerate(args.l):
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
     windows = evaluation.extract_sliding_window_instances(windowsize,slider)
-    print windows
+#    for inst in windows:
+#        print inst.instances[0].dict["tfz"], inst.instances[1].dict["tfz"]

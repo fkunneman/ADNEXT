@@ -165,7 +165,7 @@ class Evalset():
                 print "error: no label match; exiting program"
                 exit()
 
-    def extract_sliding_window_instances(self,window,slider):
+    def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
         tfz_instances = defaultdict(list)            
         for instance in self.instances:
@@ -182,8 +182,8 @@ class Evalset():
                     windowtweets.extend(tfz_instances[tfz])
                 window = self.Window(windowtweets)
                 windows.append(window)
-            window[0] += slider
-            window[1] += slider
+            slider[0] += incre
+            slider[1] += incre
         return windows
 
     def set_instances_sparse_meta(self,infile):
