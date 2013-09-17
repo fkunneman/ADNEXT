@@ -116,7 +116,6 @@ class Evalset():
             self.set_vocabulary(vocabulary)
         for line in cl_open.readlines():
             if re.search("==",line):
-                print line
                 classifications.append(line)
                 if not test == "":
                     classifications_nn[test] = nn
