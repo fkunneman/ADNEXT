@@ -185,14 +185,15 @@ class Evalset():
                     instances = tfz_instances[tfz]
                     seen_instances += len(instances)
                     windowtweets.extend(tfz_instances[tfz])
+                window = self.Window(windowtweets,seen_instances)
+                windows.append(window)
             elif slider[1] in tfz_set:
                 for tfz in slider_range: 
                     windowtweets.extend(tfz_instances[tfz])
                     if tfz == slider[1]:
-                        seen_instances += len(tfz_instances[tfz])        
-            print windowtweets            
-            window = self.Window(windowtweets,seen_instances)
-            windows.append(window)
+                        seen_instances += len(tfz_instances[tfz])                   
+                window = self.Window(windowtweets,seen_instances)
+                windows.append(window)
             slider[0] += incre
             slider[1] += incre
         self.windows = windows
