@@ -147,7 +147,7 @@ class Evalset():
                         if label in hidden:
                             timelabel_index = neighbour_tokens[0]
                             timelabel = self.vocabulary[timelabel_index]
-                            if timelabel != "early" or != "\d":
+                            if timelabel != "early" or timelabel != "\d":
                                 print timelabel,timelabel_index
                             else:
                                 timelabel_freq[timelabel] += 1
