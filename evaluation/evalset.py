@@ -111,19 +111,19 @@ class Evalset():
         classifications_nn = defaultdict(list)
         classifications = []
         nn = []
-        test = ""
+        # test = ""
         if vocabulary:
             self.set_vocabulary(vocabulary)
         for line in cl_open.readlines():
             if re.search("==",line):
                 classifications.append(line)
-                if not test == "":
-                    classifications_nn[test] = nn
-                nn = []
-                test = line
-            else:
-                nn.append(line)
-        classifications_nn[test] = nn
+                # if not test == "":
+                #     classifications_nn[test] = nn
+                # nn = []
+                # test = line
+            # else:
+            #     nn.append(line)
+        # classifications_nn[test] = nn
         cl_open.close()
         if len(classifications) != len(self.instances):
             print len(classifications),len(self.instances),"classification and meta do not align, exiting program..."
@@ -132,6 +132,7 @@ class Evalset():
         for i,line in enumerate(classifications):
             instance = self.instances[i]
             tokens = line.split("==")[1].split("  ")[1].split(" ")
+            print tokens
             if instance.dict["label"] == tokens[0]:
                 classification = tokens[1]
                 neighbours = classifications_nn[line]
