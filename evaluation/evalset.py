@@ -178,10 +178,8 @@ class Evalset():
         while slider[1] <= highest_tfz:
             windowtweets = []
             slider_range = range(slider[0],slider[1]+1)
-            if slider[0] == 0:
-                print "ja",slider[0]                
+            if slider[0] == 0:             
                 for tfz in slider_range:
-                    print tfz_instances[tfz]
                     instances = tfz_instances[tfz]
                     seen_instances += len(instances)
                     windowtweets.extend(tfz_instances[tfz])
