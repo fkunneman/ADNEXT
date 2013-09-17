@@ -148,7 +148,7 @@ class Evalset():
                             timelabel_index = neighbour_tokens[0]
                             timelabel = self.vocabulary[timelabel_index]
                             if timelabel != "early" or timelabel != "\d":
-                                print timelabel,timelabel_index
+                                print timelabel,timelabel_index,label,i 
                             else:
                                 timelabel_freq[timelabel] += 1
                                 score_timelabel[score].append(timelabel)
