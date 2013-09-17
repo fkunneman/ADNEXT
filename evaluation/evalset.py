@@ -228,8 +228,10 @@ class Evalset():
             target = window.label
             # target_tl = str(instance.timelabel)
             prediction = window.classification
+            print target,prediction
             # outcome = [str(instance.tfz),target,prediction]
             if target == "-" or target == "early":
+                print "abstain"
                 correct_abstain_vals[0] += 1
                 if prediction == "abstain":
                     correct_abstain_vals[1] += 1
@@ -241,10 +243,12 @@ class Evalset():
                 rmse_vals[0] += 1
                 #before += 1
                 if prediction == "abstain":
+                    print 'responsiveness -'
                     continue
 #                    outcome.extend(["ab","ab"])
 #                    ab += 1
                 else:
+                    print "rmse"
                     # es += 1
                     responsiveness_vals[1] += 1
                     target = int(target)
