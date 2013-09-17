@@ -145,13 +145,10 @@ class Evalset():
                         score = float(neighbour.split("  ")[1])
                         label_scores[label].append(score)
                         if label in hidden:
-                            timelabel_index = neighbour_tokens[0]
+                            timelabel_index = neighbour_tokens[-2]
                             timelabel = self.vocabulary[timelabel_index]
-                            if timelabel != "early" or timelabel != "\d":
-                                print timelabel,timelabel_index,label,i 
-                            else:
-                                timelabel_freq[timelabel] += 1
-                                score_timelabel[score].append(timelabel)
+                            timelabel_freq[timelabel] += 1
+                            score_timelabel[score].append(timelabel)
                     
                     timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
                     score_rank = sorted(score_timelabel.keys(),reverse = True)
