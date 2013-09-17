@@ -22,7 +22,7 @@ parser.add_argument('-f', action='store', default = "all_to_one", help = "[WINDO
 parser.add_argument('-et', action='store', default = "rmse", help = "specify the evaluation type")
 parser.add_argument('--size', action='store', default = 24, help = "specify the window size (in hours)")
 parser.add_argument('--slider', action='store', default = 1, help = "specify the slider (in hours)")
-parser.add_argument('--threshold', action='store', default = 100, help = "specify the threshold after which to score")
+# parser.add_argument('--threshold', action='store', default = 100, help = "specify the threshold after which to score")
 parser.add_argument('--plot', action='store_true', help = "choose whether results are plotted")
 parser.add_argument('--metadict',action='store',required=True,nargs='+', help = "if the fields of the metafile are different from the default, specify them here (format: filename 0 id 1)")
 
@@ -59,9 +59,9 @@ for i,t in enumerate(args.l):
     evaluation.extract_sliding_window_instances(windowsize,slider)
     
     for window in evaluation.windows:
-        if window.seen < args.threshold:
-            window.set_classification("abstain")
-        else:
+        # if window.seen < args.threshold:
+        #     window.set_classification("abstain")
+        # else:
 
             # # if self.input_type == "meta":
             # estimations = defaultdict(int)
@@ -86,30 +86,32 @@ for i,t in enumerate(args.l):
                 # else:
                 #     testwindow.set_classification("abstain")
         
-            predictions = defaultdict(int)
-            predictions_days = defaultdict(int)
-            score_prediction = defaultdict(list)                
-            #check for majority
-            for instance in window.instances:
-                # try:
-                if instance.classification[0] in ["early","during","after"]:
-                    predictions[instance.classification[0]] += 1
-                else:
-                    predictions["tte"] += 1
-                    predictions_days[instance.classification[0]] += 1
-                    score_prediction[instance.classification[1]].append(instance.classification[0])
-                # except IndexError:
-                #     print "window IE",instance.classification
-                    #continue
-                                            
-            majority_rank = sorted(predictions,key = predictions.get,reverse=True)
-            if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
-                tte_rank = sorted(predictions_other,key=predictions_other.get,reverse=True)
-                score_rank = sorted(score_prediction.keys(),reverse=True)
-                estimation = self.extract_timelabel(predictions_other,tte_rank,score_prediction,score_rank)
-                window.set_classification(estimation[0])
+        predictions = defaultdict(int)
+        predictions_days = defaultdict(int)
+        score_prediction = defaultdict(list)                
+        #check for majority
+        for instance in window.instances:
+            # try:
+            print instance.classification[0]
+            if instance.classification[0] in ["early","during","after"]:
+                predictions[instance.classification[0]] += 1
             else:
-                window.set_classification("abstain")
+                predictions["tte"] += 1
+                predictions_days[instance.classification[0]] += 1
+                score_prediction[instance.classification[1]].append(instance.classification[0])
+            # except IndexError:
+            #     print "window IE",instance.classification
+                #continue
+        print predictions
+
+        majority_rank = sorted(predictions,key = predictions.get,reverse=True)
+        if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
+            tte_rank = sorted(predictions_other,key=predictions_other.get,reverse=True)
+            score_rank = sorted(score_prediction.keys(),reverse=True)
+            estimation = self.extract_timelabel(predictions_other,tte_rank,score_prediction,score_rank)
+            window.set_classification(estimation[0])
+        else:
+            window.set_classification("abstain")
     #     testwindows.append(testwindow)
     # if plot:
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
