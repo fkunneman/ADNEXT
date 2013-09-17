@@ -220,9 +220,10 @@ class Evalset():
         # es = 0
         # fab = 0
         # before = 0
-        correct_abstain_vals = (0,0)
-        responsiveness_vals = (0,0)
-        rmse_vals = (0,0)
+#        print "ja"        
+        correct_abstain_vals = [0,0]
+        responsiveness_vals = [0,0]
+        rmse_vals = [0,0]
         for window in self.windows:
             target = window.label
             # target_tl = str(instance.timelabel)

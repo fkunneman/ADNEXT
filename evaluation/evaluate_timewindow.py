@@ -110,12 +110,11 @@ for i,t in enumerate(args.l):
                 window.set_classification(estimation[0])
             else:
                 window.set_classification("abstain")
-    exit()
     #     testwindows.append(testwindow)
     # if plot:
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
     #     evaluation = self.calculate_rmse(testwindows,plotfile)
-    rmse = self.calculate_rmse()
+    rmse = evaluation.calculate_rmse()
     print rmse
     # if self.input_type == "meta":
     #     out_dict[event] = evaluation[-4:]
