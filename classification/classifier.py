@@ -87,8 +87,6 @@ class Classifier():
                     feature_freq[feature] += 1
         elif classifier == "lcs":
             for instance in self.training:
-                tokens=instance.split(" ")
-                filename=tokens[0]
                 filename=instance["features"][0]
                 fileread=codecs.open(self.file_dir + filename,"r","utf-8")
                 for feature in fileread.readlines():
@@ -228,16 +226,18 @@ class Classifier():
             print "not enough arguments for LCS, exiting program..."
             exit()
 
+        if prune:
+            self.prune_features(int(prune),"lcs")
         if select:
             self.select_features(int(select),int(prune),"lcs")
         
         train=codecs.open(classification_dir + "train","w","utf-8")
-        for i in self.training:
-            train.write(i)
+        for t in self.training:
+            train.write(" ".join([t["features"],t["label"]) + "\n")
         train.close()
         test=codecs.open(classification_dir + "test","w","utf-8")
         for t in self.test:
-            test.write(t)
+            test.write(" ".join([t["features"],t["label"]) + "\n")
         test.close()
         if prune or select:
             stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
@@ -251,18 +251,15 @@ class Classifier():
             os.system("mkdir " + self.directory)
             train=codecs.open(classification_dir + "train","w","utf-8")
             for i,t in enumerate(self.training):
-                tokens=t.split(" ")
-                if tokens[1].strip() == "before":
-                    tl=self.metatraining[i].split("\t")[4]
-                    tokens[1]=tl
-                    train.write(" ".join(tokens) + "\n")
+                label = t["label"]
+                if label == "before":
+                    tl=t["meta"][4]
+                    train.write(" ".join([t["features"],tl]) + "\n")
             train.close()
             test=codecs.open(classification_dir + "test","w","utf-8")
             for i,t in enumerate(self.test):
-                tokens=t.split(" ")
-                tl=self.metatest[i].split("\t")[4]
-                tokens[1]=tl
-                test.write(" ".join(tokens) + "\n")
+                tl=t["meta"][4]
+                test.write(" ".join([t["features"],tl]) + "\n")
             test.close()
             stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
             for feature in self.stoplist:
