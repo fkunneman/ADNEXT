@@ -137,6 +137,7 @@ class Evalset():
                 exit()
             instance.set_label(tokens[0])
             classification = tokens[1]
+            print instance.label,instance.classification
             instance.set_classification(classification)
             neighbours = classifications_nn[line]
             label_scores = defaultdict(list)
@@ -157,14 +158,14 @@ class Evalset():
                 timelabel_rank = sorted(timelabel_freq,key=timelabel_freq.get, reverse=True)
                 score_rank = sorted(score_timelabel.keys(),reverse = True)
                 selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
-                instance.set_classification(selected_tl)
+                instance.set_time_classification(selected_tl)
             else:
                 for neighbour in neighbours:
                     label = neighbour.split(" ")[1].split(",")[-1]
                     score = float(neighbour.split("  ")[1])
                     label_scores[label].append(score)
                 highest_score = sorted(label_scores[classification],reverse=True)[0]
-                instance.set_classification((classification,highest_score))
+                instance.set_time_classification((classification,highest_score))
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
@@ -736,10 +737,10 @@ class Evalset():
         #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         ce = evaluation.ClassEvaluation()
         for instance in self.instances:
-            print instance.label
+            # print instance.label
             ce.append(instance.label,instance.classification)
         for label in sorted(list(set(ce.goals))):
-            print label
+            # print label
             if not label == "":
                 table = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
                 table.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
@@ -777,6 +778,9 @@ class Evalset():
         
         def set_classification(self,classification):
             self.classification = classification
+
+        def set_time_classification(self,tc):
+            self.time_classification = tc
 
         def set_event(self,event):
             self.event = event

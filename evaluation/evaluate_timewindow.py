@@ -93,12 +93,12 @@ for i,t in enumerate(args.l):
         for instance in window.instances:
             # try:
 #            print instance.classification[0]
-            if instance.classification[0] in ["early","during","after"]:
-                predictions[instance.classification[0]] += 1
+            if instance.time_classification[0] in ["early","during","after"]:
+                predictions[instance.time_classification[0]] += 1
             else:
                 predictions["tte"] += 1
-                predictions_days[instance.classification[0]] += 1
-                score_prediction[instance.classification[1]].append(instance.classification[0])
+                predictions_days[instance.time_classification[0]] += 1
+                score_prediction[instance.time_classification[1]].append(instance.time_classification[0])
             # except IndexError:
             #     print "window IE",instance.classification
                 #continue
@@ -119,8 +119,6 @@ for i,t in enumerate(args.l):
 
     rmse = evaluation.calculate_rmse()
     print rmse
-    for instance in evaluation.instances:
-        instance.classification = instance.classification[0]
     evaluation.print_results()
 
 
