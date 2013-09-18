@@ -233,11 +233,11 @@ class Classifier():
         
         train=codecs.open(classification_dir + "train","w","utf-8")
         for t in self.training:
-            train.write(" ".join([t["features"],t["label"]) + "\n")
+            train.write(" ".join([t["features"],t["label"]]) + "\n")
         train.close()
         test=codecs.open(classification_dir + "test","w","utf-8")
         for t in self.test:
-            test.write(" ".join([t["features"],t["label"]) + "\n")
+            test.write(" ".join([t["features"],t["label"]]) + "\n")
         test.close()
         if prune or select:
             stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
