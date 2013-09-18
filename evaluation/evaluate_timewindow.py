@@ -92,7 +92,7 @@ for i,t in enumerate(args.l):
         #check for majority
         for instance in window.instances:
             # try:
-            print instance.classification[0]
+#            print instance.classification[0]
             if instance.classification[0] in ["early","during","after"]:
                 predictions[instance.classification[0]] += 1
             else:
@@ -102,13 +102,13 @@ for i,t in enumerate(args.l):
             # except IndexError:
             #     print "window IE",instance.classification
                 #continue
-        print predictions
+#        print predictions
 
         majority_rank = sorted(predictions,key = predictions.get,reverse=True)
         if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
-            tte_rank = sorted(predictions_other,key=predictions_other.get,reverse=True)
+            tte_rank = sorted(predictions_days,key=predictions_days.get,reverse=True)
             score_rank = sorted(score_prediction.keys(),reverse=True)
-            estimation = self.extract_timelabel(predictions_other,tte_rank,score_prediction,score_rank)
+            estimation = evaluation.extract_timelabel(predictions_days,tte_rank,score_prediction,score_rank)
             window.set_classification(estimation[0])
         else:
             window.set_classification("abstain")
@@ -117,8 +117,8 @@ for i,t in enumerate(args.l):
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
     #     evaluation = self.calculate_rmse(testwindows,plotfile)
 
-    # rmse = evaluation.calculate_rmse()
-    # print rmse
+    rmse = evaluation.calculate_rmse()
+    print rmse
 
     # if self.input_type == "meta":
     #     out_dict[event] = evaluation[-4:]
