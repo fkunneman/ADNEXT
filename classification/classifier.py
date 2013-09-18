@@ -445,8 +445,6 @@ class Classifier():
     def lin_reg_event(self,args):
         
         #generate input
-        event_file = args[0]
-        event_hash = time_functions.generate_event_time_hash(event_file)
         event_tweets = defaultdict(list)
         event_frequency = defaultdict(lambda : {}) 
         #generate a list of tweets for each event
@@ -461,11 +459,41 @@ class Classifier():
             ef = event_frequency[event]["sequence"]
             for hour in range(last_tfz+1):
                 ef.append(0)
+            est = True
             for tweet in tweets:
                 tfz = int(tweet["meta"][4])
-                #print len(ef),tfz
                 ef[tfz] += 1
+                if est:
+                    timelabel = tweet["meta"][3]
+                    if timelabel == "-":
+                        event_frequency[event]["start_time"] = tfz+1
+                        est = False
 
-            print ef
+        #if args[1] == "log"
+        #convert to log
+
+        #slide through windows and generate x-y pairs
+        window = int(args[0])
+        half = window/2
+        slider = int(args[1])
+        training = []
+        for event in event_frequency.keys():
+            ef = event_frequency[event][frequency]
+            event_time = event_frequency[event]["start_time"]
+            start = 0
+            end = window
+            while end <= len(ef):
+                half1 = ef[start:start+half]
+                half2 = ef[start+half+1:end]
+                value = half2/half1
+                target = int((event_time - end)/24)
+                training["value"].append(value)
+                training["target"].append(target)
+                start += slider
+                end += slider
+
+        print training
+
+
 
 
