@@ -25,6 +25,8 @@ class Classifier():
             self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="ibt":
             self.informed_baseline_date(arguments)
+        elif algorithm=="dist":
+            self.lin_reg_event(arguments)
     
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
@@ -439,3 +441,30 @@ class Classifier():
         for ti in tested_instances:
             baseline_out.write(ti)
         baseline_out.close()
+
+    def lin_reg_event(self,args):
+        
+        #generate input
+        event_file = args[0]
+        event_hash = time_functions.generate_event_time_hash(event_file)
+        event_tweets = defaultdict(list)
+        event_frequency = defaultdict(lambda : {}) 
+        #generate a list of tweets for each event
+        for instance in self.train:
+            event = instance["meta"][1]
+            event_tweets[event].append(instance)
+        #generate an hourly sequence of tweet frequencies for each event
+        for event in event_tweets.keys():
+            tweets = event_tweets[event]
+            last_tfz = tweets[-1]["meta"][4]
+            event_frequency[event]["sequence"] = []
+            ef = event_frequency[event]["sequence"]
+            for hour in range(last_tfz):
+                ef.append(0)
+            for tweet in tweets:
+                tfz = int(tweet["meta"][4])
+                ef[tfz] += 1
+
+            print ef
+
+

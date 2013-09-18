@@ -70,8 +70,6 @@ elif validation=="looe":
         instance_event=tokens[event_column]
         if instance_event != event:
             event_bounds.append((instance_event,i))
-            print len(meta)
-            # if len(meta) > 0:
             if not event == "":
                 event_train_test[event]["meta"] = meta
             event=instance_event
