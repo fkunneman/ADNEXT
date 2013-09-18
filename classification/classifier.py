@@ -261,10 +261,11 @@ class Classifier():
                 tl=t["meta"][4]
                 test.write(" ".join([t["features"][0],tl]) + "\n")
             test.close()
-            stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
-            for feature in self.stoplist:
-                stoplist.write(feature + "\n")
-            stoplist.close()
+            if prune or select:
+                stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
+                for feature in self.stoplist:
+                    stoplist.write(feature + "\n")
+                stoplist.close()
             performer()
 
     def perform_knn(self,klist,prune,select,timelabels):

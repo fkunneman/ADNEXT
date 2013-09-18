@@ -85,7 +85,6 @@ elif validation=="looe":
 
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
-        print event
         start=event_bound[1]
         if i==len(event_bounds)-1:
             test=[]
@@ -120,6 +119,7 @@ elif validation=="looe":
         
     if parameters[0]=="regular":
         for event in event_train_test.keys():
+            print event
             event_write = event
             if re.search(" ",event_write):
                 event_write="_".join(event_write.split(" "))
