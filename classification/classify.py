@@ -78,6 +78,11 @@ elif validation=="looe":
             meta = [] 
         meta.append(instance)
 
+    if args.c == "knn":
+        delimiter = ","
+    elif args.c == "lcs":
+        delimiter = " "
+
     for i,event_bound in enumerate(event_bounds):
         event=event_bound[0]
         print event
@@ -85,13 +90,13 @@ elif validation=="looe":
         if i==len(event_bounds)-1:
             test=[]
             for i in range(len(instances[start:])):
-                values = instances[start+i].strip().split(",")
+                values = instances[start+i].strip().split(delimiter)
                 meta_values = metaread[start+i].strip().split("\t")
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 test.append(instance)
             training=[]
             for i in range(len(instances[:start])):
-                values = instances[i].strip().split(",")
+                values = instances[i].strip().split(delimiter)
                 meta_values = metaread[i].strip().split("\t")
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 training.append(instance)
@@ -99,13 +104,13 @@ elif validation=="looe":
             end=event_bounds[i+1][1]
             test=[]
             for i in range(len(instances[start:end])):
-                values = instances[start+i].strip().split(",")
+                values = instances[start+i].strip().split(delimiter)
                 meta_values = metaread[start+i].strip().split("\t")
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 test.append(instance)
             training=[]
             for i in range(len(instances)):
-                values = instances[i].strip().split(",")
+                values = instances[i].strip().split(delimiter)
                 meta_values = metaread[i].strip().split("\t")
                 instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                 training.append(instance)
