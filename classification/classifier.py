@@ -128,7 +128,7 @@ class Classifier():
         elif classifier == "lcs":
             print "counting features..."
             for instance in self.training:
-                filename=instance["features"]
+                filename=instance["features"][0]
                 label=instance["label"]
                 label_freq[label] += 1
                 fileread=codecs.open(self.file_dir + filename,"r","utf-8")
