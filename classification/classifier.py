@@ -87,6 +87,7 @@ class Classifier():
                     feature_freq[feature] += 1
         elif classifier == "lcs":
             for instance in self.training:
+                print instance
                 tokens=instance.split(" ")
                 filename=tokens[0]
                 fileread=codecs.open(self.file_dir + filename,"r","utf-8")
