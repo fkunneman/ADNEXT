@@ -450,19 +450,20 @@ class Classifier():
         event_tweets = defaultdict(list)
         event_frequency = defaultdict(lambda : {}) 
         #generate a list of tweets for each event
-        for instance in self.train:
+        for instance in self.training:
             event = instance["meta"][1]
             event_tweets[event].append(instance)
         #generate an hourly sequence of tweet frequencies for each event
         for event in event_tweets.keys():
             tweets = event_tweets[event]
-            last_tfz = tweets[-1]["meta"][4]
+            last_tfz = int(tweets[-1]["meta"][4])
             event_frequency[event]["sequence"] = []
             ef = event_frequency[event]["sequence"]
-            for hour in range(last_tfz):
+            for hour in range(last_tfz+1):
                 ef.append(0)
             for tweet in tweets:
                 tfz = int(tweet["meta"][4])
+                #print len(ef),tfz
                 ef[tfz] += 1
 
             print ef
