@@ -734,8 +734,10 @@ class Evalset():
         #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         ce = evaluation.ClassEvaluation()
         for instance in self.instances:
+            print instance.label
             ce.append(instance.label,instance.classification)
         for label in sorted(list(set(ce.goals))):
+            print label
             if not label == "":
                 table = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
                 table.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])

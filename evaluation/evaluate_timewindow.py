@@ -119,7 +119,9 @@ for i,t in enumerate(args.l):
 
     rmse = evaluation.calculate_rmse()
     print rmse
-    # evaluation.print_results()
+    for instance in evaluation.instances:
+        instance.classification = instance.classification[0]
+    evaluation.print_results()
 
 
     # if self.input_type == "meta":
