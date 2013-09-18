@@ -87,9 +87,9 @@ class Classifier():
                     feature_freq[feature] += 1
         elif classifier == "lcs":
             for instance in self.training:
-                print instance
                 tokens=instance.split(" ")
                 filename=tokens[0]
+                filename=instance["features"]
                 fileread=codecs.open(self.file_dir + filename,"r","utf-8")
                 for feature in fileread.readlines():
                     feature_freq[feature.strip()] += 1
@@ -128,9 +128,8 @@ class Classifier():
         elif classifier == "lcs":
             print "counting features..."
             for instance in self.training:
-                tokens=instance.split(" ")
-                filename=tokens[0]
-                label=tokens[1]
+                filename=instance["features"]
+                label=instance["label"]
                 label_freq[label] += 1
                 fileread=codecs.open(self.file_dir + filename,"r","utf-8")
                 features=[]
@@ -199,7 +198,7 @@ class Classifier():
         return feature_infogain
 
     def select_features(self,num_features,prune,classifier):
-        #make a file of the instances and perform infogain weighting (based on timbl)
+        #make a file of the instances and perform infogain weighting
         feature_weights=self.infogain(classifier,prune)
         selected_features=sorted(feature_weights, key=feature_weights.get, reverse=True)    
         if classifier == "knn":
