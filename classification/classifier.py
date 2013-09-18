@@ -89,7 +89,7 @@ class Classifier():
             for instance in self.training:
                 tokens=instance.split(" ")
                 filename=tokens[0]
-                filename=instance["features"]
+                filename=instance["features"][0]
                 fileread=codecs.open(self.file_dir + filename,"r","utf-8")
                 for feature in fileread.readlines():
                     feature_freq[feature.strip()] += 1
@@ -120,7 +120,7 @@ class Classifier():
         feature_freq=defaultdict(int)
         if classifier == "knn":
             for instance in self.training:
-                features=instance["features"]
+                features=instance["features"][0]
                 label=instance["label"]
                 label_freq[label] += 1
                 for feature in features:
