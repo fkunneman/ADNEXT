@@ -135,7 +135,9 @@ class Evalset():
             if not instance.dict["label"] == tokens[0]:
                 print "error: no label match; exiting program"
                 exit()
+            instance.set_label(tokens[0])
             classification = tokens[1]
+            instance.set_classification(classification)
             neighbours = classifications_nn[line]
             label_scores = defaultdict(list)
             if hidden and classification in hidden:
