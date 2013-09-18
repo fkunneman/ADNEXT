@@ -224,6 +224,7 @@ class Evalset():
         # fab = 0
         # before = 0
 #        print "ja"        
+        estimation_sequence = []
         correct_abstain_vals = [0,0]
         responsiveness_vals = [0,0]
         rmse_vals = [0,0]
@@ -231,10 +232,9 @@ class Evalset():
             target = window.label
             # target_tl = str(instance.timelabel)
             prediction = window.classification
-            print target,prediction
+            estimation_sequence.append((target,prediction))
             # outcome = [str(instance.tfz),target,prediction]
             if target == "-" or target == "early":
-                print "abstain"
                 correct_abstain_vals[0] += 1
                 if prediction == "abstain":
                     correct_abstain_vals[1] += 1
@@ -246,12 +246,10 @@ class Evalset():
                 rmse_vals[0] += 1
                 #before += 1
                 if prediction == "abstain":
-                    print 'responsiveness -'
                     continue
 #                    outcome.extend(["ab","ab"])
 #                    ab += 1
                 else:
-                    print "rmse"
                     # es += 1
                     responsiveness_vals[1] += 1
                     target = int(target)
@@ -288,7 +286,7 @@ class Evalset():
     #fes_percent = round(fes/ab,2)
         # responsiveness = round((scores/before),2)
         # outcomes.extend([rmse,responsiveness,len(instances),mrse])
-        return (rmse,responsiveness,correct_abstain)
+        return (estimation_sequence,rmse,responsiveness,correct_abstain)
 
     def extract_timelabel(self,timelabel_freq,timelabel_rank,score_timelabel,score_rank):
         
