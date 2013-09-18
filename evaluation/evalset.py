@@ -344,285 +344,283 @@ class Evalset():
                 score = select_highest_score_tl(score_rank,score_timelabel,selected[0])
                 return (mean, round(score,4))
 
-    def evaluate_window(self,event_scores,windowsize,slider,threshold,outfile,output = "rmse",hidden = False,plot = False,filt = False,eventfile=False):
+    # def evaluate_window(self,event_scores,windowsize,slider,threshold,outfile,output = "rmse",hidden = False,plot = False,filt = False,eventfile=False):
         
-        if eventfile:
-            event_time = time_functions.generate_event_time_hash(eventfile)
+    #     if eventfile:
+    #         event_time = time_functions.generate_event_time_hash(eventfile)
 
-        out = open(outfile,"w")
-        out_dict = {}
-        if output == "fscore":
-            out_dict = defaultdict(lambda: defaultdict(list))
-        #walk through events
-        for event in self.testset_instances.keys():
-            event_file = re.sub(" ","_",event)
-            print event_file
-            if hidden:
-                file_tokens = event_scores[event_file][0].split("/")
-                file_tokens[-1] = "vocabulary"
-                vocabulary_file = "/".join(file_tokens)
-                vocabulary_read = codecs.open(vocabulary_file,"r","utf-8")
-                self.vocabulary = {}
-                for line in vocabulary_read:
-                    tokens = line.strip().split("\t")
-                    self.vocabulary[tokens[0]] = tokens[1] 
-            if self.input_type == "meta":
-                metafile_baseline = codecs.open(event_scores[event_file][0],"r","utf-8")
-                meta_instances = []
-                for line in metafile_baseline:
-                    instance = Evalset.Instance()
-                    tokens = line.split("\t")
-                    instance.set_id(tokens[0])
-                    instance.set_event(tokens[1])
-                    instance.set_label(tokens[2])
-                    instance.set_classification([tokens[3]])
-                    instance.set_tfz(int(tokens[4]))
-                    instance.set_timelabel(tokens[5])
-                    instance.set_date(tokens[6])
-                    instance.set_time(tokens[7])
-                    self.instances.append(instance)
-                    meta_instances.append(instance)
-            else:
-                meta_instances = self.testset_instances[event]
-            #temporal
-            #bda = defaultdict(int)
-            #for ins in meta_instances:
-            #    bda[ins.label] += 1
-            #for key in sorted(bda.keys()):
-            #    print key,"\t",bda[key]
-            #generate windows
-            instance_tfz = []
-            #print len(meta_instances)
-            for instance in meta_instances:
-                instance_tfz.append(([instance],instance.tfz))
-            windows = time_functions.extract_sliding_window_instances(instance_tfz,windowsize,slider)
-            #for each file with classifications
-            for scorefile in event_scores[event_file]:
-                #print scorefile
-                #link classifications to instances
-                if self.input_type == "knn":
-                    classification_info = codecs.open(scorefile,"r","utf-8")
-                    scorefile_context = scorefile.split("/")
-                    validation = scorefile_context[-2]
-                    if filt and not validation in filt:
-                        continue
-                    k = scorefile_context[-1]
-                    print validation,k
-                    self.set_instances_knn(classification_info.readlines(),meta_instances,hidden)
-                    classification_info.close()
-                elif self.input_type == "lcs":
-                    self.set_instances_lcs(scorefile,"standard")
-                    scoretokens = scorefile.split("/")
-                    validation = scoretokens[-2]
-                    #print validation
-                    if filt and not validation in filt:
-                        continue
-                    scoretokens[-1] = "timelabels"
-                    timelabel_score_file = "/".join(scoretokens) + "/test.rnk"
-                    self.set_instances_lcs(timelabel_score_file,"timelabel")
-                #elif self.input_type == "meta":
-                 #   classification_info = codecs.open(scorefile,"r","utf-8")
-                    #for i,line in enumerate(classification_info).readlines():
-                        #tokens = line.split("\t")
-                        #if tokens[3] != "nt":
-                        #    print tokens[3]
-                        #instance = meta_instances[i]
+    #     out = open(outfile,"w")
+    #     out_dict = {}
+    #     if output == "fscore":
+    #         out_dict = defaultdict(lambda: defaultdict(list))
+    #     #walk through events
+    #     for event in self.testset_instances.keys():
+    #         event_file = re.sub(" ","_",event)
+    #         print event_file
+    #         if hidden:
+    #             file_tokens = event_scores[event_file][0].split("/")
+    #             file_tokens[-1] = "vocabulary"
+    #             vocabulary_file = "/".join(file_tokens)
+    #             vocabulary_read = codecs.open(vocabulary_file,"r","utf-8")
+    #             self.vocabulary = {}
+    #             for line in vocabulary_read:
+    #                 tokens = line.strip().split("\t")
+    #                 self.vocabulary[tokens[0]] = tokens[1] 
+    #         if self.input_type == "meta":
+    #             metafile_baseline = codecs.open(event_scores[event_file][0],"r","utf-8")
+    #             meta_instances = []
+    #             for line in metafile_baseline:
+    #                 instance = Evalset.Instance()
+    #                 tokens = line.split("\t")
+    #                 instance.set_id(tokens[0])
+    #                 instance.set_event(tokens[1])
+    #                 instance.set_label(tokens[2])
+    #                 instance.set_classification([tokens[3]])
+    #                 instance.set_tfz(int(tokens[4]))
+    #                 instance.set_timelabel(tokens[5])
+    #                 instance.set_date(tokens[6])
+    #                 instance.set_time(tokens[7])
+    #                 self.instances.append(instance)
+    #                 meta_instances.append(instance)
+    #         else:
+    #             meta_instances = self.testset_instances[event]
+    #         #temporal
+    #         #bda = defaultdict(int)
+    #         #for ins in meta_instances:
+    #         #    bda[ins.label] += 1
+    #         #for key in sorted(bda.keys()):
+    #         #    print key,"\t",bda[key]
+    #         #generate windows
+    #         instance_tfz = []
+    #         #print len(meta_instances)
+    #         for instance in meta_instances:
+    #             instance_tfz.append(([instance],instance.tfz))
+    #         windows = time_functions.extract_sliding_window_instances(instance_tfz,windowsize,slider)
+    #         #for each file with classifications
+    #         for scorefile in event_scores[event_file]:
+    #             #print scorefile
+    #             #link classifications to instances
+    #             if self.input_type == "knn":
+    #                 classification_info = codecs.open(scorefile,"r","utf-8")
+    #                 scorefile_context = scorefile.split("/")
+    #                 validation = scorefile_context[-2]
+    #                 if filt and not validation in filt:
+    #                     continue
+    #                 k = scorefile_context[-1]
+    #                 print validation,k
+    #                 self.set_instances_knn(classification_info.readlines(),meta_instances,hidden)
+    #                 classification_info.close()
+    #             elif self.input_type == "lcs":
+    #                 self.set_instances_lcs(scorefile,"standard")
+    #                 scoretokens = scorefile.split("/")
+    #                 validation = scoretokens[-2]
+    #                 #print validation
+    #                 if filt and not validation in filt:
+    #                     continue
+    #                 scoretokens[-1] = "timelabels"
+    #                 timelabel_score_file = "/".join(scoretokens) + "/test.rnk"
+    #                 self.set_instances_lcs(timelabel_score_file,"timelabel")
+    #             #elif self.input_type == "meta":
+    #              #   classification_info = codecs.open(scorefile,"r","utf-8")
+    #                 #for i,line in enumerate(classification_info).readlines():
+    #                     #tokens = line.split("\t")
+    #                     #if tokens[3] != "nt":
+    #                     #    print tokens[3]
+    #                     #instance = meta_instances[i]
 
-                        #instance.set_classification([tokens[3]])
-                  #  if len(classification_info.readlines()) != len(meta_instances):
-                   #     print len(classification_info),len(meta_instances),"classification and meta do not align, exiting program..."
-                    #for i,line in enumerate(classification_info.readlines()):
-                      #  tokens = line.split("\t")
-                     #   instance = meta_instances[i]
-                       # instance.set_classification([tokens[3]])
-                    #classification_info.close()
-                #for each window
-                testwindows = []
-                num_tweets = 0
-                if output == "rmse":
-                    for window in windows:
-                        testwindow = Evalset.Instance()
-                        testwindow.set_tfz(window[1])
-                        if plot:
-                            window_tweet = window[0][-1]
-                            window_datetime = time_functions.return_datetime(window_tweet.date,window_tweet.time,setting="vs")
-                            tfz = time_functions.timerel(event_time[event][0],window_datetime,"hour")
-                            testwindow.set_tfz(tfz)
-                        num_tweets += len(window[0])
-                        if num_tweets <= threshold:
-                            testwindow.set_classification("abstain")
-                        else:
-                            testwindow.set_label(window[0][-1].timelabel)
-                            if self.input_type == "meta":
-                                estimations = defaultdict(int)
-                                for instance in window[0]:
-                                    try:
-                                        if not instance.classification[0] == "nt":
-                                            estimations[instance.classification[0]] += 1
-                                    except IndexError:
-                                        continue
-                                ranked_estimations = sorted(estimations,key = estimations.get,reverse=True)
-                                if len(ranked_estimations) == 0:
-                                    testwindow.set_classification("abstain")
-                                else:
-                                    majority = ranked_estimations[0]
-                                    if len(ranked_estimations) == 1 or estimations[majority] > estimations[ranked_estimations[1]]:
-                                        if majority == "early":
-                                            testwindow.set_classification("abstain")
-                                        else:
-                                            testwindow.set_classification(majority)
-                                    else:
-                                        testwindow.set_classification("abstain")
+    #                     #instance.set_classification([tokens[3]])
+    #               #  if len(classification_info.readlines()) != len(meta_instances):
+    #                #     print len(classification_info),len(meta_instances),"classification and meta do not align, exiting program..."
+    #                 #for i,line in enumerate(classification_info.readlines()):
+    #                   #  tokens = line.split("\t")
+    #                  #   instance = meta_instances[i]
+    #                    # instance.set_classification([tokens[3]])
+    #                 #classification_info.close()
+    #             #for each window
+    #             testwindows = []
+    #             num_tweets = 0
+    #             if output == "rmse":
+    #                 for window in windows:
+    #                     testwindow = Evalset.Instance()
+    #                     testwindow.set_tfz(window[1])
+    #                     if plot:
+    #                         window_tweet = window[0][-1]
+    #                         window_datetime = time_functions.return_datetime(window_tweet.date,window_tweet.time,setting="vs")
+    #                         tfz = time_functions.timerel(event_time[event][0],window_datetime,"hour")
+    #                         testwindow.set_tfz(tfz)
+    #                     num_tweets += len(window[0])
+    #                     if num_tweets <= threshold:
+    #                         testwindow.set_classification("abstain")
+    #                     else:
+    #                         testwindow.set_label(window[0][-1].timelabel)
+    #                         if self.input_type == "meta":
+    #                             estimations = defaultdict(int)
+    #                             for instance in window[0]:
+    #                                 try:
+    #                                     if not instance.classification[0] == "nt":
+    #                                         estimations[instance.classification[0]] += 1
+    #                                 except IndexError:
+    #                                     continue
+    #                             ranked_estimations = sorted(estimations,key = estimations.get,reverse=True)
+    #                             if len(ranked_estimations) == 0:
+    #                                 testwindow.set_classification("abstain")
+    #                             else:
+    #                                 majority = ranked_estimations[0]
+    #                                 if len(ranked_estimations) == 1 or estimations[majority] > estimations[ranked_estimations[1]]:
+    #                                     if majority == "early":
+    #                                         testwindow.set_classification("abstain")
+    #                                     else:
+    #                                         testwindow.set_classification(majority)
+    #                                 else:
+    #                                     testwindow.set_classification("abstain")
                             
-                            else:
-                                predictions = defaultdict(int)
-                                predictions_other = defaultdict(int)
-                                score_prediction = defaultdict(list)
+    #                         else:
+    #                             predictions = defaultdict(int)
+    #                             predictions_other = defaultdict(int)
+    #                             score_prediction = defaultdict(list)
                                 
-                                #check for majority
-                                for instance in window[0]:
+    #                             #check for majority
+    #                             for instance in window[0]:
 
-                                    try:
-                                        if instance.classification[0] in ["early","during","after"]:
-                                            predictions[instance.classification[0]] += 1
-                                        else:
-                                            predictions["tte"] += 1
-                                            predictions_other[instance.classification[0]] += 1
-                                            score_prediction[instance.classification[1]].append(instance.classification[0])
-                                    except IndexError:
-                                        print "window IE",instance.classification
-                                        #continue
+    #                                 try:
+    #                                     if instance.classification[0] in ["early","during","after"]:
+    #                                         predictions[instance.classification[0]] += 1
+    #                                     else:
+    #                                         predictions["tte"] += 1
+    #                                         predictions_other[instance.classification[0]] += 1
+    #                                         score_prediction[instance.classification[1]].append(instance.classification[0])
+    #                                 except IndexError:
+    #                                     print "window IE",instance.classification
+    #                                     #continue
                                                                 
-                                majority_rank = sorted(predictions,key = predictions.get,reverse=True)
-                                if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
-                                    tte_rank = sorted(predictions_other,key=predictions_other.get,reverse=True)
-                                    score_rank = sorted(score_prediction.keys(),reverse=True)
-                                    estimation = self.extract_timelabel(predictions_other,tte_rank,score_prediction,score_rank)
-                                    testwindow.set_classification(estimation[0])
-                                else:
-                                    testwindow.set_classification("abstain")
-                        testwindows.append(testwindow)
-                    if plot:
-                        plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
-                        evaluation = self.calculate_rmse(testwindows,plotfile)
-                    else:
-                        evaluation = self.calculate_rmse(testwindows)
-                    if self.input_type == "meta":
-                        out_dict[event] = evaluation[-4:]
-                    elif self.input_type == "knn":
-                        out_dict[event + "_" + validation + "_" + k] = evaluation[-4:]
-                    elif self.input_type == "lcs":
-                        out_dict[event + "_" + validation] = evaluation[-4:]
+    #                             majority_rank = sorted(predictions,key = predictions.get,reverse=True)
+    #                             if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
+    #                                 tte_rank = sorted(predictions_other,key=predictions_other.get,reverse=True)
+    #                                 score_rank = sorted(score_prediction.keys(),reverse=True)
+    #                                 estimation = self.extract_timelabel(predictions_other,tte_rank,score_prediction,score_rank)
+    #                                 testwindow.set_classification(estimation[0])
+    #                             else:
+    #                                 testwindow.set_classification("abstain")
+    #                     testwindows.append(testwindow)
+    #                 if plot:
+    #                     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
+    #                     evaluation = self.calculate_rmse(testwindows,plotfile)
+    #                 else:
+    #                     evaluation = self.calculate_rmse(testwindows)
+    #                 if self.input_type == "meta":
+    #                     out_dict[event] = evaluation[-4:]
+    #                 elif self.input_type == "knn":
+    #                     out_dict[event + "_" + validation + "_" + k] = evaluation[-4:]
+    #                 elif self.input_type == "lcs":
+    #                     out_dict[event + "_" + validation] = evaluation[-4:]
                 
-                elif output == "fscore":
-                    print "fscore"
-                    ce = proy_evaluation.ClassEvaluation()
-                    for window in windows:
-                        testwindow = Evalset.Instance()
-                        testwindow.set_tfz(window[1])
-                        label = (window[0][-1].label)
-                        if label == "during" or label == "after":
-                            label = "late"
-                        else:
-                            if window[0][-1].timelabel == "early":
-                                label = "early"
-                            else:
-                                label = "before"
-                        if self.input_type == "meta":
-                            estimations = defaultdict(int)
-                            for instance in window[0]:
-                                try:
-                                    if not instance.classification[0] == "nt":
-                                        estimations[instance.classification[0]] += 1
-                                except IndexError:
-                                    continue
-                            ranked_estimations = sorted(estimations,key = estimations.get,reverse=True)
-                            if len(ranked_estimations) == 0:
-                                classification = "late"
-                            else:
-                                majority = ranked_estimations[0]
-                                if len(ranked_estimations) == 1 or estimations[majority] > estimations[ranked_estimations[1]]:
-                                    if majority == "early":
-                                        classification = "early"
-                                    else:
-                                        classification = "before"
-                                else:
-                                    classification = "late"
+    #             elif output == "fscore":
+    #                 print "fscore"
+    #                 ce = proy_evaluation.ClassEvaluation()
+    #                 for window in windows:
+    #                     testwindow = Evalset.Instance()
+    #                     testwindow.set_tfz(window[1])
+    #                     label = (window[0][-1].label)
+    #                     if label == "during" or label == "after":
+    #                         label = "late"
+    #                     else:
+    #                         if window[0][-1].timelabel == "early":
+    #                             label = "early"
+    #                         else:
+    #                             label = "before"
+    #                     if self.input_type == "meta":
+    #                         estimations = defaultdict(int)
+    #                         for instance in window[0]:
+    #                             try:
+    #                                 if not instance.classification[0] == "nt":
+    #                                     estimations[instance.classification[0]] += 1
+    #                             except IndexError:
+    #                                 continue
+    #                         ranked_estimations = sorted(estimations,key = estimations.get,reverse=True)
+    #                         if len(ranked_estimations) == 0:
+    #                             classification = "late"
+    #                         else:
+    #                             majority = ranked_estimations[0]
+    #                             if len(ranked_estimations) == 1 or estimations[majority] > estimations[ranked_estimations[1]]:
+    #                                 if majority == "early":
+    #                                     classification = "early"
+    #                                 else:
+    #                                     classification = "before"
+    #                             else:
+    #                                 classification = "late"
                             
-                        else:
-                            predictions = defaultdict(int)
-                            predictions_other = defaultdict(int)
-                            score_prediction = defaultdict(list)
-                            #check for majority
+    #                     else:
+    #                         predictions = defaultdict(int)
+    #                         predictions_other = defaultdict(int)
+    #                         score_prediction = defaultdict(list)
+    #                         #check for majority
                             
-                            for instance in window[0]:
-                                try:
-                                    if instance.classification == "early":
-                                        print instance.classification[0]
-                                    if instance.classification[0] in ["early","during","after"]:
-                                        predictions[instance.classification[0]] += 1
-                                    else:
-                                        predictions["before"] += 1
-                                except IndexError:
-                                    continue
-                            majority_rank = sorted(predictions,key = predictions.get,reverse=True)
-                            if majority_rank[0] == "before" or predictions["before"] == predictions[majority_rank[0]]:
-                                classification = "before"
-                            else:
-                                if majority_rank[0] == "early" or predictions["early"] == predictions[majority_rank[0]]:
-                                    classification = "early"
-                                else:
-                                    classification = "late"
-                        ce.append(label,classification)
-                    for label in sorted(list(set(ce.goals))):
-                        out_dict[label]["precision"].append(round(ce.precision(cls=label),2))
-                        out_dict[label]["recall"].append(round(ce.recall(cls=label),2))
-                        out_dict[label]["f1"].append(round(ce.fscore(cls=label),2))
+    #                         for instance in window[0]:
+    #                             try:
+    #                                 if instance.classification == "early":
+    #                                     print instance.classification[0]
+    #                                 if instance.classification[0] in ["early","during","after"]:
+    #                                     predictions[instance.classification[0]] += 1
+    #                                 else:
+    #                                     predictions["before"] += 1
+    #                             except IndexError:
+    #                                 continue
+    #                         majority_rank = sorted(predictions,key = predictions.get,reverse=True)
+    #                         if majority_rank[0] == "before" or predictions["before"] == predictions[majority_rank[0]]:
+    #                             classification = "before"
+    #                         else:
+    #                             if majority_rank[0] == "early" or predictions["early"] == predictions[majority_rank[0]]:
+    #                                 classification = "early"
+    #                             else:
+    #                                 classification = "late"
+    #                     ce.append(label,classification)
+    #                 for label in sorted(list(set(ce.goals))):
+    #                     out_dict[label]["precision"].append(round(ce.precision(cls=label),2))
+    #                     out_dict[label]["recall"].append(round(ce.recall(cls=label),2))
+    #                     out_dict[label]["f1"].append(round(ce.fscore(cls=label),2))
 
-        if output == "rmse":
-            rmses = defaultdict(list)
-            if self.input_type == "meta":
-                for v in sorted(out_dict.keys()):
-                    scores = out_dict[v]
-                    if scores[0] != "-":
-                        rmses[v].extend(scores)
-                    out.write(str(scores[0]) + "\t" + str(scores[1]) + "\t")
-            elif self.input_type == "knn":
-                for v in sorted(out_dict.keys()):
-                    scores = out_dict[v]
-                    if scores[0] != "-":
-                        rmses[v].extend(scores)
-                    out.write(str(scores[0]) + "\t" + str(scores[1]) + "\t")
+    #     if output == "rmse":
+    #         rmses = defaultdict(list)
+    #         if self.input_type == "meta":
+    #             for v in sorted(out_dict.keys()):
+    #                 scores = out_dict[v]
+    #                 if scores[0] != "-":
+    #                     rmses[v].extend(scores)
+    #                 out.write(str(scores[0]) + "\t" + str(scores[1]) + "\t")
+    #         elif self.input_type == "knn":
+    #             for v in sorted(out_dict.keys()):
+    #                 scores = out_dict[v]
+    #                 if scores[0] != "-":
+    #                     rmses[v].extend(scores)
+    #                 out.write(str(scores[0]) + "\t" + str(scores[1]) + "\t")
                         
-            elif self.input_type == "lcs":
-                for v in sorted(out_dict.keys()):
-                    scores = out_dict[v]
-                    if scores[0] != "-":
-                        rmses[v] = scores
-                    out.write(str(scores[0]) + "\t" + str(scores[1]) + "\t")
+    #         elif self.input_type == "lcs":
+    #             for v in sorted(out_dict.keys()):
+    #                 scores = out_dict[v]
+    #                 if scores[0] != "-":
+    #                     rmses[v] = scores
+    #                 out.write(str(scores[0]) + "\t" + str(scores[1]) + "\t")
             
-            scorelists = [[],[],[]]
-            for x in rmses.keys():
-                for i,score in enumerate(rmses[x][:3]):
-                    if not score == "-":
-                        scorelists[i].append(score)
-            out.write("\nmean " + x + "\t" + str(round(sum(scorelists[0])/len(scorelists[0]),2)) + "\t" + str(round(sum(scorelists[1])/len(scorelists[1]),2)) + "\t" + str(sum(scorelists[2])) + "\n")
+    #         scorelists = [[],[],[]]
+    #         for x in rmses.keys():
+    #             for i,score in enumerate(rmses[x][:3]):
+    #                 if not score == "-":
+    #                     scorelists[i].append(score)
+    #         out.write("\nmean " + x + "\t" + str(round(sum(scorelists[0])/len(scorelists[0]),2)) + "\t" + str(round(sum(scorelists[1])/len(scorelists[1]),2)) + "\t" + str(sum(scorelists[2])) + "\n")
         
-        elif output == "fscore":
-            for label in sorted(out_dict.keys()):
-                for ever in sorted(out_dict[label].keys()):
-                    entries = out_dict[label][ever]
-                    mean = round(sum(entries) / len(entries),2)
-                    #st_dev = 0
-                    #for entry in entries:
-                    #    dif = entry - mean
-                    #    sdif = dif * dif 
-                    #    st_dev += sdif
-                    #st_dev = round(math.sqrt(st_dev / len(entries)),2)
-                    out.write(str(mean) + "\t")
-
-
-             
+    #     elif output == "fscore":
+    #         for label in sorted(out_dict.keys()):
+    #             for ever in sorted(out_dict[label].keys()):
+    #                 entries = out_dict[label][ever]
+    #                 mean = round(sum(entries) / len(entries),2)
+    #                 #st_dev = 0
+    #                 #for entry in entries:
+    #                 #    dif = entry - mean
+    #                 #    sdif = dif * dif 
+    #                 #    st_dev += sdif
+    #                 #st_dev = round(math.sqrt(st_dev / len(entries)),2)
+    #                 out.write(str(mean) + "\t")
+       
     def extract_top(self,outfile,classification,top_n,files):
         out_write = open(outfile,"w")
         instances = defaultdict(int)
@@ -643,49 +641,49 @@ class Evalset():
             out_write.write(str(instance.score) + "\t" + text + "\n")    
         out_write.close()
     
-    def generate_timebuckets(self,metafiles,eventfiles):
-        print "generating event-time hash..."
-        # generate event-time hash
-        event_time = dict({})
-        for eventfile in eventfiles:
-            event_time.update(time_functions.generate_event_time_hash(eventfile))
+    # def generate_timebuckets(self,metafiles,eventfiles):
+    #     print "generating event-time hash..."
+    #     # generate event-time hash
+    #     event_time = dict({})
+    #     for eventfile in eventfiles:
+    #         event_time.update(time_functions.generate_event_time_hash(eventfile))
 
-        print "setting tweet_to_event-time..."
-        # for each tweet
-        for metafile in metafiles:
-            metafile = open(metafile,"r")
-            for tweet in metafile:
-                # link to event
-                tokens = tweet.split(" ")
-                filename = tokens[0].strip()
-                keyterm = tokens[1]
-                tweetdate = tokens[2]
-                tweettime = tokens[3]
-                tweetdatetime = time_functions.return_datetime(tweetdate,tweettime,"vs")
-                eventdatetime_begin = event_time[keyterm][0]
-                eventdatetime_end = event_time[keyterm][1]
-                if (eventdatetime_begin - tweetdatetime) < event_time[keyterm][2]:
-                    #print eventdatetime_begin,tweetdatetime
-                    try:                        
-                        instance = self.name_instance[filename]
-                        if not instance.label == "other":
-                            self.time_buckets[0].append(instance)
-                    except KeyError:
-                        continue
-                else:
-                    eventdatetime_begin = (eventdatetime_begin - event_time[keyterm][2]) + datetime.timedelta(days = 1) 
-                    tweetevent_time = time_functions.timerel(eventdatetime_begin,tweetdatetime,"day") * -1
-                    #print tweetevent_time
-                    if tweetevent_time < 0:
-                        try:
-                            instance = self.name_instance[filename]
-                            #print instance.label,tweetevent_time
-                            if not instance.label == "other":
-                                self.time_buckets[tweetevent_time].append(instance)
-                        except KeyError:
-                            continue
+    #     print "setting tweet_to_event-time..."
+    #     # for each tweet
+    #     for metafile in metafiles:
+    #         metafile = open(metafile,"r")
+    #         for tweet in metafile:
+    #             # link to event
+    #             tokens = tweet.split(" ")
+    #             filename = tokens[0].strip()
+    #             keyterm = tokens[1]
+    #             tweetdate = tokens[2]
+    #             tweettime = tokens[3]
+    #             tweetdatetime = time_functions.return_datetime(tweetdate,tweettime,"vs")
+    #             eventdatetime_begin = event_time[keyterm][0]
+    #             eventdatetime_end = event_time[keyterm][1]
+    #             if (eventdatetime_begin - tweetdatetime) < event_time[keyterm][2]:
+    #                 #print eventdatetime_begin,tweetdatetime
+    #                 try:                        
+    #                     instance = self.name_instance[filename]
+    #                     if not instance.label == "other":
+    #                         self.time_buckets[0].append(instance)
+    #                 except KeyError:
+    #                     continue
+    #             else:
+    #                 eventdatetime_begin = (eventdatetime_begin - event_time[keyterm][2]) + datetime.timedelta(days = 1) 
+    #                 tweetevent_time = time_functions.timerel(eventdatetime_begin,tweetdatetime,"day") * -1
+    #                 #print tweetevent_time
+    #                 if tweetevent_time < 0:
+    #                     try:
+    #                         instance = self.name_instance[filename]
+    #                         #print instance.label,tweetevent_time
+    #                         if not instance.label == "other":
+    #                             self.time_buckets[tweetevent_time].append(instance)
+    #                     except KeyError:
+    #                         continue
                         
-        print "sorting instances..."
+    #     print "sorting instances..."
         #sort instances
         #self.instances = sorted(self.instances,key = lambda x: x.time_to_event)
         #for tte in sorted(self.time_buckets.keys()):
@@ -729,10 +727,10 @@ class Evalset():
         plt.savefig(plotfile)
         
                  
-    def print_results(self,outfile):
-
-        out_write = open(outfile,"w")
-        out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
+    def print_results(self):
+        # out_write = open(outfile,"w")
+        # out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
+        print "\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"])
         #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         ce = evaluation.ClassEvaluation()
         for instance in self.instances:
@@ -743,7 +741,8 @@ class Evalset():
                 table.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
                 table.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
                 #rows.append(table)
-                out_write.write("\t".join(table) + "\n")
+                # out_write.write("\t".join(table) + "\n")
+                print "\t".join(table)
 
     class Instance():
         
