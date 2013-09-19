@@ -517,8 +517,8 @@ class Classifier():
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
         generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider)
-        for i in range(len(test["sequence"])):
-            estimation = (test["sequence"][i]*w[1][0]) + w[0][0]
-            print estimation,test["target"][i]
+        for i in range(len(test["value"])):
+            estimation = (test["value"][i]*w[1][0]) + w[0][0]
+            print test["value"][i],estimation,test["target"][i]
 
 
