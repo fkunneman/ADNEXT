@@ -474,6 +474,8 @@ class Classifier():
                     value = 0
                 else:
                     if log:
+                        if sum(half1) == 1 or sum(half2) == 1:
+                            value = 0
                         value = math.log(sum(half2),2)/math.log(sum(half1),2)
                     else:
                         value = sum(half2)/sum(half1)
