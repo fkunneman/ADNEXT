@@ -446,6 +446,22 @@ class Classifier():
 
     def lin_reg_event(self,args):
         
+        def generate_hourly_sequence(instances,instance_dict):
+            last_tfz = int(instances[-1]["meta"][4])
+            instance_dict["sequence"] = []
+            ef = instance_dict["sequence"]
+            for hour in range(last_tfz+1):
+                ef.append(0)
+            est = True
+            for instance in instances:
+                tfz = int(instance["meta"][4])
+                ef[tfz] += 1
+                if est:
+                    timelabel = instance["meta"][3]
+                    if timelabel == "-":
+                        instance_dict["start_time"] = tfz+1
+                        est = False
+
         #generate input
         event_tweets = defaultdict(list)
         event_frequency = defaultdict(lambda : {}) 
@@ -456,20 +472,7 @@ class Classifier():
         #generate an hourly sequence of tweet frequencies for each event
         for event in event_tweets.keys():
             tweets = event_tweets[event]
-            last_tfz = int(tweets[-1]["meta"][4])
-            event_frequency[event]["sequence"] = []
-            ef = event_frequency[event]["sequence"]
-            for hour in range(last_tfz+1):
-                ef.append(0)
-            est = True
-            for tweet in tweets:
-                tfz = int(tweet["meta"][4])
-                ef[tfz] += 1
-                if est:
-                    timelabel = tweet["meta"][3]
-                    if timelabel == "-":
-                        event_frequency[event]["start_time"] = tfz+1
-                        est = False
+            generate_hourly_sequence(tweets,event_frequency[event])
 
         #if args[1] == "log"
         #convert to log
@@ -501,10 +504,13 @@ class Classifier():
         #calculate w0 and w1
         a = array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
         y = array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
-        print a
-        print y
+        #print a
+        #print y
         w = dot(inv(a),y)
         print w
 
+        #make estimations
+        test_dict = {}}
+        generate_hourly_sequence(self.test,test_dict)
 
 
