@@ -506,7 +506,7 @@ class Classifier():
         for event in event_frequency.keys():
             ef = event_frequency[event]["sequence"]
             event_time = event_frequency[event]["start_time"]
-            generate_window_output(ef,training,event_time,window,slider)
+            generate_window_output(ef,training,event_time,window,slider,log)
 
         #calculate w0 and w1
         a = array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
@@ -520,7 +520,7 @@ class Classifier():
         test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
-        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider)
+        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
         for i in range(len(test["value"])):
             estimation = (test["value"][i]*w[1][0]) + w[0][0]
             print test["value"][i],estimation,test["target"][i]
