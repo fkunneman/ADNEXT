@@ -462,6 +462,24 @@ class Classifier():
                         instance_dict["start_time"] = tfz+1
                         est = False
 
+        def generate_window_output(sequence,outdict,start_time,window,slider):
+            half = int(window/2)
+            start = 0
+            end = window
+            while end <= len(sequence):
+#                print window,half,slider,ef,start,half
+                half1 = sequence[start:start+half]
+                half2 = sequence[start+half+1:end]
+                if sum(half1) == 0 or sum(half2) == 0:
+                    value = 0
+                else:
+                    value = sum(half2)/sum(half1)
+                target = int((start_time - end)/24)
+                outdict["value"].append(value)
+                outdict["target"].append(target)
+                start += slider
+                end += slider
+
         #generate input
         event_tweets = defaultdict(list)
         event_frequency = defaultdict(lambda : {}) 
@@ -479,27 +497,12 @@ class Classifier():
 
         #slide through windows and generate x-y pairs
         window = int(args[0])
-        half = int(window/2)
         slider = int(args[1])
         training = defaultdict(list)
         for event in event_frequency.keys():
             ef = event_frequency[event]["sequence"]
             event_time = event_frequency[event]["start_time"]
-            start = 0
-            end = window
-            while end <= len(ef):
-#                print window,half,slider,ef,start,half
-                half1 = ef[start:start+half]
-                half2 = ef[start+half+1:end]
-                if sum(half1) == 0 or sum(half2) == 0:
-                    value = 0
-                else:
-                    value = sum(half2)/sum(half1)
-                target = int((event_time - end)/24)
-                training["value"].append(value)
-                training["target"].append(target)
-                start += slider
-                end += slider
+            generate_window_output(ef,training,event_time,window,slider)
 
         #calculate w0 and w1
         a = array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
@@ -512,5 +515,8 @@ class Classifier():
         #make estimations
         test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
+        test = defaultdict(list)
+        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider)
+        print test
 
 
