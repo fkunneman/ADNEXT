@@ -474,7 +474,7 @@ class Classifier():
                     value = 0
                 else:
                     if log:
-                        value = math.log(sum(half2)[,2])/math.log(sum(half1)[,2])
+                        value = math.log(sum(half2),2)/math.log(sum(half1),2)
                     else:
                         value = sum(half2)/sum(half1)
                 target = int((start_time - end)/24)
