@@ -510,7 +510,7 @@ class Classifier():
         print w
 
         #make estimations
-        test_dict = {}}
+        test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
 
 
