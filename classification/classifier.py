@@ -486,7 +486,10 @@ class Classifier():
 #                print window,half,slider,ef,start,half
                 half1 = ef[start:start+half]
                 half2 = ef[start+half+1:end]
-                value = sum(half2)/sum(half1)
+                if sum(half1) == 0 or sum(half2) == 0:
+                    value = 0
+                else:
+                    value = sum(half2)/sum(half1)
                 target = int((event_time - end)/24)
                 training["value"].append(value)
                 training["target"].append(target)
