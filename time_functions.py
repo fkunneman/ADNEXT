@@ -52,22 +52,3 @@ def generate_event_time_hash(events,delimiter="\t"):
         event_time[event_name] = (event_datetime_begin,event_datetime_end)
     eventfile_open.close()
     return event_time
-
-def extract_sliding_window_instances(tweets_tfz,window,slider):
-    #make tfz hash
-    tfz_instances = defaultdict(list)            
-    windows = []
-    for tweet in tweets_tfz:
-        tfz_instances[int(tweet.dict["tfz"])].append(tweet)
-    highest_tfz = sorted(tfz_instances.keys())[-1]
-    window = [0,0+window]
-    while window[1] <= highest_tfz:
-        windowtweets = []
-        if tfz_instances.has_key(window[1]):        
-            for tfz in range(window[0],window[1]):
-                windowtweets.extend(tfz_instances[tfz])
-            if len(windowtweets) > 0:
-                windows.append((windowtweets,window[1]))
-        window[0] += slider
-        window[1] += slider
-    return windows

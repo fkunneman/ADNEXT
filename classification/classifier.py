@@ -499,7 +499,7 @@ class Classifier():
                 end += slider
 
         #calculate w0 and w1
-        a = array([[len(training["value"]),sum(training["value")]],[sum(training["value"]),sum((x*x) for x in training["value"])]])
+        a = array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
         y = array([[sum(training["target"])],[sum(training["value"][i] * training["target"][i]) for i in range(len(training["value"]))]])
         w = inv(a) * y
         print w

@@ -6,6 +6,7 @@ import codecs
 import datetime
 from collections import defaultdict
 import re
+from pattern import sentiment
 
 parser = argparse.ArgumentParser(description = "")
 
