@@ -462,18 +462,21 @@ class Classifier():
                         instance_dict["start_time"] = tfz+1
                         est = False
 
-        def generate_window_output(sequence,outdict,start_time,window,slider):
+        def generate_window_output(sequence,outdict,start_time,window,slider,log):
             half = int(window/2)
             start = 0
             end = window
             while end <= len(sequence):
-#                print window,half,slider,ef,start,half
+#               print window,half,slider,ef,start,half
                 half1 = sequence[start:start+half]
                 half2 = sequence[start+half+1:end]
                 if sum(half1) == 0 or sum(half2) == 0:
                     value = 0
                 else:
-                    value = sum(half2)/sum(half1)
+                    if log:
+                        value = math.log(sum(half2)[,2])/math.log(sum(half1)[,2])
+                    else:
+                        value = sum(half2)/sum(half1)
                 target = int((start_time - end)/24)
                 outdict["value"].append(value)
                 outdict["target"].append(target)
@@ -498,6 +501,7 @@ class Classifier():
         #slide through windows and generate x-y pairs
         window = int(args[0])
         slider = int(args[1])
+        log = int(args[2])
         training = defaultdict(list)
         for event in event_frequency.keys():
             ef = event_frequency[event]["sequence"]
