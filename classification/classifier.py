@@ -474,18 +474,19 @@ class Classifier():
 
         #slide through windows and generate x-y pairs
         window = int(args[0])
-        half = window/2
+        half = int(window/2)
         slider = int(args[1])
-        training = []
+        training = defaultdict(list)
         for event in event_frequency.keys():
-            ef = event_frequency[event][frequency]
+            ef = event_frequency[event]["sequence"]
             event_time = event_frequency[event]["start_time"]
             start = 0
             end = window
             while end <= len(ef):
+#                print window,half,slider,ef,start,half
                 half1 = ef[start:start+half]
                 half2 = ef[start+half+1:end]
-                value = half2/half1
+                value = sum(half2)/sum(half1)
                 target = int((event_time - end)/24)
                 training["value"].append(value)
                 training["target"].append(target)
