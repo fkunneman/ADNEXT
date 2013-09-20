@@ -59,10 +59,7 @@ if validation=="test":
 
 elif validation=="looe":
     parameters=args.l
-    if classifier == "ibt":
-        meta=codecs.open(args.i)
-    else:
-        meta=codecs.open(parameters[1],"r","utf-8")
+    meta=codecs.open(parameters[1],"r","utf-8")
     metaread=meta.readlines()
     event_column=int(parameters[2])
     event_train_test=defaultdict(lambda : defaultdict(list))
