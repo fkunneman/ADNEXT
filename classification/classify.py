@@ -59,7 +59,7 @@ if validation=="test":
 
 elif validation=="looe":
     parameters=args.l
-    if args.c = "ibt":
+    if classifier == "ibt":
         meta=codecs.open(args.i)
     else:
         meta=codecs.open(parameters[1],"r","utf-8")
@@ -80,7 +80,7 @@ elif validation=="looe":
             meta = [] 
         meta.append(instance)
 
-    if args.c == "ibt":
+    if classifier == "ibt":
         d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + "baseline/"
         for event in event_train_test.keys():
             print event
