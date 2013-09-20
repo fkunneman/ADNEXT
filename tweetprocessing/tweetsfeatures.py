@@ -690,7 +690,8 @@ class Tweetsfeatures():
             self.features=[]
         
         def __init__(self,token,form):
-            print token
+            if re.search("_f11",token[0]):
+                print token
             if form=="one_line":
                 self.label=token[0]
                 self.event=token[0]
