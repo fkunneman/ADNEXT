@@ -23,9 +23,7 @@ def ibt(self,metalines,outdir,dummy = False):
     estimations=[]
     for i in metalines:
         tokens=i.split("\t")
-        label=tokens[4]
-        date=tokens[5]
-        text=tokens[8]
+        text=tokens[-1]
         text=text.strip()
         if future.search(text):
             if today.search(text):
