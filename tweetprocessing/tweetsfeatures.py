@@ -337,13 +337,18 @@ class Tweetsfeatures():
         self.tweets=filtered_tweets
         print "tweets after",len(self.tweets)
 
-    def remove_eventmention(self):
+    def remove_eventmention(self,h):
         """Remove a feature if it contains the mentioning of one of the given events."""
         blacklist=[]
         print "removing eventmentions..."
+        events = self.eventhash.keys()
         for event in self.eventhash.keys():
             words=event.split(" ")
             for word in words:
+                if re.search("_",word):
+                    word = word.split("_")[0]
+                if h:
+                    word = "#" + word
                 blacklist.append(word)
         removed_features=[]
         for t in self.tweets:

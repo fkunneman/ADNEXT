@@ -29,7 +29,7 @@ parser.add_argument('-w', action = 'store', required = True, nargs = '+', help =
 parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done")
 parser.add_argument('--text', action= 'store_true', help = "if the inputted tweets do not contain metadata, indicate by this parameter")
 parser.add_argument('--eos', action = 'store_true', help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed (the marker will be added to previous word)")
-
+parser.add_argument('--eventhash', action = 'store_true', help = "choose to add a hashtag to event refs for filtering from tweets")
 args = parser.parse_args() 
 infile = args.i
 events = args.e
@@ -85,7 +85,7 @@ if events:
     tf.set_events(events,args.a)
 
 if remove_features:
-    tf.remove_eventmention()
+    tf.remove_eventmention(args.eventhash)
 
 if args.rb:
     tf.remove_blacklist(args.rb,args.eos)
