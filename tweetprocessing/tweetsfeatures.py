@@ -707,14 +707,16 @@ class Tweetsfeatures():
             self.possequence=[]
             self.features=[]
             if re.match("_f11",token[0]):
-                if re.search("#utrfey",token[-1]):
+                if re.search("utrfey",token[-1]):
                     eventprev = self.event
                     self.event = "utrfey_f11"
-                    print eventprev,self.event
-                elif re.search("#azpsv",token[-1]):
+ #                   print eventprev,self.event
+                elif re.search("azpsv",token[-1]):
                     eventprev = self.event
                     self.event = "azpsv_f11" 
-                    print eventprev,self.event       
+#                    print eventprev,self.event
+                else:
+                    print token       
 
         def add_sequence(self,token):
             self.add_word(token)
