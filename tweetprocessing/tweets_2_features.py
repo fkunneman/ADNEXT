@@ -81,8 +81,8 @@ elif input_type == "tweet":
 # if args.cn:
 #     tf.add_char_ngrams(args.cn[0],args.cn[2:],int(args.cn[1]),args.text,args.rb)
 
-# if events:
-#     tf.set_events(events,args.a)
+if events:
+    tf.set_events(events,args.a)
 
 # if remove_features:
 #     tf.remove_eventmention(args.eventhash)
