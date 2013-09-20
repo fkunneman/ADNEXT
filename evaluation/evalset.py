@@ -42,7 +42,9 @@ class Evalset():
             if input_type == "lcs":
                 self.name_instance[tokens[metadict["name"]]] = instance
             self.instances.append(instance)
+            print instance.dict
         meta.close()
+        
         #         instance.set_name(tokens[0])
         #         instance.set_id(tokens[1])
         #         instance.set_event(tokens[2])
@@ -103,7 +105,7 @@ class Evalset():
 
         if timelabels:
             timelabel_classifications = codecs.open("/".join(classificationfile.split("/")[:-1]) + "/timelabels/test.rnk","r","utf-8")
-            for line in classifications.readlines():
+            for line in timelabel_classifications.readlines():
                 tokens = line.split("  ")
                 filename = tokens[0].strip()
                 instance = self.name_instance[filename]
@@ -180,6 +182,7 @@ class Evalset():
         #make tfz hash
         tfz_instances = defaultdict(list)            
         for instance in self.instances:
+#            print instance.dict
             tfz_instances[int(instance.dict["tfz"])].append(instance)
         highest_tfz = sorted(tfz_instances.keys())[-1]
         slider = [0,0+window]
