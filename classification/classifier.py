@@ -476,10 +476,11 @@ class Classifier():
                     if log:
                         if sum(half1) == 1 or sum(half2) == 1:
                             value = 0
-                        print math.log(sum(half2),2),math.log(sum(half1),2)
-                        value = math.log(sum(half2),2)/math.log(sum(half1),2)
+                        #print sum(half2),sum(half1),math.log(sum(half2),2),math.log(sum(half1),2)
+                        else:
+                            value = math.log(sum(half2),2)/math.log(sum(half1),2)
                     else:
-                        value = sum(half2)/sum(half1)
+                        value = (sum(half2)-sum(half1))/sum(half1)
                 target = int((start_time - end)/24)
                 outdict["value"].append(value)
                 outdict["target"].append(target)
