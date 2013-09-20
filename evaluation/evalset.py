@@ -40,7 +40,8 @@ class Evalset():
             for meta_info in metadict.keys():
                 instance.dict[meta_info] = tokens[metadict[meta_info]]
             if input_type == "lcs":
-                self.name_instance[tokens[metadict["name"]]] = instance
+                self.name_instance[instance.dict["name"]] = instance
+                instance.set_label(instance.dict["label"])
             self.instances.append(instance)
         meta.close()
         
