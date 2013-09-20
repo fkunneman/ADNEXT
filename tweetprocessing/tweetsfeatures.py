@@ -690,8 +690,6 @@ class Tweetsfeatures():
             self.features=[]
         
         def __init__(self,token,form):
-            if re.search("_f11",token[0]):
-                print token
             if form=="one_line":
                 self.label=token[0]
                 self.event=token[0]
@@ -708,6 +706,15 @@ class Tweetsfeatures():
             self.lemmasequence=[]
             self.possequence=[]
             self.features=[]
+            if re.match("_f11",token[0]):
+                if re.search("#utrfey",token[-1]):
+                    eventprev = self.event
+                    self.event = "utrfey_f11"
+                    print eventprev,self.event
+                elif re.search("#azpsv",token[-1]):
+                    eventprev = self.event
+                    self.event = "azpsv_f11" 
+                    print eventprev,self.event       
 
         def add_sequence(self,token):
             self.add_word(token)
