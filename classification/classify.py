@@ -17,7 +17,8 @@ parser.add_argument('-i', action='store', required=True, help="file with either 
 parser.add_argument('-v', action='store', required=True, choices=["test","n-fold","looe"], help="specify the type of validation")
 parser.add_argument('-t', action='store', required=False, help="[TEST] give the file with test data")
 parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify n")
-parser.add_argument('-l', action='store', required=False, nargs="+", help="[LOOE] specify the type of leave-one-out (regular,inner_domain or outer_domain), a meta-file, the column of the event in the metafile and (unless the type is \'regular\') a file with domain-event relations")
+parser.add_argument('-l', action='store', required=False, nargs="+", help="[LOOE] specify the type of leave-one-out (regular,inner_domain or outer_domain) and (unless the type is \'regular\') a file with domain-event relations")
+parser.add_argument('-m', action='store', required=False, nargs="+", help="[LOOE] specify a meta-file and the column of the event in the metafile ")
 parser.add_argument('--vocab', action='store', required=False, help="[OPTIONAL] give a file with a vocabulary to use for pruning and feature selection")
 parser.add_argument('-c', action='store', required=True, choices=["lcs","knn","ibt","dist"], help="the classifier")
 parser.add_argument('-a', action='store', required=False, nargs='+', help="the arguments needed for the chosen algorithm:\n\n[LCS] specify respectively the directory in which classification is performed (make sure the config file and optionally a data-directory with indexes are present in this directory) and the directory in which files are stored\n[KNN] specify value(s) of k (the classifier will be ran for each value of k)\n[IBT] for the informed baseline time, choose to set the system to dummy by filling in \"dummy\"")
@@ -58,10 +59,10 @@ if validation=="test":
     test_instances.close()
 
 elif validation=="looe":
-    parameters=args.l
-    meta=codecs.open(parameters[1],"r","utf-8")
+    meta_parameters = args.m
+    meta=codecs.open(meta_parameters[1],"r","utf-8")
     metaread=meta.readlines()
-    event_column=int(parameters[2])
+    event_column=int(meta_parameters[2])
     event_train_test=defaultdict(lambda : defaultdict(list))
     event_bounds=[]
     event=""
@@ -89,10 +90,10 @@ elif validation=="looe":
             informed_baseline_time.ibt(meta,d_event,args[0])
 
     else:
-
-        if args.c == "knn":
+        parameters = args.l
+        if classifier == "knn":
             delimiter = ","
-        elif args.c == "lcs":
+        elif classifier == "lcs":
             delimiter = " "
 
         for i,event_bound in enumerate(event_bounds):
