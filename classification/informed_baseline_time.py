@@ -5,7 +5,7 @@ import re
 import time_functions
 import datetime
 
-def ibt(self,metalines,outdir,dummy = False):
+def ibt(metalines,outdir,dummy = False):
     
     future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgen|morgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond|januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december|nog.+(dagen|slapen))")       
     today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)")
