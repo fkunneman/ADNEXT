@@ -9,7 +9,7 @@ import time_functions
 parser = argparse.ArgumentParser(description = "Program to evaluate the time-to-event of tweets with a slider")
 
 parser.add_argument('-l', action = 'store', required = True, nargs='+', help = "the label / label+classification files (required)")
-parser.add_argument('-c', action='store', required=False, nargs='+', help = "the classification files (if separated)")
+parser.add_argument('-o', action='store', required=False, nargs='+', help = "the classification files (if separated)")
 parser.add_argument('-m', action='store', required=True, nargs='+', help = "the files with meta-information")
 parser.add_argument('-v', action='store', required = False, nargs='+', help = "[KNN] give vocabulary files to link indexes to features")
 parser.add_argument('-o', action='store', required=True, help = "file to write the results to (required)")
@@ -57,7 +57,7 @@ for i,t in enumerate(args.l):
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
     elif args.i == "lcs":
-        evaluation.set_instances_lcs(args.l[i],args.c[i],timelabels = True)
+        evaluation.set_instances_lcs(args.l[i],args.o[i],timelabels = True)
 
     evaluation.extract_sliding_window_instances(windowsize,slider)
     
