@@ -178,6 +178,13 @@ class Evalset():
                 highest_score = sorted(label_scores[classification],reverse=True)[0]
                 instance.set_time_classification((classification,highest_score))
 
+    def set_instances_ibt(self,classification_file):
+        classifications = codecs.open(classificationfile,"r","utf-8")
+        estimations = classifications.read().split(" ")
+        print estimations        
+
+
+
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
         tfz_instances = defaultdict(list)            
