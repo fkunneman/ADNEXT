@@ -142,12 +142,11 @@ elif validation=="looe":
                 d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
                 print d
                 if not os.path.exists(d):
-                    if not os.path.exists("/".join(d.split("/")[:-2])):
-                        print "-2"
-                        if not os.path.exists("/".join(d.split("/")[:-1])):
-                            print "-1"
-                            os.system("mkdir " + "/".join(d.split("/")[:-1]))
-                        os.system("mkdir " + "/".join(d.split("/")[:-2]))
+                    if not os.path.exists("/".join(d.split("/")[:-1])):
+                        if not os.path.exists("/".join(d.split("/")[:-2])):
+                            #print "mkdir " + "/".join(d.split("/")[:-1])
+                            os.system("mkdir " + "/".join(d.split("/")[:-2]))
+                        os.system("mkdir " + "/".join(d.split("/")[:-1]))
                     os.system("mkdir " + d)
                 if args.parralel:
                     # print event
