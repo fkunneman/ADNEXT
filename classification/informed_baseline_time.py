@@ -21,7 +21,9 @@ def ibt(metalines,outdir,args):
     wordnums=["twee","drie","vier","vijf","zes","zeven","acht","negen","tien","elf","twaalf","dertien","veertien","vijftien","zestien","zeventien","achttien","negentien","twintig","eenentwintig"]
     
     estimations=[]
+    meta_out = codecs.open(outdir + "meta.txt","w","utf-8")
     for i in metalines:
+        meta_out.write(i)
         tokens=i.split("\t")
         text=tokens[-1]
         date=tokens[int(args[0])]
@@ -88,6 +90,7 @@ def ibt(metalines,outdir,args):
                         estimations.append("nt")
         else:
             estimations.append("nt")
+    meta_out.close()
     if args[1] == "dummy":
         baseline_out=codecs.open(outdir + "baseline_dummy.txt","w","utf-8")
     else: 

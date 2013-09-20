@@ -58,7 +58,8 @@ for i,t in enumerate(args.l):
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
     elif args.i == "lcs":
         evaluation.set_instances_lcs(args.l[i],timelabels = True)
-
+    elif args.i == "ibt":
+        evaluation.set_instances_ibt(args.l[i])
     evaluation.extract_sliding_window_instances(windowsize,slider)
     
     for window in evaluation.windows:
