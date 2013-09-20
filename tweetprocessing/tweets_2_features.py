@@ -54,41 +54,41 @@ elif input_type == "tweet":
     else:
         tf.set_tweets_one_line(lower = args.lo)
 
-if remove_instances:
-    tf.filter_tweets(remove_instances)
+# if remove_instances:
+#     tf.filter_tweets(remove_instances)
 
-if args.re:
-    tf.filter_tweets_reflexive_hashtag(args.re)
+# if args.re:
+#     tf.filter_tweets_reflexive_hashtag(args.re)
 
-if remove_instances_window:
-    event_file = remove_instances_window[0]
-    window_size = int(remove_instances_window[1])
-    time_unit = remove_instances_window[2]
-    tf.filter_tweets_timewindow(window_size,time_unit)
+# if remove_instances_window:
+#     event_file = remove_instances_window[0]
+#     window_size = int(remove_instances_window[1])
+#     time_unit = remove_instances_window[2]
+#     tf.filter_tweets_timewindow(window_size,time_unit)
 
-if args.rp:
-    tf.filter_tweets_timepoint(args.rp[0],args.rp[1])
+# if args.rp:
+#     tf.filter_tweets_timepoint(args.rp[0],args.rp[1])
 
-if url:
-    tf.normalize("url")
+# if url:
+#     tf.normalize("url")
 
-if user_name:
-    tf.normalize("user")
+# if user_name:
+#     tf.normalize("user")
     
-for n in ngrams:
-    tf.add_ngrams(n=int(n))
+# for n in ngrams:
+#     tf.add_ngrams(n=int(n))
 
-if args.cn:
-    tf.add_char_ngrams(args.cn[0],args.cn[2:],int(args.cn[1]),args.text,args.rb)
+# if args.cn:
+#     tf.add_char_ngrams(args.cn[0],args.cn[2:],int(args.cn[1]),args.text,args.rb)
 
-if events:
-    tf.set_events(events,args.a)
+# if events:
+#     tf.set_events(events,args.a)
 
-if remove_features:
-    tf.remove_eventmention(args.eventhash)
+# if remove_features:
+#     tf.remove_eventmention(args.eventhash)
 
-if args.rb:
-    tf.remove_blacklist(args.rb,args.eos)
+# if args.rb:
+#     tf.remove_blacklist(args.rb,args.eos)
 
 if time_labels:
     time_unit = time_labels[0]
