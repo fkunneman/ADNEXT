@@ -52,10 +52,13 @@ while i < len(args.metadict):
 for i,t in enumerate(args.l):
     print t
     #set instances
-    evaluation = Evalset(args.i)
+    evaluation = Evalset()
     evaluation.set_meta(args.m[i],metadict)
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
+    elif args.i == "lcs":
+        evaluation.set_instances_lcs(args.l[i],args.c[i],timelabels = True)
+
     evaluation.extract_sliding_window_instances(windowsize,slider)
     
     for window in evaluation.windows:

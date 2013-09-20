@@ -13,8 +13,8 @@ import math
 
 class Evalset():
 
-    def __init__(self,input_type):
-        self.input_type = input_type
+    def __init__(self):
+        # self.input_type = input_type
         # instances = codecs.open(instancefile,"r","utf-8")
         self.instances = []
         # instances.close()
@@ -70,7 +70,7 @@ class Evalset():
         #         if multiple:
         #             self.testset_instances[instance.event].append(instance)
 
-    def set_instances_lcs(self,labelfile,classificationfile,evaluationtype,threshold = False):         
+    def set_instances_lcs(self,labelfile,classificationfile,timelabels = False,threshold = False):         
         labels = open(labelfile)
         for line in labels:
             tokens = line.split(" ")
@@ -92,18 +92,28 @@ class Evalset():
             if not (threshold and re.search(r"\?",classification_score[0])):  
                 classification = re.sub("\?","",classification_score[0])
                 score = float(classification_score[1])
-                if evaluationtype == "timelabel":
-                    if instance.classification[0] == "before":
-                        instance.set_classification((classification,score))
+                instance.set_classification(classification)
+                if classification != instance.label:
+                    instance.set_fp()
+                    instance.set_fn()
                 else:
-                    instance.set_classification(classification)
-                    if classification != instance.label:
-                        instance.set_fp()
-                        instance.set_fn()
-                    else:
-                        instance.set_tp() 
-                    instance.set_score(score)
+                    instance.set_tp() 
+                instance.set_score(score)
         classifications.close()
+
+        if timelabels:
+            timelabel_classifications = codecs.open("/".join(classificationfile.split("/")[:-1]) + "/timelabels/test.rnk","r","utf-8")
+            for line in classifications.readlines():
+                tokens = line.split("  ")
+                filename = tokens[0].strip()
+                instance = self.name_instance[filename]
+                scores = tokens[1]
+                classification_score = scores.split(" ")[0].split(":")
+                if not (threshold and re.search(r"\?",classification_score[0])):  
+                    classification = re.sub("\?","",classification_score[0])
+                    score = float(classification_score[1])
+                    instance.set_time_classification((classification,score))
+            timelabel_classifications.close()            
     
     def set_instances_knn(self,classification_file,hidden=False,vocabulary=False):
         #extract information
@@ -137,7 +147,6 @@ class Evalset():
                 exit()
             instance.set_label(tokens[0])
             classification = tokens[1]
-            print instance.label,instance.classification
             instance.set_classification(classification)
             neighbours = classifications_nn[line]
             label_scores = defaultdict(list)
