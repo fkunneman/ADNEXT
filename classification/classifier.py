@@ -265,6 +265,9 @@ class Classifier():
                 tl=t["meta"][4]
                 test.write(" ".join([t["features"][0],tl]) + "\n")
             test.close()
+            meta = self.directory + "meta"
+            for line in self.meta:
+                metaout.write(line)
             if prune or select:
                 stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
                 for feature in self.stoplist:

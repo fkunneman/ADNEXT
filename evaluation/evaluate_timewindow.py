@@ -9,7 +9,7 @@ import time_functions
 parser = argparse.ArgumentParser(description = "Program to evaluate the time-to-event of tweets with a slider")
 
 parser.add_argument('-l', action = 'store', required = True, nargs='+', help = "the label / label+classification files (required)")
-parser.add_argument('-c', action='store', required=False, nargs='+', help = "the classification files (if separated)")
+parser.add_argument('-g', action='store', required=False, nargs='+', help = "the classification files (if separated)")
 parser.add_argument('-m', action='store', required=True, nargs='+', help = "the files with meta-information")
 parser.add_argument('-v', action='store', required = False, nargs='+', help = "[KNN] give vocabulary files to link indexes to features")
 parser.add_argument('-o', action='store', required=True, help = "file to write the results to (required)")
@@ -18,8 +18,8 @@ parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn"], help
 #parser.add_argument('-d', action='store', default = 1, help = "Define the depth of a distinct testset in terms of the path of scorefiles; [Default = 1]  (in the case of the testset \'bla\' and the paths \'bla/score1.txt\' and \'bla/score2.txt\', give two as the depth and the results for the different scorefiles are outputted in the same row)")
 #parser.add_argument('--hidden', action='store', required = False, nargs = '+', help = "[KNN] if instances contain hidden classes to be retrieved in evaluation, specify their topclas(ses)")
 parser.add_argument('-e', action='store', required = True, help = "specify the file with event information")
-parser.add_argument('-f', action='store', default = "all_to_one", help = "[WINDOW] filter of output")
-parser.add_argument('-et', action='store', default = "rmse", help = "specify the evaluation type")
+# parser.add_argument('-f', action='store', default = "all_to_one", help = "[WINDOW] filter of output (default = all-to-one")
+# parser.add_argument('-et', action='store', default = "rmse", help = "specify the evaluation type (default = rmse")
 parser.add_argument('--size', action='store', default = 24, help = "specify the window size (in hours)")
 parser.add_argument('--slider', action='store', default = 1, help = "specify the slider (in hours)")
 # parser.add_argument('--threshold', action='store', default = 100, help = "specify the threshold after which to score")
@@ -57,7 +57,7 @@ for i,t in enumerate(args.l):
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
     elif args.i == "lcs":
-        evaluation.set_instances_lcs(args.l[i],args.c[i],timelabels = True)
+        evaluation.set_instances_lcs(args.l[i],args.g[i],timelabels = True)
 
     evaluation.extract_sliding_window_instances(windowsize,slider)
     
