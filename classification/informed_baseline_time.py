@@ -91,5 +91,6 @@ def ibt(self,metalines,outdir,dummy = False):
         baseline_out=codecs.open(outdir + "baseline_dummy.txt","w","utf-8")
     else: 
         baseline_out=codecs.open(outdir + "baseline.txt","w","utf-8")
+    print " ".join(estimations),baseline_out
     baseline_out.write(" ".join(estimations))
     baseline_out.close()

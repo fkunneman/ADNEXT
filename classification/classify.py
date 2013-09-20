@@ -81,6 +81,7 @@ elif validation=="looe":
 
     if classifier == "ibt":
         d="/".join(meta_parameters[0].split("/")[:-1]) + "/" + "baseline/"
+        print d
         for event in event_train_test.keys():
             print event
             event_write = event
