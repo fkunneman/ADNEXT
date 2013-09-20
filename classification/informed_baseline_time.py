@@ -21,6 +21,7 @@ def ibt(metalines,outdir,dummy = False):
     wordnums=["twee","drie","vier","vijf","zes","zeven","acht","negen","tien","elf","twaalf","dertien","veertien","vijftien","zestien","zeventien","achttien","negentien","twintig","eenentwintig"]
     
     estimations=[]
+    print len(metalines)
     for i in metalines:
         print i
         tokens=i.split("\t")
