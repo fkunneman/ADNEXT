@@ -32,7 +32,7 @@ class Evalset():
 
     def set_meta(self,metafile,metadict,input_type):
         meta = codecs.open(metafile,"r","utf-8")
-        if self.input_type == "lcs":
+        if input_type == "lcs":
             self.name_instance = {}
         for line in meta.readlines():
             instance = Evalset.Instance()
