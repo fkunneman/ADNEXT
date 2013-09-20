@@ -30,7 +30,7 @@ class Evalset():
             self.vocabulary[tokens[0]] = tokens[1]
         vocab.close()
 
-    def set_meta(self,metafile,metadict):
+    def set_meta(self,metafile,metadict,input_type):
         meta = codecs.open(metafile,"r","utf-8")
         if self.input_type == "lcs":
             self.name_instance = {}
@@ -39,7 +39,7 @@ class Evalset():
             tokens = line.strip().split("\t")
             for meta_info in metadict.keys():
                 instance.dict[meta_info] = tokens[metadict[meta_info]]
-            if self.input_type == "lcs":
+            if input_type == "lcs":
                 self.name_instance[tokens[metadict["name"]]] = instance
             self.instances.append(instance)
         meta.close()

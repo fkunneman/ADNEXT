@@ -53,7 +53,7 @@ for i,t in enumerate(args.l):
     print t
     #set instances
     evaluation = Evalset()
-    evaluation.set_meta(args.m[i],metadict)
+    evaluation.set_meta(args.m[i],metadict,args.i)
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
     elif args.i == "lcs":
