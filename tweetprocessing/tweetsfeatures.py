@@ -599,7 +599,7 @@ class Tweetsfeatures():
              self.feature_index[feature]=i+1
              vocabulary_out.write(str(i) + "\t" + feature + "\n")
 
-    def features2sparsebinary(self,out_file,vocabulary_file,metafile=False,threshold=False):
+    def features2sparsebinary(self,out_file,vocabulary_file,metafile=False):
         """Write the features to a file in the sparse-binary format."""
         
         out=open(out_file,"w")
@@ -630,9 +630,8 @@ class Tweetsfeatures():
             print event,"done"
 
         self.generate_feature_indexes(vocabulary_file)
-        if threshold:
-            for event in self.event_tweets.keys():
-                generate_dataline(self.event_tweets[event],event)
+        for event in self.event_tweets.keys():
+            generate_dataline(self.event_tweets[event],event)
 
         out.close() 
         if metafile:            
