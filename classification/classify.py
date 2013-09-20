@@ -140,20 +140,23 @@ elif validation=="looe":
                 if re.search(" ",event_write):
                     event_write="_".join(event_write.split(" "))
                 d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
+                print d
                 if not os.path.exists(d):
                     if not os.path.exists("/".join(d.split("/")[:-2])):
+                        print "-2"
                         if not os.path.exists("/".join(d.split("/")[:-1])):
+                            print "-1"
                             os.system("mkdir " + "/".join(d.split("/")[:-1]))
                         os.system("mkdir " + "/".join(d.split("/")[:-2]))
                     os.system("mkdir " + d)
                 if args.parralel:
-                    print event
-                    print len(event_train_test[event]["meta"])
-                    try:
-                        p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
-                        p.start()
-                    except OSError:
-                        classify(event_train_test[event],d)
+                    # print event
+                    # print len(event_train_test[event]["meta"])
+                    #try:
+                    p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
+                    p.start()
+                    #except OSError:
+                    #    classify(event_train_test[event],d)
                 else:
                     classify(event_train_test[event],d)
         
