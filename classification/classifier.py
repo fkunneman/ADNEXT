@@ -370,7 +370,7 @@ class Classifier():
             dummy=False
         
         estimations=[]
-        for i in self.test:
+        for i in self.meta:
             tokens=i.split("\t")
             label=tokens[4]
             date=tokens[5]
