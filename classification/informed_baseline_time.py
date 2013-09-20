@@ -25,6 +25,7 @@ def ibt(self,metalines,outdir,dummy = False):
         tokens=i.split("\t")
         text=tokens[-1]
         text=text.strip()
+        print text
         if future.search(text):
             if today.search(text):
                 estimations.append("0")
@@ -87,6 +88,7 @@ def ibt(self,metalines,outdir,dummy = False):
                         estimations.append("nt")
         else:
             estimations.append("nt")
+    print outdir
     if dummy:
         baseline_out=codecs.open(outdir + "baseline_dummy.txt","w","utf-8")
     else: 
