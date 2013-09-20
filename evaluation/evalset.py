@@ -72,17 +72,17 @@ class Evalset():
         #         if multiple:
         #             self.testset_instances[instance.event].append(instance)
 
-    def set_instances_lcs(self,labelfile,classificationfile,timelabels = False,threshold = False):         
-        labels = open(labelfile)
-        for line in labels:
-            tokens = line.split(" ")
-            filename = tokens[0]
-            label = tokens[1].strip()
-            instance = Evalset.Instance()
-            instance.set_label(label)
-            instance.set_name(filename)
-            self.name_instance[filename] = instance
-            self.instances.append(instance) 
+    def set_instances_lcs(self,classificationfile,timelabels = False,threshold = False):         
+        # labels = open(labelfile)
+        # for line in labels:
+        #     tokens = line.split(" ")
+        #     filename = tokens[0]
+        #     label = tokens[1].strip()
+        #     instance = Evalset.Instance()
+        #     instance.set_label(label)
+        #     instance.set_name(filename)
+        #     self.name_instance[filename] = instance
+        #     self.instances.append(instance) 
    
         classifications = codecs.open(classificationfile,"r","utf-8")
         for line in classifications.readlines():
