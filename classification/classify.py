@@ -81,13 +81,14 @@ elif validation=="looe":
 
     if classifier == "ibt":
         d="/".join(meta_parameters[0].split("/")[:-1]) + "/" + "baseline/"
-        print d
+        os.system("mkdir " + d)
         for event in event_train_test.keys():
             print event
             event_write = event
             if re.search(" ",event_write):
                 event_write="_".join(event_write.split(" "))
             d_event = d + event_write + "/"
+            os.system("mkdir " + d_event)
             meta = event_train_test["meta"]
             informed_baseline_time.ibt(meta,d_event,arguments[0])
 
