@@ -28,9 +28,10 @@ parser.add_argument('--tl', action='store_true', required=False, help="[OPTIONAL
 parser.add_argument('--parralel', action='store_true', required=False, help="choose whether distinct train and test sets are ran in parrallel")
 
 args=parser.parse_args() 
-instance_file=codecs.open(args.i,"r","utf-8")
-instances=instance_file.readlines()
-instance_file.close()
+if args.i:
+    instance_file=codecs.open(args.i,"r","utf-8")
+    instances=instance_file.readlines()
+    instance_file.close()
 validation=args.v
 classifier=args.c
 arguments=args.a
