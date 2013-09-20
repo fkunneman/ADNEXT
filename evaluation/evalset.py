@@ -42,7 +42,6 @@ class Evalset():
             if input_type == "lcs":
                 self.name_instance[tokens[metadict["name"]]] = instance
             self.instances.append(instance)
-            print instance.dict
         meta.close()
         
         #         instance.set_name(tokens[0])

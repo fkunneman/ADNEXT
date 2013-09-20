@@ -9,7 +9,7 @@ import time_functions
 parser = argparse.ArgumentParser(description = "Program to evaluate the time-to-event of tweets with a slider")
 
 parser.add_argument('-l', action = 'store', required = True, nargs='+', help = "the label / label+classification files (required)")
-parser.add_argument('-g', action='store', required=False, nargs='+', help = "the classification files (if separated)")
+#parser.add_argument('-g', action='store', required=False, nargs='+', help = "the classification files (if separated)")
 parser.add_argument('-m', action='store', required=True, nargs='+', help = "the files with meta-information")
 parser.add_argument('-v', action='store', required = False, nargs='+', help = "[KNN] give vocabulary files to link indexes to features")
 parser.add_argument('-o', action='store', required=True, help = "file to write the results to (required)")
@@ -57,7 +57,7 @@ for i,t in enumerate(args.l):
     if args.i == "knn":
         evaluation.set_instances_knn(args.l[i],hidden="before",vocabulary=args.v[i])
     elif args.i == "lcs":
-        evaluation.set_instances_lcs(args.l[i],args.g[i],timelabels = True)
+        evaluation.set_instances_lcs(args.l[i],timelabels = True)
 
     evaluation.extract_sliding_window_instances(windowsize,slider)
     
@@ -96,14 +96,15 @@ for i,t in enumerate(args.l):
         for instance in window.instances:
             # try:
 #            print instance.classification[0]
-            if instance.time_classification[0] in ["early","during","after"]:
-                predictions[instance.time_classification[0]] += 1
-            else:
-                predictions["tte"] += 1
-                predictions_days[instance.time_classification[0]] += 1
-                score_prediction[instance.time_classification[1]].append(instance.time_classification[0])
-            # except IndexError:
-            #     print "window IE",instance.classification
+            try:
+                if instance.time_classification[0] in ["early","during","after"]:
+                    predictions[instance.time_classification[0]] += 1
+                else:
+                    predictions["tte"] += 1
+                    predictions_days[instance.time_classification[0]] += 1
+                    score_prediction[instance.time_classification[1]].append(instance.time_classification[0])
+            except AttributeError:
+                predictions[instance.classification] += 1
                 #continue
 #        print predictions
 
