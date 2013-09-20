@@ -369,7 +369,7 @@ class Classifier():
         else:
             dummy=False
         
-        tested_instances=[]
+        estimations=[]
         for i in self.test:
             tokens=i.split("\t")
             label=tokens[4]
@@ -378,14 +378,14 @@ class Classifier():
             text=text.strip()
             if future.search(text):
                 if today.search(text):
-                    tokens[2]=tokens[2] + "\t" + "0"
+                    estimations.append("0")
                 elif tomorrow.search(text):
-                    tokens[2]=tokens[2] + "\t" + "-1"
+                    estimations.append("-1")
                 elif day_after_t.search(text):
-                    tokens[2]=tokens[2] + "\t" + "-2"
+                    estimations.append("-2")
                 else:
                     if dummy:
-                        tokens[2]=tokens[2] + "\t" + "nt"
+                        estimations.append("nt")
                     else:
                         tweet_date=time_functions.return_datetime(date,setting="vs")
                         if weekend.search(text) or weekday.search(text):
@@ -395,14 +395,14 @@ class Classifier():
                             elif weekday.search(text):
                                 ref_weekday=weekdays.index(weekday.search(text).groups()[0])
                             if ref_weekday == tweet_weekday:
-                                tokens[2]=tokens[2] + "\t" + "0"
+                                estimations.append("0")
                             else:
                                 if tweet_weekday < ref_weekday:
                                     dif=ref_weekday - tweet_weekday
                                 else:
                                     dif=ref_weekday + (7-tweet_weekday)
-                                estimate=str(dif * -1)
-                                tokens[2]=tokens[2] + "\t" + estimate
+                                estimation=str(dif * -1)
+                                estimations.append(estimation)
                         elif month.search(text):
                             ref=month.search(text).groups()
                             day=int(ref[0])
@@ -418,7 +418,7 @@ class Classifier():
                                 tte=str(time_functions.timerel(ref_date,tweet_date,"day") * -1)
                                 if int(tte) < -21:
                                     tte="early"
-                                tokens[2]=tokens[2] + "\t" + tte
+                                estimations.append(tte)
                             except ValueError:
                                 continue
                         elif nog.search(text):
@@ -431,20 +431,19 @@ class Classifier():
                                 number=str(int(number) * -1)
                                 if int(number) < -21:
                                     number="early"
-                                tokens[2]=tokens[2] + "\t" + number
+                                estimations.append(number)
                             else:
-                                tokens[2]=tokens[2] + "\t" + "nt"
+                                estimations.append("nt")
                         else:
-                            tokens[2]=tokens[2] + "\t" + "nt"
+                            estimations.append("nt")
             else:
-                tokens[2]=tokens[2] + "\t" + "nt"
+                estimations.append("nt")
             tested_instances.append("\t".join(tokens))
         if dummy:
             baseline_out=codecs.open(self.directory + "baseline_dummy.txt","w","utf-8")
         else: 
             baseline_out=codecs.open(self.directory + "baseline.txt","w","utf-8")
-        for ti in tested_instances:
-            baseline_out.write(ti)
+        baseline_out.write(" ".join(estimations))
         baseline_out.close()
 
     def lin_reg_event(self,args):
