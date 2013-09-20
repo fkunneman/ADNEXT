@@ -22,6 +22,7 @@ def ibt(metalines,outdir,dummy = False):
     
     estimations=[]
     for i in metalines:
+        print i
         tokens=i.split("\t")
         text=tokens[-1]
         text=text.strip()
