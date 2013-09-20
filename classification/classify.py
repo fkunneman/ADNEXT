@@ -61,9 +61,9 @@ if validation=="test":
 
 elif validation=="looe":
     meta_parameters = args.m
-    meta=codecs.open(meta_parameters[1],"r","utf-8")
+    meta=codecs.open(meta_parameters[0],"r","utf-8")
     metaread=meta.readlines()
-    event_column=int(meta_parameters[2])
+    event_column=int(meta_parameters[1])
     event_train_test=defaultdict(lambda : defaultdict(list))
     event_bounds=[]
     event=""
@@ -80,7 +80,7 @@ elif validation=="looe":
         meta.append(instance)
 
     if classifier == "ibt":
-        d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + "baseline/"
+        d="/".join(meta_parameters[0].split("/")[:-1]) + "/" + "baseline/"
         for event in event_train_test.keys():
             print event
             event_write = event
@@ -88,7 +88,7 @@ elif validation=="looe":
                 event_write="_".join(event_write.split(" "))
             d_event = d + event_write + "/"
             meta = event_train_test["meta"]
-            informed_baseline_time.ibt(meta,d_event,args[0])
+            informed_baseline_time.ibt(meta,d_event,arguments[0])
 
     else:
         parameters = args.l
