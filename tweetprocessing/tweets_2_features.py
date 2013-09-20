@@ -54,6 +54,9 @@ elif input_type == "tweet":
     else:
         tf.set_tweets_one_line(lower = args.lo)
 
+print tf.tweets
+exit()
+
 if remove_instances:
     tf.filter_tweets(remove_instances)
 
