@@ -87,7 +87,6 @@ def ibt(self,metalines,outdir,dummy = False):
                         estimations.append("nt")
         else:
             estimations.append("nt")
-        tested_instances.append("\t".join(tokens))
     if dummy:
         baseline_out=codecs.open(outdir + "baseline_dummy.txt","w","utf-8")
     else: 
