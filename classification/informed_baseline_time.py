@@ -5,7 +5,7 @@ import re
 import time_functions
 import datetime
 
-def ibt(metalines,outdir,dummy = False):
+def ibt(metalines,outdir,args):
     
     future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgen|morgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond|januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december|nog.+(dagen|slapen))")       
     today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)")
@@ -21,13 +21,11 @@ def ibt(metalines,outdir,dummy = False):
     wordnums=["twee","drie","vier","vijf","zes","zeven","acht","negen","tien","elf","twaalf","dertien","veertien","vijftien","zestien","zeventien","achttien","negentien","twintig","eenentwintig"]
     
     estimations=[]
-    print len(metalines)
     for i in metalines:
-        print i
         tokens=i.split("\t")
         text=tokens[-1]
+        date=tokens[int(args[0])]
         text=text.strip()
-        print text
         if future.search(text):
             if today.search(text):
                 estimations.append("0")
@@ -36,7 +34,7 @@ def ibt(metalines,outdir,dummy = False):
             elif day_after_t.search(text):
                 estimations.append("-2")
             else:
-                if dummy:
+                if args[1] == "dummy":
                     estimations.append("nt")
                 else:
                     tweet_date=time_functions.return_datetime(date,setting="vs")
@@ -90,11 +88,9 @@ def ibt(metalines,outdir,dummy = False):
                         estimations.append("nt")
         else:
             estimations.append("nt")
-    print outdir
-    if dummy:
+    if args[1] == "dummy":
         baseline_out=codecs.open(outdir + "baseline_dummy.txt","w","utf-8")
     else: 
         baseline_out=codecs.open(outdir + "baseline.txt","w","utf-8")
-    print " ".join(estimations),baseline_out
     baseline_out.write(" ".join(estimations))
     baseline_out.close()

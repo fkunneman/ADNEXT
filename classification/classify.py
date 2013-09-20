@@ -90,7 +90,7 @@ elif validation=="looe":
             d_event = d + event_write + "/"
             os.system("mkdir " + d_event)
             meta = event_train_test[event]["meta"]
-            informed_baseline_time.ibt(meta,d_event,arguments[0])
+            informed_baseline_time.ibt(meta,d_event,arguments)
 
     else:
         parameters = args.l
