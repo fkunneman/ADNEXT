@@ -109,7 +109,7 @@ if output_type == "lcs":
     metafile = target[4]
     tf.features2standard(target_dir, prefix, dirsize, partsfile, metafile, args.a,args.parralel)
 elif output_type == "sparsebin":
-    tf.features2sparsebinary(target[0],target[1],target[2],target[3])
+    tf.features2sparsebinary(target[0],target[1],target[2])
 elif output_type == "big":
     tf.features_2_bigdoc(target[0])
 elif output_type == "lda":
