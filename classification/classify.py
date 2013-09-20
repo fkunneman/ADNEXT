@@ -13,7 +13,7 @@ import informed_baseline_time
 Script to perform classification with a chosen algorithm and parameter settings. The used data should be in the right format.
 """
 parser=argparse.ArgumentParser(description="Script to perform classification with a chosen algorithm and parameter settings. The used data should be in the right format.")
-parser.add_argument('-i', action='store', required=True, help="file with either all instances or training instances")
+parser.add_argument('-i', action='store', required=False, help="file with either all instances or training instances")
 parser.add_argument('-v', action='store', required=True, choices=["test","n-fold","looe"], help="specify the type of validation")
 parser.add_argument('-t', action='store', required=False, help="[TEST] give the file with test data")
 parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify n")
