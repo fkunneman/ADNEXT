@@ -84,7 +84,7 @@ elif validation=="looe":
         d="/".join(meta_parameters[0].split("/")[:-1]) + "/" + "baseline/"
         os.system("mkdir " + d)
         for event in event_train_test.keys():
-            print event
+            # print event
             event_write = event
             if re.search(" ",event_write):
                 event_write="_".join(event_write.split(" "))
@@ -137,31 +137,31 @@ elif validation=="looe":
         if parameters[0]=="regular":
             #events_done = ["utrfey_s11","ajaaz_f11","ajautr_f12","psvutr_f11","utraz_s11","ajaaz_f12","tweaja_s12","utraz_s12","ajafey_s11","azpsv_f11","psvfey_f12","twefey_f12","utrpsv_f12","ajapsv_s12","feypsv_f11","psvtwe_f12","utraja_f11"]
             for event in event_train_test.keys():
-                if not event in events_done:
-                    print event
-                    event_write = event
-                    if re.search(" ",event_write):
-                        event_write="_".join(event_write.split(" "))
-                    d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
-                    print d
-                    if not os.path.exists(d):
-                        if not os.path.exists("/".join(d.split("/")[:-1])):
-                            if not os.path.exists("/".join(d.split("/")[:-2])):
-                                print "mkdir " + "/".join(d.split("/")[:-2])
-                                os.system("mkdir " + "/".join(d.split("/")[:-2]))
-                            print "mkdir " + "/".join(d.split("/")[:-1])
-                            os.system("mkdir " + "/".join(d.split("/")[:-1]))
-                        os.system("mkdir " + d)
-                    if args.parralel:
-                        # print event
-                        # print len(event_train_test[event]["meta"])
-                        #try:
-                        p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
-                        p.start()
-                        #except OSError:
-                        #    classify(event_train_test[event],d)
-                    else:
-                        classify(event_train_test[event],d)
+                # if not event in events_done:
+                print event
+                event_write = event
+                if re.search(" ",event_write):
+                    event_write="_".join(event_write.split(" "))
+                d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
+                print d
+                if not os.path.exists(d):
+                    if not os.path.exists("/".join(d.split("/")[:-1])):
+                        if not os.path.exists("/".join(d.split("/")[:-2])):
+                            print "mkdir " + "/".join(d.split("/")[:-2])
+                            os.system("mkdir " + "/".join(d.split("/")[:-2]))
+                        print "mkdir " + "/".join(d.split("/")[:-1])
+                        os.system("mkdir " + "/".join(d.split("/")[:-1]))
+                    os.system("mkdir " + d)
+                if args.parralel:
+                    # print event
+                    # print len(event_train_test[event]["meta"])
+                    #try:
+                    p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
+                    p.start()
+                    #except OSError:
+                    #    classify(event_train_test[event],d)
+                else:
+                    classify(event_train_test[event],d)
         
         else:
             domain_events=codecs.open(parameters[3],"r","utf-8")
