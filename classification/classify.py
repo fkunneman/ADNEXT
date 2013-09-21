@@ -71,6 +71,7 @@ elif validation=="looe":
     for i,instance in enumerate(metaread):
         tokens=instance.split("\t")
         instance_event=tokens[event_column]
+        print event
         if instance_event != event:
             event_bounds.append((instance_event,i))
             if not event == "":
