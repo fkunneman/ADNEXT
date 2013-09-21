@@ -240,6 +240,10 @@ class Classifier():
         for t in self.test:
             test.write(" ".join([t["features"][0],t["label"]]) + "\n")
         test.close()
+        meta = self.directory + "meta"
+        metaout = codecs.open(meta,"w","utf-8")
+        for line in self.meta:
+            metaout.write(line)
         if prune or select:
             stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
             for feature in self.stoplist:
@@ -262,9 +266,6 @@ class Classifier():
                 tl=t["meta"][4]
                 test.write(" ".join([t["features"][0],tl]) + "\n")
             test.close()
-            meta = self.directory + "meta"
-            for line in self.meta:
-                metaout.write(line)
             if prune or select:
                 stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
                 for feature in self.stoplist:
@@ -308,7 +309,13 @@ class Classifier():
                     instance["features"].append(time_label_vocab[timelabel])
             #output a weightfile with feature weights
             weight = self.directory + "weights"
-            weightout=codecs.open(weight,"w","utf-8")
+            try:
+                weightout=codecs.open(weight,"w","utf-8")
+            except IOError:
+                os.system("mkdir " + "/".join(self.directory.split("/")[:-2]))
+                os.system("mkdir " + "/".join(self.directory.split("/")[:-1]))
+                weightout=codecs.open(weight,"w","utf-8")
+
             sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
             for numeric_feature in sorted_features:
                 feature = str(numeric_feature)
