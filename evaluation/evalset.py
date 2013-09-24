@@ -764,9 +764,9 @@ class Evalset():
         for label in sorted(list(set(ce.goals))):
             # print label
             if not label == "":
-                row = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
-                row.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
-                row.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
+                row = [label,round(ce.precision(cls=label),2),round(ce.recall(cls=label),2),round(ce.fscore(cls=label),2)]
+                row.extend([round(ce.tp_rate(cls=label),2),round(ce.fp_rate(cls=label),2),round(auc([0,round(ce.fp_rate(cls=label),2),1],[0,round(ce.tp_rate(cls=label),2),1]),2)])
+                row.extend([(ce.tp[label] + ce.fn[label]),(ce.tp[label] + ce.fp[label]),ce.tp[label]])
                 #rows.append(table)
                 # out_write.write("\t".join(table) + "\n")
                 table.append(row)
