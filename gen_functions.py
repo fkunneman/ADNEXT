@@ -116,6 +116,6 @@ def has_endhashtag(sequence,hashtags):
 
 def return_standard_deviation(v):
     mean = sum(v) / len(v)
-    return math.sqrt(sum([((e-mean)*(e-mean)) for e in v]) / len(v))
+    return math.sqrt(round(sum([((e-mean)*(e-mean)) for e in v]) / len(v),2)
     
 

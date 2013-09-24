@@ -137,14 +137,17 @@ for i,t in enumerate(args.l):
         cols[i].append(token)
     out.write("\n")
 
-aggregates = []
-for i in range(len(cols.keys())):
-    col = cols[i]
-    mean = sum(col) / len(col)
-    stdev = gen_functions.return_standard_deviation(col)
-    aggregates.append(str(mean) + " (" + str(stdev) + ")")
+i = 0
+while i < len(cols.keys()):
+    aggregates = []
+    for j in range(3):
+        col = cols[i+j]
+        mean = round(sum(col)/len(col),2)
+        stdev = gen_functions.return_standard_deviation(col)
+        aggregates.append(str(mean) + " (" + str(stdev) + ")")
+    out.write("\t".join(aggregates))
+    i += 3
 
-out.write("\n".join(aggregates))
 out.close()
 
     # if self.input_type == "meta":
