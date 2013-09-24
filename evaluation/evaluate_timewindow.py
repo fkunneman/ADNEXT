@@ -127,7 +127,7 @@ for i,t in enumerate(args.l):
 
     event_results = []
     rmse = evaluation.calculate_rmse()
-    event_results.extend([str(e) for e in rmse[1:]])
+    event_results.extend(rmse[1:])
     out.write(" ".join([str(e) for e in rmse[1:]]))
     table = evaluation.return_results()
     for label in table[1:]:
