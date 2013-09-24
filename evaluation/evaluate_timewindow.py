@@ -4,7 +4,7 @@ import argparse
 from evalset import Evalset
 from collections import defaultdict
 import time_functions
-
+import gen_functions
 
 parser = argparse.ArgumentParser(description = "Program to evaluate the time-to-event of tweets with a slider")
 
@@ -27,6 +27,9 @@ parser.add_argument('--plot', action='store_true', help = "choose whether result
 parser.add_argument('--metadict',action='store',required=True,nargs='+', help = "if the fields of the metafile are different from the default, specify them here (format: name 0 id 1)")
 
 args = parser.parse_args()
+
+out = open(args.o,"w")
+cols = defaultdict(list)
 
 windowsize = int(args.size)
 slider = int(args.slider)
@@ -122,14 +125,27 @@ for i,t in enumerate(args.l):
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
     #     evaluation = self.calculate_rmse(testwindows,plotfile)
 
-    out = open(args.o,"a")
+    event_results = []
     rmse = evaluation.calculate_rmse()
+    event_results.extend(rmse[1:])
     out.write(" ".join(rmse[1:]))
     table = evaluation.return_results()
     for label in table[1:]:
+        event_results.extend(label[:3]))
         out.write(" " + " ".join(label[:3]))
+    for i,token in enumerate(event_results):
+        cols[i].append(token)
     out.write("\n")
-    out.close()
+
+aggregates = []
+for i in range(len(cols.keys())):
+    col = cols[i]
+    mean = sum(col) / len(col)
+    stdev = gen_functions.return_standard_deviation(col)
+    aggregates.append(mean + " (" + stdev + ")")
+
+out.write("\t".join(aggregates))
+out.close()
 
     # if self.input_type == "meta":
     #     out_dict[event] = evaluation[-4:]
