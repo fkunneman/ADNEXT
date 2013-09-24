@@ -122,10 +122,14 @@ for i,t in enumerate(args.l):
     #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
     #     evaluation = self.calculate_rmse(testwindows,plotfile)
 
+    out = open(args.o,"a")
     rmse = evaluation.calculate_rmse()
-    print rmse
-    evaluation.print_results()
-
+    out.write(" ".join(rmse[1:]))
+    table = evaluation.return_results()
+    for label in table[1:]:
+        out.write(" " + " ".join(label[:3]))
+    out.write("\n")
+    out.close()
 
     # if self.input_type == "meta":
     #     out_dict[event] = evaluation[-4:]

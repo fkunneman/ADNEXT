@@ -136,7 +136,7 @@ class Evalset():
             else:
                 nn.append(line)
         classifications_nn[test] = nn
-        print classifications_nn
+        # print classifications_nn
         cl_open.close()
         if len(classifications) != len(self.instances):
             print len(classifications),len(self.instances),"classification and meta do not align, exiting program..."
@@ -172,7 +172,7 @@ class Evalset():
                 selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
                 instance.set_time_classification(selected_tl)
             else:
-                print neightbours
+                # print neighbours
                 for neighbour in neighbours:
                     label = neighbour.split(" ")[1].split(",")[-1]
                     score = float(neighbour.split("  ")[1])
@@ -752,7 +752,7 @@ class Evalset():
     def print_results(self):
         # out_write = open(outfile,"w")
         # out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
-        print "\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"])
+        table = "\t".join([["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]])
         #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         ce = evaluation.ClassEvaluation()
         for instance in self.instances:
@@ -761,12 +761,13 @@ class Evalset():
         for label in sorted(list(set(ce.goals))):
             # print label
             if not label == "":
-                table = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
-                table.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
-                table.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
+                row = [label,str(round(ce.precision(cls=label),2)),str(round(ce.recall(cls=label),2)),str(round(ce.fscore(cls=label),2))]
+                row.extend([str(round(ce.tp_rate(cls=label),2)),str(round(ce.fp_rate(cls=label),2)),str(round(auc([0,round(ce.fp_rate(cls=label),2),1], [0,round(ce.tp_rate(cls=label),2),1]),2))])
+                row.extend([str((ce.tp[label] + ce.fn[label])),str((ce.tp[label] + ce.fp[label])),str(ce.tp[label])])
                 #rows.append(table)
                 # out_write.write("\t".join(table) + "\n")
-                print "\t".join(table)
+                table.append(row)
+        return table
 
     class Instance():
         
