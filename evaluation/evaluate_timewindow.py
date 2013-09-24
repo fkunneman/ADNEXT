@@ -131,7 +131,7 @@ for i,t in enumerate(args.l):
     out.write(" ".join([str(e) for e in rmse[1:]]))
     table = evaluation.return_results()
     for label in table[1:]:
-        event_results.extend(label[:3])
+        event_results.extend(label[1:4])
         out.write(" " + " ".join([str(e) for e in label[:3]]))
     for i,token in enumerate(event_results):
         cols[i].append(token)
@@ -140,6 +140,7 @@ for i,t in enumerate(args.l):
 aggregates = []
 for i in range(len(cols.keys())):
     col = cols[i]
+    print col
     mean = sum(col) / len(col)
     stdev = gen_functions.return_standard_deviation(col)
     aggregates.append(mean + " (" + stdev + ")")
