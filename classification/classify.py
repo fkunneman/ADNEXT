@@ -71,7 +71,6 @@ elif validation=="looe":
     for i,instance in enumerate(metaread):
         tokens=instance.split("\t")
         instance_event=tokens[event_column]
-        print event
         if instance_event != event:
             event_bounds.append((instance_event,i))
             if not event == "":
@@ -138,6 +137,7 @@ elif validation=="looe":
             #events_done = ["utrfey_s11","ajaaz_f11","ajautr_f12","psvutr_f11","utraz_s11","ajaaz_f12","tweaja_s12","utraz_s12","ajafey_s11","azpsv_f11","psvfey_f12","twefey_f12","utrpsv_f12","ajapsv_s12","feypsv_f11","psvtwe_f12","utraja_f11"]
             for event in event_train_test.keys():
                 # if not event in events_done:
+                print event
                 if event in ["utrtwe_f11", "utrtwe_f12", "utrtwe_s11"]:
                     print event
                     event_write = event
