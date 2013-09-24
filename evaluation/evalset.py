@@ -752,10 +752,10 @@ class Evalset():
         plt.savefig(plotfile)
         
                  
-    def print_results(self):
+    def return_results(self):
         # out_write = open(outfile,"w")
         # out_write.write("\t".join(["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]) + "\n")
-        table = "\t".join([["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]])
+        table = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         #rows = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples","Classifications","Correct"]]
         ce = evaluation.ClassEvaluation()
         for instance in self.instances:

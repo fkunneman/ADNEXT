@@ -127,12 +127,12 @@ for i,t in enumerate(args.l):
 
     event_results = []
     rmse = evaluation.calculate_rmse()
-    event_results.extend(rmse[1:])
-    out.write(" ".join(rmse[1:]))
+    event_results.extend([str(e) for e in rmse[1:]])
+    out.write(" ".join([str(e) for e in rmse[1:]]))
     table = evaluation.return_results()
     for label in table[1:]:
-        event_results.extend(label[:3]))
-        out.write(" " + " ".join(label[:3]))
+        event_results.extend(label[:3])
+        out.write(" " + " ".join([str(e) for e in label[:3]]))
     for i,token in enumerate(event_results):
         cols[i].append(token)
     out.write("\n")
