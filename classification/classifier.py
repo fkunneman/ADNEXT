@@ -356,6 +356,10 @@ class Classifier():
 
     def lin_reg_event(self,args):
         
+        def return_standard_deviation(windows):
+            mean = sum(windows) / len(windows)
+            #return sum([(window-mean) for window in windows]) / len(windows)
+
         def generate_hourly_sequence(instances,instance_dict):
             last_tfz = int(instances[-1]["meta"][4])
             instance_dict["sequence"] = []
@@ -373,29 +377,36 @@ class Classifier():
                         est = False
 
         def generate_window_output(sequence,outdict,start_time,window,slider,log):
-            half = int(window/2)
+            #half = int(window/2)
             start = 0
-            end = window
-            while end <= len(sequence):
+            end = window 
+            hist = [sum(sequence[start:start+window]),sum(sequence[start+window:start+(window*2)])]
+            stdev_hist = return_standard_deviation(hist)
+            start = start+(window*2)
+            while start+window < start_time:
 #               print window,half,slider,ef,start,half
-                half1 = sequence[start:start+half]
-                half2 = sequence[start+half+1:end]
-                if sum(half1) == 0 or sum(half2) == 0:
-                    value = 0
-                else:
-                    if log:
-                        if sum(half1) == 1 or sum(half2) == 1:
-                            value = 0
-                        #print sum(half2),sum(half1),math.log(sum(half2),2),math.log(sum(half1),2)
-                        else:
-                            value = math.log(sum(half2),2)/math.log(sum(half1),2)
-                    else:
-                        value = (sum(half2)-sum(half1))/sum(half1)
-                target = int((start_time - end)/24)
-                outdict["value"].append(value)
-                outdict["target"].append(target)
-                start += slider
-                end += slider
+                #half1 = sequence[start:start+half]
+                #half2 = sequence[start+half+1:end]
+                #if sum(half1) == 0 or sum(half2) == 0:
+                #    value = 0
+                hist.append(sequence[start:start+window])
+                outdict["value"].append(return_standard_deviation(hist))             
+                outdict["target"].append(int((start_time - start+window)/24))
+                start += window
+                # else:
+                #     if log:
+                #         if sum(half1) == 1 or sum(half2) == 1:
+                #             value = 0
+                #         #print sum(half2),sum(half1),math.log(sum(half2),2),math.log(sum(half1),2)
+                #         else:
+                #             value = math.log(sum(half2),2)/math.log(sum(half1),2)
+                #     else:
+                #         value = (sum(half2)-sum(half1))/sum(half1)
+
+                # outdict["value"].append(value)
+                # outdict["target"].append(target)
+                # start += slider
+                # end += slider
 
         #generate input
         event_tweets = defaultdict(list)
@@ -434,9 +445,9 @@ class Classifier():
         test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
-        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
-        for i in range(len(test["value"])):
-            estimation = (test["value"][i]*w[1][0]) + w[0][0]
-            print test["value"][i],estimation,test["target"][i]
-
+        #generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
+        #for i in range(len(test["value"])):
+        #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
+        #    print test["value"][i],estimation,test["target"][i]
+        for 
 
