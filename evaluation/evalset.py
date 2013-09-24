@@ -294,7 +294,10 @@ class Evalset():
         # if plotfile:
         #     plot_out.close()
         # if scores > 0:
-        correct_abstain = round(correct_abstain_vals[1]/correct_abstain_vals[0],2)
+        try:
+            correct_abstain = round(correct_abstain_vals[1]/correct_abstain_vals[0],2)
+        except ZeroDivisionError:
+            correct_abstain = 0
         responsiveness = round(responsiveness_vals[1]/responsiveness_vals[0],2)  
         rmse = round(math.sqrt(rmse_vals[1] / rmse_vals[0]),1)
 
