@@ -143,7 +143,7 @@ for i in range(len(cols.keys())):
     print col
     mean = sum(col) / len(col)
     stdev = gen_functions.return_standard_deviation(col)
-    aggregates.append(mean + " (" + stdev + ")")
+    aggregates.append(str(mean) + " (" + str(stdev) + ")")
 
 out.write("\t".join(aggregates))
 out.close()
