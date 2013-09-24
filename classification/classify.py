@@ -138,7 +138,7 @@ elif validation=="looe":
             for event in event_train_test.keys():
                 # if not event in events_done:
                 print event
-                if event in ["utrtwe_f11", "utrtwe_f12", "utrtwe_s11"]:
+                if event == "azfey_f11":
                     print event
                     event_write = event
                     if re.search(" ",event_write):

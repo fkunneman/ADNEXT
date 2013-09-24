@@ -14,7 +14,7 @@ parser.add_argument('-m', action='store', required=True, nargs='+', help = "the 
 parser.add_argument('-v', action='store', required = False, nargs='+', help = "[KNN] give vocabulary files to link indexes to features")
 parser.add_argument('-o', action='store', required=True, help = "file to write the results to (required)")
 #parser.add_argument('--multi', action='store_true', help = "confirm when the meta-file contains instances for multiple testsets")
-parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn"], help="specify the input type of label (and classification) files")
+parser.add_argument('-i', action = 'store', choices = ["lcs","ibt","knn"], help="specify the input type of label (and classification) files")
 #parser.add_argument('-d', action='store', default = 1, help = "Define the depth of a distinct testset in terms of the path of scorefiles; [Default = 1]  (in the case of the testset \'bla\' and the paths \'bla/score1.txt\' and \'bla/score2.txt\', give two as the depth and the results for the different scorefiles are outputted in the same row)")
 #parser.add_argument('--hidden', action='store', required = False, nargs = '+', help = "[KNN] if instances contain hidden classes to be retrieved in evaluation, specify their topclas(ses)")
 parser.add_argument('-e', action='store', required = True, help = "specify the file with event information")

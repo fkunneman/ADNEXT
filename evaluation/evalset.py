@@ -136,6 +136,7 @@ class Evalset():
             else:
                 nn.append(line)
         classifications_nn[test] = nn
+        print classifications_nn
         cl_open.close()
         if len(classifications) != len(self.instances):
             print len(classifications),len(self.instances),"classification and meta do not align, exiting program..."
@@ -171,6 +172,7 @@ class Evalset():
                 selected_tl = self.extract_timelabel(timelabel_freq,timelabel_rank,score_timelabel,score_rank)
                 instance.set_time_classification(selected_tl)
             else:
+                print neightbours
                 for neighbour in neighbours:
                     label = neighbour.split(" ")[1].split(",")[-1]
                     score = float(neighbour.split("  ")[1])
@@ -178,7 +180,7 @@ class Evalset():
                 highest_score = sorted(label_scores[classification],reverse=True)[0]
                 instance.set_time_classification((classification,highest_score))
 
-    def set_instances_ibt(self,classification_file):
+    def set_instances_ibt(self,classificationfile):
         classifications = codecs.open(classificationfile,"r","utf-8")
         estimations = classifications.read().split(" ")
         print estimations        
