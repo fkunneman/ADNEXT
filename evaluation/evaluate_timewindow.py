@@ -102,7 +102,7 @@ for i,t in enumerate(args.l):
             # try:
 #            print instance.classification[0]
             try:
-                if instance.time_classification[0] in ["early","during","after"]:
+                if instance.time_classification[0] in ["early","during","after","nt"]:
                     predictions[instance.time_classification[0]] += 1
                 else:
                     predictions["tte"] += 1
