@@ -182,8 +182,8 @@ class Evalset():
 
     def set_instances_ibt(self,classificationfile):
         classifications = codecs.open(classificationfile,"r","utf-8")
-        estimations = classifications.read().split(" ")
-        print estimations        
+        for i,estimation in enumerate(classifications.read().split(" ")):
+            self.instances[i].set_time_classification((estimation,0))
 
 
 
