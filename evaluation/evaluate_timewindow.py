@@ -145,7 +145,7 @@ while i < len(cols.keys()):
         mean = round(sum(col)/len(col),2)
         stdev = gen_functions.return_standard_deviation(col)
         aggregates.append(str(mean) + " (" + str(stdev) + ")")
-    out.write("\t".join(aggregates))
+    out.write("\t".join(aggregates) + "\n")
     i += 3
 
 out.close()
