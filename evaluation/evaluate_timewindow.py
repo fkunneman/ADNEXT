@@ -93,6 +93,7 @@ for i,t in enumerate(args.l):
                 # else:
                 #     testwindow.set_classification("abstain")
         
+
         predictions = defaultdict(int)
         predictions_days = defaultdict(int)
         score_prediction = defaultdict(list)                
@@ -101,7 +102,7 @@ for i,t in enumerate(args.l):
             # try:
 #            print instance.classification[0]
             try:
-                if instance.time_classification[0] in ["early","during","after","nt"]:
+                if instance.time_classification[0] in ["early","during","after"]:
                     predictions[instance.time_classification[0]] += 1
                 else:
                     predictions["tte"] += 1
@@ -113,7 +114,7 @@ for i,t in enumerate(args.l):
 #        print predictions
 
         majority_rank = sorted(predictions,key = predictions.get,reverse=True)
-        if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]]:
+        if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]] or (args.i == "ibt" and "tte" in predictions):
             tte_rank = sorted(predictions_days,key=predictions_days.get,reverse=True)
             score_rank = sorted(score_prediction.keys(),reverse=True)
             estimation = evaluation.extract_timelabel(predictions_days,tte_rank,score_prediction,score_rank)
