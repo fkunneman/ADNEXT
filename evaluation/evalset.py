@@ -185,8 +185,6 @@ class Evalset():
         for i,estimation in enumerate(classifications.read().split(" ")):
             self.instances[i].set_time_classification((estimation,0))
 
-
-
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
         tfz_instances = defaultdict(list)            
@@ -314,6 +312,8 @@ class Evalset():
 
     def extract_timelabel(self,timelabel_freq,timelabel_rank,score_timelabel,score_rank):
         
+        print timelabel_freq
+
         def select_highest_score_tl(rank_ds,ds_tl,tl):
             for ds in rank_ds:
                 if tl in ds_tl[ds]:
