@@ -113,8 +113,9 @@ for i,t in enumerate(args.l):
                 #continue
 #        print predictions
 
+        print predictions
         majority_rank = sorted(predictions,key = predictions.get,reverse=True)
-        if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]] or (args.i == "ibt" and "tte" in predictions.keys()):
+        if majority_rank[0] == "tte" or predictions["tte"] == predictions[majority_rank[0]] or (args.i == "ibt" and "tte" in majority_rank):
             tte_rank = sorted(predictions_days,key=predictions_days.get,reverse=True)
             score_rank = sorted(score_prediction.keys(),reverse=True)
             estimation = evaluation.extract_timelabel(predictions_days,tte_rank,score_prediction,score_rank)
