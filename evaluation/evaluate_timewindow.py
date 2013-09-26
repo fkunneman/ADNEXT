@@ -129,7 +129,8 @@ for i,t in enumerate(args.l):
     if args.plot:
         plotfile = open("/".join(t.split("/")[:-1]) + "/plot.png","w")
         for window in evaluation.windows:
-            plotfile.write("\t".join([window.label,window.error]) + "\n")
+            if not window.label in ["early","during","after"]:
+                plotfile.write("\t".join([window.label,window.error]) + "\n")
         plotfile.close()
     event_results.extend(rmse[1:])
     out.write(" ".join([str(e) for e in rmse[1:]]))
