@@ -7,6 +7,7 @@ import time_functions
 from collections import defaultdict
 import datetime
 import matplotlib.pyplot as plt
+import pylab
 from sklearn.metrics import auc
 import codecs
 import math
@@ -266,6 +267,7 @@ class Evalset():
                 #before += 1
                 if prediction == "abstain":
                     continue
+                    window.set_error("NaN")
 #                    outcome.extend(["ab","ab"])
 #                    ab += 1
                 else:
@@ -274,6 +276,9 @@ class Evalset():
                     target = int(target)
                     prediction = int(prediction)
                     dif = target - prediction
+                    if dif < 0:
+                        dif = dif * -1
+                    window.set_error(str(dif))
                     # if plotfile:
                     #     if dif < 0:
                     #         dif = dif * -1
@@ -311,8 +316,6 @@ class Evalset():
         return (estimation_sequence,rmse,responsiveness,correct_abstain)
 
     def extract_timelabel(self,timelabel_freq,timelabel_rank,score_timelabel,score_rank):
-        
-        print timelabel_freq
 
         def select_highest_score_tl(rank_ds,ds_tl,tl):
             for ds in rank_ds:
@@ -850,4 +853,7 @@ class Evalset():
 
         def set_classification(self,classification):
             self.classification = classification
+
+        def set_error(self,error):
+            self.error = error
 

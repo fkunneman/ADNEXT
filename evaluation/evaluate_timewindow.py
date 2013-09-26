@@ -123,12 +123,14 @@ for i,t in enumerate(args.l):
         else:
             window.set_classification("abstain")
     #     testwindows.append(testwindow)
-    # if plot:
-    #     plotfile = "/".join(outfile.split("/")[:-1]) + "/" + self.input_type + "_" + event + "_plot.png"
-    #     evaluation = self.calculate_rmse(testwindows,plotfile)
 
     event_results = []
     rmse = evaluation.calculate_rmse()
+    if args.plot:
+        plotfile = open("/".join(t.split("/")[:-1]) + "/plot.png","w")
+        for window in evaluation.windows:
+            plotfile.write("\t".join([window.label,window.error]) + "\n")
+        plotfile.close()
     event_results.extend(rmse[1:])
     out.write(" ".join([str(e) for e in rmse[1:]]))
     table = evaluation.return_results()
