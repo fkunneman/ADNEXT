@@ -389,6 +389,7 @@ class Classifier():
                 #half2 = sequence[start+half+1:end]
                 #if sum(half1) == 0 or sum(half2) == 0:
                 #    value = 0
+                print sequence,start,start+window,sequence[start:start+window]
                 hist.append(sum(sequence[start:start+window]))
                 outdict["value"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
