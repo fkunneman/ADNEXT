@@ -386,7 +386,8 @@ class Classifier():
             if test:
                 stop = len(sequence)
                 print "stop",stop
-            stop = start_time
+            else:
+                stop = start_time
             while start < stop:
                 print "start",start
                 #print hist
