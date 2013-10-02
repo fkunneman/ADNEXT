@@ -455,7 +455,7 @@ class Classifier():
                 print "stop"
                 break
             else: 
-                estimation = (w[1]*window) + w[0]
+                estimation = (w[1][0]*window) + w[0][0]
                 print test["target"][i],estimation
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
