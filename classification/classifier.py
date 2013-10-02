@@ -350,7 +350,7 @@ class Classifier():
             print "k=",k
             classification=self.directory + "classification" + k + " .txt"
             if timelabels:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -i -D -m 3 -d 1 -k " + k + " < " + test + " > " + classification) 
+                os.system("stimbl -v -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -i -D -m 3 -d 1 -k " + k + " < " + test + " > " + classification) 
             else:
                 os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -i -D -m 3 -d 1 -w 2 -k " + k + " < " + test + " > " + classification) 
 
@@ -445,7 +445,8 @@ class Classifier():
         test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
-        #generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
+        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
+        print test
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
         #    print test["value"][i],estimation,test["target"][i]
