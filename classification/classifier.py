@@ -373,7 +373,7 @@ class Classifier():
                     timelabel = instance["meta"][3]
                     if timelabel == "-":
                         instance_dict["start_time"] = tfz+1
-                        est = False
+
 
         def generate_window_output(sequence,outdict,start_time,window,slider,log,test=False):
             #half = int(window/2)
@@ -395,12 +395,14 @@ class Classifier():
                 #print sequence,start,start+window,sequence[start:start+window]
                 hist.append(sum(sequence[start:start+window]))
                 if log == 1:
+                    outdict["stdef"].append(return_standard_deviation(hist))
                     if hist[-1] == 0:
                         outdict["value"].append(0)
                     else:
                         outdict["value"].append(math.log(hist[-1]) / math.log(2))
                 else:
-                    outdict["value"].append(return_standard_deviation(hist))             
+                    outdict["value"].append(return_standard_deviation(hist))
+                    outdict["stdef"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
                 start += window
                 # else:
@@ -468,7 +470,10 @@ class Classifier():
             # else: 
             estimation = (w[1][0]*window) + w[0][0]
             estimation_2 = (m[0]*window) + m[1]
-            print window,round(test["value"][i],2),round((window*3),2),test["target"][i],round(estimation,2),round(estimation_2,2)
+            try:
+                print round(test["stdef"][i],2),round(test["stdef"][i-1],2),round((test["stdef"][i]*3),2),test["target"][i],round(estimation,2)
+            except IndexError:
+                print test["target"[i]],round(estimation,2)
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
         #    print test["value"][i],estimation,test["target"][i]
