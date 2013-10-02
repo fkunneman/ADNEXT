@@ -373,6 +373,7 @@ class Classifier():
                     timelabel = instance["meta"][3]
                     if timelabel == "-":
                         instance_dict["start_time"] = tfz+1
+                        est = False
 
 
         def generate_window_output(sequence,outdict,start_time,window,slider,log,test=False):
