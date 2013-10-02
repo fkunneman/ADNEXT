@@ -474,7 +474,7 @@ class Classifier():
             estimation = (w[1][0]*window) + w[0][0]
             estimation_2 = (m[0]*window) + m[1]
             try:
-                print round(test["stdef"][i],2),round(test["stdef"][i-1],2),round((test["stdef"][i]*3),2),test["target"][i],round(estimation,2)
+                print test["stdef"][i],test["stdef"][i-1],(test["stdef"][i]*3),test["target"][i],round(estimation,2)
             except IndexError:
                 print test["target"[i]],round(estimation,2)
         #for i in range(len(test["value"])):
