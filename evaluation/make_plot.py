@@ -8,8 +8,8 @@ ylabel = sys.argv[3]
 plotfiles = sys.argv[4:]
 
 linestyles = ['-.', '-', '--', ':']
-#half = len(plotfiles)/2
-for i,pf in enumerate(plotfiles):
+half = len(plotfiles)/2
+for i,pf in enumerate(plotfiles[:half]):
     pf_open = open(pf)
     x = []
     y = []
@@ -20,7 +20,7 @@ for i,pf in enumerate(plotfiles):
         if tokens[1] == "NaN":
             ytoken = NaN
         else:
-            ytoken = int(ytoken)
+            ytoken = int(tokens[1])
         y.append(ytoken)
     plt.plot(x,y,linestyle = linestyles[i])
 legend = plotfiles[half:]

@@ -23,7 +23,7 @@ parser.add_argument('-e', action='store', required = True, help = "specify the f
 parser.add_argument('--size', action='store', default = 24, help = "specify the window size (in hours)")
 parser.add_argument('--slider', action='store', default = 1, help = "specify the slider (in hours)")
 # parser.add_argument('--threshold', action='store', default = 100, help = "specify the threshold after which to score")
-parser.add_argument('--plot', action='store_true', help = "choose whether results are plotted")
+parser.add_argument('--plot', action='store', required = False,  help = "choose whether results are plotted")
 parser.add_argument('--metadict',action='store',required=True,nargs='+', help = "if the fields of the metafile are different from the default, specify them here (format: name 0 id 1)")
 
 args = parser.parse_args()
@@ -127,7 +127,7 @@ for i,t in enumerate(args.l):
     event_results = []
     rmse = evaluation.calculate_rmse()
     if args.plot:
-        plotfile = open("/".join(t.split("/")[:-1]) + "/plot.png","w")
+        plotfile = open("/".join(t.split("/")[:-1]) + "/" + args.plot,"w")
         for window in evaluation.windows:
             if hasattr(window, "error"):
                 plotfile.write("\t".join([window.label,window.error]) + "\n")
