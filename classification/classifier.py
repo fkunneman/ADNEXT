@@ -383,13 +383,13 @@ class Classifier():
             stdev_hist = return_standard_deviation(hist)
             start = start+(window*2)
             while start+window < start_time:
-                print hist
+                #print hist
 #               print window,half,slider,ef,start,half
                 #half1 = sequence[start:start+half]
                 #half2 = sequence[start+half+1:end]
                 #if sum(half1) == 0 or sum(half2) == 0:
                 #    value = 0
-                print sequence,start,start+window,sequence[start:start+window]
+                #print sequence,start,start+window,sequence[start:start+window]
                 hist.append(sum(sequence[start:start+window]))
                 outdict["value"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
@@ -434,6 +434,7 @@ class Classifier():
             generate_window_output(ef,training,event_time,window,slider,log)
 
         #calculate w0 and w1
+        print training["value"]
         a = numpy.array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
         y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
