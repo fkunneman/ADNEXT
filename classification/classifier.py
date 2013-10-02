@@ -448,7 +448,7 @@ class Classifier():
         w = numpy.dot(numpy.linalg.inv(a),y)
         print w
 
-        #(m,b) = polyfit(a,y,1)
+        m = polyfit(training["value"],training["target"],1)
         #print (b)
         #print (m)
 
@@ -464,7 +464,7 @@ class Classifier():
             #     break
             # else: 
             estimation = (w[1][0]*window) + w[0][0]
-            #estimation_2 = (m[1]*window) + m[0]
+            estimation_2 = (m[1]*window) + m[0]
             print window,test["value"][i],(window*3),test["target"][i],estimation
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
