@@ -355,6 +355,7 @@ class Classifier():
     def lin_reg_event(self,args):
         
         def return_standard_deviation(windows):
+            print windows
             mean = sum(windows) / len(windows)
             #return sum([(window-mean) for window in windows]) / len(windows)
 
