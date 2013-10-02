@@ -459,7 +459,7 @@ class Classifier():
         test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
-        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
+        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log,test=True)
         print test
         for i,window in enumerate(test["value"]):
             # if window >= (3 * test["value"][i]):
