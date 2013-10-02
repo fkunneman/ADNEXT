@@ -14,7 +14,6 @@ Script to perform classification with a chosen algorithm and parameter settings.
 """
 parser=argparse.ArgumentParser(description="Script to perform classification with a chosen algorithm and parameter settings. The used data should be in the right format.")
 parser.add_argument('-i', action='store', required=False, help="file with either all instances or training instances")
-parser.add_argument('-d', action='store', default = "\t", help="specify the delimiter of datafields on a line (default is tab)")
 parser.add_argument('-v', action='store', required=True, choices=["test","n-fold","looe"], help="specify the type of validation")
 parser.add_argument('-t', action='store', required=False, help="[TEST] give the file with test data")
 parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify n")
@@ -33,7 +32,6 @@ if args.i:
     instance_file=codecs.open(args.i,"r","utf-8")
     instances=instance_file.readlines()
     instance_file.close()
-delimiter=args.d
 validation=args.v
 classifier=args.c
 arguments=args.a
@@ -62,6 +60,7 @@ if validation=="test":
     test_instances.close()
 
 elif validation=="looe":
+    print "generating train-test"
     meta_parameters = args.m
     meta=codecs.open(meta_parameters[0],"r","utf-8")
     metaread=meta.readlines()
@@ -109,13 +108,19 @@ elif validation=="looe":
                 for i in range(len(instances[start:])):
                     values = instances[start+i].strip().split(delimiter)
                     meta_values = metaread[start+i].strip().split("\t")
-                    instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                    if classifier == "dist":
+                        instance = {"meta":meta_values}
+                    else:
+                        instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     test.append(instance)
                 training=[]
                 for i in range(len(instances[:start])):
                     values = instances[i].strip().split(delimiter)
                     meta_values = metaread[i].strip().split("\t")
-                    instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                    if classifier == "dist":
+                        instance = {"meta":meta_values}
+                    else:
+                        instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     training.append(instance)
             else:
                 end=event_bounds[i+1][1]
@@ -123,13 +128,19 @@ elif validation=="looe":
                 for i in range(len(instances[start:end])):
                     values = instances[start+i].strip().split(delimiter)
                     meta_values = metaread[start+i].strip().split("\t")
-                    instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                    if classifier == "dist":
+                        instance = {"meta":meta_values}
+                    else:
+                        instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     test.append(instance)
                 training=[]
                 for i in range(len(instances)):
                     values = instances[i].strip().split(delimiter)
                     meta_values = metaread[i].strip().split("\t")
-                    instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
+                    if classifier == "dist":
+                        instance = {"meta":meta_values}
+                    else:
+                        instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     training.append(instance)
                 del training[start:end]
             event_train_test[event]["training"] = training
@@ -137,34 +148,35 @@ elif validation=="looe":
             
         if parameters[0]=="regular":
             #events_done = ["utrfey_s11","ajaaz_f11","ajautr_f12","psvutr_f11","utraz_s11","ajaaz_f12","tweaja_s12","utraz_s12","ajafey_s11","azpsv_f11","psvfey_f12","twefey_f12","utrpsv_f12","ajapsv_s12","feypsv_f11","psvtwe_f12","utraja_f11"]
+            print "classification"
             for event in event_train_test.keys():
                 # if not event in events_done:
                 print event
-                if event == "azfey_f11":
-                    print event
-                    event_write = event
-                    if re.search(" ",event_write):
-                        event_write="_".join(event_write.split(" "))
-                    d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
-                    print d
-                    if not os.path.exists(d):
-                        if not os.path.exists("/".join(d.split("/")[:-1])):
-                            if not os.path.exists("/".join(d.split("/")[:-2])):
-                                print "mkdir " + "/".join(d.split("/")[:-2])
-                                os.system("mkdir " + "/".join(d.split("/")[:-2]))
-                            print "mkdir " + "/".join(d.split("/")[:-1])
-                            os.system("mkdir " + "/".join(d.split("/")[:-1]))
-                        os.system("mkdir " + d)
-                    if args.parralel:
-                        # print event
-                        # print len(event_train_test[event]["meta"])
-                        #try:
-                        p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
-                        p.start()
-                        #except OSError:
-                        #    classify(event_train_test[event],d)
-                    else:
-                        classify(event_train_test[event],d)
+                # if event == "azfey_f11":
+                #     print event
+                event_write = event
+                if re.search(" ",event_write):
+                    event_write="_".join(event_write.split(" "))
+                d="/".join(args.i.split(".txt")[0].split("/")[:-1]) + "/" + event_write + "/all_to_one/"
+                print d
+                if not os.path.exists(d):
+                    if not os.path.exists("/".join(d.split("/")[:-1])):
+                        if not os.path.exists("/".join(d.split("/")[:-2])):
+                            print "mkdir " + "/".join(d.split("/")[:-2])
+                            os.system("mkdir " + "/".join(d.split("/")[:-2]))
+                        print "mkdir " + "/".join(d.split("/")[:-1])
+                        os.system("mkdir " + "/".join(d.split("/")[:-1]))
+                    os.system("mkdir " + d)
+                if args.parralel:
+                    # print event
+                    # print len(event_train_test[event]["meta"])
+                    #try:
+                    p=multiprocessing.Process(target=classify,args=[event_train_test[event],d])
+                    p.start()
+                    #except OSError:
+                    #    classify(event_train_test[event],d)
+                else:
+                    classify(event_train_test[event],d)
         
         else:
             domain_events=codecs.open(parameters[3],"r","utf-8")
