@@ -445,8 +445,9 @@ class Classifier():
         w = numpy.dot(numpy.linalg.inv(a),y)
         print w
 
-        m = polyfit(a,y,1)
-        print m
+        (m,b) = polyfit(a,y,1)
+        print (b)
+        print (m)
 
         #make estimations
         test_dict = {}
