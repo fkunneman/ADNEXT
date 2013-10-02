@@ -106,40 +106,40 @@ elif validation=="looe":
             if i==len(event_bounds)-1:
                 test=[]
                 for i in range(len(instances[start:])):
-                    values = instances[start+i].strip().split(delimiter)
                     meta_values = metaread[start+i].strip().split("\t")
                     if classifier == "dist":
                         instance = {"meta":meta_values}
                     else:
+                        values = instances[start+i].strip().split(delimiter)
                         instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     test.append(instance)
                 training=[]
                 for i in range(len(instances[:start])):
-                    values = instances[i].strip().split(delimiter)
                     meta_values = metaread[i].strip().split("\t")
                     if classifier == "dist":
                         instance = {"meta":meta_values}
                     else:
+                        values = instances[i].strip().split(delimiter)
                         instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     training.append(instance)
             else:
                 end=event_bounds[i+1][1]
                 test=[]
                 for i in range(len(instances[start:end])):
-                    values = instances[start+i].strip().split(delimiter)
                     meta_values = metaread[start+i].strip().split("\t")
                     if classifier == "dist":
                         instance = {"meta":meta_values}
                     else:
+                        values = instances[start+i].strip().split(delimiter)
                         instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     test.append(instance)
                 training=[]
                 for i in range(len(instances)):
-                    values = instances[i].strip().split(delimiter)
                     meta_values = metaread[i].strip().split("\t")
                     if classifier == "dist":
                         instance = {"meta":meta_values}
                     else:
+                        values = instances[i].strip().split(delimiter)
                         instance = {"features":values[:-1],"label":values[-1],"meta":meta_values}
                     training.append(instance)
                 del training[start:end]
