@@ -453,10 +453,10 @@ class Classifier():
         #y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
         #print y
-        w = numpy.dot(numpy.linalg.inv(a),y)
-        print w
+        #w = numpy.dot(numpy.linalg.inv(a),y)
+        #print w
 
-        #m = polyfit(training["value"],training["target"],1)
+        m = polyfit(training["value"],training["target"],1)
         #print (b)
         #print (m)
 
@@ -471,8 +471,8 @@ class Classifier():
             #     print "stop"
             #     break
             # else: 
-            estimation = (w[1][0]*window) + w[0][0]
-            estimation_2 = (m[0]*window) + m[1]
+            #estimation = (w[1][0]*window) + w[0][0]
+            estimation = (m[0]*window) + m[1]
             try:
                 print test["stdef"][i],test["stdef"][i-1],(test["stdef"][i]*3),test["target"][i],round(estimation,2)
             except IndexError:
