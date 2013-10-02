@@ -6,7 +6,6 @@ import os
 from collections import defaultdict
 import math
 import numpy
-import numpy.linalg
 
 class Classifier():
 
@@ -439,7 +438,7 @@ class Classifier():
         y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
         #print y
-        w = numpy.linalgdot(numpy.linalg.inv(a),y)
+        w = numpy.linalg.dot(numpy.linalg.inv(a),y)
         print w
 
         #make estimations
