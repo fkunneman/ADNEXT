@@ -354,7 +354,7 @@ class Classifier():
     def lin_reg_event(self,args):
         
         def return_standard_deviation(windows):
-            print windows
+            #print windows
             mean = sum(windows) / len(windows)
             return sum([(window-mean) for window in windows]) / len(windows)
 
@@ -451,12 +451,12 @@ class Classifier():
         generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
         print test
         for i,window in enumerate(test["value"]):
-            if window >= (3 * test["value"][i]):
-                print "stop"
-                break
-            else: 
-                estimation = (w[1][0]*window) + w[0][0]
-                print test["target"][i],estimation
+            # if window >= (3 * test["value"][i]):
+            #     print "stop"
+            #     break
+            # else: 
+            estimation = (w[1][0]*window) + w[0][0]
+            print window,test["value"][i],(window*3),test["target"][i],estimation
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
         #    print test["value"][i],estimation,test["target"][i]
