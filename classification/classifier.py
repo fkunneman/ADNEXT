@@ -394,7 +394,10 @@ class Classifier():
                 #    value = 0
                 #print sequence,start,start+window,sequence[start:start+window]
                 hist.append(sum(sequence[start:start+window]))
-                outdict["value"].append(return_standard_deviation(hist))             
+                if log == 1:
+                    outdict["value"].append(math.log(hist[-1]) / math.log(10))
+                else:
+                    outdict["value"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
                 start += window
                 # else:
@@ -445,9 +448,9 @@ class Classifier():
         w = numpy.dot(numpy.linalg.inv(a),y)
         print w
 
-        (m,b) = polyfit(a,y,1)
-        print (b)
-        print (m)
+        #(m,b) = polyfit(a,y,1)
+        #print (b)
+        #print (m)
 
         #make estimations
         test_dict = {}
@@ -461,8 +464,8 @@ class Classifier():
             #     break
             # else: 
             estimation = (w[1][0]*window) + w[0][0]
-            estimation_2 = (m[1]*window) + m[0]
-            print window,test["value"][i],(window*3),test["target"][i],estimation,estimation_2
+            #estimation_2 = (m[1]*window) + m[0]
+            print window,test["value"][i],(window*3),test["target"][i],estimation
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
         #    print test["value"][i],estimation,test["target"][i]
