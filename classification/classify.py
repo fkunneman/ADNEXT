@@ -33,6 +33,7 @@ if args.i:
     instance_file=codecs.open(args.i,"r","utf-8")
     instances=instance_file.readlines()
     instance_file.close()
+delimiter=args.d
 validation=args.v
 classifier=args.c
 arguments=args.a
