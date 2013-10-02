@@ -376,7 +376,7 @@ class Classifier():
                         est = False
 
 
-        def generate_window_output(sequence,outdict,start_time,window,slider,log,test=False):
+        def generate_window_output(sequence,outdict,start_time,window,slider,log,test):
             #half = int(window/2)
             start = 0
             end = window 
@@ -385,8 +385,10 @@ class Classifier():
             start = start+(window*2)
             if test:
                 stop = len(sequence)
+                print "stop",stop
             stop = start_time
             while start < stop:
+                print "start",start
                 #print hist
 #               print window,half,slider,ef,start,half
                 #half1 = sequence[start:start+half]
@@ -443,18 +445,18 @@ class Classifier():
         for event in event_frequency.keys():
             ef = event_frequency[event]["sequence"]
             event_time = event_frequency[event]["start_time"]
-            generate_window_output(ef,training,event_time,window,slider,log)
+            generate_window_output(ef,training,event_time,window,slider,log,test=False)
 
         #calculate w0 and w1
         #print training["value"]
-        a = numpy.array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
-        y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
+        #a = numpy.array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
+        #y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
         #print y
         w = numpy.dot(numpy.linalg.inv(a),y)
         print w
 
-        m = polyfit(training["value"],training["target"],1)
+        #m = polyfit(training["value"],training["target"],1)
         #print (b)
         #print (m)
 
