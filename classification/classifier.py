@@ -395,7 +395,10 @@ class Classifier():
                 #print sequence,start,start+window,sequence[start:start+window]
                 hist.append(sum(sequence[start:start+window]))
                 if log == 1:
-                    outdict["value"].append(math.log(hist[-1]) / math.log(10))
+                    if hist[-1] == 0:
+                        outdict["value"].append(0)
+                    else:
+                        outdict["value"].append(math.log(hist[-1]) / math.log(10))
                 else:
                     outdict["value"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
