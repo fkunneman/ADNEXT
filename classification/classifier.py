@@ -438,7 +438,7 @@ class Classifier():
         y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
         #print y
-        w = numpy.linalg.dot(numpy.linalg.inv(a),y)
+        w = numpy.dot(numpy.linalg.inv(a),y)
         print w
 
         #make estimations
