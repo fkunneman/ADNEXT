@@ -5,8 +5,8 @@ import codecs
 import os
 from collections import defaultdict
 import math
-from numpy import *
-from numpy.linalg import *
+import numpy
+import numpy.linalg
 
 class Classifier():
 
@@ -421,7 +421,6 @@ class Classifier():
 
         #if args[1] == "log"
         #convert to log
-        print event_frequency
         #slide through windows and generate x-y pairs
         window = int(args[0])
         slider = int(args[1])
@@ -433,11 +432,11 @@ class Classifier():
             generate_window_output(ef,training,event_time,window,slider,log)
 
         #calculate w0 and w1
-        a = array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
-        y = array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
+        a = numpy.array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
+        y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
         #print y
-        w = dot(inv(a),y)
+        w = numpy.linalgdot(numpy.linalg.inv(a),y)
         print w
 
         #make estimations
