@@ -356,7 +356,7 @@ class Classifier():
         def return_standard_deviation(windows):
             print windows
             mean = sum(windows) / len(windows)
-            #return sum([(window-mean) for window in windows]) / len(windows)
+            return sum([(window-mean) for window in windows]) / len(windows)
 
         def generate_hourly_sequence(instances,instance_dict):
             last_tfz = int(instances[-1]["meta"][4])
@@ -433,7 +433,7 @@ class Classifier():
             generate_window_output(ef,training,event_time,window,slider,log)
 
         #calculate w0 and w1
-        print training["value"]
+        #print training["value"]
         a = numpy.array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
         y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
         #print a
