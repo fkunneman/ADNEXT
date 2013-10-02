@@ -22,8 +22,6 @@ class Classifier():
             self.perform_knn(arguments,prune,select,timelabels)
         elif algorithm=="lcs":
             self.perform_lcs(arguments,prune,select,timelabels)
-        elif algorithm=="ibt":
-            self.informed_baseline_date(arguments)
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
     
@@ -384,6 +382,7 @@ class Classifier():
             stdev_hist = return_standard_deviation(hist)
             start = start+(window*2)
             while start+window < start_time:
+                print hist
 #               print window,half,slider,ef,start,half
                 #half1 = sequence[start:start+half]
                 #half2 = sequence[start+half+1:end]
@@ -422,7 +421,7 @@ class Classifier():
 
         #if args[1] == "log"
         #convert to log
-
+        print event_frequency
         #slide through windows and generate x-y pairs
         window = int(args[0])
         slider = int(args[1])
