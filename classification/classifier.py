@@ -374,14 +374,17 @@ class Classifier():
                         instance_dict["start_time"] = tfz+1
                         est = False
 
-        def generate_window_output(sequence,outdict,start_time,window,slider,log):
+        def generate_window_output(sequence,outdict,start_time,window,slider,log,test=False):
             #half = int(window/2)
             start = 0
             end = window 
             hist = [sum(sequence[start:start+window]),sum(sequence[start+window:start+(window*2)])]
             stdev_hist = return_standard_deviation(hist)
             start = start+(window*2)
-            while start+window < start_time:
+            if test:
+                stop = len(sequence)
+            stop = start_time
+            while start < stop:
                 #print hist
 #               print window,half,slider,ef,start,half
                 #half1 = sequence[start:start+half]
@@ -447,6 +450,13 @@ class Classifier():
         test = defaultdict(list)
         generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log)
         print test
+        for i,window in enumerate(test["value"]):
+            if window >= (3 * test["value"][i]):
+                print "stop"
+                break
+            else: 
+                estimation = (w[1]*window) + w[0]
+                print test["target"][i],estimation
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
         #    print test["value"][i],estimation,test["target"][i]
