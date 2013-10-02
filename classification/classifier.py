@@ -398,7 +398,7 @@ class Classifier():
                     if hist[-1] == 0:
                         outdict["value"].append(0)
                     else:
-                        outdict["value"].append(math.log(hist[-1]) / math.log(10))
+                        outdict["value"].append(math.log(hist[-1]) / math.log(2))
                 else:
                     outdict["value"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
@@ -467,7 +467,7 @@ class Classifier():
             #     break
             # else: 
             estimation = (w[1][0]*window) + w[0][0]
-            estimation_2 = (m[1]*window) + m[0]
+            estimation_2 = (m[0]*window) + m[1]
             print window,test["value"][i],(window*3),test["target"][i],estimation,estimation_2
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
