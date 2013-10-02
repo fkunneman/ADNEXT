@@ -468,7 +468,7 @@ class Classifier():
             # else: 
             estimation = (w[1][0]*window) + w[0][0]
             estimation_2 = (m[0]*window) + m[1]
-            print window,test["value"][i],(window*3),test["target"][i],estimation,estimation_2
+            print window,round(test["value"][i],2),round((window*3),2),test["target"][i],round(estimation,2),round(estimation_2,2)
         #for i in range(len(test["value"])):
         #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
         #    print test["value"][i],estimation,test["target"][i]
