@@ -357,7 +357,7 @@ class Classifier():
         def return_standard_deviation(windows):
             #print windows
             mean = sum(windows) / len(windows)
-            return sum([(window-mean) for window in windows]) / len(windows)
+            return math.sqrt(sum([(window-mean) for window in windows]) / len(windows))
 
         def generate_hourly_sequence(instances,instance_dict):
             last_tfz = int(instances[-1]["meta"][4])
