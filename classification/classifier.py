@@ -357,9 +357,9 @@ class Classifier():
         def return_standard_deviation(windows):
             #print windows
             mean = sum(windows) / len(windows)
-            print mean,windows,[window-mean for window in windows],sum([(window-mean) for window in windows]) / len(windows)
+#            print mean,windows,[window-mean for window in windows],sum([(window-mean) for window in windows]) / len(windows)
             try:
-                stdef = math.sqrt(sum([(window-mean) for window in windows]) / len(windows))
+                stdef = math.sqrt(sum([((window-mean) * (window-mean)) for window in windows]) / len(windows))
             except ValueError:
                 stdef = 0
             return stdef
@@ -390,11 +390,11 @@ class Classifier():
             start = start+(window*2)
             if test:
                 stop = len(sequence)
-                print "stop",stop
+#                print "stop",stop
             else:
                 stop = start_time
             while start < stop:
-                print "start",start
+#                print "start",start
                 #print hist
 #               print window,half,slider,ef,start,half
                 #half1 = sequence[start:start+half]
@@ -471,7 +471,7 @@ class Classifier():
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
         generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log,test=True)
-        print test
+#        print test
         for i,window in enumerate(test["value"]):
             # if window >= (3 * test["value"][i]):
             #     print "stop"
