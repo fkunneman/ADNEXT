@@ -357,8 +357,7 @@ class Classifier():
         def return_standard_deviation(windows):
             #print windows
             mean = sum(windows) / len(windows)
-#            print mean,windows,[window-mean for window in windows],sum([(window-mean) for window in windows]) / len(windows)
-            try:
+	    try:
                 stdef = math.sqrt(sum([((window-mean) * (window-mean)) for window in windows]) / len(windows))
             except ValueError:
                 stdef = 0
