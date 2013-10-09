@@ -4,6 +4,7 @@ from __future__ import division
 import math
 import xlrd
 import re
+import datetime
 
 def make_chunks(lines,num_chunks=16):
     chunks=[]
@@ -16,7 +17,7 @@ def make_chunks(lines,num_chunks=16):
     chunks.append(lines[i:])
     return chunks
 
-def excel2lines(file_name,sheet_indexes,header = False,annotation=False):
+def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=False):
     lines = []
     num_annotators = False
     workbook = xlrd.open_workbook(file_name)
@@ -53,7 +54,10 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False):
                 else:
                     num_annotators = len(values)
             else:
-                values = [str(x) for x in sheet.row_values(rownum)]
+                rowvals = sheet.row_values(rownum)
+                if date:
+                    rowvals[date] = datetime.datetime(xlrd.xldate_as_tuple(rowvals[date], book.datemode))
+                values = [unicode(x) for x in sheet.row_values(rownum)]
             sheetlines.append(values)
         #each sheet is a list of lists
         lines.append(sheetlines)

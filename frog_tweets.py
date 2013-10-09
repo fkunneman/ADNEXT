@@ -61,7 +61,7 @@ else:
     infile = codecs.open(args.i,"r","utf-8")
 
 if args.i[-3:] == "xls": 
-    pre_tweets = gen_functions.excel2lines(args.i,[0],args.header)
+    pre_tweets = gen_functions.excel2lines(args.i,[0],args.header,datecolumn)
 else:
     lines = infile.readlines()
     if args.header():
