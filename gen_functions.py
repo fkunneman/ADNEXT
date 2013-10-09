@@ -53,7 +53,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False):
                 else:
                     num_annotators = len(values)
             else:
-                values = [str(int(x)) for x in sheet.row_values(rownum)]
+                values = [str(x) for x in sheet.row_values(rownum)]
             sheetlines.append(values)
         #each sheet is a list of lists
         lines.append(sheetlines)
