@@ -404,7 +404,7 @@ class Tweetsfeatures():
 
     def generate_tfz(self,agg=False):
         """
-        Add time-from zero in hours information to tweets based on their time of posting
+        Add time-from zero in days information to tweets based on their time of posting
         """
         event_tweets=defaultdict(list)
         event_tweets_tfz=defaultdict(list)
@@ -417,9 +417,10 @@ class Tweetsfeatures():
             tweets.sort(key=operator.methodcaller("get_datetime"), reverse=False)
             zeropoint=tweets[0].get_datetime()
             for t in tweets:
-                tfz=int(time_functions.timerel(t.get_datetime(),zeropoint,"hour"))
+                tfz=int(time_functions.timerel(t.get_datetime(),zeropoint,"day"))
                 t.tfz=str(tfz)
-                tweets_tfz.append(([t],tfz))        
+                tweets_tfz.append(([t],tfz))
+                print t.get_datetime(),tfz        
             if agg:
                 window=int(agg[0])
                 slider=int(agg[1])

@@ -33,6 +33,7 @@ parser.add_argument('--events', action = 'store', required = False, help = "if t
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
 
+
 args = parser.parse_args() 
 if args.i[-2:] == "gz":
     infile = gzip.open(args.i,"rb")
@@ -43,9 +44,23 @@ if args.i[-2:] == "gz":
     # for filename in zf.namelist()[:3]:
     #     if filename[-2:] == "gz":
     #         ex = zf.extract(filename)
-
 else:
     infile = codecs.open(args.i,"r","utf-8")
+
+if args.i[-3:] == "xls": 
+    pre_tweets = gen_functions.excel2lines(args.i,[0],args.header)
+    print pre_tweets
+elif args.header:
+    pre_tweets = infile.readlines()[1:]
+else:
+    pre_tweets = infile.readlines()
+infile.close()
+tweets = []
+for tweet in pre_tweets:
+    if tweet != "":
+        tweets.append(tweet.strip())
+
+
 outfile = codecs.open(args.w,"w","utf-8")
 port = int(args.p)
 delimiter = args.d

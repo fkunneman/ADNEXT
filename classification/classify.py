@@ -19,12 +19,13 @@ parser.add_argument('-t', action='store', required=False, help="[TEST] give the 
 parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify n")
 parser.add_argument('-l', action='store', required=False, nargs="+", help="[LOOE] specify the type of leave-one-out (regular,inner_domain or outer_domain) and (unless the type is \'regular\') a file with domain-event relations")
 parser.add_argument('-m', action='store', required=False, nargs="+", help="[LOOE] specify a meta-file and the column of the event in the metafile ")
-parser.add_argument('--vocab', action='store', required=False, help="[OPTIONAL] give a file with a vocabulary to use for pruning and feature selection")
 parser.add_argument('-c', action='store', required=True, choices=["lcs","knn","ibt","dist"], help="the classifier")
 parser.add_argument('-a', action='store', required=False, nargs='+', help="the arguments needed for the chosen algorithm:\n\n[LCS] specify respectively the directory in which classification is performed (make sure the config file and optionally a data-directory with indexes are present in this directory) and the directory in which files are stored\n[KNN] specify value(s) of k (the classifier will be ran for each value of k)\n[IBT] for the informed baseline time, choose to set the system to dummy by filling in \"dummy\"")
 parser.add_argument('-p', action='store', required=False, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
 parser.add_argument('-s', action='store', required=False, help="[OPTIONAL] to select features based on their infogain, specify the number of features to select") 
 parser.add_argument('--tl', action='store_true', required=False, help="[OPTIONAL] set \'tl\' in order to have second stage or hidden timelabel classification")
+parser.add_argument('--vocab', action='store', required=False, help="[OPTIONAL] give a file with a vocabulary to use for pruning and feature selection")
+parser.add_argument('--aggregate', action='store', required=False, help="[OPTIONAL] to aggregate instances, define the length of the sliding instance window")
 parser.add_argument('--parralel', action='store_true', required=False, help="choose whether distinct train and test sets are ran in parrallel")
 
 args=parser.parse_args() 
@@ -66,19 +67,33 @@ elif validation=="looe":
     metaread=meta.readlines()
     event_column=int(meta_parameters[1])
     event_train_test=defaultdict(lambda : defaultdict(list))
-    event_bounds=[]
+    event_instances = defaultdict(list)
     event=""
     meta=[]
-    for i,instance in enumerate(metaread):
+    eventcount = 0
+    for i,record in enumerate(metaread):
         tokens=instance.split("\t")
         instance_event=tokens[event_column]
         if instance_event != event:
-            event_bounds.append((instance_event,i))
+            eventcount = 0
             if not event == "":
+                event_train_test[event]["test"] = event_instances
                 event_train_test[event]["meta"] = meta
             event=instance_event
-            meta = [] 
-        meta.append(instance)
+            event_instances = []
+            meta = []
+            test = []
+        eventcount += 1 
+        meta.append(record)
+        test.append(instances[i])
+        if args.aggregation:
+            if len(test) >= args.aggregation:
+                aggregate_doc = ""
+                for instance in test[int(args.aggregation)*-1:]:
+                    
+
+                           event_instances.append
+            event_instances.append(instances[i])
 
     if classifier == "ibt":
         d="/".join(meta_parameters[0].split("/")[:-1]) + "/" + "baseline/"
