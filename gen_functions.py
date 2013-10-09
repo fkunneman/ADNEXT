@@ -16,7 +16,7 @@ def make_chunks(lines,num_chunks=16):
     chunks.append(lines[i:])
     return chunks
 
-def excel2lines(file_name,sheet_indexes,header = False):
+def excel2lines(file_name,sheet_indexes,header = False,annotation=False):
     lines = []
     num_annotators = False
     workbook = xlrd.open_workbook(file_name)
@@ -39,18 +39,21 @@ def excel2lines(file_name,sheet_indexes,header = False):
         for rownum in range(first_row,last_row):
             values = []
             #collect annotation values
-            for value in sheet.row_values(rownum):
-                try:
-                    if int(value) in range(2):
-                        values.append(value)
-                except ValueError:
-                    continue
-            if num_annotators:
-                if len(values) != num_annotators:
-                    print "number of annotation values on line is not consistent; check the inputfile. Exiting..."
-                    exit()
+            if annotation:
+                for value in sheet.row_values(rownum):
+                    try:
+                        if int(value) in range(2):
+                            values.append(value)
+                    except ValueError:
+                        continue
+                if num_annotators:
+                    if len(values) != num_annotators:
+                        print "number of annotation values on line is not consistent; check the inputfile. Exiting..."
+                        exit()
+                else:
+                    num_annotators = len(values)
             else:
-                num_annotators = len(values)
+                values = sheet.row_values(rownum)
             sheetlines.append(values)
         #each sheet is a list of lists
         lines.append(sheetlines)

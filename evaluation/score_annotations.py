@@ -24,7 +24,7 @@ args = parser.parse_args()
 #precision_at = args.p
 
 # retrieve annotation sets
-annotation_values = gen_functions.excel2lines(args.i,args.s,args.header)
+annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
 
 # calculate and output scores
 for i,sheet in enumerate(annotation_values):

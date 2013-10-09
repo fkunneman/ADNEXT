@@ -86,11 +86,11 @@ elif validation=="looe":
         eventcount += 1 
         meta.append(record)
         test.append(instances[i])
-        if args.aggregation:
+        if args.aggregate:
             if len(test) >= args.aggregation:
                 aggregate_doc = ""
                 for instance in test[int(args.aggregation)*-1:]:
-                    
+
 
                            event_instances.append
             event_instances.append(instances[i])

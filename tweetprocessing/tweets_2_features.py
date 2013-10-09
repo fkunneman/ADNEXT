@@ -101,17 +101,19 @@ if time_labels:
 tf.set_meta()
 
 print "Writing classifier input..."
-if output_type == "lcs":    
-    target_dir = target[0]
-    prefix = target[1]
-    dirsize = int(target[2])
-    partsfile = target[3]
-    metafile = target[4]
-    tf.features2standard(target_dir, prefix, dirsize, partsfile, metafile, args.a,args.parralel)
-elif output_type == "sparsebin":
-    tf.features2sparsebinary(target[0],target[1],target[2])
-elif output_type == "big":
-    tf.features_2_bigdoc(target[0])
-elif output_type == "lda":
-    tf.features_2_lda(target[0])
+# if output_type == "lcs":    
+#     target_dir = target[0]
+#     prefix = target[1]
+#     dirsize = int(target[2])
+#     partsfile = target[3]
+#     metafile = target[4]
+#     tf.features2standard(target_dir, prefix, dirsize, partsfile, metafile, args.a,args.parralel)
+# elif output_type == "sparsebin":
+#     tf.features2sparsebinary(target[0],target[1],target[2])
+# elif output_type == "big":
+#     tf.features_2_bigdoc(target[0])
+# elif output_type == "lda":
+#     tf.features_2_lda(target[0])
+tf.print_data(outfile)
+
 

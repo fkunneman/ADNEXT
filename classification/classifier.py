@@ -24,6 +24,7 @@ class Classifier():
             self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
+
     
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}

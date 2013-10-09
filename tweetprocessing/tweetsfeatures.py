@@ -653,6 +653,10 @@ class Tweetsfeatures():
             out.write(line)
         out.close()
 
+    def print_output(self,outfile):
+        out = codecs.open(outfile,"w","utf-8")
+        
+
     #Standard subfunctions
     def get_wordsequences(self):
         wordsequences=[]

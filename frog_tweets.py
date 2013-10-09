@@ -33,8 +33,21 @@ parser.add_argument('--events', action = 'store', required = False, help = "if t
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
 
-
 args = parser.parse_args() 
+outfile = codecs.open(args.w,"w","utf-8")
+port = int(args.p)
+delimiter = args.d
+textcolumn = int(args.text)
+usercolumn = int(args.user)
+datecolumn = int(args.date)
+timecolumn = int(args.time)
+idcolumn = args.id
+labelcolumn = args.label
+parralel = args.parralel
+eventlist = args.events
+punct = args.punct
+man_class = args.man
+
 if args.i[-2:] == "gz":
     infile = gzip.open(args.i,"rb")
     # content = zf.read()
@@ -50,36 +63,14 @@ else:
 if args.i[-3:] == "xls": 
     pre_tweets = gen_functions.excel2lines(args.i,[0],args.header)
     print pre_tweets
-elif args.header:
-    pre_tweets = infile.readlines()[1:]
 else:
-    pre_tweets = infile.readlines()
-infile.close()
-tweets = []
-for tweet in pre_tweets:
-    if tweet != "":
-        tweets.append(tweet.strip())
-
-
-outfile = codecs.open(args.w,"w","utf-8")
-port = int(args.p)
-delimiter = args.d
-textcolumn = int(args.text)
-usercolumn = int(args.user)
-datecolumn = int(args.date)
-timecolumn = int(args.time)
-idcolumn = args.id
-labelcolumn = args.label
-parralel = args.parralel
-eventlist = args.events
-punct = args.punct
-man_class = args.man
- 
-if args.header:
-    pre_tweets = infile.readlines()[1:]
-else:
-    pre_tweets = infile.readlines()
-infile.close()
+    lines = infile.readlines()
+    if args.header():
+        lines.pop()
+    pre_tweets = []
+    for line in lines:
+        pre_tweets.append(line.split(delimiter))
+    infile.close()
 tweets = []
 for tweet in pre_tweets:
     if tweet != "":
@@ -99,8 +90,7 @@ if eventlist:
 #Function to tokenize the inputfile
 def frogger(t,o,i):
     fc = pynlpl.clients.frogclient.FrogClient('localhost',port)
-    for tweet in t:
-        tokens = tweet.split(delimiter)
+    for tokens in t:
         if args.txtdelim:
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
             tokens = tokens[:column_sequence[-1]+1]
