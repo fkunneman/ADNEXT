@@ -66,9 +66,7 @@ else:
     lines = infile.readlines()
     if args.header():
         lines.pop()
-    pre_tweets = []
-    for line in lines:
-        pre_tweets.append(line.strip().split(delimiter))
+    pre_tweets = [line.strip().split(delimiter) for line in lines]
     infile.close()
 tweets = []
 for tweet in pre_tweets:
