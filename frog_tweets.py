@@ -62,19 +62,18 @@ else:
 
 if args.i[-3:] == "xls": 
     pre_tweets = gen_functions.excel2lines(args.i,[0],args.header)
-    print pre_tweets
 else:
     lines = infile.readlines()
     if args.header():
         lines.pop()
     pre_tweets = []
     for line in lines:
-        pre_tweets.append(line.split(delimiter))
+        pre_tweets.append(line.strip().split(delimiter))
     infile.close()
 tweets = []
 for tweet in pre_tweets:
     if tweet != "":
-        tweets.append(tweet.strip())
+        tweets.append(tweet)
 
 column_sequence = [labelcolumn,idcolumn,usercolumn,datecolumn,timecolumn,textcolumn]
 
