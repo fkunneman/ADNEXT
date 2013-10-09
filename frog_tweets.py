@@ -123,12 +123,14 @@ def frogger(t,o,i):
                 words.append(word)    
     
         outfields[-1] = " ".join(words)
+        print outfields
         for field in outfields:
             if outstring == "":
                 outstring = field
             else:
                 outstring = outstring + "\t" + field
 
+        print outfields
         outstring = outstring + "\n"
         o.put(outstring)
     print "Chunk " + str(i) + " done."
