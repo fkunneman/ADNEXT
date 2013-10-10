@@ -24,8 +24,7 @@ class Classifier():
             self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
-
-    
+  
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
         feature_status={}        
@@ -232,6 +231,7 @@ class Classifier():
         
         train=codecs.open(classification_dir + "train","w","utf-8")
         for t in self.training:
+            print t
             train.write(" ".join([t["features"][0],t["label"]]) + "\n")
         train.close()
         test=codecs.open(classification_dir + "test","w","utf-8")

@@ -25,11 +25,11 @@ if args.i == "lcs":
     labelfiles = args.l
     observationfiles = args.c
     for i,l in enumerate(labelfiles):
-        evaluation.set_instances_lcs(l,observationfiles[i],"normal")
+        evaluation.set_instances_lcs(observationfiles[i],labelfile=l)
     results = evaluation.return_results()
     outfile = open(args.o,"w")
     for row in results:
-        line = "\t".join(row)
+        line = "\t".join([str(e) for e in row]) + "\n"
         outfile.write(line)
     outfile.close()
     if args.fp:
