@@ -39,8 +39,18 @@ class Evalset():
             self.instances.append(instance)
         meta.close()
 
-    def set_instances_lcs(self,classificationfile,timelabels = False,threshold = False):         
+    def set_instances_lcs(self,classificationfile,labelfile=False,timelabels = False,threshold = False):         
    
+        if labelfile:
+            self.name_instance = {}
+            labels = codecs.open(labelfile,"r","utf-8")
+            for line in labels.readlines():
+                instance = Evalset.Instance()
+                tokens = line.strip().split(" ")
+                self.name_instance[tokens[0]] = instance
+                instance.set_label(tokens[1])
+                self.instances.append(instance)
+
         classifications = codecs.open(classificationfile,"r","utf-8")
         for line in classifications.readlines():
             tokens = line.split("  ")
