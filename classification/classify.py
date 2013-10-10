@@ -8,6 +8,7 @@ import re
 import multiprocessing
 from collections import defaultdict
 import informed_baseline_time
+import random
 
 """
 Script to perform classification with a chosen algorithm and parameter settings. The used data should be in the right format.
@@ -20,7 +21,7 @@ parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify
 parser.add_argument('-l', action='store', required=False, nargs="+", help="[LOOE] specify the type of leave-one-out (regular,inner_domain or outer_domain) and (unless the type is \'regular\') a file with domain-event relations")
 parser.add_argument('-m', action='store', required=False, nargs="+", help="[LOOE] specify a meta-file and the column of the event in the metafile ")
 parser.add_argument('-c', action='store', required=True, choices=["lcs","knn","ibt","dist"], help="the classifier")
-parser.add_argument('-a', action='store', required=False, nargs='+', help="the arguments needed for the chosen algorithm:\n\n[LCS] specify respectively the directory in which classification is performed (make sure the config file and optionally a data-directory with indexes are present in this directory) and the directory in which files are stored\n[KNN] specify value(s) of k (the classifier will be ran for each value of k)\n[IBT] for the informed baseline time, choose to set the system to dummy by filling in \"dummy\"")
+parser.add_argument('-a', action='store', required=False, nargs='+', help="the arguments needed for the chosen algorithm:\n\n[LCS] specify the directory in which classification is performed (make sure the config file and optionally a data-directory with indexes are present in this directory)\n[KNN] specify value(s) of k (the classifier will be ran for each value of k)\n[IBT] for the informed baseline time, choose to set the system to dummy by filling in \"dummy\"")
 parser.add_argument('-p', action='store', required=False, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
 parser.add_argument('-s', action='store', required=False, help="[OPTIONAL] to select features based on their infogain, specify the number of features to select") 
 parser.add_argument('--tl', action='store_true', required=False, help="[OPTIONAL] set \'tl\' in order to have second stage or hidden timelabel classification")
@@ -33,6 +34,7 @@ if args.i:
     instance_file=codecs.open(args.i,"r","utf-8")
     instances=instance_file.readlines()
     instance_file.close()
+
 validation=args.v
 classifier=args.c
 arguments=args.a
@@ -59,6 +61,33 @@ if validation=="test":
     directory="/".join(args.t.split("/")[:-1]) + "/"
     classify(instances,test_instances.readlines(),directory)
     test_instances.close()
+
+elif validation=="n-fold":
+    if classifier == "knn":
+        delimiter = ","
+    elif classifier == "lcs":
+        delimiter = " "
+    instances_fl = []
+    for instance in instances:    
+        values = instance.strip().split(delimiter)
+        instances_fl.append({"features":values[:-1],"label":values[-1],"meta":[]})       
+    sorted_instances = sorted(instances_fl, key=lambda k: k['label'])
+    print sorted_instances 
+
+    # n = int(args.n)
+    # size = len(instances_fl)
+    # len_testset = int(size/n)
+    # for i in range(n):
+    #     train_test = defaultdict(list)
+    #     indexes = range(size)
+
+    #     for j in range(len_testset):
+    #         index = indexes[int(random.random() * len(indexes))]
+    #         train_test["test"].append(parts[index])
+    #         indexes.remove(index)
+    #     for remainder in indexes:
+    #         outtrain.write(parts[remainder])
+
 
 elif validation=="looe":
     print "generating train-test"
