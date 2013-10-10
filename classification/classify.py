@@ -84,9 +84,11 @@ elif validation=="n-fold":
         train_test["train"] = list(sorted_instances)
         j = i
         offset = 0
-        while j <= size:
+        while j < size:
             train_test["test"].append(sorted_instances[j])
+            #print i,j-offset,len(train_test["train"]),j,size,len(sorted_instances)
             del train_test["train"][j-offset]
+            j += n
             offset += 1
         train_test["meta"] = []
         classify(train_test,fold_dir)
