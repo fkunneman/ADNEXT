@@ -110,13 +110,13 @@ elif validation=="learning_curve":
     size = len(sorted_instances)
     train = list(sorted_instances)
     test = []
-    j = i
+    j = 0
     offset = 0
     while j < size:
         test.append(sorted_instances[j])
         #print i,j-offset,len(train_test["train"]),j,size,len(sorted_instances)
         del train[j-offset]
-        j += n
+        j += 10
         offset += 1
     logajumps = [2,5,10]
     loga = 10
