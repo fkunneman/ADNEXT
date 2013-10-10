@@ -80,16 +80,16 @@ elif validation=="n-fold":
     for i in range(n):
         fold_dir = main_dir + "fold_" + str(i) + "/"
         print fold_dir
-        # train_test = defaultdict(list)
-        # train_test["train"] = list(sorted_instances)
-        # j = i
-        # offset = 0
-        # while j <= size:
-        #     train_test["test"].append(sorted_instances[j])
-        #     del train_test["train"][j-offset]
-        #     offset += 1
-        # train_test["meta"] = []
-        # classify(train_test,fold_dir)
+        train_test = defaultdict(list)
+        train_test["train"] = list(sorted_instances)
+        j = i
+        offset = 0
+        while j <= size:
+            train_test["test"].append(sorted_instances[j])
+            del train_test["train"][j-offset]
+            offset += 1
+        train_test["meta"] = []
+        classify(train_test,fold_dir)
 
 elif validation=="looe":
     print "generating train-test"
