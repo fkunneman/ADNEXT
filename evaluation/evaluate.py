@@ -28,21 +28,8 @@ evaluation = Evalset(args.i)
 
 if args.v:
     evaluation.set_vocabulary(args.v)
-
-if args.w:
-    depth = int(args.d) * -1
-    dir_scores = defaultdict(list)
-    for i,f in enumerate(args.l):
-        cats = f.split("/")
-        dir_scores[cats[depth]].append(f)
-    window_size = int(args.w[0])
-    slider = int(args.w[1])
-    threshold = int(args.w[2])
-    evaluation.set_meta(args.m,args.multi)
-    evaluation.evaluate_window(dir_scores,window_size,slider,threshold,args.o,args.ot,args.hidden,args.plot,args.f,args.e)
-        
-else:
-    if args.i == "lcs":
+   
+if args.i == "lcs":
         labelfiles = args.l
         observationfiles = args.c
         for i,l in enumerate(labelfiles):
@@ -55,11 +42,11 @@ else:
         #if args.fn:
         #    evaluation.extract_top()
 
-    elif args.i == "meta":
-        metafiles = args.l
-        for m in metafiles:
-            evaluation.set_instances_meta(m,args.w)
-        
-    elif args.i == "sparsebin":
-        exit()
+elif args.i == "meta":
+    metafiles = args.l
+    for m in metafiles:
+        evaluation.set_instances_meta(m,args.w)
+    
+elif args.i == "sparsebin":
+    exit()
 
