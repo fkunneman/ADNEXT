@@ -63,6 +63,7 @@ if validation=="test":
     test_instances.close()
 
 elif validation=="n-fold":
+    main_dir = "/".join(args.i.split("/")[:-1]) + "/" 
     if classifier == "knn":
         delimiter = ","
     elif classifier == "lcs":
@@ -70,24 +71,25 @@ elif validation=="n-fold":
     instances_fl = []
     for instance in instances:    
         values = instance.strip().split(delimiter)
-        instances_fl.append({"features":values[:-1],"label":values[-1],"meta":[]})       
+        instances_fl.append({"features":values[:-1],"label":values[-1],"meta":[]})
+    #sort instances based on their label       
     sorted_instances = sorted(instances_fl, key=lambda k: k['label'])
-    print sorted_instances 
-
-    # n = int(args.n)
-    # size = len(instances_fl)
-    # len_testset = int(size/n)
-    # for i in range(n):
-    #     train_test = defaultdict(list)
-    #     indexes = range(size)
-
-    #     for j in range(len_testset):
-    #         index = indexes[int(random.random() * len(indexes))]
-    #         train_test["test"].append(parts[index])
-    #         indexes.remove(index)
-    #     for remainder in indexes:
-    #         outtrain.write(parts[remainder])
-
+    #make folds based on taking the n-th instance as test
+    n = int(args.n)
+    size = len(sorted_instances)
+    for i in range(n):
+        fold_dir = main_dir + "fold_" + str(i) + "/"
+        print fold_dir
+        # train_test = defaultdict(list)
+        # train_test["train"] = list(sorted_instances)
+        # j = i
+        # offset = 0
+        # while j <= size:
+        #     train_test["test"].append(sorted_instances[j])
+        #     del train_test["train"][j-offset]
+        #     offset += 1
+        # train_test["meta"] = []
+        # classify(train_test,fold_dir)
 
 elif validation=="looe":
     print "generating train-test"
