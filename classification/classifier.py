@@ -221,57 +221,55 @@ class Classifier():
         
         try:
             classification_dir=args[0]
-            self.file_dir=args[1]
         except IndexError:
             print "not enough arguments for LCS, exiting program..."
             exit()
-
-        if not os.path.exists(self.directory + "test.rnk"):
-            if prune:
-                self.prune_features(int(prune),"lcs")
-            if select:
-                self.select_features(int(select),int(prune),"lcs")
-            
+        
+        if prune:
+            self.prune_features(int(prune),"lcs")
+        if select:
+            self.select_features(int(select),int(prune),"lcs")
+        
+        train=codecs.open(classification_dir + "train","w","utf-8")
+        for t in self.training:
+            train.write(" ".join([t["features"][0],t["label"]]) + "\n")
+        train.close()
+        test=codecs.open(classification_dir + "test","w","utf-8")
+        for t in self.test:
+            test.write(" ".join([t["features"][0],t["label"]]) + "\n")
+        test.close()
+        meta = self.directory + "meta"
+        metaout = codecs.open(meta,"w","utf-8")
+        for line in self.meta:
+            metaout.write(line)
+        if prune or select:
+            stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
+            for feature in self.stoplist:
+                stoplist.write(feature + "\n")
+            stoplist.close()
+        performer()
+        
+        if timelabels:
+            self.directory=self.directory + "timelabels/"
+            os.system("mkdir " + self.directory)
             train=codecs.open(classification_dir + "train","w","utf-8")
-            for t in self.training:
-                train.write(" ".join([t["features"][0],t["label"]]) + "\n")
+            for i,t in enumerate(self.training):
+                label = t["label"]
+                if label == "before":
+                    tl=t["meta"][4]
+                    train.write(" ".join([t["features"][0],tl]) + "\n")
             train.close()
             test=codecs.open(classification_dir + "test","w","utf-8")
-            for t in self.test:
-                test.write(" ".join([t["features"][0],t["label"]]) + "\n")
+            for i,t in enumerate(self.test):
+                tl=t["meta"][4]
+                test.write(" ".join([t["features"][0],tl]) + "\n")
             test.close()
-            meta = self.directory + "meta"
-            metaout = codecs.open(meta,"w","utf-8")
-            for line in self.meta:
-                metaout.write(line)
             if prune or select:
                 stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
                 for feature in self.stoplist:
                     stoplist.write(feature + "\n")
                 stoplist.close()
             performer()
-            
-            if timelabels:
-                self.directory=self.directory + "timelabels/"
-                os.system("mkdir " + self.directory)
-                train=codecs.open(classification_dir + "train","w","utf-8")
-                for i,t in enumerate(self.training):
-                    label = t["label"]
-                    if label == "before":
-                        tl=t["meta"][4]
-                        train.write(" ".join([t["features"][0],tl]) + "\n")
-                train.close()
-                test=codecs.open(classification_dir + "test","w","utf-8")
-                for i,t in enumerate(self.test):
-                    tl=t["meta"][4]
-                    test.write(" ".join([t["features"][0],tl]) + "\n")
-                test.close()
-                if prune or select:
-                    stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
-                    for feature in self.stoplist:
-                        stoplist.write(feature + "\n")
-                    stoplist.close()
-                performer()
 
     def perform_knn(self,klist,prune,select,timelabels):
         
