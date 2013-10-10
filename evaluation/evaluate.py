@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description = "Program to process a file contai
 parser.add_argument('-l', action = 'store', required = True, nargs='+', help = "the label / label+classification files (required)")
 parser.add_argument('-c', action='store', required=False, nargs='+', help = "the classification files (if separated)")
 parser.add_argument('-m', action='store', required=False, nargs='+', help = "the files with meta-information")
-parser.add_argument('-v', action='store', required = False, nargs='+', help = "[KNN] give vocabulary files to link indexes to features")
+#parser.add_argument('-v', action='store', required = False, nargs='+', help = "[KNN] give vocabulary files to link indexes to features")
 parser.add_argument('-o', action='store', required=True, help = "file to write the results to (required)")
 #parser.add_argument('--multi', action='store_true', help = "confirm when the meta-file contains instances for multiple testsets")
 parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn"], help="specify the input type of label (and classification) files")
@@ -28,7 +28,6 @@ evaluation = Evalset(args.i)
 
 if args.v:
     evaluation.set_vocabulary(args.v)
-
 
 if args.w:
     depth = int(args.d) * -1
