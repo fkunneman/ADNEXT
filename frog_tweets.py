@@ -61,7 +61,7 @@ else:
     infile = codecs.open(args.i,"r","utf-8")
 
 if args.i[-3:] == "xls": 
-    pre_tweets = gen_functions.excel2lines(args.i,[0],args.header)[0]
+    pre_tweets = gen_functions.excel2lines(args.i,[0],args.header,date=datecolumn)[0]
 else:
     lines = infile.readlines()
     if args.header():
@@ -121,14 +121,12 @@ def frogger(t,o,i):
                 words.append(word)    
     
         outfields[-1] = " ".join(words)
-        print outfields
         for field in outfields:
             if outstring == "":
                 outstring = field
             else:
                 outstring = outstring + "\t" + field
 
-        print outfields
         outstring = outstring + "\n"
         o.put(outstring)
     print "Chunk " + str(i) + " done."

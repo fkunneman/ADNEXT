@@ -96,11 +96,13 @@ class Tweetsfeatures():
         conv=re.compile(r"^@")
         
         for line in tweets:
-            tokens=line.split("\t")
+            tokens=line.strip().split("\t")
             if info_type == "meta":
-                if len(tokens) >= 5:
+                print tokens
+                if len(tokens) >= 6:
+                    print len(tokens)
                     tweet=Tweetsfeatures.Tweet(tokens,"one_line")
-                    words=tokens[5].split(" ") 
+                    words=tokens[-1].split(" ") 
                 else: 
                     continue
             elif info_type == "text":
@@ -579,7 +581,7 @@ class Tweetsfeatures():
                     filewriter(self.event_tweets[event],event,True)
                    
             except AttributeError:
-                tweet_chunks=gen_functions.make_chunks(self.tweets,16)
+                tweets_chunks=gen_functions.make_chunks(self.tweets)
                 for i in range(16):
                     filewriter(tweets_chunks[i],str(i))
             
