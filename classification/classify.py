@@ -15,7 +15,7 @@ Script to perform classification with a chosen algorithm and parameter settings.
 """
 parser=argparse.ArgumentParser(description="Script to perform classification with a chosen algorithm and parameter settings. The used data should be in the right format.")
 parser.add_argument('-i', action='store', required=False, help="file with either all instances or training instances")
-parser.add_argument('-v', action='store', required=True, choices=["test","n-fold","looe"], help="specify the type of validation")
+parser.add_argument('-v', action='store', required=True, choices=["test","n-fold","learning_curve","looe"], help="specify the type of validation")
 parser.add_argument('-t', action='store', required=False, help="[TEST] give the file with test data")
 parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify n")
 parser.add_argument('-l', action='store', required=False, nargs="+", help="[LOOE] specify the type of leave-one-out (regular,inner_domain or outer_domain) and (unless the type is \'regular\') a file with domain-event relations")
@@ -93,6 +93,56 @@ elif validation=="n-fold":
             offset += 1
         train_test["meta"] = []
         classify(train_test,fold_dir)
+
+elif validation=="learning_curve":
+    main_dir = "/".join(args.i.split("/")[:-1]) + "/learning_curve/" 
+    if classifier == "knn":
+        delimiter = ","
+    elif classifier == "lcs":
+        delimiter = " "
+    instances_fl = []
+    for instance in instances:    
+        values = instance.strip().split(delimiter)
+        instances_fl.append({"features":values[:-1],"label":values[-1],"meta":[]})
+    #sort instances based on their label       
+    sorted_instances = sorted(instances_fl, key=lambda k: k['label'])
+    #split train and static test
+    size = len(sorted_instances)
+    train = list(sorted_instances)
+    test = []
+    j = i
+    offset = 0
+    while j < size:
+        test.append(sorted_instances[j])
+        #print i,j-offset,len(train_test["train"]),j,size,len(sorted_instances)
+        del train[j-offset]
+        j += n
+        offset += 1
+    logajumps = [2,5,10]
+    loga = 10
+
+    trainincr = list(train)
+    trainhist = []
+    while True:
+        for jump in logajumps:
+            cycle_loga = loga * jump
+            add = cycle_loga - len(trainhist)
+            inds = len(trainincr / add)
+            offset = 0
+            if cycle_loga > len(train):
+                train_test = {"train":train,"test":test}
+                classification_dir = main_dir + "train_total/"
+                classify(train_test,classification_dir)
+                break
+            else:
+                for i in range(add):
+                    trainhist.append(trainincr[(i*inds)-offset])
+                    del trainincr[i*inds)-offset]
+                    offset += 1
+                train_test = {"train":trainhist,"test":test}
+                classification_dir = main_dir + "train_" + str(cycle_loga) + "/"
+                classify(train_test,classification_dir)
+        loga = cycle_loga
 
 elif validation=="looe":
     print "generating train-test"
