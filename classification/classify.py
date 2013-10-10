@@ -137,7 +137,7 @@ elif validation=="learning_curve":
             else:
                 for i in range(add):
                     trainhist.append(trainincr[(i*inds)-offset])
-                    del trainincr[i*inds)-offset]
+                    del trainincr[(i*inds)-offset]
                     offset += 1
                 train_test = {"train":trainhist,"test":test}
                 classification_dir = main_dir + "train_" + str(cycle_loga) + "/"
