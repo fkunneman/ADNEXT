@@ -123,15 +123,17 @@ elif validation=="learning_curve":
 
     trainincr = list(train)
     trainhist = []
-    while True:
+    print train
+    while loga < len(train):
         for jump in logajumps:
             cycle_loga = loga * jump
             add = cycle_loga - len(trainhist)
-            inds = len(trainincr / add)
+            inds = int(len(trainincr) / add)
             offset = 0
             if cycle_loga > len(train):
-                train_test = {"train":train,"test":test}
+                train_test = {"training":train,"test":test, "meta":[]}
                 classification_dir = main_dir + "train_total/"
+                os.system("mkdir " + classification_dir)
                 classify(train_test,classification_dir)
                 break
             else:
@@ -139,8 +141,9 @@ elif validation=="learning_curve":
                     trainhist.append(trainincr[(i*inds)-offset])
                     del trainincr[(i*inds)-offset]
                     offset += 1
-                train_test = {"train":trainhist,"test":test}
+                train_test = {"training":trainhist,"test":test, "meta":[]}
                 classification_dir = main_dir + "train_" + str(cycle_loga) + "/"
+                os.system("mkdir " + classification_dir)
                 classify(train_test,classification_dir)
         loga = cycle_loga
 

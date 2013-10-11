@@ -231,7 +231,7 @@ class Classifier():
         
         train=codecs.open(classification_dir + "train","w","utf-8")
         for t in self.training:
-            print t
+#            print t
             train.write(" ".join([t["features"][0],t["label"]]) + "\n")
         train.close()
         test=codecs.open(classification_dir + "test","w","utf-8")

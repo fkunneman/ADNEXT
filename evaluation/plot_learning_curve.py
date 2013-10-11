@@ -20,7 +20,6 @@ yaxis = []
 for i,f in enumerate(args.l):
     evaluation = Evalset()
     if args.i == "lcs":
-        observationfile = args.c[i]
         evaluation.set_instances_lcs(args.c[i],labelfile=f)
         results = evaluation.return_results()
         yaxis.append(results[-1][-7])
@@ -29,7 +28,7 @@ for i,f in enumerate(args.l):
         xaxis.append(len(trainingopen.readlines()))
         trainingopen.close()
 
-plt.plot(x_axis,y_axis)
+plt.plot(xaxis,yaxis)
 plt.xscale('log')
 plt.ylabel("Micro-F1")
 plt.xlabel("Size trainingdata")
