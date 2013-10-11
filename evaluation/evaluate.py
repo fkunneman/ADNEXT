@@ -10,7 +10,7 @@ parser.add_argument('-l', action = 'store', required = True, nargs='+', help = "
 parser.add_argument('-c', action='store', required=False, nargs='+', help = "the classification files (if separated)")
 parser.add_argument('-m', action='store', required=False, nargs='+', help = "the files with meta-information")
 parser.add_argument('-o', action='store', required=True, help = "file to write the results to (required)")
-parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn"], help="specify the input type of label (and classification) files")
+parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn","simple"], help="specify the input type of label (and classification) files")
 parser.add_argument('-fp', action='store', required = False, nargs = '+', help = "to extract a ranked list of the most confident false positive instances, specify a file name, the class to which the false positives apply, the number of instances and the directory with tweet files")
 parser.add_argument('-v', action='store', required = False, help = "[KNN] give a vocabulary file to link indexes to features")
 parser.add_argument('--plot', action='store_true', help = "choose to plot data")
@@ -26,18 +26,10 @@ if args.i == "lcs":
     observationfiles = args.c
     for i,l in enumerate(labelfiles):
         evaluation.set_instances_lcs(observationfiles[i],labelfile=l)
-    results = evaluation.return_results()
-    outfile = open(args.o,"w")
-    for row in results:
-        line = "\t".join([str(e) for e in row]) + "\n"
-        outfile.write(line)
-    outfile.close()
-    if args.fp:
-        evaluation.extract_top(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
-    #if args.tp:
-    #    evaluation.extract_top()
-    #if args.fn:
-    #    evaluation.extract_top()
+
+elif args.i == "simple":
+    for lf in args.l:
+        evaluation.set_instances_simple(lf)
 
 elif args.i == "meta":
     metafiles = args.l
@@ -47,4 +39,11 @@ elif args.i == "meta":
 elif args.i == "knn":
     exit()
 
-
+results = evaluation.return_results()
+outfile = open(args.o,"w")
+for row in results:
+    line = "\t".join([str(e) for e in row]) + "\n"
+    outfile.write(line)
+outfile.close()
+if args.fp:
+    evaluation.extract_top(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
