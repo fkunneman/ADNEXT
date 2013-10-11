@@ -152,6 +152,15 @@ class Evalset():
         for i,estimation in enumerate(classifications.read().split(" ")):
             self.instances[i].set_time_classification((estimation,0))
 
+    def set_instances_simple(self,label_classificationfile):
+        c_open = open(label_classificationfile)
+        for line in c_open.readlines():
+            tokens = line.strip().split(" ")
+            instance = Evalset.Instance()            
+            instance.set_label(tokens[0])
+            instance.set_classification(tokens[1])
+            self.instances.append(instance)
+
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
         tfz_instances = defaultdict(list)            
