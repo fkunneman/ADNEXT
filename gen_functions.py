@@ -6,6 +6,7 @@ import xlrd
 import re
 import datetime
 import codecs
+from collections import defaultdict
 
 def make_chunks(lines,num_chunks=16):
     chunks=[]
@@ -70,14 +71,17 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
  
 
 def excel2columns(file_name):
-    groups = defaultdict(list)
+    word_cat = {}
     workbook = xlrd.open_workbook(file_name)
     sheet = workbook.sheet_by_index(0)
-    columns = sheet.ncols()
-    for column in range(columns):
+    for column in range(sheet.ncols):
         values = sheet.col_values(column)
-        groups[values[0]] = groups[values[1:]]
-    print groups
+        header = values[0]
+        for i,value in enumerate(values[1:]):
+            if value == '':
+                break
+            word_cat[value] = header
+    return groups    
 
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
@@ -150,7 +154,7 @@ def read_lcs_files(partsfile,filesdir):
         features = []
         for line in txtfile.readlines():
             features.append(line.strip())
-        featuresets.append(wordseq)
+        featuresets.append(features)
         txtfile.close()
     return featuresets
 

@@ -222,7 +222,7 @@ elif validation=="looe":
             else:
                 end=event_bounds[i+1][1]
                 test = instances[start+i]
-                training = list(instances):
+                training = list(instances)
                 del training[start:end]
             event_train_test[event]["training"] = training
             event_train_test[event]["test"] = test
