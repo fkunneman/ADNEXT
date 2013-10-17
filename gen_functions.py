@@ -5,6 +5,7 @@ import math
 import xlrd
 import re
 import datetime
+import codecs
 
 def make_chunks(lines,num_chunks=16):
     chunks=[]
@@ -67,6 +68,17 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
 
     return lines
  
+
+def excel2columns(file_name):
+    groups = defaultdict(list)
+    workbook = xlrd.open_workbook(file_name)
+    sheet = workbook.sheet_by_index(0)
+    columns = sheet.ncols()
+    for column in range(columns):
+        values = sheet.col_values(column)
+        groups[values[0]] = groups[values[1:]]
+    print groups
+
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
         print str(len(vector1)) + " " + str(len(vector2)) 
@@ -123,6 +135,24 @@ def has_endhashtag(sequence,hashtags):
     else:
 #        print "empty stop"
         return False
+
+def read_lcs_files(partsfile,filesdir):
+    #generate list of filenames
+    parts = open(partsfile)
+    filenames = []
+    for line in parts.readlines():
+        filenames.append(filesdir + line.split(" ")[0])
+    parts.close()
+    #generate list of wordsequences from file content
+    featuresets = []
+    for filename in filenames:
+        txtfile = codecs.open(filename,"r","utf-8")
+        features = []
+        for line in txtfile.readlines():
+            features.append(line.strip())
+        featuresets.append(wordseq)
+        txtfile.close()
+    return featuresets
 
 def return_standard_deviation(v):
     mean = sum(v) / len(v)
