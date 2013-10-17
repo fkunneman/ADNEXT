@@ -341,7 +341,7 @@ class Evalset():
                 table.append(row)
         micro_row = [round(ce.precision(),2),round(ce.recall(),2),round(ce.fscore(),2)]
         micro_row.extend([round(ce.tp_rate(),2),round(ce.fp_rate(),2),round(auc([0,round(ce.fp_rate(),2),1],[0,round(ce.tp_rate(),2),1]),2)])
-        micro_row.extend([(ce.tp[label] + ce.fn[label]),(ce.tp[label] + ce.fp[label]),ce.tp[label]])
+        micro_row.extend([len(ce.observations),len(ce.observations),"")
         table.append(micro_row)
         return table
 
