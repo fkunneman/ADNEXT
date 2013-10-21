@@ -81,7 +81,7 @@ def excel2columns(file_name):
             if value == '':
                 break
             word_cat[value] = header
-    return groups    
+    return word_cat    
 
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
