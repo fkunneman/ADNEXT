@@ -474,8 +474,8 @@ class Tweetsfeatures():
 
     def aggregate_instances(self,size):
         #sort instances in time
-        self.instances.sort(key = lambda i: (i.get_datetime))
-        print [(i.date,i.time) for i in self.instances]
+        self.tweets.sort(key = lambda i: (i.get_datetime))
+        print [(i.date,i.time) for i in self.tweets]
 
     def set_meta(self):
         """for each tweet, combine their metadata into one list"""
