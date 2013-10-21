@@ -34,7 +34,7 @@ def timerel(time1,time2,unit):
         if unit == "minute":   
             minutes = (int(dif.days) * 1440) + int(dif.seconds / 60)
             return minutes
-        
+
 def generate_event_time_hash(events,delimiter="\t"):
     """Based on an eventfile, generate a dictionary with events as keys and their start/end time as value."""
     event_time = {}

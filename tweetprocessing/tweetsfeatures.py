@@ -474,6 +474,11 @@ class Tweetsfeatures():
                             tweet_event_time=time_functions.timerel(event_datetime_begin,tweet_datetime,"minute")
                             t.set_label=tweet_event_time
 
+    def aggregate_instances(self,size):
+        #sort instances in time
+        self.instances.sort(key = lambda i: (i.get_datetime))
+        print [(i.date,i.time) for i in self.instances]
+
     def set_meta(self):
         """for each tweet, combine their metadata into one list"""
         for t in self.tweets:
@@ -654,10 +659,6 @@ class Tweetsfeatures():
             line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + "\t" + " ".join(tweet.wordsequence) + "\n"
             out.write(line)
         out.close()
-
-    def print_output(self,outfile):
-        out = codecs.open(outfile,"w","utf-8")
-        
 
     #Standard subfunctions
     def get_wordsequences(self):

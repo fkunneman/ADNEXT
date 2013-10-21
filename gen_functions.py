@@ -8,12 +8,12 @@ import datetime
 import codecs
 from collections import defaultdict
 
-def make_chunks(lines,num_chunks=16):
+def make_chunks(lines,nc=16):
     chunks=[]
-    size = int(len(lines)/num_chunks)
+    size = int(len(lines)/nc)
     i=0
     #remains = len(lines)
-    for j in range(num_chunks-1):
+    for j in range(nc-1):
         chunks.append(lines[i:(i+size)])
         i += size
     chunks.append(lines[i:])
