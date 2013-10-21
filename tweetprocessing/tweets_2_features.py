@@ -101,7 +101,7 @@ if time_labels:
 tf.set_meta()
 
 if args.a:
-    tf.aggregate_instances(int(args.a)
+    tf.aggregate_instances(int(args.a))
 
 print "Writing classifier input..."
 if output_type == "lcs":    
