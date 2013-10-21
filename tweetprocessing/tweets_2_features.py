@@ -23,7 +23,7 @@ parser.add_argument('-ur', action = 'store_true', default = False, help = "[OPTI
 parser.add_argument('-us', action = 'store_true', default = False, help = "[OPTIONAL] choose whether usernames are normalized")
 parser.add_argument('-lo', action = 'store_true', default = False, help = "[OPTIONAL] choose whether words are standardized to lower case")
 parser.add_argument('-tl', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] for attaching time-to-event labels to instances, give a time unit (\'minute\', \'day\' or \'hour\'), a labeltype (\'before\' to only label and retain tweets before eventtime, \'category\' for the label \'after\' and \'time\' for temporal labels for after-tweets) and optionally a threshold before which tweets are not labeled with their tte, but with \'early\'.")
-parser.add_argument('-a', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] in order to aggregate instances by time, define the window and slider here")
+parser.add_argument('-a', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] in order to aggregate instances by time the size of the window (in number of tweets) here")
 parser.add_argument('-o', action = 'store', required = True, choices = ["sparse","sparsebin","lcs","big","lda"], help = "specify the output type")
 parser.add_argument('-w', action = 'store', required = True, nargs = '+', help = "specify the target to write output to; for big and lda specify the outfile, for sparse(bin) specify the outfile, the vocabulary file and optionally the metafile and a \'1\' to give the time of a tweet with a given hashtag after the first occurence in time; for lcs give respectively the directory, prefix, dirsize, partsfile and metafile")
 parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done")
@@ -99,6 +99,9 @@ if time_labels:
         tf.generate_time_label(time_unit,label_type)
 
 tf.set_meta()
+
+if args.a:
+    tf.aggregate_instances(int(args.a)
 
 print "Writing classifier input..."
 if output_type == "lcs":    
