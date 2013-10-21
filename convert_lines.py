@@ -78,8 +78,8 @@ elif action == "extract":
 if args.excel:
     outfile.close()
     if len(lineconvert.lines) > 65535:
-        num_chunks = int(len(lineconvert.lines) / 65534)
-        chunks = gen_functions.make_chunks(lineconvert.lines,num_chunks)
+        num_chunks = int(len(lineconvert.lines) / 65534) + 1
+        chunks = gen_functions.make_chunks(lineconvert.lines,nc = num_chunks)
     else:
         chunks = [lineconvert.lines]
     outname = args.o.split("/")[-1].split(".")[0]

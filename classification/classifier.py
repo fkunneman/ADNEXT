@@ -194,6 +194,8 @@ class Classifier():
 
         return feature_infogain
 
+    #def pca(self):
+
     def select_features(self,num_features,prune,classifier):
         #make a file of the instances and perform infogain weighting
         feature_weights=self.infogain(classifier,prune)
@@ -378,7 +380,6 @@ class Classifier():
                         instance_dict["start_time"] = tfz+1
                         est = False
 
-
         def generate_window_output(sequence,outdict,start_time,window,slider,log,test):
             #half = int(window/2)
             start = 0
@@ -388,18 +389,9 @@ class Classifier():
             start = start+(window*2)
             if test:
                 stop = len(sequence)
-#                print "stop",stop
             else:
                 stop = start_time
             while start < stop:
-#                print "start",start
-                #print hist
-#               print window,half,slider,ef,start,half
-                #half1 = sequence[start:start+half]
-                #half2 = sequence[start+half+1:end]
-                #if sum(half1) == 0 or sum(half2) == 0:
-                #    value = 0
-                #print sequence,start,start+window,sequence[start:start+window]
                 hist.append(sum(sequence[start:start+window]))
                 if log == 1:
                     outdict["stdef"].append(return_standard_deviation(hist))
@@ -412,20 +404,6 @@ class Classifier():
                     outdict["stdef"].append(return_standard_deviation(hist))             
                 outdict["target"].append(int((start_time - start+window)/24))
                 start += window
-                # else:
-                #     if log:
-                #         if sum(half1) == 1 or sum(half2) == 1:
-                #             value = 0
-                #         #print sum(half2),sum(half1),math.log(sum(half2),2),math.log(sum(half1),2)
-                #         else:
-                #             value = math.log(sum(half2),2)/math.log(sum(half1),2)
-                #     else:
-                #         value = (sum(half2)-sum(half1))/sum(half1)
-
-                # outdict["value"].append(value)
-                # outdict["target"].append(target)
-                # start += slider
-                # end += slider
 
         #generate input
         event_tweets = defaultdict(list)
@@ -439,8 +417,6 @@ class Classifier():
             tweets = event_tweets[event]
             generate_hourly_sequence(tweets,event_frequency[event])
 
-        #if args[1] == "log"
-        #convert to log
         #slide through windows and generate x-y pairs
         window = int(args[0])
         slider = int(args[1])
@@ -451,38 +427,16 @@ class Classifier():
             event_time = event_frequency[event]["start_time"]
             generate_window_output(ef,training,event_time,window,slider,log,test=False)
 
-        #calculate w0 and w1
-        #print training["value"]
-        #a = numpy.array([[len(training["value"]),sum(training["value"])],[sum(training["value"]),sum((x*x) for x in training["value"])]])
-        #y = numpy.array([[sum(training["target"])],[sum((training["value"][i] * training["target"][i]) for i in range(len(training["value"])))]])
-        #print a
-        #print y
-        #w = numpy.dot(numpy.linalg.inv(a),y)
-        #print w
-
         m = polyfit(training["value"],training["target"],1)
-        #print (b)
-        #print (m)
 
         #make estimations
         test_dict = {}
         generate_hourly_sequence(self.test,test_dict)
         test = defaultdict(list)
         generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log,test=True)
-#        print test
         for i,window in enumerate(test["value"]):
-            # if window >= (3 * test["value"][i]):
-            #     print "stop"
-            #     break
-            # else: 
-            #estimation = (w[1][0]*window) + w[0][0]
             estimation = (m[0]*window) + m[1]
             try:
                 print test["stdef"][i]/test["stdef"][i-1],test["target"][i],round(estimation,2)
             except IndexError:
                 print test["target"[i]],round(estimation,2)
-        #for i in range(len(test["value"])):
-        #    estimation = (test["value"][i]*w[1][0]) + w[0][0]
-        #    print test["value"][i],estimation,test["target"][i]
-        # for 
-
