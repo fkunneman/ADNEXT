@@ -98,9 +98,7 @@ class Tweetsfeatures():
         for line in tweets:
             tokens=line.strip().split("\t")
             if info_type == "meta":
-                print tokens
                 if len(tokens) >= 6:
-                    print len(tokens)
                     tweet=Tweetsfeatures.Tweet(tokens,"one_line")
                     words=tokens[-1].split(" ") 
                 else: 
