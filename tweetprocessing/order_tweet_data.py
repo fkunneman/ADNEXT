@@ -9,7 +9,7 @@ Program to put tweet metadata in the right order for tweets_2_features.py
 parser = argparse.ArgumentParser(description = "Program to put tweet metadata in the right order for \'tweets_2_features.py\'")
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
 parser.add_argument('-o', action = 'store', required = True, help = "the output file")
-parser.add_argument('--text', action = 'store', type=int, required = False, help = "give the field on a line that contains the text (starting with 0 (the third column would be given by '2'). If the lines only contain text, give '0'.")
+parser.add_argument('--text', action = 'store', type=int, required = True, help = "give the field on a line that contains the text (starting with 0 (the third column would be given by '2'). If the lines only contain text, give '0'.")
 parser.add_argument('--user', action = 'store', type=int, required = False, help = "if one of the fields contain a username, specify its column.")
 parser.add_argument('--date', action = 'store', type=int, required = False, help = "if one of the fields contain a date, specify its column.")
 parser.add_argument('--time', action = 'store', type=int, required = False, help = "if one of the fields contain a time, specify its column.")
@@ -26,6 +26,7 @@ for line in infile.readlines():
     outfields = []
     for column in column_sequence:
         if column:
+            print tokens,column,tokens[column]
             outfields.append(tokens[column])
         else:
             outfields.append("-")
