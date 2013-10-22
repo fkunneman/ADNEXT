@@ -25,8 +25,7 @@ for line in infile.readlines():
     tokens = line.split("\t")
     outfields = []
     for column in column_sequence:
-        if column:
-            print tokens,column,tokens[column]
+        if column != None:
             outfields.append(tokens[column])
         else:
             outfields.append("-")
