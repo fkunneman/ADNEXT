@@ -1,15 +1,12 @@
 #! /usr/bin/env python
 
-from __future__ import division
 import os
 import codecs
 import re
 import datetime
 from collections import defaultdict
-import multiprocessing
 import time_functions
 import gen_functions
-import operator
 
 class Tweetsfeatures():
     """
@@ -267,176 +264,168 @@ class Tweetsfeatures():
     def aggregate_instances(self,size):
         #sort instances in time
         self.instances.sort(key = lambda i: (i.get_datetime))
-        self.windows = []
-        start = 0
-
-        while i+size < len(self.instances)
-        for i in range
+        windows = []
+        i = 0
+        while i+size < len(self.instances):
+            window = self.instances[i+size]
+            features = []
+            for instance in self.instances[i:i+size]:
+                features.extend(instance.features)
+            window.features = features
+            windows.append(window)
+        self.instances = windows
 
     def set_meta(self):
         """for each tweet, combine their metadata into one list"""
         for t in self.instances:
             t.set_meta()
 
-    def features2standard(self, directory, parralel=False):
-        """Write the features of a tweet to separate files to be processed by the LCS balanced Winnow classifier."""
-        
-        path = directory + "files/"
-        if not os.path.exists(path):
-            os.system("mkdir " + path)
-        outparts=codecs.open(directory + "parts.txt","a","utf-8")
-        outmeta=codecs.open(directory + "meta.txt","a","utf-8")
-                    
-        def filewriter(instances,lab,qp=False,qm=False):
-            dir_index=0
-            for i in range(len(instances)):
-                dir_string=str(lab) + "_" + prefix + "_" + str(i)
-                os.system("mkdir " + path + dir_string)
-                file_index=0
-                if i+dirsize < len(instances):
-                    ctweets=instances[i:i+dirsize]
-                else: 
-                    ctweets=instances[i:]
-                for t in ctweets:
-                    #make filename and write contents to it
-                    zeros=5-len(str(file_index))
-                    j=0
-                    file_name=str(file_index) + ".txt"
-                    while j < zeros:
-                        file_name="0" + file_name
-                        j += 1
-                    file_name=dir_string + "/" + file_name
-                    outfile=codecs.open(path + file_name,"w","utf-8")
-                    features=t.features
-                    words=t.wordsequence
-                    tweetlabel=t.label
-                    meta=t.meta
-
-                    contents="\n".join(features)
-                    outfile.write(contents)
-                    #write file name and label to the partsfile
-                    instanceline=file_name + " " + tweetlabel + "\n"
-                    if qp:
-                        qp.put(instanceline)
-                    else:
-                        outparts.write(instanceline)
-                    
-                    #write meta to metafile
-                    metaline=file_name + "\t" + "\t".join(meta) + "\t" + " ".join(words) + "\n"
-                    if qm:
-                        qm.put(metaline)
-                    else:
-                        outmeta.write(metaline)
-                    file_index += 1
-                i += dirsize
-            print lab,"done"
-       
-        if parralel:
-            q=multiprocessing.Queue()
-            r=multiprocessing.Queue()
-            qwrites=[]
-            rwrites=[]
-            num_instances=0
-            num_instances=len(self.instances)
-            tweet_chunks=gen_functions.make_chunks(self.instances)
-            for i in range(16):
-                p=multiprocessing.Process(target=filewriter,args=[tweet_chunks[i],i,q,r])
-                p.start()
-
-            while len(qwrites) < num_instances:
-                l=q.get()
-                qwrites.append(l)
-                outparts.write(l)
-            while len(rwrites) < num_instances:
-                l=r.get()
-                rwrites.append(l)
-                outmeta.write(l)
-            
-        else:      
-            filewriter(self.instances,0)
-            
-        outparts.close()
-        outmeta.close()
-                
-    def generate_feature_indexes(self,vocabulary):
-        """Generate a dictionary to be used for sparse and sparse binary output."""
-        feature_frequency=defaultdict(int)
-        vocabulary_out=codecs.open(vocabulary,"w","utf-8")
-        self.feature_index={}
-        for t in self.instances:
-            for feature in t.features:
-                feature_frequency[feature] += 1
-        
-        for i,feature in enumerate(feature_frequency.keys()):
-             self.feature_index[feature]=i+1
-             vocabulary_out.write(str(i) + "\t" + feature + "\n")
-
-    def features2sparsebinary(self,out_file,vocabulary_file,metafile=False):
-        """Write the features to a file in the sparse-binary format."""
-        
-        out=open(out_file,"w")
-        if metafile:
-            meta_out=codecs.open(metafile,"w","utf-8")
-
-        def generate_dataline(eventtweets,event):
-            for t in eventtweets:
-                tweets=t[0]
-                tfz=t[1]
-                datastring=""
-                indexes=[]
-                features=[]
-                for tweet in tweets:
-                    features.extend(tweet.features)
-                features=list(set(features))
-                for feature in features:
-                    indexes.append(self.feature_index[feature])
-                indexes=sorted(indexes)
-                metatweet=tweets[-1]
-                for index in indexes:
-                    datastring=datastring + str(index) + ","
-                datastring=datastring + metatweet.label + "\n"
-                out.write(datastring)
-                if metafile:
-                    metastring="\t".join(metatweet.meta) + "\t" + " ".join(metatweet.wordsequence) + "\n"
-                    meta_out.write(metastring)
-            print event,"done"
-
-        self.generate_feature_indexes(vocabulary_file)
-        for event in self.event_tweets.keys():
-            generate_dataline(self.event_tweets[event],event)
-
-        out.close() 
-        if metafile:            
-            meta_out.close()
-    
-    #turn the tweets into one big document
-    def features_2_bigdoc(self,outfile):
-        outwrite = codecs.open(outfile,"w","utf-8")
-        document = []
-        for tweet in self.instances:
-            document.extend(tweet.features)
-        outwrite.write(" ".join(document))
-        outwrite.close() 
-
-    def features_2_lda(self,outfile):
+    def output_features(self, outfile):
         out = codecs.open(outfile,"w","utf-8")
-        for tweet in self.instances:
-            line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + "\t" + " ".join(tweet.wordsequence) + "\n"
-            out.write(line)
+        for i in self.instances:
+            out.write("\t".join(i.meta) + "\t" + "|".join(self.features) + "\n")
         out.close()
 
-    #Standard subfunctions
-    def get_wordsequences(self):
-        wordsequences=[]
-        for t in self.instances:
-            wordsequences.append(t.wordsequence)
-        return wordsequences
+    # def features2standard(self, directory, prefix, parralel=False):
+    #     """Write the features of a tweet to separate files to be processed by the LCS balanced Winnow classifier."""
+        
+    #     path = directory + "files/"
+    #     if not os.path.exists(path):
+    #         os.system("mkdir " + path)
+    #     outparts=codecs.open(directory + prefix + "parts.txt","w","utf-8")
+    #     outmeta=codecs.open(directory + prefix + "meta.txt","w","utf-8")
+                    
+    #     def filewriter(instances,lab,qp=False,qm=False):
+    #         dir_index=0
+    #         for i in range(len(instances)):
+    #             dir_string=str(lab) + "_" + prefix + "_" + str(i)
+    #             os.system("mkdir " + path + dir_string)
+    #             file_index,dirsize=0,25000
+    #             if i+dirsize < len(instances):
+    #                 ctweets=instances[i:i+d]
+    #             else: 
+    #                 ctweets=instances[i:]
+    #             for t in ctweets:
+    #                 #make filename and write contents to it
+    #                 zeros=5-len(str(file_index))
+    #                 j=0
+    #                 file_name=str(file_index) + ".txt"
+    #                 while j < zeros:
+    #                     file_name="0" + file_name
+    #                     j += 1
+    #                 outfile=codecs.open(path + dir_string + "/" + file_name,"w","utf-8")
+    #                 features,words,tweetlabel,meta=t.features,t.wordsequence,t.label,t.meta
+    #                 outfile.write("\n".join(features))
+    #                 outfile.close()
+    #                 #write file name and label to the partsfile
+    #                 instanceline=file_name + " " + tweetlabel + "\n"
+    #                 if qp:
+    #                     qp.put(instanceline)
+    #                 else:
+    #                     outparts.write(instanceline)
+    #                 #write meta to metafile
+    #                 metaline=file_name + "\t" + "\t".join(meta) + "\t" + " ".join(words) + "\n"
+    #                 if qm:
+    #                     qm.put(metaline)
+    #                 else:
+    #                     outmeta.write(metaline)
+    #                 file_index += 1
+    #             i += dirsize
+    #         print lab,"done"
+       
+    #     if parralel:
+    #         q=multiprocessing.Queue()
+    #         r=multiprocessing.Queue()
+    #         qwrites=[]
+    #         rwrites=[]
+    #         num_instances=0
+    #         num_instances=len(self.instances)
+    #         tweet_chunks=gen_functions.make_chunks(self.instances)
+    #         for i in range(16):
+    #             p=multiprocessing.Process(target=filewriter,args=[tweet_chunks[i],i,q,r])
+    #             p.start()
 
-    def get_features(self): 
-        tweet_features=[]
-        for t in self.instances:
-            tweet_features.append(t.features)
-        return tweet_features
+    #         while len(qwrites) < num_instances:
+    #             l=q.get()
+    #             qwrites.append(l)
+    #             outparts.write(l)
+    #         while len(rwrites) < num_instances:
+    #             l=r.get()
+    #             rwrites.append(l)
+    #             outmeta.write(l)
+            
+    #     else:      
+    #         filewriter(self.instances,0)
+            
+    #     outparts.close()
+    #     outmeta.close()
+                
+    # def generate_feature_indexes(self,vocabulary):
+    #     """Generate a dictionary to be used for sparse and sparse binary output."""
+    #     feature_frequency=defaultdict(int)
+    #     vocabulary_out=codecs.open(vocabulary,"w","utf-8")
+    #     self.feature_index={}
+    #     for t in self.instances:
+    #         for feature in t.features:
+    #             feature_frequency[feature] += 1
+        
+    #     for i,feature in enumerate(feature_frequency.keys()):
+    #          self.feature_index[feature]=i+1
+    #          vocabulary_out.write(str(i) + "\t" + feature + "\n")
+
+    # def features2sparsebinary(self,directory,prefix):
+    #     """Write the features to a file in the sparse-binary format."""
+        
+    #     out=open(directory+"instances.txt","w")
+    #     meta_out=codecs.open(directory+"meta.txt","w","utf-8")
+    #     vocabulary_file = directory+"vocabulary.txt","w","utf-8"
+
+    #     def generate_dataline(eventtweets,event):
+    #         for t in eventtweets:
+    #             tweets=t[0]
+    #             tfz=t[1]
+    #             datastring=""
+    #             indexes=[]
+    #             features=[]
+    #             for tweet in tweets:
+    #                 features.extend(tweet.features)
+    #             features=list(set(features))
+    #             for feature in features:
+    #                 indexes.append(self.feature_index[feature])
+    #             indexes=sorted(indexes)
+    #             metatweet=tweets[-1]
+    #             for index in indexes:
+    #                 datastring=datastring + str(index) + ","
+    #             datastring=datastring + metatweet.label + "\n"
+    #             out.write(datastring)
+    #             if metafile:
+    #                 metastring="\t".join(metatweet.meta) + "\t" + " ".join(metatweet.wordsequence) + "\n"
+    #                 meta_out.write(metastring)
+    #         print event,"done"
+
+    #     self.generate_feature_indexes(vocabulary_file)
+    #     for event in self.event_tweets.keys():
+    #         generate_dataline(self.event_tweets[event],event)
+
+    #     out.close() 
+    #     if metafile:            
+    #         meta_out.close()
+    
+    # #turn the tweets into one big document
+    # def features_2_bigdoc(self,outfile):
+    #     outwrite = codecs.open(outfile,"w","utf-8")
+    #     document = []
+    #     for tweet in self.instances:
+    #         document.extend(tweet.features)
+    #     outwrite.write(" ".join(document))
+    #     outwrite.close() 
+
+    # def features_2_lda(self,outfile):
+    #     out = codecs.open(outfile,"w","utf-8")
+    #     for tweet in self.instances:
+    #         line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + "\t" + " ".join(tweet.wordsequence) + "\n"
+    #         out.write(line)
+    #     out.close()
 
     class Tweet:
         """Class containing the features and characteristics of a tweet."""

@@ -10,7 +10,7 @@ Script to generate instances with metadata and features, based on a file with li
 parser = argparse.ArgumentParser(description = "Script to generate instances with metadata and features, based on a file with lines of tweets, and output these in a specified format.")
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
 parser.add_argument('-n', action = 'store', nargs = '+', required = False, help = "the word n-grams that will be generated (for uni- and trigrams give \'1 3\')")
-parser.add_argument('-cn', action = 'store', nargs = '+', required = False, help = "to include character n-grams, give a file with raw (un-frogged) tweets and after this specify the column of the tweet id and the values of \'n\' (anything goes)")
+parser.add_argument('-cn', action = 'store', nargs = '+', required = False, help = "to include character n-grams, specify the values of \'n\'")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, help = "[OPTIONAL] choose to remove features given after this parameter")
 parser.add_argument('-ri', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] remove instances if they contain one of the given words") 
 parser.add_argument('-re', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] remove instances if the do not end with a given hashtag (the given hashtag may still be followed by a URL or other hashtags)")
@@ -18,16 +18,13 @@ parser.add_argument('-rp', action = 'store', required = False, nargs = '+', help
 parser.add_argument('-ur', action = 'store_true', default = False, help = "[OPTIONAL] choose whether url's are normalized")
 parser.add_argument('-us', action = 'store_true', default = False, help = "[OPTIONAL] choose whether usernames are normalized")
 parser.add_argument('-lo', action = 'store_true', default = False, help = "[OPTIONAL] choose whether words are standardized to lower case")
-parser.add_argument('-tl', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] for attaching time-to-event labels to instances, give a time unit (\'minute\', \'day\' or \'hour\')")
 parser.add_argument('-a', action = 'store', required = False, help = "[OPTIONAL] in order to aggregate instances by time the size of the window (in number of tweets) here")
-parser.add_argument('-o', action = 'store', required = True, choices = ["sparse","sparsebin","lcs","big","lda"], help = "specify the output type")
-parser.add_argument('-w', action = 'store', required = True, nargs = '+', help = "specify the target to write output to; for big and lda specify the outfile, for sparse(bin) specify the outfile, the vocabulary file and optionally the metafile and a \'1\' to give the time of a tweet with a given hashtag after the first occurence in time; for lcs give respectively the directory, prefix, dirsize, partsfile and metafile")
-parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done")
+# parser.add_argument('-o', action = 'store', required = True, choices = ["sparse","sparsebin","lcs","big","lda"], help = "specify the output type")
+parser.add_argument('-o', action = 'store', required = True, help = "specify the output file")
+# parser.add_argument('--prefix', action='store', required = False, help = "specify a prefix to characterize files in the directory")
+# parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done while writing to files")
 parser.add_argument('--eos', action = 'store_true', help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed (the marker will be added to previous word)")
-parser.add_argument('--eventhash', action = 'store_true', help = "choose to add a hashtag to event refs for filtering from tweets")
 args = parser.parse_args() 
-output_type = args.o
-target = args.w 
 
 print "Generating features..."
 tf = Tweetsfeatures(args.i)
@@ -52,33 +49,21 @@ if args.n:
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
 
-if args.tl:
-    time_unit = time_labels[0]
-    label_type = time_labels[1]
-    if len(time_labels) > 2:
-        tf.generate_time_label(time_unit,label_type,int(time_labels[2]))
-    else:
-        tf.generate_time_label(time_unit,label_type)
-
-tf.set_meta()
-
 if args.a:
     tf.aggregate_instances(int(args.a))
+tf.set_meta()
 
 print "Writing classifier input..."
-if output_type == "lcs":    
-    target_dir = target[0]
-    prefix = target[1]
-    dirsize = int(target[2])
-    partsfile = target[3]
-    metafile = target[4]
-    tf.features2standard(target_dir, prefix, dirsize, partsfile, metafile, args.a,args.parralel)
-elif output_type == "sparsebin":
-    tf.features2sparsebinary(target[0],target[1],target[2])
-elif output_type == "big":
-    tf.features_2_bigdoc(target[0])
-elif output_type == "lda":
-     tf.features_2_lda(target[0])
+tf.output_features(args.o)
+
+# if output_type == "lcs":    
+#     tf.features2standard(args.d,args.prefix,args.parralel)
+# elif output_type == "sparsebin":
+#     tf.features2sparsebinary(target[0],target[1],target[2])
+# elif output_type == "big":
+#     tf.features_2_bigdoc(target[0])
+# elif output_type == "lda":
+#     tf.features_2_lda(target[0])
 #tf.print_data(outfile)
 
 
