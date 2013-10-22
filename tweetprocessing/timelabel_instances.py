@@ -1,3 +1,11 @@
+    if args.tl:
+    time_unit = time_labels[0]
+    label_type = time_labels[1]
+    if len(time_labels) > 2:
+        tf.generate_time_label(time_unit,label_type,int(time_labels[2]))
+    else:
+        tf.generate_time_label(time_unit,label_type)
+
     # def generate_tfz(self,agg=False):
     #     """
     #     Add time-from zero in days information to tweets based on their time of posting
