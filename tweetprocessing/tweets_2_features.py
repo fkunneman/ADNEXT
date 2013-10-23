@@ -26,7 +26,6 @@ parser.add_argument('-o', action = 'store', required = True, help = "specify the
 parser.add_argument('--eos', action = 'store_true', help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed (the marker will be added to previous word)")
 args = parser.parse_args() 
 
-print "Generating features..."
 tf = Tweetsfeatures(args.i)
 tf.set_wordsequences(lower=args.lo)
 if args.ri:
@@ -40,7 +39,8 @@ if args.ur:
     tf.normalize("url")
 if args.us:
     tf.normalize("user")
-    
+
+print "Generating features..."    
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
@@ -49,7 +49,9 @@ if args.n:
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
 
+
 if args.a:
+print "Aggregating instances..."
     tf.aggregate_instances(int(args.a))
 tf.set_meta()
 
@@ -65,5 +67,3 @@ tf.output_features(args.o)
 # elif output_type == "lda":
 #     tf.features_2_lda(target[0])
 #tf.print_data(outfile)
-
-
