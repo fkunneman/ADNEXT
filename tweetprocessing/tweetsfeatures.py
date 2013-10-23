@@ -152,10 +152,8 @@ class Tweetsfeatures():
         #make list of raw tweets        
         for t in self.instances:
             text = t.text
-            print text
             if ignore:
                 text = rm_string([text],ignore)
-            print text
             for n_val in n:
                 t.features.extend(make_char_ngrams(text,int(n_val)))
   
@@ -263,15 +261,15 @@ class Tweetsfeatures():
         self.instances.sort(key = lambda i: (i.get_datetime))
         windows = []
         features = []
+        i = 0
         while i+size < len(self.instances):
-            print i
             window = self.instances[i+size]
             if len(features) == 0:
                 for instance in self.instances[i:i+size]:
                     features.extend(instance.features)
             else:
-                features = features[len(self.instances[i-1]):]
-                features.append(instance[i+size].features)
+                features = features[len(self.instances[i-1].features):]
+                features.extend(self.instances[i+size].features)
             window.features = features
             windows.append(window)
             i+=1
