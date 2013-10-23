@@ -273,6 +273,7 @@ class Tweetsfeatures():
                 features.extend(instance.features)
             window.features = features
             windows.append(window)
+            i+=1
         self.instances = windows
 
     def set_meta(self):
