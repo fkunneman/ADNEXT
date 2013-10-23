@@ -283,7 +283,7 @@ class Tweetsfeatures():
     def output_features(self, outfile):
         out = codecs.open(outfile,"w","utf-8")
         for i in self.instances:
-            out.write("\t".join(i.meta) + "\t" + "|".join(self.features) + "\n")
+            out.write("\t".join(i.meta) + "\t" + " ".join(self.features) + "\n")
         out.close()
 
     # def features2standard(self, directory, prefix, parralel=False):
@@ -436,7 +436,6 @@ class Tweetsfeatures():
             self.date=str(tokens[3])
             self.time=str(tokens[4])
             self.text=tokens[5]
-            self.tte='-'
             self.wordsequence=[]
             self.features = []
 
