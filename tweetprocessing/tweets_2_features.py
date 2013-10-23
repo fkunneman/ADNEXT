@@ -30,7 +30,7 @@ print "Generating features..."
 tf = Tweetsfeatures(args.i)
 
 if args.ri:
-    tf.filter_tweets(remove_instances)
+    tf.filter_tweets(args.ri)
 if args.re:
     tf.filter_tweets_reflexive_hashtag(args.re)
 if args.rp:
