@@ -141,6 +141,7 @@ class Tweetsfeatures():
         def rm_string(inputstrings,rmstrings):
             new_strings = []
             for rmstring in rmstrings:
+                print rmstring
                 keep_inputstring = []
                 for inputstring in inputstrings:
                     new_inputstrings = [inputstring]
