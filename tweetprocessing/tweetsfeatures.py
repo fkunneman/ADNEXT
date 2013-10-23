@@ -157,7 +157,7 @@ class Tweetsfeatures():
 
         #make list of raw tweets        
         for t in self.instances:
-            text = [tokens[-1]]
+            text = self.text
             if ignore:
                 text = rm_string(text,ignore)
             for n_val in n:
