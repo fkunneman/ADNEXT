@@ -271,6 +271,7 @@ class Tweetsfeatures():
             features = []
             for instance in self.instances[i:i+size]:
                 features.extend(instance.features)
+            print features
             window.features = features
             windows.append(window)
             i+=1
