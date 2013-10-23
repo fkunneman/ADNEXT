@@ -51,7 +51,7 @@ if args.cn:
 
 
 if args.a:
-print "Aggregating instances..."
+    print "Aggregating instances..."
     tf.aggregate_instances(int(args.a))
 tf.set_meta()
 

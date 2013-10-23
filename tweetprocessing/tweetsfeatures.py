@@ -284,7 +284,7 @@ class Tweetsfeatures():
     def output_features(self, outfile):
         out = codecs.open(outfile,"w","utf-8")
         for i in self.instances:
-            out.write("\t".join(i.meta) + "\t" + " ".join(self.features) + "\n")
+            out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
         out.close()
 
     # def features2standard(self, directory, prefix, parralel=False):
@@ -441,7 +441,7 @@ class Tweetsfeatures():
             self.features = []
 
         def set_meta(self):
-            self.meta=[self.id,self.event,self.label,self.tte,self.user,self.date,self.time]
+            self.meta=[self.id,self.label,self.user,self.date,self.time]
 
         def get_datetime(self):
             return time_functions.return_datetime(self.date,self.time,"vs")
