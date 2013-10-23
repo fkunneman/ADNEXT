@@ -157,8 +157,10 @@ class Tweetsfeatures():
         #make list of raw tweets        
         for t in self.instances:
             text = t.text
+            print text
             if ignore:
                 text = rm_string(text,ignore)
+            print text
             for n_val in n:
                 t.features.extend(make_char_ngrams(text,int(n_val)))
   
@@ -271,7 +273,7 @@ class Tweetsfeatures():
             features = []
             for instance in self.instances[i:i+size]:
                 features.extend(instance.features)
-            print features
+#            print features
             window.features = features
             windows.append(window)
             i+=1
