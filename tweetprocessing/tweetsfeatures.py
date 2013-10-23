@@ -262,13 +262,16 @@ class Tweetsfeatures():
         #sort instances in time
         self.instances.sort(key = lambda i: (i.get_datetime))
         windows = []
-        i = 0
+        features = []
         while i+size < len(self.instances):
+            print i
             window = self.instances[i+size]
-            features = []
-            for instance in self.instances[i:i+size]:
-                features.extend(instance.features)
-#            print features
+            if len(features) == 0:
+                for instance in self.instances[i:i+size]:
+                    features.extend(instance.features)
+            else:
+                features = features[len(self.instances[i-1]):]
+                features.append(instance[i+size].features)
             window.features = features
             windows.append(window)
             i+=1
