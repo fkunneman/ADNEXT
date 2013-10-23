@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 print "Generating features..."
 tf = Tweetsfeatures(args.i)
-
+tf.set_wordsequences(lower=args.lo)
 if args.ri:
     tf.filter_tweets(args.ri)
 if args.re:

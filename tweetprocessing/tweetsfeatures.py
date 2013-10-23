@@ -58,15 +58,14 @@ class Tweetsfeatures():
         hashtag=re.compile(r"#")
         url=re.compile(r"http:")
         for t in self.instances:
+            if lower: 
+                text = text.lower()
             words=t.text.split(" ") 
             for word in words:
                 if (ht and hashtag.search(word)) or (u and url.search(word)):
                     continue
                 else:
-                    if lower:
-                        word=word.lower()
                     t.wordsequence.append(word)        
-            self.instances.append(t)
 
     def normalize(self,cat):
         """Normalize diverse word types like url's and usernames to one standard form"""
@@ -157,7 +156,7 @@ class Tweetsfeatures():
 
         #make list of raw tweets        
         for t in self.instances:
-            text = self.text
+            text = t.text
             if ignore:
                 text = rm_string(text,ignore)
             for n_val in n:
