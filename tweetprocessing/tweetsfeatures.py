@@ -139,20 +139,14 @@ class Tweetsfeatures():
             return ngrams
 
         def rm_string(inputstrings,rmstrings):
-            new_strings = []
             for rmstring in rmstrings:
-                print rmstring
-                keep_inputstring = []
+                new_inputstrings = []
                 for inputstring in inputstrings:
-                    new_inputstrings = [inputstring]
-                    while re.search(rmstring,new_inputstrings[-1]):
-                        new_inputstrings_rear = [new_inputstrings[-1][:new_inputstrings[-1].index(rmstring)]] + [new_inputstrings[-1][new_inputstrings[-1].index(rmstring)+len(rmstring):]]
-                        if len(new_inputstrings) > 1:
-                            new_inputstrings = new_inputstrings[:-1] + new_inputstrings_rear
-                        else:
-                            new_inputstrings = new_inputstrings_rear
-                    keep_inputstring.extend(new_inputstrings)
-                inputstrings = keep_inputstring
+                    if re.search(rmstring,inputstring):
+                        new_inputstrings.extend(inputstring.split(rmstring))
+                    else:
+                        new_inputstrings.append(inputstring)
+                inputstrings = new_inputstrings
             return inputstrings
 
         #make list of raw tweets        
@@ -160,7 +154,7 @@ class Tweetsfeatures():
             text = t.text
             print text
             if ignore:
-                text = rm_string(text,ignore)
+                text = rm_string([text],ignore)
             print text
             for n_val in n:
                 t.features.extend(make_char_ngrams(text,int(n_val)))
