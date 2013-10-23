@@ -59,7 +59,7 @@ class Tweetsfeatures():
         url=re.compile(r"http:")
         for t in self.instances:
             if lower: 
-                text = text.lower()
+                t.text = t.text.lower()
             words=t.text.split(" ") 
             for word in words:
                 if (ht and hashtag.search(word)) or (u and url.search(word)):
@@ -160,7 +160,7 @@ class Tweetsfeatures():
             if ignore:
                 text = rm_string(text,ignore)
             for n_val in n:
-                tweet.features.extend(make_char_ngrams(text,int(n_val)))
+                t.features.extend(make_char_ngrams(text,int(n_val)))
   
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an event reference or RT"""
