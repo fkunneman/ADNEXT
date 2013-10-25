@@ -13,7 +13,7 @@ from pylab import *
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,metalist,directory=False, vocabulary=False):
+    def __init__(self,trainlist,testlist,metalist=False,directory=False, vocabulary=False):
         self.training=trainlist
         self.test=testlist
         self.meta=metalist
@@ -241,7 +241,7 @@ class Classifier():
     def perform_svm(self,tf):
         #generate sparse input
         training,test = self.index_features(top_frequency = tf)
-        training labels = [x["label"] for x in self.training]
+        labels = [x["label"] for x in self.training]
         clf = svm.SVC()
         clf.fit(training,labels)
 

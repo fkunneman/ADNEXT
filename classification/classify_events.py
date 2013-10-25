@@ -42,9 +42,9 @@ for i,event in enumerate(events):
         train_events = events[:i] + events[i+1:]
     except IndexError:
         train_events = events[:i]
-    train = list(itertools.chain(event_instances[x] for x in train_events))
+    train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
-    cl = classifier.Classifier(train,test)
+    cl = Classifier(train,test)
     cl.perform_svm(args.f)
 
 # elif validation=="looe":
