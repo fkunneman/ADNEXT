@@ -3,6 +3,7 @@
 import argparse
 from classifier import Classifier
 from collections import defaultdict
+import codecs
 
 """
 
@@ -29,8 +30,7 @@ for ef in args.i:
     instances_raw=instance_file.readlines()
     instance_file.close()
     depth = args.depth * -1
-    event = ef.split("/")[depth:]
-    print event
+    event = "/".join(ef.split("/")[depth:])
     for instance in instances_raw:    
         values = instance.strip().split("\t")
         event_instances[event].append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})

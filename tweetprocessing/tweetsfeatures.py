@@ -166,7 +166,7 @@ class Tweetsfeatures():
             black=False
             for w in t.wordsequence:
                 for b in blacklist:
-                    if re.search(b,w,re.IGNORECASE):
+                    if re.match(b,w,re.IGNORECASE):
                         black=True
             if not black:
                 templist.append(t)
