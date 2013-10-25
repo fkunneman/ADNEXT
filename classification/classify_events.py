@@ -4,6 +4,7 @@ import argparse
 from classifier import Classifier
 from collections import defaultdict
 import codecs
+import itertools
 
 """
 
@@ -35,8 +36,16 @@ for ef in args.i:
         values = instance.strip().split("\t")
         event_instances[event].append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})
 
-for event in event_instances.keys():
-    print event
+events = event_instances.keys()
+for i,event in enumerate(events):
+    try:
+        train_events = events[:i] + events[i+1:]
+    except IndexError:
+        train_events = events[:i]
+    train = list(itertools.chain(event_instances[x] for x in train_events))
+    test = event_instances[event]
+    cl = classifier.Classifier(train,test)
+    cl.perform_svm(args.f)
 
 # elif validation=="looe":
 #     print "generating train-test"
