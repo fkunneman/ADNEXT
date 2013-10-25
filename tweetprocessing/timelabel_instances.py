@@ -20,35 +20,27 @@ parser.add_argument('-n', action = 'store', required = True, help = "event name"
 parser.add_argument('-u', action = 'store', choices = ["day","hour","minute"], default='day', help = "specify the unit of time for the timelabel")
 parser.add_argument('-b', action = 'store', type=int, required = False, help = "for the inclusion of an early" + 
     "class, specify before which anount of time units this label is given")
-parser.add_argument('--header', action = 'store_true', help="ignore a header")
 args = parser.parse_args() 
 
-tweetfile = codecs.open(args.i,"r","utf-8")
-outfile = codecs.open(args.o,"w","utf-8")
+tweetfile = codecs.open(args.i,"utf-8","r")
+outfile = codecs.open(args.o,"utf-8","r")
 
 eventhash = time_functions.generate_event_time_hash(args.e)
 event_time = eventhash[args.n]
-if args.header:
-    tweets = tweetfile.readlines()[1:]
-else:
-    tweets = tweetfile.readlines()
-for tweet in tweets:
+for tweet in tweetfile.readlines():
     tokens = tweet.split("\t")
     time = time_functions.return_datetime(tokens[args.d],tokens[args.t],"vs")
     #Extract the time difference between the tweet and the event 
-    if time < event_time[0]:
-        tweet_event_time=time_functions.timerel(event_time[0],time,args.u) * -1
+    if tweet_datetime < event_datetime_begin:
+        tweet_event_time=time_functions.timerel(event_datetime_begin,tweet_datetime,timeunit) * -1
         if args.b and tweet_event_time < args.b:
             label="early"
         else:
             label=str(tweet_event_time)
     else:
-        if time < event_time[1]:
+        if tweet_datetime < event_datetime_end:
             label="during"
         else:
             label="after"
-    tokens = [label] + tokens
+    tokens = label + tokens
     outfile.write("\t".join(tokens))
-
-outfile.close()
-tweetfile.close()

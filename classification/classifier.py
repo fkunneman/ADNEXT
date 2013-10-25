@@ -6,6 +6,9 @@ import os
 from collections import defaultdict
 import math
 import numpy
+from sklearn import svm
+from scipy.sparse import *
+from scipy import *
 from pylab import *
 
 class Classifier():
@@ -17,8 +20,38 @@ class Classifier():
         self.directory=directory
         self.feature_info=vocabulary
 
+    def index_features(self,top_frequency = -1,ind = 0):
+        feature_frequency=defaultdict(int)
+        self.feature_index={}      
+        for instance in self.training:
+            for feature in instance["features"]:
+                feature_frequency[feature] += 1
+        feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
+        for i,feature in enumerate(feature_frequency_sorted[:top_frequency]):
+            self.feature_index[feature]=i+ind
+        zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
+        instances = self.training + self.test
+        for instance in instances:
+            instance["sparse"] = zerolist
+            feature_freq = defaultdict(int)
+            for feature in instance["features"]:
+                try:
+                    index = self.feature_index[feature]
+                    feature_freq[index] += 1
+                except KeyError:
+                    continue
+            for index in feature_freq.keys():
+                instance["sparse"][index] = feature_freq[index]
+        training_instances = [x["sparse"] for x in self.training]
+        training = csr_matrix(training_instances,dtype=float64)
+        test_instances = [x["sparse"] for x in self.test]
+        test = csr_matrix(test_instances,dtype=float64)
+        return training,test
+
     def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):
-        if algorithm=="knn":
+        if algorithm=="svm":
+            self.perform_svm()
+        elif algorithm=="knn":
             self.perform_knn(arguments,prune,select,timelabels)
         elif algorithm=="lcs":
             self.perform_lcs(arguments,prune,select,timelabels)
@@ -204,6 +237,13 @@ class Classifier():
             self.adjust_index_space(selected_features,feature_weights,num_features)
         elif classifier == "lcs":
             self.stoplist.extend(selected_features[num_features:])
+
+    def perform_svm(self,tf):
+        #generate sparse input
+        training,test = self.index_features(top_frequency = tf)
+        training labels = [x["label"] for x in self.training]
+        clf = svm.SVC()
+        clf.fit(training,labels)
 
     def perform_lcs(self,args,prune,select,timelabels):
         
