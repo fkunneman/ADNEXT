@@ -20,7 +20,7 @@ class Classifier():
         self.directory=directory
         self.feature_info=vocabulary
 
-    def index_features(self,top_frequency = -1,ind = 0):
+    def index_features(self,top_frequency = -1,ind = 1):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
         for instance in self.training:
@@ -29,10 +29,10 @@ class Classifier():
         feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
         for i,feature in enumerate(feature_frequency_sorted[:top_frequency]):
             self.feature_info[feature]=i+ind
-        zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
+        #zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
         instances = self.training + self.test
         for instance in instances:
-            instance["sparse"] = zerolist
+            instance["sparse"] = []
             feature_freq = defaultdict(int)
             for feature in instance["features"]:
                 try:
@@ -40,8 +40,8 @@ class Classifier():
                     feature_freq[index] += 1
                 except KeyError:
                     continue
-            for index in feature_freq.keys():
-                instance["sparse"][index] = feature_freq[index]
+            for index in sorted(feature_freq.keys()):
+                instance["sparse"].append(index)
         # training_instances = [x["sparse"] for x in self.training]
         # training = csr_matrix(training_instances,dtype=float64)
         # test_instances = [x["sparse"] for x in self.test]
