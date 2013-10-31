@@ -20,39 +20,6 @@ class Classifier():
         self.directory=directory
         self.feature_info=vocabulary
 
-    def index_features(self,top_frequency = -1,ind = 1):
-        feature_frequency=defaultdict(int)
-        self.feature_info={}      
-        for instance in self.training:
-            for feature in instance["features"]:
-                feature_frequency[feature] += 1
-        #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
-        for i,feature in enumerate(feature_frequency.keys()):
-            self.feature_info[feature]=i+ind
-        #zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
-#        print self.feature_info
-        instances = self.training + self.test
-        for instance in instances:
-            instance["sparse"] = []
-            feature_freq = defaultdict(int)
-            for feature in instance["features"]:
-#                print feature
-                try:
-                    index = self.feature_info[feature]
-                    #print index
-                    feature_freq[index] += 1
-                except KeyError:
-                    #print "except"
-                    continue
- #           print feature_freq
-            for index in sorted(feature_freq.keys()):
-                instance["sparse"].append(index)
-        # training_instances = [x["sparse"] for x in self.training]
-        # training = csr_matrix(training_instances,dtype=float64)
-        # test_instances = [x["sparse"] for x in self.test]
-        # test = csr_matrix(test_instances,dtype=float64)
-        # return training,test
-
     def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):
         if algorithm=="svm":
             self.perform_svm()
@@ -63,28 +30,126 @@ class Classifier():
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
 
+    def index_features(self,top_frequency = -1,ind = 1):
+        feature_frequency=defaultdict(int)
+        self.feature_info={}      
+        for instance in self.training:
+            for feature in instance["features"]:
+                feature_frequency[feature] += 1
+        #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
+        for i,feature in enumerate(feature_frequency.keys()):
+            self.feature_info[feature]=i+ind
+        #zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
+        instances = self.training + self.test
+        for instance in instances:
+            instance["sparse"] = []
+            feature_freq = defaultdict(int)
+            for feature in instance["features"]:
+                try:
+                    index = self.feature_info[feature]
+                    feature_freq[index] += 1
+                except KeyError:
+                    continue
+            for index in sorted(feature_freq.keys()):
+                instance["sparse"].append(index)
+        # training_instances = [x["sparse"] for x in self.training]
+        # training = csr_matrix(training_instances,dtype=float64)
+        # test_instances = [x["sparse"] for x in self.test]
+        # test = csr_matrix(test_instances,dtype=float64)
+        # return training,test
+
+    def ltqnorm(p):
+        """
+        Modified from the author's original perl code (original comments follow below)
+        by dfield@yahoo-inc.com.  May 3, 2004.
+
+        Lower tail quantile for standard normal distribution function.
+
+        This function returns an approximation of the inverse cumulative
+        standard normal distribution function.  I.e., given P, it returns
+        an approximation to the X satisfying P = Pr{Z <= X} where Z is a
+        random variable from the standard normal distribution.
+
+        The algorithm uses a minimax approximation by rational functions
+        and the result has a relative error whose absolute value is less
+        than 1.15e-9.
+
+        Author:      Peter John Acklam
+        Time-stamp:  2000-07-19 18:26:14
+        E-mail:      pjacklam@online.no
+        WWW URL:     http://home.online.no/~pjacklam
+        """
+
+        if p <= 0 or p >= 1:
+            # The original perl code exits here, we'll throw an exception instead
+            raise ValueError( "Argument to ltqnorm %f must be in open interval (0,1)" % p )
+
+        # Coefficients in rational approximations.
+        a = (-3.969683028665376e+01,  2.209460984245205e+02, \
+             -2.759285104469687e+02,  1.383577518672690e+02, \
+             -3.066479806614716e+01,  2.506628277459239e+00)
+        b = (-5.447609879822406e+01,  1.615858368580409e+02, \
+             -1.556989798598866e+02,  6.680131188771972e+01, \
+             -1.328068155288572e+01 )
+        c = (-7.784894002430293e-03, -3.223964580411365e-01, \
+             -2.400758277161838e+00, -2.549732539343734e+00, \
+              4.374664141464968e+00,  2.938163982698783e+00)
+        d = ( 7.784695709041462e-03,  3.224671290700398e-01, \
+              2.445134137142996e+00,  3.754408661907416e+00)
+
+        # Define break-points.
+        plow  = 0.02425
+        phigh = 1 - plow
+
+        # Rational approximation for lower region:
+        if p < plow:
+           q  = math.sqrt(-2*math.log(p))
+           return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+                   ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+
+        # Rational approximation for upper region:
+        if phigh < p:
+           q  = math.sqrt(-2*math.log(1-p))
+           return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+                    ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+
+        # Rational approximation for central region:
+        q = p - 0.5
+        r = q*q
+        return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
+               (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
+
     def scale_features(self):
         label_frequency = defaultdict(int)
         feature_label_frequency = defaultdict(lambda : defaultdict(int))
+        feature_label_bns = defaultdict(lambda : {})
         #for each label and feature
         for instance in self.training:     
             label = instance["label"]
             label_frequency[label] += 1
-            print instance["sparse"]
-            # for feature in list(set(instance["features"])):
-            #     feature_label_frequency[feature][label] += 1 
-        #make feature vocabulary
-        # if self.feature_info == False:
-        #     self.feature_info = {}
-        #     for instance in self.training
-        # for instance 
-
+            for feature in instance["sparse"]:
+                feature_label_frequency[feature][label] += 1
+        for feature in feature_label_frequency.keys():
+            feature_labels = feature_label_frequency[feature].keys()
+            for i,label in enumerate(feature_labels):
+                tp = feature_label_frequency[feature][label]
+                pos = label_frequency[label]
+                fp =  sum([feature_label_frequency[feature][feature_labels[x]] for x in feature_labels[:i] + feature_labels[:i]])
+                neg = len(self.training) - pos
+                tpr = tp/pos
+                fpr = fp/neg
+                if tpr < 0.0005: 
+                    tpr = 0.0005
+                elif tpr > (1-0.0005): 
+                    tpr = (1-0.0005)
+                if fpr < 0.0005: 
+                    fpr = 0.0005
+                elif fpr > (1-0.0005): 
+                    ftpr = (1-0.0005)
+                print tpr, ltqnorm(tpr), fpr, lrqnorm(fpr), ltqnorm(tpr) - lrqnorm(fpr) 
         #for each instance
         #for each token
         #calculate BNS
-
-
-
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
