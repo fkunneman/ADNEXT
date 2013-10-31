@@ -26,21 +26,25 @@ class Classifier():
         for instance in self.training:
             for feature in instance["features"]:
                 feature_frequency[feature] += 1
-        feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
-        for i,feature in enumerate(feature_frequency_sorted[:top_frequency]):
+        #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
+        for i,feature in enumerate(feature_frequency.keys()):
             self.feature_info[feature]=i+ind
         #zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
+#        print self.feature_info
         instances = self.training + self.test
         for instance in instances:
             instance["sparse"] = []
             feature_freq = defaultdict(int)
             for feature in instance["features"]:
+#                print feature
                 try:
                     index = self.feature_info[feature]
+                    #print index
                     feature_freq[index] += 1
                 except KeyError:
+                    #print "except"
                     continue
-            print feature_freq
+ #           print feature_freq
             for index in sorted(feature_freq.keys()):
                 instance["sparse"].append(index)
         # training_instances = [x["sparse"] for x in self.training]
