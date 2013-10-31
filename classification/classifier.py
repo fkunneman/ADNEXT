@@ -6,7 +6,7 @@ import os
 from collections import defaultdict
 import math
 import numpy
-from sklearn import svm
+#from sklearn import svm
 from scipy.sparse import *
 from scipy import *
 from pylab import *
@@ -58,7 +58,7 @@ class Classifier():
         # test = csr_matrix(test_instances,dtype=float64)
         # return training,test
 
-    def ltqnorm(p):
+    def ltqnorm(self,p):
         """
         Modified from the author's original perl code (original comments follow below)
         by dfield@yahoo-inc.com.  May 3, 2004.
@@ -134,7 +134,10 @@ class Classifier():
             for i,label in enumerate(feature_labels):
                 tp = feature_label_frequency[feature][label]
                 pos = label_frequency[label]
-                fp =  sum([feature_label_frequency[feature][feature_labels[x]] for x in feature_labels[:i] + feature_labels[:i]])
+                try:
+                    fp = sum([feature_label_frequency[feature][x] for x in feature_labels[:i] + feature_labels[i+1:]])
+                except IndexError:
+                    fp = sum([feature_label_frequency[feature][x] for x in feature_labels[:i]])
                 neg = len(self.training) - pos
                 tpr = tp/pos
                 fpr = fp/neg
@@ -146,7 +149,7 @@ class Classifier():
                     fpr = 0.0005
                 elif fpr > (1-0.0005): 
                     ftpr = (1-0.0005)
-                print tpr, ltqnorm(tpr), fpr, lrqnorm(fpr), ltqnorm(tpr) - lrqnorm(fpr) 
+                print tpr, self.ltqnorm(tpr), fpr, self.ltqnorm(fpr), self.ltqnorm(tpr) - self.ltqnorm(fpr) 
         #for each instance
         #for each token
         #calculate BNS
