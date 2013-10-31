@@ -22,13 +22,13 @@ class Classifier():
 
     def index_features(self,top_frequency = -1,ind = 0):
         feature_frequency=defaultdict(int)
-        self.feature_index={}      
+        self.feature_info={}      
         for instance in self.training:
             for feature in instance["features"]:
                 feature_frequency[feature] += 1
         feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
         for i,feature in enumerate(feature_frequency_sorted[:top_frequency]):
-            self.feature_index[feature]=i+ind
+            self.feature_info[feature]=i+ind
         zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
         instances = self.training + self.test
         for instance in instances:
@@ -36,17 +36,17 @@ class Classifier():
             feature_freq = defaultdict(int)
             for feature in instance["features"]:
                 try:
-                    index = self.feature_index[feature]
+                    index = self.feature_info[feature]
                     feature_freq[index] += 1
                 except KeyError:
                     continue
             for index in feature_freq.keys():
                 instance["sparse"][index] = feature_freq[index]
-        training_instances = [x["sparse"] for x in self.training]
-        training = csr_matrix(training_instances,dtype=float64)
-        test_instances = [x["sparse"] for x in self.test]
-        test = csr_matrix(test_instances,dtype=float64)
-        return training,test
+        # training_instances = [x["sparse"] for x in self.training]
+        # training = csr_matrix(training_instances,dtype=float64)
+        # test_instances = [x["sparse"] for x in self.test]
+        # test = csr_matrix(test_instances,dtype=float64)
+        # return training,test
 
     def classify(self, algorithm, arguments, prune=False, select=False, timelabels=False):
         if algorithm=="svm":
@@ -57,7 +57,30 @@ class Classifier():
             self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
-  
+
+    def scale_features(self):
+        label_frequency = defaultdict(int)
+        feature_label_frequency = defaultdict(lambda : defaultdict(int))
+        #for each label and feature
+        for instance in self.training:     
+            label = instance["label"]
+            label_frequency[label] += 1
+            print instance["sparse"]
+            # for feature in list(set(instance["features"])):
+            #     feature_label_frequency[feature][label] += 1 
+        #make feature vocabulary
+        # if self.feature_info == False:
+        #     self.feature_info = {}
+        #     for instance in self.training
+        # for instance 
+
+        #for each instance
+        #for each token
+        #calculate BNS
+
+
+
+
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
         feature_status={}        
