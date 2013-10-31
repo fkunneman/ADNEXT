@@ -244,6 +244,11 @@ class Classifier():
         labels = [x["label"] for x in self.training]
         clf = svm.SVC()
         clf.fit(training,labels)
+        #print clf.n_support_
+        #print clf.predict(test)
+        for i,t in enumerate(self.test):        
+            print t["label"],clf.predict(test[i])
+        
 
     def perform_lcs(self,args,prune,select,timelabels):
         
