@@ -40,6 +40,7 @@ class Classifier():
                     feature_freq[index] += 1
                 except KeyError:
                     continue
+            print feature_freq
             for index in sorted(feature_freq.keys()):
                 instance["sparse"].append(index)
         # training_instances = [x["sparse"] for x in self.training]
