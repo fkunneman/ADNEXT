@@ -45,7 +45,9 @@ for i,event in enumerate(events):
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
     cl = Classifier(train,test)
-    cl.perform_svm(args.f)
+    cl.index_features()
+    cl.scale_features()
+    #cl.perform_svm(args.f)
 
 # elif validation=="looe":
 #     print "generating train-test"
