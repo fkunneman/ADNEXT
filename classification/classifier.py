@@ -172,22 +172,21 @@ class Classifier():
         #adapt instance-features
         outputdirs = {}
         for label in labels:
-            outputdirs[label] = self.directory + label + "/"
+            d = self.directory + label + "/"
+            os.system("mkdir " + d)
+            outputdirs[label] = d
         for instance in self.training:
             feature_freq = defaultdict(int)
-            for feature in instance["sparse"]:
-                    feature_freq[index] += 1
-                except KeyError:
-                    continue
             for label in labels:
                 outfile = open(outputdirs[label] + "train","a")
                 inst_label = instance["label"]
+                features = list(set(instance["sparse"]))
                 if inst_label == label:
                     outlabel = "1"
                 else:
                     outlabel = "-1"
                 outfile.write(outlabel)
-                for index in sorted(feature_freq.keys()):
+                for index in sorted(features):
                     bns = feature_label_bns[index][label]
                     outfile.write(" " + str(index) + ":" + str(bns))
                 outfile.write("\n")
