@@ -119,16 +119,18 @@ class Classifier():
         return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
                (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
 
-    def scale_features(self):
+    def scale_features(self,positive_label):
         label_frequency = defaultdict(int)
         feature_label_frequency = defaultdict(lambda : defaultdict(int))
         feature_label_bns = defaultdict(lambda : {})
-        #for each label and feature
+        #obtain feature and label frequencies
         for instance in self.training:     
             label = instance["label"]
             label_frequency[label] += 1
             for feature in instance["sparse"]:
                 feature_label_frequency[feature][label] += 1
+        #generate bns-values per feature-label pair
+        labels = label_frequency.keys()
         for feature in feature_label_frequency.keys():
             feature_labels = feature_label_frequency[feature].keys()
             for i,label in enumerate(feature_labels):
@@ -149,10 +151,38 @@ class Classifier():
                     fpr = 0.0005
                 elif fpr > (1-0.0005): 
                     ftpr = (1-0.0005)
-                print tpr, self.ltqnorm(tpr), fpr, self.ltqnorm(fpr), self.ltqnorm(tpr) - self.ltqnorm(fpr) 
-        #for each instance
-        #for each token
-        #calculate BNS
+                feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+            other_labels = list(set(labels) - set(feature_labels))
+            for label in other_labels:
+                tp = 0
+                pos = label_frequency[label]
+                fp = sum([feature_label_frequency[feature][x] for x in feature_labels])
+                neg = len(self.training) - pos
+                tpr = tp/pos
+                fpr = fp/neg
+                if tpr < 0.0005: 
+                    tpr = 0.0005
+                elif tpr > (1-0.0005): 
+                    tpr = (1-0.0005)
+                if fpr < 0.0005: 
+                    fpr = 0.0005
+                elif fpr > (1-0.0005): 
+                    ftpr = (1-0.0005)     
+                feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+        #adapt instance-features
+        outputdirs = {}
+        for label in labels:
+            outputdirs[label] = self.directory + label + "/"
+        for instance in self.training:
+            for feature in instance["sparse"]
+                try:
+                    # for label in labels:
+                    bns = feature_label_bns[feature][label] = self.feature_info[feature]
+                    feature_freq[index] += 1
+                except KeyError:
+                    continue
+            for index in sorted(feature_freq.keys()):
+                instance["sparse"].append(index)
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
