@@ -176,14 +176,22 @@ class Classifier():
         for instance in self.training:
             feature_freq = defaultdict(int)
             for feature in instance["sparse"]:
-                try:
-                    # for label in labels:
-                    bns = feature_label_bns[feature][label] = self.feature_info[feature]
                     feature_freq[index] += 1
                 except KeyError:
                     continue
-            for index in sorted(feature_freq.keys()):
-                instance["sparse"].append(index)
+            for label in labels:
+                outfile = open(outputdirs[label] + "train","a")
+                inst_label = instance["label"]
+                if inst_label == label:
+                    outlabel = "1"
+                else:
+                    outlabel = "-1"
+                outfile.write(outlabel)
+                for index in sorted(feature_freq.keys()):
+                    bns = feature_label_bns[index][label]
+                    outfile.write(" " + str(index) + ":" + str(bns))
+                outfile.write("\n")
+                outfile.close()
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
