@@ -119,7 +119,7 @@ class Classifier():
         return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
                (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
 
-    def scale_features(self,positive_label):
+    def scale_features(self):
         label_frequency = defaultdict(int)
         feature_label_frequency = defaultdict(lambda : defaultdict(int))
         feature_label_bns = defaultdict(lambda : {})
@@ -174,7 +174,8 @@ class Classifier():
         for label in labels:
             outputdirs[label] = self.directory + label + "/"
         for instance in self.training:
-            for feature in instance["sparse"]
+            feature_freq = defaultdict(int)
+            for feature in instance["sparse"]:
                 try:
                     # for label in labels:
                     bns = feature_label_bns[feature][label] = self.feature_info[feature]

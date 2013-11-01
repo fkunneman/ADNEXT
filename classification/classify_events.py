@@ -44,7 +44,7 @@ for i,event in enumerate(events):
         train_events = events[:i]
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
-    cl = Classifier(train,test)
+    cl = Classifier(train,test,directory = args.d)
     cl.index_features()
     cl.scale_features()
     #cl.perform_svm(args.f)
