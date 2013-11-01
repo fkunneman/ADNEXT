@@ -202,12 +202,12 @@ class Classifier():
                 else:
                     outlabel = "-1"
                 outfile.write(outlabel)
-                for index in sorted(features):
-                    try:
-                        bns = feature_label_bns[index][label]
-                        outfile.write(" " + str(index) + ":" + str(bns))
-                    except KeyError:
-                        continue
+                #for index in sorted(features):
+                #    try:
+                #        bns = feature_label_bns[index][label]
+                #        outfile.write(" " + str(index) + ":" + str(bns))
+                #    except KeyError:
+                #        continue
                 outfile.write("\n")
                 outfile.close()
 
