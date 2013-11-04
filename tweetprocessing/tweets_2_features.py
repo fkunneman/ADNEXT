@@ -28,6 +28,7 @@ args = parser.parse_args()
 
 tf = Tweetsfeatures(args.i)
 tf.set_wordsequences(lower=args.lo)
+
 if args.ri:
     tf.filter_tweets(args.ri)
 if args.re:
@@ -48,7 +49,6 @@ if args.n:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
-
 
 # if args.a:
 #     print "Aggregating instances..."
