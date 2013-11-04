@@ -151,6 +151,7 @@ class Classifier():
                     fpr = 0.0005
                 elif fpr > (1-0.0005): 
                     ftpr = (1-0.0005)
+                print tpr,fpr
                 feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
             other_labels = list(set(labels) - set(feature_labels))
             for label in other_labels:
@@ -167,7 +168,8 @@ class Classifier():
                 if fpr < 0.0005: 
                     fpr = 0.0005
                 elif fpr > (1-0.0005): 
-                    ftpr = (1-0.0005)     
+                    fpr = (1-0.0005)     
+                print tpr,fpr
                 feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
         #adapt instance-features
         outputdirs = {}
