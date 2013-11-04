@@ -74,7 +74,8 @@ for i,event in enumerate(events):
     eventdir = args.d + event + "/"
     os.system("mkdir " + eventdir)
     cl = Classifier(train,test,directory = eventdir)
-    
+    if args.f:
+        cl.top_features[args.f]
     cl.index_features()
     cl.scale_features()
     #cl.perform_svm(args.f)

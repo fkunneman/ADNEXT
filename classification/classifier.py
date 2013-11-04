@@ -151,7 +151,6 @@ class Classifier():
                     fpr = 0.0005
                 elif fpr > (1-0.0005): 
                     ftpr = (1-0.0005)
-                print tpr,fpr
                 feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
             other_labels = list(set(labels) - set(feature_labels))
             for label in other_labels:
@@ -169,7 +168,6 @@ class Classifier():
                     fpr = 0.0005
                 elif fpr > (1-0.0005): 
                     fpr = (1-0.0005)     
-                print tpr,fpr
                 feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
         #adapt instance-features
         outputdirs = {}
@@ -264,38 +262,51 @@ class Classifier():
                 self.test[index]["features"]=new_features_str
                 index += 1
 
-    def prune_features(self,minimum_threshold,classifier):
+    def top_features(self,n):
         #generate feature_frequency dict
         feature_freq=defaultdict(int)
-        if classifier == "knn":
-            for instance in self.training:
-                features=instance["features"]
-                for feature in features:
-                    feature_freq[feature] += 1
-        elif classifier == "lcs":
-            for instance in self.training:
-                filename=instance["features"][0]
-                fileread=codecs.open(self.file_dir + filename,"r","utf-8")
-                for feature in fileread.readlines():
-                    feature_freq[feature.strip()] += 1
-                fileread.close()
-        print "num features before pruning: ",len(feature_freq.keys())
+        # if classifier == "knn":
+        for instance in self.training:
+            features=instance["features"]
+            for feature in features:
+                feature_freq[feature] += 1
+        # elif classifier == "lcs":
+        #     for instance in self.training:
+        #         filename=instance["features"][0]
+        #         fileread=codecs.open(self.file_dir + filename,"r","utf-8")
+        #         for feature in fileread.readlines():
+        #             feature_freq[feature.strip()] += 1
+        # #         fileread.close()
+        # print "num features before pruning: ",len(feature_freq.keys())
         #prune features 
         sorted_feature_freq=sorted(feature_freq, key=feature_freq.get, reverse=True)
         boundary=0
+        feature_status = {}
         for i,f in enumerate(sorted_feature_freq):
-            if feature_freq[f] <= minimum_threshold:
-                boundary=i
-                break
-        if classifier == "knn":
-            #generate new indexes and make a new feature_info 
-            self.adjust_index_space(sorted_feature_freq,feature_freq,boundary)
-            print "num features after pruning: ", len(self.feature_info.keys())
-        elif classifier == "lcs":
-            #generate stoplist
-            self.stoplist=[]
-            for feature in sorted_feature_freq[:boundary]:
-                self.stoplist.append(feature)
+            if i <= n:
+                feature_status[f] = True
+            else:
+                feature_status[f] = False
+        for instance in self.training:
+            new_features = []
+            for f in instance["features"]:
+                if feature_status[f]:
+                    new_features.append(f)
+            instance["features"] = new_features
+        # for f in sorted_feature_freq[i:]
+        #     feature_status[f] = False
+        # print "num features after pruning: ", i
+        # for instance in self.training + self.test:
+        #     for feature in instance[]
+        # # if classifier == "knn":
+        #     #generate new indexes and make a new feature_info 
+        # self.adjust_index_space(sorted_feature_freq,feature_freq,boundary)
+        
+        # elif classifier == "lcs":
+        #     #generate stoplist
+        #     self.stoplist=[]
+        #     for feature in sorted_feature_freq[:boundary]:
+        #         self.stoplist.append(feature)
                 
     def infogain(self,classifier,prune):
     
