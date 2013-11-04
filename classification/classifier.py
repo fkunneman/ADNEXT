@@ -202,15 +202,14 @@ class Classifier():
                 else:
                     outlabel = "-1"
                 outfile.write(outlabel)
-                #for index in sorted(features):
-                #    try:
-                #        bns = feature_label_bns[index][label]
-                #        outfile.write(" " + str(index) + ":" + str(bns))
-                #    except KeyError:
-                #        continue
+                for index in sorted(features):
+                    try:
+                        bns = feature_label_bns[index][label]
+                        outfile.write(" " + str(index) + ":" + str(bns))
+                    except KeyError:
+                        continue
                 outfile.write("\n")
                 outfile.close()
-
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
@@ -392,16 +391,18 @@ class Classifier():
         elif classifier == "lcs":
             self.stoplist.extend(selected_features[num_features:])
 
-    def perform_svm(self,tf):
+    def perform_svm(self):
         #generate sparse input
-        training,test = self.index_features(top_frequency = tf)
+        self.index_features()
+        #generate classifiers
+        self.scale_features()
         labels = [x["label"] for x in self.training]
-        clf = svm.SVC()
-        clf.fit(training,labels)
+        #clf = svm.SVC()
+        #clf.fit(training,labels)
         #print clf.n_support_
         #print clf.predict(test)
-        for i,t in enumerate(self.test):        
-            print t["label"],clf.predict(test[i])
+        #for i,t in enumerate(self.test):        
+        #    print t["label"],clf.predict(test[i])
         
 
     def perform_lcs(self,args,prune,select,timelabels):
