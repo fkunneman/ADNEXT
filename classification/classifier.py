@@ -152,23 +152,23 @@ class Classifier():
                 elif fpr > (1-0.0005): 
                     fpr = (1-0.0005)
                 feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-            # other_labels = list(set(labels) - set(feature_labels))
-            # for label in other_labels:
-            #     tp = 0
-            #     pos = label_frequency[label]
-            #     fp = sum([feature_label_frequency[feature][x] for x in feature_labels])
-            #     neg = len(self.training) - pos
-            #     tpr = tp/pos
-            #     fpr = fp/neg
-            #     if tpr < 0.0005: 
-            #         tpr = 0.0005
-            #     elif tpr > (1-0.0005): 
-            #         tpr = (1-0.0005)
-            #     if fpr < 0.0005: 
-            #         fpr = 0.0005
-            #     elif fpr > (1-0.0005): 
-            #         fpr = (1-0.0005)     
-            #     feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+            other_labels = list(set(labels) - set(feature_labels))
+            for label in other_labels:
+                tp = 0
+                pos = label_frequency[label]
+                fp = sum([feature_label_frequency[feature][x] for x in feature_labels])
+                neg = len(self.training) - pos
+                tpr = tp/pos
+                fpr = fp/neg
+                if tpr < 0.0005: 
+                    tpr = 0.0005
+                elif tpr > (1-0.0005): 
+                    tpr = (1-0.0005)
+                if fpr < 0.0005: 
+                    fpr = 0.0005
+                elif fpr > (1-0.0005): 
+                    fpr = (1-0.0005)     
+                feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
         #adapt instance-features
         outputdirs = {}
         for label in labels:
