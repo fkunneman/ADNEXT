@@ -9,7 +9,7 @@ Script to generate instances with metadata and features, based on a file with li
 """
 parser = argparse.ArgumentParser(description = "Script to generate instances with metadata and features, based on a file with lines of tweets, and output these in a specified format.")
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
-parser.add_argument('-n', action = 'store', nargs = '+', required = False, help = "the word n-grams that will be generated (for uni- and trigrams give \'1 3\')")
+parser.add_argument('-n', action = 'store', nargs = '+', required = False, help = "to include word n-grams, specify the values of \'n\'")
 parser.add_argument('-cn', action = 'store', nargs = '+', required = False, help = "to include character n-grams, specify the values of \'n\'")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, help = "[OPTIONAL] choose to remove features given after this parameter")
 parser.add_argument('-ri', action = 'store', required = False, nargs = '+', help = "[OPTIONAL] remove instances if they contain one of the given words") 
@@ -18,7 +18,7 @@ parser.add_argument('-rp', action = 'store', required = False, nargs = '+', help
 parser.add_argument('-ur', action = 'store_true', default = False, help = "[OPTIONAL] choose whether url's are normalized")
 parser.add_argument('-us', action = 'store_true', default = False, help = "[OPTIONAL] choose whether usernames are normalized")
 parser.add_argument('-lo', action = 'store_true', default = False, help = "[OPTIONAL] choose whether words are standardized to lower case")
-parser.add_argument('-a', action = 'store', required = False, help = "[OPTIONAL] in order to aggregate instances by time the size of the window (in number of tweets) here")
+#parser.add_argument('-a', action = 'store', required = False, help = "[OPTIONAL] in order to aggregate instances by time the size of the window (in number of tweets) here")
 # parser.add_argument('-o', action = 'store', required = True, choices = ["sparse","sparsebin","lcs","big","lda"], help = "specify the output type")
 parser.add_argument('-o', action = 'store', required = True, help = "specify the output file")
 # parser.add_argument('--prefix', action='store', required = False, help = "specify a prefix to characterize files in the directory")
@@ -50,9 +50,9 @@ if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
 
 
-if args.a:
-    print "Aggregating instances..."
-    tf.aggregate_instances(int(args.a))
+# if args.a:
+#     print "Aggregating instances..."
+#     tf.aggregate_instances(int(args.a))
 tf.set_meta()
 
 print "Writing classifier input..."
