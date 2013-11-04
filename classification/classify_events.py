@@ -12,11 +12,13 @@ import itertools
 parser=argparse.ArgumentParser(description="")
 parser.add_argument('-i', action='store', nargs='+', required=True, help="the files with tweets per event")
 parser.add_argument('-d', action='store', help="the directory in which to write classification files")
-parser.add_argument('-c', action='store', required=True, choices=["svm","lcs","knn","ibt","dist","random","majority"], help="the classifier")
+parser.add_argument('-c', action='store', required=True, choices=["svm","lcs","knn","winnow","ibt","dist","random","majority"], help="the classifier")
 parser.add_argument('-p', action='store', required=False, type=int, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
 parser.add_argument('-s', action='store', required=False, type=int, help="[OPTIONAL] to select features based on their infogain, specify the number of features to select") 
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency.")
-parser.add_argument('--depth', action='store', default=1, type=int, help="[OPTIONAL] specify the depth of file characterizations (default = 1)")
+parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
+parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
+parser.add_argument('--depth', action='store', default=1, type=int, help="[OPTIONAL] specify the depth of file characterizations; [DEFAULT] = 1)")
 parser.add_argument('--parralel', action='store_true', required=False, help="choose whether distinct train and test sets are ran in parrallel")
 
 args=parser.parse_args() 
@@ -25,6 +27,7 @@ if len(args.i) <= 1:
     print "not enough event files, exiting program..."
     exit()
 
+#read in instances
 event_instances = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
@@ -32,10 +35,32 @@ for ef in args.i:
     instance_file.close()
     depth = args.depth * -1
     event = "/".join(ef.split("/")[depth:])
-    for instance in instances_raw:    
-        values = instance.strip().split("\t")
-        event_instances[event].append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})
+    #make list of tweet dicts
+    tweets = []
+    for tweet in instances_raw:
+        values = tweet.strip().split("\t")
+        tweets.append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})    
+    #generate instance windows based on window- and stepsize
+    features = []
+    i = 0
+    while i+args.window < len(tweets):
+        window = tweets[i+args.window]
+        if len(features) == 0:
+            for tweet in tweets[i:i+args.window]:
+                features.extend(tweet["features"])
+        else:
+            #cut features at beginning of window and add at the rear
+            #extract length of step features
+            length = 0
+            for tweet in tweets[i-args.step:i]:
+                length += len(tweet["features"])
+            features = features[length:]
+            for tweet in tweets[i+(args.window-args.step):i+args.window]:
+                features.extend(tweet["features"])
+        i+=args.step
+        event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
 
+#divide train and test events
 events = event_instances.keys()
 for i,event in enumerate(events):
     try:
@@ -44,9 +69,11 @@ for i,event in enumerate(events):
         train_events = events[:i]
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
+    #set up classifier object
     eventdir = args.d + event + "/"
     os.system("mkdir " + eventdir)
     cl = Classifier(train,test,directory = eventdir)
+    
     cl.index_features()
     cl.scale_features()
     #cl.perform_svm(args.f)
