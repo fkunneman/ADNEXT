@@ -10,6 +10,7 @@ import numpy
 from scipy.sparse import *
 from scipy import *
 from pylab import *
+import lineconverter
 
 class Classifier():
 
@@ -29,6 +30,29 @@ class Classifier():
             self.perform_lcs(arguments,prune,select,timelabels)
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
+
+    def undersample(self):
+        label_instances = defaultdict(list)
+        current_label = ""
+        label_order = []
+        for instance in self.training:     
+            label = instance["label"]
+            label_frequency[label] += 1
+            label_instances[label].append(instance)
+            if label != current_label:
+                label_order.append(label_order)
+                current_label = label
+        sorted_labels = sorted(label_frequency, key=label_frequency.get, reverse=True)
+        lowest_freq = label_frequency[sorted_labels[-1]]
+        new_training = []
+        for label in label_order:
+            if label == sorted_labels[-1]:
+                new_training.append(label_instances[label])
+            else:
+                lc = lineconverter.Lineconverter(label_instances[label])
+                sample = lc.extract_sample(lowest_freq)
+                new_training.append(sample)
+        self.training = new_training
 
     def index_features(self,top_frequency = -1,ind = 1):
         feature_frequency=defaultdict(int)
@@ -210,6 +234,9 @@ class Classifier():
                         continue
                 outfile.write("\n")
                 outfile.close()
+
+
+
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
