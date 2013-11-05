@@ -33,6 +33,7 @@ class Classifier():
 
     def undersample(self):
         label_instances = defaultdict(list)
+        label_frequency = defaultdict(int)
         current_label = ""
         label_order = []
         for instance in self.training:     
@@ -40,12 +41,14 @@ class Classifier():
             label_frequency[label] += 1
             label_instances[label].append(instance)
             if label != current_label:
-                label_order.append(label_order)
+                label_order.append(label)
                 current_label = label
         sorted_labels = sorted(label_frequency, key=label_frequency.get, reverse=True)
         lowest_freq = label_frequency[sorted_labels[-1]]
         new_training = []
+        print lowest_freq
         for label in label_order:
+            print label
             if label == sorted_labels[-1]:
                 new_training.append(label_instances[label])
             else:

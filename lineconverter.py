@@ -13,7 +13,7 @@ class Lineconverter():
     def __init__(self,lines,delimiter = "\t"):
         self.lines = []
         for line in lines:
-            self.lines.append(line.strip())
+            self.lines.append(line)
         self.delimiter = delimiter
 
     # Add the same string to the back or front of each line (argument [place] can be 'front' or 'back')
