@@ -79,7 +79,6 @@ for i,event in enumerate(events):
     cl = Classifier(train,test,directory = eventdir)
     if args.u:
         cl.undersample()
-    quit()
     if args.f:
         cl.top_features(args.f)
     cl.index_features()

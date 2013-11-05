@@ -47,21 +47,20 @@ class Classifier():
         sorted_labels = sorted(label_frequency, key=label_frequency.get, reverse=True)
         lowest_freq = label_frequency[sorted_labels[-1]]
         new_training = []
-        print lowest_freq
         for label in label_order:
             print label
             if label == sorted_labels[-1]:
-                new_training.append(label_instances[label])
+                new_training.extend(label_instances[label])
             else:
                 lc = lineconverter.Lineconverter(label_instances[label])
                 sample = lc.extract_sample(lowest_freq)
-                new_training.append(sample)
+                new_training.extend(sample)
         self.training = new_training
 
     def index_features(self,top_frequency = -1,ind = 1):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
-        for instance in self.training:
+        for i,instance in enumerate(self.training):
             for feature in instance["features"]:
                 feature_frequency[feature] += 1
         #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
@@ -159,8 +158,11 @@ class Classifier():
                 feature_label_frequency[feature][label] += 1
         #make a list of each possible label pair
         labels = label_frequency.keys()
-        pairs = itertools.permutations(labels)
-        print pairs
+	pairs = []
+        perm = itertools.permutations(labels,2)
+        for entry in perm:
+            pairs.append(list(entry))
+	print pairs
         quit()
 
         #generate bns-values per feature-label pair
