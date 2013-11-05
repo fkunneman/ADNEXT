@@ -6,6 +6,7 @@ from collections import defaultdict
 import codecs
 import itertools
 import os
+import re
 
 """
 
@@ -16,7 +17,8 @@ parser.add_argument('-d', action='store', help="the directory in which to write 
 parser.add_argument('-c', action='store', required=True, choices=["svm","lcs","knn","winnow","ibt","dist","random","majority"], help="the classifier")
 parser.add_argument('-p', action='store', required=False, type=int, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
 parser.add_argument('-s', action='store', required=False, type=int, help="[OPTIONAL] to select features based on their infogain, specify the number of features to select") 
-parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency.")
+parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
+parser.add_argument('-u', action='store_true', help="Choose to balance labels by undersampling")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 parser.add_argument('--depth', action='store', default=1, type=int, help="[OPTIONAL] specify the depth of file characterizations; [DEFAULT] = 1)")
@@ -25,7 +27,7 @@ parser.add_argument('--parralel', action='store_true', required=False, help="cho
 args=parser.parse_args() 
 
 if len(args.i) <= 1:
-    print "not enough event files, exiting program..."
+    print "not enough event  files, exiting program..."
     exit()
 
 #read in instances
@@ -35,7 +37,8 @@ for ef in args.i:
     instances_raw=instance_file.readlines()
     instance_file.close()
     depth = args.depth * -1
-    event = "/".join(ef.split("/")[depth:])
+    event_txt = "/".join(ef.split("/")[depth:])
+    event = re.sub(".txt"."",event_txt)
     #make list of tweet dicts
     tweets = []
     for tweet in instances_raw:
@@ -74,8 +77,11 @@ for i,event in enumerate(events):
     eventdir = args.d + event + "/"
     os.system("mkdir " + eventdir)
     cl = Classifier(train,test,directory = eventdir)
+    if args.u:
+        cl.undersample()
+    quit()
     if args.f:
-        cl.top_features[args.f]
+        cl.top_features(args.f)
     cl.index_features()
     cl.scale_features()
     #cl.perform_svm(args.f)

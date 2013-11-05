@@ -10,7 +10,7 @@ class Lineconverter():
 
     # Give the file with lines and the standard delimiter between fields on a line (also if there is 
     #    only one field)
-    def __init__(self,lines,delimiter):
+    def __init__(self,lines,delimiter = "\t"):
         self.lines = []
         for line in lines:
             self.lines.append(line.strip())
