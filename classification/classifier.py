@@ -11,6 +11,7 @@ from scipy.sparse import *
 from scipy import *
 from pylab import *
 import lineconverter
+import itertools
 
 class Classifier():
 
@@ -156,8 +157,14 @@ class Classifier():
             label_frequency[label] += 1
             for feature in instance["sparse"]:
                 feature_label_frequency[feature][label] += 1
-        #generate bns-values per feature-label pair
+        #make a list of each possible label pair
         labels = label_frequency.keys()
+        pairs = itertools.permutations(labels)
+        print pairs
+        quit()
+
+        #generate bns-values per feature-label pair
+        
         for feature in feature_label_frequency.keys():
             feature_labels = feature_label_frequency[feature].keys()
             for i,label in enumerate(feature_labels):
@@ -237,9 +244,6 @@ class Classifier():
                         continue
                 outfile.write("\n")
                 outfile.close()
-
-
-
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
