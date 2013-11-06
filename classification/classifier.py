@@ -107,9 +107,11 @@ class Classifier():
         WWW URL:     http://home.online.no/~pjacklam
         """
 
-        if p <= 0 or p >= 1:
-            # The original perl code exits here, we'll throw an exception instead
-            raise ValueError( "Argument to ltqnorm %f must be in open interval (0,1)" % p )
+        print p
+        if p < 0.0005:
+            p = 0.0005
+        elif p > 0.9995:
+            p = 0.9995
 
         # Coefficients in rational approximations.
         a = (-3.969683028665376e+01,  2.209460984245205e+02, \
@@ -146,10 +148,9 @@ class Classifier():
         return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
                (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
 
-    def scale_features(self):
+    def generate_paired_classifiers(self):
         label_frequency = defaultdict(int)
         feature_label_frequency = defaultdict(lambda : defaultdict(int))
-        feature_label_bns = defaultdict(lambda : {})
         #obtain feature and label frequencies
         for instance in self.training:     
             label = instance["label"]
@@ -158,94 +159,51 @@ class Classifier():
                 feature_label_frequency[feature][label] += 1
         #make a list of each possible label pair
         labels = label_frequency.keys()
-	pairs = []
+        pairs = []
         perm = itertools.permutations(labels,2)
         for entry in perm:
             pairs.append(list(entry))
-	print pairs
-        quit()
-
-        #generate bns-values per feature-label pair
-        
-        for feature in feature_label_frequency.keys():
-            feature_labels = feature_label_frequency[feature].keys()
-            for i,label in enumerate(feature_labels):
-                tp = feature_label_frequency[feature][label]
-                pos = label_frequency[label]
-                try:
-                    fp = sum([feature_label_frequency[feature][x] for x in feature_labels[:i] + feature_labels[i+1:]])
-                except IndexError:
-                    fp = sum([feature_label_frequency[feature][x] for x in feature_labels[:i]])
-                neg = len(self.training) - pos
+        #generate bns-values per classifier
+        for pair in pairs:        
+            feature_bns = {}
+            for feature in feature_label_frequency.keys():
+            # feature_labels = feature_label_frequency[feature].keys()
+            # for i,label in enumerate(feature_labels):
+                tp = feature_label_frequency[feature][pair[0]]
+                pos = label_frequency[pair[0]]
+                fp = feature_label_frequency[feature][pair[1]]
+                neg = label_frequency[pair[1]]
                 tpr = tp/pos
                 fpr = fp/neg
-                if tpr < 0.0005: 
-                    tpr = 0.0005
-                elif tpr > (1-0.0005): 
-                    tpr = (1-0.0005)
-                if fpr < 0.0005: 
-                    fpr = 0.0005
-                elif fpr > (1-0.0005): 
-                    fpr = (1-0.0005)
-                feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-            other_labels = list(set(labels) - set(feature_labels))
-            for label in other_labels:
-                tp = 0
-                pos = label_frequency[label]
-                fp = sum([feature_label_frequency[feature][x] for x in feature_labels])
-                neg = len(self.training) - pos
-                tpr = tp/pos
-                fpr = fp/neg
-                if tpr < 0.0005: 
-                    tpr = 0.0005
-                elif tpr > (1-0.0005): 
-                    tpr = (1-0.0005)
-                if fpr < 0.0005: 
-                    fpr = 0.0005
-                elif fpr > (1-0.0005): 
-                    fpr = (1-0.0005)     
-                feature_label_bns[feature][label] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-        #adapt instance-features
-        outputdirs = {}
-        for label in labels:
-            d = self.directory + label + "/"
+                feature_bns[feature] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+            d = self.directory + pair[0] + "-" + pair[1] + "/"
             os.system("mkdir " + d)
-            outputdirs[label] = d
-        for instance in self.training:
-            feature_freq = defaultdict(int)
-            for label in labels:
-                outfile = open(outputdirs[label] + "train","a")
-                inst_label = instance["label"]
+            train = open(d + "train","w")
+            test = open(d + "test", "w")
+            training = [instance for instance in self.training if instance["label"] == pair[0] 
+                or instance["label"] == pair[1]] 
+            for instance in training:
                 features = list(set(instance["sparse"]))
-                if inst_label == label:
-                    outlabel = "1"
+                if instance["label"] == pair[0]:
+                    outstring = "1"
                 else:
-                    outlabel = "-1"
-                outfile.write(outlabel)
-                for index in sorted(features):
-                    bns = feature_label_bns[index][label]
-                    outfile.write(" " + str(index) + ":" + str(bns))
-                outfile.write("\n")
-                outfile.close()
-        for instance in self.test:
-            feature_freq = defaultdict(int)
-            for label in labels:
-                outfile = open(outputdirs[label] + "test","a")
-                inst_label = instance["label"]
+                    outstring = "-1"
+                for feature in sorted(features):
+                    outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                outstring += "\n"
+                train.write(outstring)
+            train.close()
+            for instance in self.test:
                 features = list(set(instance["sparse"]))
-                if inst_label == label:
-                    outlabel = "1"
+                if instance["label"] == pair[0]:
+                    outstring = "1"
                 else:
-                    outlabel = "-1"
-                outfile.write(outlabel)
-                for index in sorted(features):
-                    try:
-                        bns = feature_label_bns[index][label]
-                        outfile.write(" " + str(index) + ":" + str(bns))
-                    except KeyError:
-                        continue
-                outfile.write("\n")
-                outfile.close()
+                    outstring = "-1"
+                for feature in sorted(features):
+                    outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                outstring += "\n"
+                test.write(outstring)
+            test.close()
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
@@ -444,8 +402,7 @@ class Classifier():
         #generate sparse input
         self.index_features()
         #generate classifiers
-        self.scale_features()
-        labels = [x["label"] for x in self.training]
+        self.generate_paired_classifiers()
         #clf = svm.SVC()
         #clf.fit(training,labels)
         #print clf.n_support_

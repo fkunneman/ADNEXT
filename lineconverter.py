@@ -103,8 +103,8 @@ class Lineconverter():
         keep_lines = []
         extracted = []
         num_lines = len(self.lines)
-        sample = sorted(random.sample(range(num_lines), int(size)))      
-      
+        sample = sorted(random.sample(range(num_lines), int(size)))
+
         print "Writing..."
         for i in sample:
             extracted.append(self.lines[i])
@@ -115,4 +115,3 @@ class Lineconverter():
             del self.lines[index]
                                  
         return extracted
-        
