@@ -18,7 +18,7 @@ parser.add_argument('-c', action='store', required=True, choices=["svm","lcs","k
 parser.add_argument('-p', action='store', required=False, type=int, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
 parser.add_argument('-s', action='store', required=False, type=int, help="[OPTIONAL] to select features based on their infogain, specify the number of features to select") 
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
-parser.add_argument('-u', action='store_true', help="Choose to balance labels by undersampling")
+# parser.add_argument('-u', action='store_true', help="Choose to balance labels by undersampling")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 parser.add_argument('--depth', action='store', default=1, type=int, help="[OPTIONAL] specify the depth of file characterizations; [DEFAULT] = 1)")
@@ -77,8 +77,8 @@ for i,event in enumerate(events):
     eventdir = args.d + event + "/"
     os.system("mkdir " + eventdir)
     cl = Classifier(train,test,directory = eventdir)
-    if args.u:
-        cl.undersample()
+    # if args.u:
+    #     cl.undersample()
     if args.f:
         cl.top_features(args.f)
     cl.perform_svm()
