@@ -81,9 +81,7 @@ for i,event in enumerate(events):
         cl.undersample()
     if args.f:
         cl.top_features(args.f)
-    cl.index_features()
-    cl.scale_features()
-    #cl.perform_svm(args.f)
+    cl.perform_svm()
 
 # elif validation=="looe":
 #     print "generating train-test"
