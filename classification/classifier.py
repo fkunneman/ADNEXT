@@ -175,12 +175,20 @@ class Classifier():
                 tpr = tp/pos
                 fpr = fp/neg
                 feature_bns[feature] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-            d = self.directory + pair[0] + "|" + pair[1] + "/"
+            d = self.directory + pair[0] + "_" + pair[1] + "/"
             os.system("mkdir " + d)
             train = open(d + "train","w")
             test = open(d + "test", "w")
-            training = [instance for instance in self.training if instance["label"] == pair[0] 
-                or instance["label"] == pair[1]] 
+            positive = [instance for instance in self.training if instance["label"] == pair[0]]
+            negative = [instance for instance in self.training if instance["label"] == pair[1]]
+            #downsample
+            if len(positive) > len(negative):
+                lc = lineconverter.Lineconverter(positive)
+                positive = lc.extract_sample(len(negative))
+            else:
+                lc = lineconverter.Lineconverter(negative))
+                negative = lc.extract_sample(len(positive))
+            training = positive + negative
             for instance in training:
                 features = list(set(instance["sparse"]))
                 if instance["label"] == pair[0]:
