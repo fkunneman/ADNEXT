@@ -107,7 +107,6 @@ class Classifier():
         WWW URL:     http://home.online.no/~pjacklam
         """
 
-        print p
         if p < 0.0005:
             p = 0.0005
         elif p > 0.9995:
@@ -175,6 +174,7 @@ class Classifier():
                 neg = label_frequency[pair[1]]
                 tpr = tp/pos
                 fpr = fp/neg
+                print self.ltqnorm(tpr),self.ltqnorm(fpr),abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
                 feature_bns[feature] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
             d = self.directory + pair[0] + "-" + pair[1] + "/"
             os.system("mkdir " + d)

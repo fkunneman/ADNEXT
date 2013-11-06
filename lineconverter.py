@@ -99,19 +99,13 @@ class Lineconverter():
         self.lines = newlines
         
     def extract_sample(self,size):
-        print "Extracting sample..."
         keep_lines = []
         extracted = []
         num_lines = len(self.lines)
         sample = sorted(random.sample(range(num_lines), int(size)))
-
-        print "Writing..."
         for i in sample:
             extracted.append(self.lines[i])
-            
-        print "Deleting..."
         for offset, index in enumerate(sample):
             index -= offset
-            del self.lines[index]
-                                 
+            del self.lines[index] 
         return extracted
