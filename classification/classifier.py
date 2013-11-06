@@ -159,7 +159,7 @@ class Classifier():
         #make a list of each possible label pair
         labels = label_frequency.keys()
         pairs = []
-        perm = itertools.permutations(labels,2)
+        perm = itertools.combinations(labels,2)
         for entry in perm:
             pairs.append(list(entry))
         #generate bns-values per classifier
@@ -175,7 +175,7 @@ class Classifier():
                 tpr = tp/pos
                 fpr = fp/neg
                 feature_bns[feature] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-            d = self.directory + pair[0] + "-" + pair[1] + "/"
+            d = self.directory + pair[0] + "|" + pair[1] + "/"
             os.system("mkdir " + d)
             train = open(d + "train","w")
             test = open(d + "test", "w")
