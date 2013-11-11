@@ -186,7 +186,7 @@ class Classifier():
                 lc = lineconverter.Lineconverter(positive)
                 positive = lc.extract_sample(len(negative))
             else:
-                lc = lineconverter.Lineconverter(negative))
+                lc = lineconverter.Lineconverter(negative)
                 negative = lc.extract_sample(len(positive))
             training = positive + negative
             for instance in training:
