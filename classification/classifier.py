@@ -174,9 +174,9 @@ class Classifier():
                 neg = label_frequency[pair[1]]
                 tpr = tp/pos
                 fpr = fp/neg
-                bsn = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-                if bsn > 0.0:
-                    feature_bns[feature] = bsn
+                bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+                if bns > 0.0:
+                    feature_bns[feature] = bns
             d = self.directory + pair[0] + "_" + pair[1] + "/"
             os.system("mkdir " + d)
             train = open(d + "train","w")
@@ -204,7 +204,10 @@ class Classifier():
                 else:
                     outstring = "-1"
                 for feature in sorted(features):
-                    outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                    try:
+                        outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                    except KeyError:
+                        continue
                 outstring += "\n"
                 train.write(outstring)
             train.close()
@@ -215,7 +218,10 @@ class Classifier():
                 else:
                     outstring = "-1"
                 for feature in sorted(features):
-                    outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                    try:
+                        outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                    except KeyError:
+                        continue
                 outstring += "\n"
                 test.write(outstring)
             test.close()

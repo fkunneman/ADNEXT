@@ -100,11 +100,16 @@ class Lineconverter():
         
     def sample(self,sample_size,sample_type="down"):
         num_lines = len(self.lines)
-        sample = sorted(random.sample(range(num_lines), int(sample_size)))
-        if sample_type="down": 
+        sample = []
+        if sample_type == "up":
+            while sample_size > num_lines:
+                sample.extend(range(num_lines))
+                sample_size -= num_lines
+        sample.extend(sorted(random.sample(range(num_lines), sample_size)))
+        if sample_type=="down": 
             for offset, index in enumerate(sample):
                 index -= offset
                 del self.lines[index]
-        elif sample_type="up":
+        elif sample_type=="up":
             for i in sample:
                 self.lines.append(self.lines[i])
