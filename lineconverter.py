@@ -63,8 +63,13 @@ class Lineconverter():
     def delete_string(self,string, column):
         newlines = []
         for line in self.lines:
+            black = False
             tokens = line.split(self.delimiter)
-            if not re.search(string,tokens[column]):
+            sequence = tokens[column].split(" ")
+            for w in sequence:
+                if re.match(string,w,re.IGNORECASE):
+                    black=True
+            if not black:
                 newlines.append(line)
         self.lines = newlines
 
@@ -101,6 +106,7 @@ class Lineconverter():
     def sample(self,sample_size,sample_type="down"):
         num_lines = len(self.lines)
         sample = []
+        print "extracting",len(self.lines)
         if sample_type == "up":
             while sample_size > num_lines:
                 sample.extend(range(num_lines))
@@ -113,3 +119,4 @@ class Lineconverter():
         elif sample_type=="up":
             for i in sample:
                 self.lines.append(self.lines[i])
+        print "extracted to new sample of",len(self.lines)
