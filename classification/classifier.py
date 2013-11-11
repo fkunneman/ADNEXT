@@ -32,7 +32,7 @@ class Classifier():
         elif algorithm=="dist":
             self.lin_reg_event(arguments)
 
-    def undersample(self):
+    def half_sample(self):
         label_instances = defaultdict(list)
         label_frequency = defaultdict(int)
         current_label = ""
@@ -174,20 +174,28 @@ class Classifier():
                 neg = label_frequency[pair[1]]
                 tpr = tp/pos
                 fpr = fp/neg
-                feature_bns[feature] = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+                bsn = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+                if bsn > 0.0:
+                    feature_bns[feature] = bsn
             d = self.directory + pair[0] + "_" + pair[1] + "/"
             os.system("mkdir " + d)
             train = open(d + "train","w")
             test = open(d + "test", "w")
             positive = [instance for instance in self.training if instance["label"] == pair[0]]
             negative = [instance for instance in self.training if instance["label"] == pair[1]]
-            #downsample
+            #up- and downsample to equalize numbers
+            dif = abs(len(positive) - len(negative))
+            samplesize = int(dif/2)
+            lcp = lineconverter.Lineconverter(positive)
+            lcn = lineconverter.Lineconverter(negative)
             if len(positive) > len(negative):
-                lc = lineconverter.Lineconverter(positive)
-                positive = lc.extract_sample(len(negative))
+                lcp.sample(samplesize)
+                lcn.sample(samplesize,sample_type="up")
             else:
-                lc = lineconverter.Lineconverter(negative))
-                negative = lc.extract_sample(len(positive))
+                lcp.sample(samplesize,sample_type="up")
+                lcn.sample(samplesize)
+            positive = lcp.lines
+            negative = lcn.lines
             training = positive + negative
             for instance in training:
                 features = list(set(instance["sparse"]))

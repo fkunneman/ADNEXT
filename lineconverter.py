@@ -98,14 +98,13 @@ class Lineconverter():
             newlines.append(new_line)
         self.lines = newlines
         
-    def extract_sample(self,size):
-        keep_lines = []
-        extracted = []
+    def sample(self,sample_size,sample_type="down"):
         num_lines = len(self.lines)
-        sample = sorted(random.sample(range(num_lines), int(size)))
-        for i in sample:
-            extracted.append(self.lines[i])
-        for offset, index in enumerate(sample):
-            index -= offset
-            del self.lines[index] 
-        return extracted
+        sample = sorted(random.sample(range(num_lines), int(sample_size)))
+        if sample_type="down": 
+            for offset, index in enumerate(sample):
+                index -= offset
+                del self.lines[index]
+        elif sample_type="up":
+            for i in sample:
+                self.lines.append(self.lines[i])
