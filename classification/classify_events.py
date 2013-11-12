@@ -75,7 +75,12 @@ for i,event in enumerate(events):
     test = event_instances[event]
     #set up classifier object
     eventdir = args.d + event + "/" + str(args.window) + "_" + str(args.step) + "/"
-    os.system("mkdir " + eventdir)
+    if not os.path.exists(eventdir):
+        if not os.path.exists("/".join(eventdir.split("/")[:-1])):
+            if not os.path.exists("/".join(eventdir.split("/")[:-2])):
+                os.system("mkdir " + "/".join(eventdir.split("/")[:-2]))
+            os.system("mkdir " + "/".join(eventdir.split("/")[:-1]))
+        os.system("mkdir " + eventdir)
     cl = Classifier(train,test,directory = eventdir)
     # if args.u:
     #     cl.undersample()
