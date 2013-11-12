@@ -74,7 +74,7 @@ for i,event in enumerate(events):
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
     #set up classifier object
-    eventdir = args.d + event + "/"
+    eventdir = args.d + event + "/" + str(args.window) + "_" + str(args.step) + "/"
     os.system("mkdir " + eventdir)
     cl = Classifier(train,test,directory = eventdir)
     # if args.u:
