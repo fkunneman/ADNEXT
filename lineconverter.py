@@ -106,7 +106,6 @@ class Lineconverter():
     def sample(self,sample_size,sample_type="down"):
         num_lines = len(self.lines)
         sample = []
-        print "extracting",len(self.lines)
         if sample_type == "up":
             while sample_size > num_lines:
                 sample.extend(range(num_lines))
@@ -119,4 +118,3 @@ class Lineconverter():
         elif sample_type=="up":
             for i in sample:
                 self.lines.append(self.lines[i])
-        print "extracted to new sample of",len(self.lines)

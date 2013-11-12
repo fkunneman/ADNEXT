@@ -13,6 +13,7 @@ from pylab import *
 import lineconverter
 import itertools
 import glob
+import multiprocessing
 
 class Classifier():
 
@@ -421,19 +422,34 @@ class Classifier():
             self.stoplist.extend(selected_features[num_features:])
 
     def perform_svm(self):
+        
+        def classify_pair(p):
+            train = p + "/train"
+            test = p + "/test"
+            tdir = os.getcwd() + p.split("/")[-1]
+            os.system("mkdir " + tdir)
+            os.chdir(tdir)
+            os.system("paramsearch svmlight " + train)
+            os.system("runfull-svmlight " + train + " " + test)
+            os.system("mv svm_predictions " + p + "/")
+            os.chdir("~/")
+            os.system("rm -r " + tdir)
+
         #generate sparse input
         self.index_features()
         #generate classifiers
         self.generate_paired_classifiers()
+        #classify parralel
         for pair in glob.iglob(self.directory + '*'):
-            print pair
+            p = multiprocessing.Process(target=classify_pair,args=[pair])
+            p.start()
+
         #clf = svm.SVC()
         #clf.fit(training,labels)
         #print clf.n_support_
         #print clf.predict(test)
         #for i,t in enumerate(self.test):        
         #    print t["label"],clf.predict(test[i])
-        
 
     def perform_lcs(self,args,prune,select,timelabels):
         
