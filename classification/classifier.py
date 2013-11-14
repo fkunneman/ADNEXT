@@ -166,68 +166,75 @@ class Classifier():
         for entry in perm:
             pairs.append(list(entry))
         #generate bns-values per classifier
-        for pair in pairs:        
-            feature_bns = {}
-            for feature in feature_label_frequency.keys():
-            # feature_labels = feature_label_frequency[feature].keys()
-            # for i,label in enumerate(feature_labels):
-                tp = feature_label_frequency[feature][pair[0]]
-                pos = label_frequency[pair[0]]
-                fp = feature_label_frequency[feature][pair[1]]
-                neg = label_frequency[pair[1]]
-                tpr = tp/pos
-                fpr = fp/neg
-                bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
-                if bns > 0.0:
-                    feature_bns[feature] = bns
-            d = self.directory + pair[0] + "_" + pair[1] + "/"
-            os.system("mkdir " + d)
-            train = open(d + "train","w")
-            test = open(d + "test", "w")
-            positive = [instance for instance in self.training if instance["label"] == pair[0]]
-            negative = [instance for instance in self.training if instance["label"] == pair[1]]
-            #up- and downsample to equalize numbers
-            dif = abs(len(positive) - len(negative))
-            samplesize = int(dif/2)
-            lcp = lineconverter.Lineconverter(positive)
-            lcn = lineconverter.Lineconverter(negative)
-            if len(positive) > len(negative):
-                lcp.sample(samplesize)
-                lcn.sample(samplesize,sample_type="up")
-            else:
-                lcp.sample(samplesize,sample_type="up")
-                lcn.sample(samplesize)
-            positive = lcp.lines
-            negative = lcn.lines
-            training = positive + negative
-            for instance in training:
-                features = list(set(instance["sparse"]))
-                if instance["label"] == pair[0]:
-                    outstring = "1"
+        def install_train_test(c):
+            for pair in c:
+                feature_bns = {}
+                for feature in feature_label_frequency.keys():
+                # feature_labels = feature_label_frequency[feature].keys()
+                # for i,label in enumerate(feature_labels):
+                    tp = feature_label_frequency[feature][pair[0]]
+                    pos = label_frequency[pair[0]]
+                    fp = feature_label_frequency[feature][pair[1]]
+                    neg = label_frequency[pair[1]]
+                    tpr = tp/pos
+                    fpr = fp/neg
+                    bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+                    if bns > 0.0:
+                        feature_bns[feature] = bns
+                d = self.directory + pair[0] + "_" + pair[1] + "/"
+                os.system("mkdir " + d)
+                train = open(d + "train","w")
+                test = open(d + "test", "w")
+                positive = [instance for instance in self.training if instance["label"] == pair[0]]
+                negative = [instance for instance in self.training if instance["label"] == pair[1]]
+                #up- and downsample to equalize numbers
+                dif = abs(len(positive) - len(negative))
+                samplesize = int(dif/2)
+                lcp = lineconverter.Lineconverter(positive)
+                lcn = lineconverter.Lineconverter(negative)
+                if len(positive) > len(negative):
+                    lcp.sample(samplesize)
+                    lcn.sample(samplesize,sample_type="up")
                 else:
-                    outstring = "-1"
-                for feature in sorted(features):
-                    try:
-                        outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
-                    except KeyError:
-                        continue
-                outstring += "\n"
-                train.write(outstring)
-            train.close()
-            for instance in self.test:
-                features = list(set(instance["sparse"]))
-                if instance["label"] == pair[0]:
-                    outstring = "1"
-                else:
-                    outstring = "-1"
-                for feature in sorted(features):
-                    try:
-                        outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
-                    except KeyError:
-                        continue
-                outstring += "\n"
-                test.write(outstring)
-            test.close()
+                    lcp.sample(samplesize,sample_type="up")
+                    lcn.sample(samplesize)
+                positive = lcp.lines
+                negative = lcn.lines
+                training = positive + negative
+                for instance in training:
+                    features = list(set(instance["sparse"]))
+                    if instance["label"] == pair[0]:
+                        outstring = "1"
+                    else:
+                        outstring = "-1"
+                    for feature in sorted(features):
+                        try:
+                            outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                        except KeyError:
+                            continue
+                    outstring += "\n"
+                    train.write(outstring)
+                train.close()
+                for instance in self.test:
+                    features = list(set(instance["sparse"]))
+                    if instance["label"] == pair[0]:
+                        outstring = "1"
+                    else:
+                        outstring = "-1"
+                    for feature in sorted(features):
+                        try:
+                            outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                        except KeyError:
+                            continue
+                    outstring += "\n"
+                    test.write(outstring)
+                test.close()
+
+        p_chunks = gen_functions.make_chunks(pairs)
+        for chunk in p_chunks:
+            p = multiprocessing.Process(target=install_train_test,args=[chunk])
+            p.start()
+
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
