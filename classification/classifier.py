@@ -246,8 +246,9 @@ class Classifier():
                 shift = pairs[i:i+16]
             except IndexError:
                 shift = pairs[i:]
-            print pairs
-            # for p in pairs:
+            print shift
+            i += 16
+            # for p in shift:
             #     m = multiprocessing.Process(target=classify_pair,args=[p])
             #     m.start()
 
