@@ -447,7 +447,7 @@ class Classifier():
         #generate sparse input
         self.index_features()
         #generate classifiers
-        #self.generate_paired_classifiers()
+        self.generate_paired_classifiers()
         #classify parralel
         pairs = list(glob.iglob(self.directory + '*'))
         pair_chunks = gen_functions.make_chunks(pairs)
