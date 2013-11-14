@@ -14,6 +14,7 @@ import lineconverter
 import itertools
 import glob
 import multiprocessing
+import gen_functions
 
 class Classifier():
 
@@ -423,25 +424,28 @@ class Classifier():
 
     def perform_svm(self):
         
-        def classify_pair(p):
-            train = p + "/train"
-            test = p + "/test"
-            tdir = os.getcwd() + p.split("/")[-1]
-            os.system("mkdir " + tdir)
-            os.chdir(tdir)
-            os.system("paramsearch svmlight " + train)
-            os.system("runfull-svmlight " + train + " " + test)
-            os.system("mv svm_predictions " + p + "/")
-            os.chdir("~/")
-            os.system("rm -r " + tdir)
+        def classify_pairs(plist):
+            for p in plist:
+                train = p + "/train"
+                test = p + "/test"
+                tdir = os.getcwd() + p.split("/")[-1]
+                os.system("mkdir " + tdir)
+                os.chdir(tdir)
+                os.system("paramsearch svmlight " + train)
+                os.system("runfull-svmlight " + train + " " + test)
+                os.system("mv svm_predictions " + p + "/")
+                os.chdir("~/")
+                os.system("rm -r " + tdir)
 
         #generate sparse input
         self.index_features()
         #generate classifiers
         self.generate_paired_classifiers()
         #classify parralel
-        for pair in glob.iglob(self.directory + '*'):
-            p = multiprocessing.Process(target=classify_pair,args=[pair])
+        pairs = glob.iglob(self.directory + '*')
+        pair_chunks = gen_functions.make_chunks(pairs)
+        for chunk in pair_chunks:
+            p = multiprocessing.Process(target=classify_pairs,args=[chunk])
             p.start()
 
         #clf = svm.SVC()
