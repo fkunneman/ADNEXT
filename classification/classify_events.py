@@ -26,11 +26,14 @@ parser.add_argument('--depth', action='store', default=1, type=int, help="[OPTIO
 
 args=parser.parse_args() 
 
+print "Window",args.window,"step",args.step
+
 if len(args.i) <= 1:
     print "not enough event  files, exiting program..."
     exit()
 
 #read in instances
+print "Reading in events..."
 event_instances = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
@@ -39,7 +42,6 @@ for ef in args.i:
     depth = args.depth * -1
     event_txt = "/".join(ef.split("/")[depth:])
     event = re.sub(".txt","",event_txt)
-    print event
     #make list of tweet dicts
     tweets = []
     for tweet in instances_raw:
@@ -65,6 +67,7 @@ for ef in args.i:
         i+=args.step
         event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
 
+print "Starting classification..."
 #divide train and test events
 events = event_instances.keys()
 for i,event in enumerate(events):
