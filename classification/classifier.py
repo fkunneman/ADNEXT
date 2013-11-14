@@ -230,7 +230,7 @@ class Classifier():
                     test.write(outstring)
                 test.close()
                 test = open(d + "test", "w")
-                tdir = os.getcwd() + pair
+                tdir = os.getcwd() + "/" + pair[0] + "_" + pair[1] + "/"
                 os.system("mkdir " + tdir)
                 os.chdir(tdir)
                 os.system("mv " + d + "train .")
