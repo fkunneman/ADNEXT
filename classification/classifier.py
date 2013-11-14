@@ -229,14 +229,15 @@ class Classifier():
                     outstring += "\n"
                     test.write(outstring)
                 test.close()
-                train = open(d + "train","r")
                 test = open(d + "test", "w")
                 tdir = os.getcwd() + pair
                 os.system("mkdir " + tdir)
                 os.chdir(tdir)
-                os.system("paramsearch svmlight " + train)
-                os.system("runfull-svmlight " + train + " " + test)
-                os.system("mv svm_predictions " + d + "/")
+                os.system("mv " + d + "train .")
+                os.system("mv " + d + "test .")
+                os.system("paramsearch svmlight train")
+                os.system("runfull-svmlight train test")
+                os.system("mv * " + d + "/")
                 os.chdir("..")
                 os.system("rm -r " + tdir)
 
