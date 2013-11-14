@@ -31,6 +31,8 @@ print "Window",args.window,"step",args.step
 if len(args.i) <= 1:
     print "not enough event  files, exiting program..."
     exit()
+depth = args.depth * -1
+
 
 #read in instances
 print "Reading in events..."
@@ -39,7 +41,6 @@ for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
     instance_file.close()
-    depth = args.depth * -1
     event_txt = "/".join(ef.split("/")[depth:])
     event = re.sub(".txt","",event_txt)
     #make list of tweet dicts
@@ -80,11 +81,11 @@ for i,event in enumerate(events):
     #set up classifier object
     eventdir = args.d + event + "/" + str(args.window) + "_" + str(args.step) + "/"
     if not os.path.exists(eventdir):
-        if not os.path.exists("/".join(eventdir.split("/")[:-1])):
-            if not os.path.exists("/".join(eventdir.split("/")[:-2])):
-                os.system("mkdir " + "/".join(eventdir.split("/")[:-2]))
-            os.system("mkdir " + "/".join(eventdir.split("/")[:-1]))
-        os.system("mkdir " + eventdir)
+        d = depth-1
+        while d <= -1: 
+            if not os.path.exists("/".join(eventdir.split("/")[:d])):
+                os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
+            d+=1
     cl = Classifier(train,test,directory = eventdir)
     # if args.u:
     #     cl.undersample()
