@@ -447,9 +447,9 @@ class Classifier():
         #generate sparse input
         self.index_features()
         #generate classifiers
-        self.generate_paired_classifiers()
+        #self.generate_paired_classifiers()
         #classify parralel
-        pairs = glob.iglob(self.directory + '*')
+        pairs = list(glob.iglob(self.directory + '*'))
         pair_chunks = gen_functions.make_chunks(pairs)
         for chunk in pair_chunks:
             p = multiprocessing.Process(target=classify_pairs,args=[chunk])
