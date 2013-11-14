@@ -39,6 +39,7 @@ for ef in args.i:
     depth = args.depth * -1
     event_txt = "/".join(ef.split("/")[depth:])
     event = re.sub(".txt","",event_txt)
+    print event
     #make list of tweet dicts
     tweets = []
     for tweet in instances_raw:
