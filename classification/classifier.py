@@ -166,7 +166,7 @@ class Classifier():
         for entry in perm:
             pairs.append(list(entry))
         #generate bns-values per classifier
-        def install_train_test(c):
+        def classify_pair(c):
             for pair in c:
                 feature_bns = {}
                 for feature in feature_label_frequency.keys():
@@ -229,12 +229,21 @@ class Classifier():
                     outstring += "\n"
                     test.write(outstring)
                 test.close()
+                train = open(d + "train","r")
+                test = open(d + "test", "w")
+                tdir = os.getcwd() + p.split("/")[-1]
+                os.system("mkdir " + tdir)
+                os.chdir(tdir)
+                os.system("paramsearch svmlight " + train)
+                os.system("runfull-svmlight " + train + " " + test)
+                os.system("mv svm_predictions " + p + "/")
+                os.chdir("~/")
+                os.system("rm -r " + tdir)
 
         p_chunks = gen_functions.make_chunks(pairs)
         for chunk in p_chunks:
-            p = multiprocessing.Process(target=install_train_test,args=[chunk])
+            p = multiprocessing.Process(target=classify_pair,args=[chunk])
             p.start()
-
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
@@ -430,30 +439,16 @@ class Classifier():
             self.stoplist.extend(selected_features[num_features:])
 
     def perform_svm(self):
-        
-        def classify_pairs(plist):
-            for p in plist:
-                train = p + "/train"
-                test = p + "/test"
-                tdir = os.getcwd() + p.split("/")[-1]
-                os.system("mkdir " + tdir)
-                os.chdir(tdir)
-                os.system("paramsearch svmlight " + train)
-                os.system("runfull-svmlight " + train + " " + test)
-                os.system("mv svm_predictions " + p + "/")
-                os.chdir("~/")
-                os.system("rm -r " + tdir)
-
         #generate sparse input
         self.index_features()
         #generate classifiers
-        #self.generate_paired_classifiers()
+        self.generate_paired_classifiers()
         #classify parralel
-        pairs = list(glob.iglob(self.directory + '*'))
-        pair_chunks = gen_functions.make_chunks(pairs)
-        for chunk in pair_chunks:
-            p = multiprocessing.Process(target=classify_pairs,args=[chunk])
-            p.start()
+        # pairs = list(glob.iglob(self.directory + '*'))
+        # pair_chunks = gen_functions.make_chunks(pairs)
+        # for chunk in pair_chunks:
+        #     p = multiprocessing.Process(target=classify_pairs,args=[chunk])
+        #     p.start()
 
         #clf = svm.SVC()
         #clf.fit(training,labels)
