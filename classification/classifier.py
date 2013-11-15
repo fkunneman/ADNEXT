@@ -182,7 +182,7 @@ class Classifier():
                     bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
                     if bns > 0.0:
                         feature_bns[feature] = bns
-                        
+
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
@@ -241,7 +241,7 @@ class Classifier():
                 os.chdir(tdir)
                 os.system("mv " + d + "train .")
                 os.system("mv " + d + "test .")
-                os.system("paramsearch svmlight train")
+                os.system("paramsearch svmlight .")
                 os.system("runfull-svmlight train test")
                 os.system("mv * " + d + "/")
                 os.chdir("..")
