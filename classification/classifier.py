@@ -241,7 +241,7 @@ class Classifier():
                 os.chdir(tdir)
                 os.system("mv " + d + "train .")
                 os.system("mv " + d + "test .")
-                os.system("paramsearch svmlight .")
+                os.system("paramsearch svmlight ./train")
                 os.system("runfull-svmlight train test")
                 os.system("mv * " + d + "/")
                 os.chdir("..")
