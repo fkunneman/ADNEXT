@@ -246,11 +246,10 @@ class Classifier():
                 shift = pairs[i:i+16]
             except IndexError:
                 shift = pairs[i:]
-            print shift
             i += 16
-            # for p in shift:
-            #     m = multiprocessing.Process(target=classify_pair,args=[p])
-            #     m.start()
+            for p in shift:
+                m = multiprocessing.Process(target=classify_pair,args=[p])
+                m.start()
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
