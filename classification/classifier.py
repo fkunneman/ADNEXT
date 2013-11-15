@@ -182,7 +182,7 @@ class Classifier():
                     bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
                     if bns > 0.0:
                         feature_bns[feature] = bns
-                        for i,label in enumerate(labels):
+                        
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
