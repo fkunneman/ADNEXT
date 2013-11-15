@@ -248,9 +248,13 @@ class Classifier():
                 os.system("rm -r " + tdir)
 
         chunks = gen_functions.make_chunks(pairs)
+        processes = []
         for chunk in chunks:
             p = multiprocessing.Process(target=classify_pairs,args=[chunk])
+            processes.append(p)
             p.start()
+        for p in processes:
+            p.join()
 
         # i = 0
         # while (i+32) < len(pairs):
