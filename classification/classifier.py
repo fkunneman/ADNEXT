@@ -250,6 +250,7 @@ class Classifier():
             for p in shift:
                 m = multiprocessing.Process(target=classify_pair,args=[p])
                 m.start()
+                m.join()
 
     def adjust_index_space(self,ranked_list,value_dict,boundary):
         new_feature_info={}
