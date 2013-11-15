@@ -246,8 +246,10 @@ class Classifier():
                 os.chdir("..")
                 os.system("rm -r " + tdir)
 
-        po = multiprocessing.Pool(16)
-        po.map(classify_pairs,pairs)
+        chunks = gen_functions.make_chunks(pairs)
+        for chunk in chunks:
+            p = multiprocessing.Process(target=classify_pairs,args=[chunk])
+            p.start()
 
         # i = 0
         # while (i+32) < len(pairs):
