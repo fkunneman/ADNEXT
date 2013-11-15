@@ -162,9 +162,6 @@ class Classifier():
                 feature_label_frequency[feature][label] += 1
         #make a list of each possible label pair
         labels = label_frequency.keys()
-        for i,label in enumerate(labels):
-            if re.search("-",label):
-                labels[i] = re.sub("-","minus",label)
         pairs = []
         perm = itertools.combinations(labels,2)
         for entry in perm:
@@ -185,10 +182,7 @@ class Classifier():
                     bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
                     if bns > 0.0:
                         feature_bns[feature] = bns
-                d = self.directory + pair[0] + "_" + pair[1] + "/"
-                os.system("mkdir " + d)
-                train = open(d + "train","w")
-                test = open(d + "test", "w")
+                        for i,label in enumerate(labels):
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
@@ -205,6 +199,15 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
+                if re.search("-",pair[0]):
+                    pair0 = re.sub("-","minus",pair[0])
+                else:
+                    pair0 = pair[0]
+                pairstring = pair0 + "_" + pair[1]
+                d = self.directory + pairstring + "/"
+                os.system("mkdir " + d)
+                train = open(d + "train","w")
+                test = open(d + "test", "w")
                 for instance in training:
                     features = list(set(instance["sparse"]))
                     if instance["label"] == pair[0]:
@@ -233,9 +236,7 @@ class Classifier():
                     outstring += "\n"
                     test.write(outstring)
                 test.close()
-                test = open(d + "test", "w")
-                pair[0] 
-                tdir = os.getcwd() + "/" + pair[0] + "_" + pair[1] + "/"
+                tdir = os.getcwd() + "/" + pairstring + "/"
                 os.system("mkdir " + tdir)
                 os.chdir(tdir)
                 os.system("mv " + d + "train .")
