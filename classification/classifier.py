@@ -245,8 +245,8 @@ class Classifier():
                 os.chdir("..")
                 os.system("rm -r " + tdir)
 
-        po = multiprocessing.Pool(16):
-            p.map(classify_pairs,pairs)
+        po = multiprocessing.Pool(16)
+        p.map(classify_pairs,pairs)
 
         # i = 0
         # while (i+32) < len(pairs):
