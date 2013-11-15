@@ -15,6 +15,7 @@ import itertools
 import glob
 import multiprocessing
 import gen_functions
+import re
 
 class Classifier():
 
@@ -246,7 +247,7 @@ class Classifier():
                 os.system("rm -r " + tdir)
 
         po = multiprocessing.Pool(16)
-        p.map(classify_pairs,pairs)
+        po.map(classify_pairs,pairs)
 
         # i = 0
         # while (i+32) < len(pairs):
