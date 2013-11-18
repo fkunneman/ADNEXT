@@ -103,18 +103,25 @@ class Lineconverter():
             newlines.append(new_line)
         self.lines = newlines
         
-    def sample(self,sample_size,sample_type="down"):
+    def sample(self,sample_size,sample_method = "random",sample_type="down"):
         num_lines = len(self.lines)
         sample = []
-        if sample_type == "up":
-            while sample_size > num_lines:
-                sample.extend(range(num_lines))
-                sample_size -= num_lines
-        sample.extend(sorted(random.sample(range(num_lines), sample_size)))
-        if sample_type=="down": 
-            for offset, index in enumerate(sample):
-                index -= offset
-                del self.lines[index]
-        elif sample_type=="up":
-            for i in sample:
-                self.lines.append(self.lines[i])
+        if sample_method == "steps":
+            i = sample_size
+            while i < len(self.lines):
+                sample.append(self.lines[i])
+                i += sample_size
+            self.lines = sample
+        else:
+            if sample_type == "up":
+                while sample_size > num_lines:
+                    sample.extend(range(num_lines))
+                    sample_size -= num_lines
+            sample.extend(sorted(random.sample(range(num_lines), sample_size)))
+            if sample_type=="down": 
+                for offset, index in enumerate(sample):
+                    index -= offset
+                    del self.lines[index]
+            elif sample_type=="up":
+                for i in sample:
+                    self.lines.append(self.lines[i])

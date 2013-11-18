@@ -14,14 +14,24 @@ parser.add_argument('-d', action = 'store', default = "\t", help = "For columned
 parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","extract","add_time","add_id"], help = "Choose the action to perform.")
 parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace or delete")
 parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace or delete (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
-parser.add_argument('--extract', action = 'store', required = False, type=int, help = "[EXTRACT] specify the number of lines to extract")
+parser.add_argument('--extract', action = 'store', required = False, nargs='+', help = "[EXTRACT] specify the number of lines to extract")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
 parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
 
 args = parser.parse_args() 
-infile = codecs.open(args.i,"r","utf-8")
-lines = infile.readlines()
-infile.close()
+
+if args.i[-3:] == "xls": 
+    lines = gen_functions.excel2lines(args.i,[1])[0]
+    newlines = []
+    for line in lines:
+        newlines.append(args.d.join(line) + "\n")
+    lines = newlines
+
+else:
+    infile = codecs.open(args.i,"r","utf-8")
+    lines = infile.readlines()
+    infile.close()
+
 delimiter = args.d
 action = args.a
 # extra = args.e
@@ -62,8 +72,13 @@ if action == "delete":
     print "num lines after delete",len(lineconvert.lines)
 
 if args.extract:
-    size = len(lineconvert.lines) - args.extract
-    lineconvert.sample(size)
+    if len(args.extract) > 1 and args.extract[1] == "steps":
+        sample_m = "steps"
+        size = int(args.extract[0])
+    else:
+        sample_m = "random"
+        size = len(lineconvert.lines) - int(args.extract[0]) 
+    lineconvert.sample(size,sample_method = sample_m)
     # for line in extracted_lines:
     #     outfile.write(line + "\n")
     # outfile.close()
