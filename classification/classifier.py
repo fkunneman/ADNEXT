@@ -20,12 +20,12 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,classifiermetalist=False,directory=False, vocabulary=False):
+    def __init__(self,trainlist,testlist,classifier,directory=False,vocabulary=False):
         self.training=trainlist
         self.test=testlist
         #self.meta=metalist
         self.directory=directory
-        self.classifier = args.c
+        self.classifier = classifier
         #self.feature_info=vocabulary
 
     def top_features(self,n):
@@ -119,9 +119,9 @@ class Classifier():
         # test = csr_matrix(test_instances,dtype=float64)
         # return training,test
 
-    def generate_paired_classifiers(self,classifier):
+    def generate_paired_classifiers(self):
 
-        def pairow(self,ps):
+        def pairow(ps):
             #generate bns-values per classifier
             for pair in ps:
                 feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
@@ -148,9 +148,9 @@ class Classifier():
                 train = open(d + "train","w")
                 test = open(d + "test", "w")
                 args = [[training,train],[self.test,test]]
-                if classifier == "svm":
+                if self.classifier == "svm":
                     output = ["1","-1",":",""]
-                elif classifier == "winnow":
+                elif self.classifier == "winnow":
                     output = ["1","0","(",")"]
                 for arg in args:
                     for instance in arg[0]:
