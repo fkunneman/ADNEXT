@@ -86,12 +86,17 @@ for i,event in enumerate(events):
             if not os.path.exists("/".join(eventdir.split("/")[:d])):
                 os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
             d+=1
-    cl = Classifier(train,test,directory = eventdir)
+    cl = Classifier(train,test,directory = eventdir,classifier=args.c)
     # if args.u:
     #     cl.undersample()
     if args.f:
         cl.top_features(args.f)
-    cl.perform_svm()
+    #generate sparse input
+    cl.index_features()
+    #generate classifiers
+    if args.c == "svm" or args.c == "winnow":
+        cl.generate_paired_classifiers()
+        cl.classify_pairs_parralel
 
 # elif validation=="looe":
 #     print "generating train-test"

@@ -20,12 +20,13 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,metalist=False,directory=False, vocabulary=False):
+    def __init__(self,trainlist,testlist,classifiermetalist=False,directory=False, vocabulary=False):
         self.training=trainlist
         self.test=testlist
-        self.meta=metalist
+        #self.meta=metalist
         self.directory=directory
-        self.feature_info=vocabulary
+        self.classifier = args.c
+        #self.feature_info=vocabulary
 
     def top_features(self,n):
         #generate feature_frequency dict
@@ -118,7 +119,7 @@ class Classifier():
         # test = csr_matrix(test_instances,dtype=float64)
         # return training,test
 
-    def generate_paired_classifiers(self):
+    def generate_paired_classifiers(self,classifier):
         #obtain feature and label frequencies
         label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
         feature_label_frequency = defaultdict(lambda : defaultdict(int))
@@ -157,16 +158,22 @@ class Classifier():
             train = open(d + "train","w")
             test = open(d + "test", "w")
             args = [[training,train],[self.test,test]]
+            if classifier == "svm":
+                output = ["1","-1",":",""]
+            elif classifier == "winnow":
+                output = ["1","0","(",")"]
             for arg in args:
+                print arg
                 for instance in arg[0]:
+                    print instance
                     features = list(set(instance["sparse"]))
                     if instance["label"] == pair[0]:
-                        outstring = "1"
+                        outstring = output[0]
                     else:
-                        outstring = "-1"
+                        outstring = output[1]
                     for feature in sorted(features):
                         try:
-                            outstring += (" " + str(feature) + ":" + str(feature_bns[feature]))
+                            outstring += (" " + str(feature) + output[2] + str(feature_bns[feature]) + output[3])
                         except KeyError:
                             continue
                     outstring += "\n"
@@ -246,27 +253,24 @@ class Classifier():
     #     elif classifier == "lcs":
     #         self.stoplist.extend(selected_features[num_features:])
 
-    def classify_pairs(self,pairs,classifier):
+    def classify_pairs(self,pairs):
         for pair in pairs:
             tdir = os.getcwd() + "/" + pair.split("/")[-1] + "/"
             os.system("mkdir " + tdir)
             os.chdir(tdir)
             os.system("mv " + pair + "/train .")
             os.system("mv " + pair + "/test .")
-            if classifier == "svm":
-                os.system("paramsearch svmlight .")
+            if self.classifier == "svm":
+                os.system("paramsearch svmlight train")
                 os.system("runfull-svmlight train test")
+            elif self.classifier == "winnow":
+                os.system("paramsearch winnow train")
+                os.system("runfull-winnow train test")
             os.system("mv * " + pair + "/")
             os.chdir("..")
             os.system("rm -r " + tdir)
 
-    def perform_svm(self):
-        #generate sparse input
-        self.index_features()
-        #generate classifiers
-        self.generate_paired_classifiers()
-
-        exit()
+    def classify_pairs_parralel(self):
         pairs = list(glob.iglob(self.directory + '*'))
         chunks = gen_functions.make_chunks(pairs)
         processes = []
