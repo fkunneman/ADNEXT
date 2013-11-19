@@ -21,7 +21,7 @@ parser.add_argument('--excel', action = 'store_true', help = "Output lines in ex
 args = parser.parse_args() 
 
 if args.i[-3:] == "xls": 
-    lines = gen_functions.excel2lines(args.i,[1])[0]
+    lines = gen_functions.excel2lines(args.i,[0])[0]
     newlines = []
     for line in lines:
         newlines.append(args.d.join(line) + "\n")

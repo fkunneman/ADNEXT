@@ -281,6 +281,12 @@ class Tweetsfeatures():
             t.set_meta()
 
     def output_features(self, outfile):
+        if not os.path.exists("/".join(outfile.split("/")[:-1])):
+            d = -4
+            while d <= -1: 
+                if not os.path.exists("/".join(outfile.split("/")[:d])):
+                    os.system("mkdir " + "/".join(outfile.split("/")[:d]))
+                d+=1
         out = codecs.open(outfile,"w","utf-8")
         for i in self.instances:
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
