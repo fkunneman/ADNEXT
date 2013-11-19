@@ -120,65 +120,68 @@ class Classifier():
         # return training,test
 
     def generate_paired_classifiers(self,classifier):
+
+        def pairow(self,ps):
+            #generate bns-values per classifier
+            for pair in ps:
+                feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
+                positive = [instance for instance in self.training if instance["label"] == pair[0]]
+                negative = [instance for instance in self.training if instance["label"] == pair[1]]
+                #up- and downsample to equalize numbers
+                dif = abs(len(positive) - len(negative))
+                samplesize = int(dif/2)
+                lcp = lineconverter.Lineconverter(positive)
+                lcn = lineconverter.Lineconverter(negative)
+                if len(positive) > len(negative):
+                    lcp.sample(samplesize)
+                    lcn.sample(samplesize,sample_type="up")
+                else:
+                    lcp.sample(samplesize,sample_type="up")
+                    lcn.sample(samplesize)
+                positive = lcp.lines
+                negative = lcn.lines
+                training = positive + negative
+                pair0 = re.sub("-","minus",pair[0])
+                pairstring = pair0 + "_" + pair[1]
+                d = self.directory + pairstring + "/"
+                os.system("mkdir " + d)
+                train = open(d + "train","w")
+                test = open(d + "test", "w")
+                args = [[training,train],[self.test,test]]
+                if classifier == "svm":
+                    output = ["1","-1",":",""]
+                elif classifier == "winnow":
+                    output = ["1","0","(",")"]
+                for arg in args:
+                    for instance in arg[0]:
+                        features = list(set(instance["sparse"]))
+                        if instance["label"] == pair[0]:
+                            outstring = output[0]
+                        else:
+                            outstring = output[1]
+                        for feature in sorted(features):
+                            try:
+                                outstring += (" " + str(feature) + output[2] + str(feature_bns[feature]) + output[3])
+                            except KeyError:
+                                continue
+                        outstring += "\n"
+                        arg[1].write(outstring)
+                    arg[1].close()
+
         #obtain feature and label frequencies
         label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
-        #feature_label_frequency = defaultdict(lambda : defaultdict(int))
         #make a list of each possible label pair
         labels = label_frequency.keys()
-        pairs = []
         perm = itertools.combinations(labels,2)
-        for entry in perm:
-            pairs.append(list(entry))
-        #generate bns-values per classifier
-        for pair in pairs:
-            feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
-            positive = [instance for instance in self.training if instance["label"] == pair[0]]
-            negative = [instance for instance in self.training if instance["label"] == pair[1]]
-            #up- and downsample to equalize numbers
-            dif = abs(len(positive) - len(negative))
-            samplesize = int(dif/2)
-            lcp = lineconverter.Lineconverter(positive)
-            lcn = lineconverter.Lineconverter(negative)
-            if len(positive) > len(negative):
-                lcp.sample(samplesize)
-                lcn.sample(samplesize,sample_type="up")
-            else:
-                lcp.sample(samplesize,sample_type="up")
-                lcn.sample(samplesize)
-            positive = lcp.lines
-            negative = lcn.lines
-            training = positive + negative
-            if re.search("-",pair[0]):
-                pair0 = re.sub("-","minus",pair[0])
-            else:
-                pair0 = pair[0]
-            pairstring = pair0 + "_" + pair[1]
-            d = self.directory + pairstring + "/"
-            os.system("mkdir " + d)
-            train = open(d + "train","w")
-            test = open(d + "test", "w")
-            args = [[training,train],[self.test,test]]
-            if classifier == "svm":
-                output = ["1","-1",":",""]
-            elif classifier == "winnow":
-                output = ["1","0","(",")"]
-            for arg in args:
-                print arg
-                for instance in arg[0]:
-                    print instance
-                    features = list(set(instance["sparse"]))
-                    if instance["label"] == pair[0]:
-                        outstring = output[0]
-                    else:
-                        outstring = output[1]
-                    for feature in sorted(features):
-                        try:
-                            outstring += (" " + str(feature) + output[2] + str(feature_bns[feature]) + output[3])
-                        except KeyError:
-                            continue
-                    outstring += "\n"
-                    arg[1].write(outstring)
-                arg[1].close()
+        pairs = [list(entry) for entry in perm]
+        chunks = gen_functions.make_chunks(pairs)
+        processes = []
+        for chunk in chunks:
+            p = multiprocessing.Process(target=pairow,args=[chunk])
+            processes.append(p)
+            p.start()
+        for p in processes:
+            p.join()
 
         # i = 0
         # while (i+32) < len(pairs):
