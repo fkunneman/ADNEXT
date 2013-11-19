@@ -264,11 +264,11 @@ class Classifier():
             os.system("mv " + pair + "/train .")
             os.system("mv " + pair + "/test .")
             if self.classifier == "svm":
-                os.system("paramsearch svmlight train")
-                os.system("runfull-svmlight train test")
+                os.system("$PARAMSEARCH_DIR/paramsearch svmlight train")
+                os.system("$PARAMSEARCH_DIR/runfull-svmlight train test")
             elif self.classifier == "winnow":
-                os.system("paramsearch winnow train")
-                os.system("runfull-winnow train test")
+                os.system("$PARAMSEARCH_DIR/paramsearch winnow train")
+                os.system("$PARAMSEARCH_DIR/runfull-winnow train test")
             os.system("mv * " + pair + "/")
             os.chdir("..")
             os.system("rm -r " + tdir)
