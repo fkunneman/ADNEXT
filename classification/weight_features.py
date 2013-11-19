@@ -36,7 +36,7 @@ def infogain(label_frequency,feature_frequency,feature_label_frequency):
         feature_infogain[feature] = infogain
     return feature_infogain
 
-def ltqnorm(self,p):
+def ltqnorm(p):
     """
     Modified from the author's original perl code (original comments follow below)
     by dfield@yahoo-inc.com.  May 3, 2004.
@@ -107,7 +107,8 @@ def bns(pair,label_frequency,feature_label_frequency):
         neg = label_frequency[pair[1]]
         tpr = tp/pos
         fpr = fp/neg
-        bns = abs(self.ltqnorm(tpr) - self.ltqnorm(fpr))
+        bns = abs(ltqnorm(tpr) - ltqnorm(fpr))
+#        print feature,pair,tp,pos,fp,neg,tpr,fpr,bns
         if bns > 0.0:
             feature_bns[feature] = bns
     return feature_bns

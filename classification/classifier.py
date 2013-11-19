@@ -122,7 +122,7 @@ class Classifier():
     def generate_paired_classifiers(self,classifier):
         #obtain feature and label frequencies
         label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
-        feature_label_frequency = defaultdict(lambda : defaultdict(int))
+        #feature_label_frequency = defaultdict(lambda : defaultdict(int))
         #make a list of each possible label pair
         labels = label_frequency.keys()
         pairs = []
@@ -178,7 +178,7 @@ class Classifier():
                             continue
                     outstring += "\n"
                     arg[1].write(outstring)
-            arg[1].close()
+                arg[1].close()
 
         # i = 0
         # while (i+32) < len(pairs):
