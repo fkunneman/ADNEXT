@@ -121,7 +121,7 @@ class Classifier():
     def generate_paired_classifiers(self):
         #obtain feature and label frequencies
         label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
-        feature_label_frequency = defaultdict(lambda : defaultdict(int))
+        #feature_label_frequency = defaultdict(lambda : defaultdict(int))
         #make a list of each possible label pair
         labels = label_frequency.keys()
         pairs = []
@@ -170,32 +170,8 @@ class Classifier():
                         except KeyError:
                             continue
                     outstring += "\n"
-<<<<<<< HEAD
-                    test.write(outstring)
-                test.close()
-                tdir = os.getcwd() + "/" + pairstring + "/"
-                os.system("mkdir " + tdir)
-                os.chdir(tdir)
-                os.system("mv " + d + "train .")
-                os.system("mv " + d + "test .")
-                os.system("paramsearch svmlight ./train")
-                os.system("runfull-svmlight train test")
-                os.system("mv * " + d + "/")
-                os.chdir("..")
-                os.system("rm -r " + tdir)
-
-        chunks = gen_functions.make_chunks(pairs)
-        processes = []
-        for chunk in chunks:
-            p = multiprocessing.Process(target=classify_pairs,args=[chunk])
-            processes.append(p)
-            p.start()
-        for p in processes:
-            p.join()
-=======
                     arg[1].write(outstring)
-            arg[1].close()
->>>>>>> 978f42a9d40e782ec43b6cfbcceadf4867878a5f
+                arg[1].close()
 
         # i = 0
         # while (i+32) < len(pairs):
