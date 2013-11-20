@@ -141,8 +141,7 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
-                pair0 = re.sub("-","minus",pair[0])
-                pairstring = pair0 + "_" + pair[1]
+                pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
                 d = self.directory + pairstring + "/"
                 os.system("mkdir " + d)
                 train = open(d + "train","w")
@@ -267,7 +266,7 @@ class Classifier():
                 os.system("$PARAMSEARCH_DIR/paramsearch svmlight train")
                 os.system("$PARAMSEARCH_DIR/runfull-svmlight train test")
             elif self.classifier == "winnow":
-                os.system("$PARAMSEARCH_DIR/paramsearch winnow train")
+                os.system("$PARAMSEARCH_DIR/paramsearch winnow train 2")
                 os.system("$PARAMSEARCH_DIR/runfull-winnow train test")
             os.system("mv * " + pair + "/")
             os.chdir("..")
@@ -281,8 +280,8 @@ class Classifier():
             p = multiprocessing.Process(target=self.classify_pairs,args=[chunk])
             processes.append(p)
             p.start()
-        for p in processes:
-            p.join()
+        for pr in processes:
+            pr.join()
 
         #clf = svm.SVC()
         #clf.fit(training,labels)
