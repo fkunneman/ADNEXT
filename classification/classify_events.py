@@ -96,7 +96,6 @@ for i,event in enumerate(events):
     #generate classifiers
     if args.c == "svm" or args.c == "winnow":
         cl.generate_paired_classifiers()
-        exit()
         cl.classify_pairs_parralel
 
 # elif validation=="looe":
