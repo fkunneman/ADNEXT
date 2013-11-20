@@ -278,7 +278,7 @@ class Classifier():
         chunks = gen_functions.make_chunks(pairs)
         processes = []
         for chunk in chunks:
-            p = multiprocessing.Process(target=classify_pairs,args=[chunk])
+            p = multiprocessing.Process(target=self.classify_pairs,args=[chunk])
             processes.append(p)
             p.start()
         for p in processes:
