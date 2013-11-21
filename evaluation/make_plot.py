@@ -7,7 +7,7 @@ xlabel = sys.argv[2]
 ylabel = sys.argv[3]
 plotfiles = sys.argv[4:]
 
-linestyles = ['-.', '-', '--', ':']
+#linestyles = ['-.', '-', '--', ':']
 half = len(plotfiles)/2
 for i,pf in enumerate(plotfiles[:half]):
     pf_open = open(pf)
@@ -22,7 +22,7 @@ for i,pf in enumerate(plotfiles[:half]):
         else:
             ytoken = int(tokens[1])
         y.append(ytoken)
-    plt.plot(x,y,linestyle = linestyles[i])
+    plt.plot(x,y)
 legend = plotfiles[half:]
 plt.legend(legend,loc = "upper right",ncol = 2)
 plt.ylabel(ylabel)
