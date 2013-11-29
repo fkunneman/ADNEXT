@@ -11,8 +11,8 @@ parser.add_argument('-i', action = 'store', required = True, help = "The input f
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
 parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
 # parser.add_argument('-e', action = 'store', required = False, help = "An extra file name (needed for time deletion and the keepfile for extraction).")
-parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","extract","add_time","add_id"], help = "Choose the action to perform.")
-parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace or delete")
+parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","extract","add_time","add_id","filter"], help = "Choose the action to perform.")
+parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete or filter")
 parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace or delete (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
 parser.add_argument('--extract', action = 'store', required = False, nargs='+', help = "[EXTRACT] specify the number of lines to extract")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
@@ -70,6 +70,9 @@ if action == "delete":
     print "num lines before delete:",len(lineconvert.lines)
     lineconvert.delete_string(args.s, args.c)
     print "num lines after delete",len(lineconvert.lines)
+
+if action == "filter":
+    lineconvert.filter_string_end(args.s,args.c)
 
 if args.extract:
     if len(args.extract) > 1 and args.extract[1] == "steps":

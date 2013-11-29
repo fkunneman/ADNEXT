@@ -60,7 +60,7 @@ class Lineconverter():
                 newlines.append(newline)    
         self.lines = newlines
     
-    def delete_string(self,string, column):
+    def delete_string(self,string,column):
         newlines = []
         for line in self.lines:
             black = False
@@ -103,6 +103,28 @@ class Lineconverter():
             newlines.append(new_line)
         self.lines = newlines
         
+    def filter_string_end(self,key,column):
+
+        def has_end(sequence):
+            if re.match(sequence[-1],key,re.IGNORECASE):
+                return True
+            except:
+                return False             
+            if re.search("http://",sequence[-1]) or re.search("#",sequence[-1]):
+                has_end(sequence[:-1])
+            else:
+                return False
+
+        newlines = []
+
+        for line in self.lines:
+            text = line.split(self.delimiter)[column]
+            seq = text.split(" ")
+            if has_end(seq):
+                templist.append(line)
+
+        self.lines = newlines
+
     def sample(self,sample_size,sample_method = "random",sample_type="down"):
         num_lines = len(self.lines)
         sample = []
