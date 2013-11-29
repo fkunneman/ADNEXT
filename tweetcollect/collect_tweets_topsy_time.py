@@ -1,28 +1,57 @@
 #! /usr/bin/env python
 
 import sys
+import time
 import datetime
+import re
 import time_functions
 import urllib2
+import json
+import codecs
 
 time_file = open(sys.argv[1])
-tweet_file = open(sys.argv[2],"a")
-language = sys.argv[3]
+tweet_file = codecs.open(sys.argv[2],"a","utf-8")
+key = sys.argv[3]
+language = sys.argv[4]
 
-begin_time = time_functions.return_datetime(time_file.readlines()[0],time=True)
-end_time = begin_time + datetime.timedelta(days=1)
-begin_time_unix = begin_time.timestamp()
-end_time_unix = end_time.timestamp()
-
-tweets = []
-page = 1
-while True:
-    search = urllib2.url("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=sarcasme&mintime=" + begin_time_unix + "&maxtime=" + end_time_unix + "&type=tweet&locale=" + language + "&perpage=100&page=" + page) 
+def s(btu,etu,page):
+    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23" + key + "&mintime=" + btu + "&maxtime=" + etu + "&type=tweet&allow_lang=" + language + "&perpage=100&page=" + str(page)) 
     print page
-    print search
-    for entry in search["response"]["list"]:
-        tweets.append("\t".join(entry["topsy_trackback_url"],entry["date"],entry["trackback_author_nick"],entry["content"]))
-    page += 1
+    data = json.load(search)
+    return data
+    
+def collect_tweets(begin_time_unix,end_time_unix):
+    datetweets = []
+    p = 1
+    d = s(begin_time_unix,end_time_unix,p)
+    while len(d["response"]["list"]) > 0:
+        for entry in d["response"]["list"]:
+#            print entry["content"]
+            datetweets.append("\t".join([str(entry["topsy_trackback_url"].split("/")[-1]),time.strftime("%D %H:%M", time.localtime(entry["date"])),entry["trackback_author_nick"],re.sub("\n"," | ",entry["content"])]))
+        p += 1
+        d = s(begin_time_unix,end_time_unix,p)
+    return datetweets
+
+print key
+date_time = time_file.readlines()[0].strip().split(" ")
+begin_time = time_functions.return_datetime(date_time[0],time=date_time[1])
+end_time = begin_time + datetime.timedelta(days=1)
+begin_time_unix = str(int(time.mktime(begin_time.timetuple())))
+end_time_unix = str(int(time.mktime(end_time.timetuple())))
+new_tweets = collect_tweets(begin_time_unix,end_time_unix)
+while len(new_tweets) > 0:
+    print begin_time_unix,end_time_unix
+    print "len",len(new_tweets)
+    for t in new_tweets:
+        tweet_file.write(t + "\n")
+    begin_time = end_time
+    end_time = begin_time + datetime.timedelta(days=1)
+    begin_time_unix = str(int(time.mktime(begin_time.timetuple())))
+    end_time_unix = str(int(time.mktime(end_time.timetuple())))
+    new_tweets = collect_tweets(begin_time_unix,end_time_unix)
+
+print "done"
+tweet_file.close()
 
 
 # begin_time = end_time

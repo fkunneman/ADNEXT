@@ -22,6 +22,8 @@ for i,pf in enumerate(plotfiles[:half]):
         else:
             ytoken = int(tokens[1])
         y.append(ytoken)
+    print x
+    print y
     plt.plot(x,y)
 legend = plotfiles[half:]
 plt.legend(legend,loc = "upper right",ncol = 2)

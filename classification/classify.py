@@ -20,7 +20,7 @@ parser.add_argument('-v', action='store', required=True, choices=["test","n-fold
 parser.add_argument('-t', action='store', required=False, help="[TEST] give the file with test data")
 parser.add_argument('-n', action='store', required=False, help="[N-FOLD] specify n")
 # parser.add_argument('-l', action='store', required=False, nargs="+", help="[LOOE] specify the type of leave-one-out (regular,inner_domain or outer_domain) and (unless the type is \'regular\') a file with domain-event relations")
-# parser.add_argument('-m', action='store', required=False, nargs="+", help="[LOOE] specify a meta-file and the column of the event in the metafile ")
+parser.add_argument('-m', action='store', required=False, nargs="+", help="[LOOE] specify a meta-file and the column of the event in the metafile ")
 parser.add_argument('-c', action='store', required=True, choices=["lcs","knn","ibt","dist","random","majority"], help="the classifier")
 parser.add_argument('-a', action='store', required=False, nargs='+', help="the arguments needed for the chosen algorithm:\n\n[LCS] specify the directory in which classification is performed (make sure the config file and optionally a data-directory with indexes are present in this directory)\n[KNN] specify value(s) of k (the classifier will be ran for each value of k)\n[IBT] for the informed baseline time, choose to set the system to dummy by filling in \"dummy\"")
 parser.add_argument('-p', action='store', required=False, help="[OPTIONAL] to prune features, give a minimum frequency threshold")
