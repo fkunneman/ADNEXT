@@ -90,7 +90,7 @@ class Classifier():
     #             new_training.extend(sample)
     #     self.training = new_training
 
-    def index_features(self,top_frequency = -1,ind = 0):
+    def index_features(self,top_frequency,ind = 0):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
         for i,instance in enumerate(self.training):
@@ -99,7 +99,7 @@ class Classifier():
         #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
         for i,feature in enumerate(feature_frequency.keys()):
             self.feature_info[feature]=i+ind
-        zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
+        zerolist = [0] * top_frequency
         instances = self.training + self.test
         for instance in instances:
             instance["sparse"] = zerolist
@@ -108,9 +108,10 @@ class Classifier():
                 try:
                     index = self.feature_info[feature]
                     instance["sparse"][index] += 1
-                    # feature_freq[index] += 1
-                except KeyError:
+                    #[index] += 1
+                except:
                     continue
+            # print instance["features"],instance["sparse"]
             # for index in sorted(feature_freq.keys()):
             #     instance["sparse"].append(index)
 
@@ -118,6 +119,7 @@ class Classifier():
 
         def pairow(ps):
             #generate bns-values per classifier
+            print "pairow"
             for pair in ps:
                 feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
@@ -136,15 +138,17 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
+                print training
 
-                training_instances = [x["sparse"] for x in training]
-                training_csr = csr_matrix(training_instances,dtype=float64)
+#                training_instances = [x["sparse"] for x in training]
+                
+                training_csr = csr_matrix(training)
+                training_labels = [x["label"] for x in training]
                 test_instances = [x["sparse"] for x in self.test]
-                test_csr = csr_matrix(test_instances,dtype=float64)
-                return 
+                test_csr = csr_matrix(test_instances)
 
                 clf = svm.SVC()
-                clf.fit(training_csr,labels)
+                clf.fit(training_csr,training_labels)
                 #print clf.n_support_
                 #print clf.predict(test)
                 for i,t in enumerate(self.test):        
