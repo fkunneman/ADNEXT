@@ -15,7 +15,7 @@ key = sys.argv[3]
 language = sys.argv[4]
 
 def s(btu,etu,page):
-    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23" + key + "&mintime=" + btu + "&maxtime=" + etu + "&type=tweet&allow_lang=" + language + "&perpage=100&page=" + str(page)) 
+    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23" + key + "&mintime=" + btu + "&maxtime=" + etu + "&allow_lang=" + language + "&type=tweet&perpage=100&page=" + str(page)) 
     print page
     data = json.load(search)
     return data
