@@ -33,7 +33,6 @@ if len(args.i) <= 1:
     exit()
 depth = args.depth * -1
 
-
 #read in instances
 print "Reading in events..."
 event_instances = defaultdict(list)

@@ -6,7 +6,7 @@ import os
 from collections import defaultdict
 import math
 import numpy
-#from sklearn import svm
+from sklearn import svm
 from scipy.sparse import *
 from scipy import *
 from pylab import *
@@ -90,7 +90,7 @@ class Classifier():
     #             new_training.extend(sample)
     #     self.training = new_training
 
-    def index_features(self,top_frequency = -1,ind = 1):
+    def index_features(self,top_frequency = -1,ind = 0):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
         for i,instance in enumerate(self.training):
@@ -99,25 +99,20 @@ class Classifier():
         #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
         for i,feature in enumerate(feature_frequency.keys()):
             self.feature_info[feature]=i+ind
-        #zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
+        zerolist = [0] * len(feature_frequency_sorted[:top_frequency])
         instances = self.training + self.test
         for instance in instances:
-            instance["sparse"] = []
+            instance["sparse"] = zerolist
             feature_freq = defaultdict(int)
             for feature in instance["features"]:
                 try:
                     index = self.feature_info[feature]
-                    feature_freq[index] += 1
+                    instance["sparse"][index] += 1
+                    # feature_freq[index] += 1
                 except KeyError:
                     continue
-            for index in sorted(feature_freq.keys()):
-                instance["sparse"].append(index)
-        
-        # training_instances = [x["sparse"] for x in self.training]
-        # training = csr_matrix(training_instances,dtype=float64)
-        # test_instances = [x["sparse"] for x in self.test]
-        # test = csr_matrix(test_instances,dtype=float64)
-        # return training,test
+            # for index in sorted(feature_freq.keys()):
+            #     instance["sparse"].append(index)
 
     def generate_paired_classifiers(self):
 
@@ -141,31 +136,45 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
-                pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
-                d = self.directory + pairstring + "/"
-                os.system("mkdir " + d)
-                train = open(d + "train","w")
-                test = open(d + "test", "w")
-                args = [[training,train],[self.test,test]]
-                if self.classifier == "svm":
-                    output = ["1","-1",":",""]
-                elif self.classifier == "winnow":
-                    output = ["1","0","(",")"]
-                for arg in args:
-                    for instance in arg[0]:
-                        features = list(set(instance["sparse"]))
-                        if instance["label"] == pair[0]:
-                            outstring = output[0]
-                        else:
-                            outstring = output[1]
-                        for feature in sorted(features):
-                            try:
-                                outstring += (" " + str(feature) + output[2] + str(feature_bns[feature]) + output[3])
-                            except KeyError:
-                                continue
-                        outstring += "\n"
-                        arg[1].write(outstring)
-                    arg[1].close()
+
+                training_instances = [x["sparse"] for x in training]
+                training_csr = csr_matrix(training_instances,dtype=float64)
+                test_instances = [x["sparse"] for x in self.test]
+                test_csr = csr_matrix(test_instances,dtype=float64)
+                return 
+
+                clf = svm.SVC()
+                clf.fit(training_csr,labels)
+                #print clf.n_support_
+                #print clf.predict(test)
+                for i,t in enumerate(self.test):        
+                    print t["label"],clf.predict(test_csr[i])
+
+                # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
+                # d = self.directory + pairstring + "/"
+                # os.system("mkdir " + d)
+                # train = open(d + "train","w")
+                # test = open(d + "test", "w")
+                # args = [[training,train],[self.test,test]]
+                # if self.classifier == "svm":
+                #     output = ["1","-1",":",""]
+                # elif self.classifier == "winnow":
+                #     output = ["1","0","(",")"]
+                # for arg in args:
+                #     for instance in arg[0]:
+                #         features = list(set(instance["sparse"]))
+                #         if instance["label"] == pair[0]:
+                #             outstring = output[0]
+                #         else:
+                #             outstring = output[1]
+                #         for feature in sorted(features):
+                #             try:
+                #                 outstring += (" " + str(feature) + output[2] + str(feature_bns[feature]) + output[3])
+                #             except KeyError:
+                #                 continue
+                #         outstring += "\n"
+                #         arg[1].write(outstring)
+                #     arg[1].close()
 
         #obtain feature and label frequencies
         label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
@@ -282,6 +291,12 @@ class Classifier():
             p.start()
         for pr in processes:
             pr.join()
+
+        # training_instances = [x["sparse"] for x in self.training]
+        # training = csr_matrix(training_instances,dtype=float64)
+        # test_instances = [x["sparse"] for x in self.test]
+        # test = csr_matrix(test_instances,dtype=float64)
+        # return training,test
 
         #clf = svm.SVC()
         #clf.fit(training,labels)

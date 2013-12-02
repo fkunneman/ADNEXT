@@ -106,22 +106,22 @@ class Lineconverter():
     def filter_string_end(self,key,column):
 
         def has_end(sequence):
-            if re.match(sequence[-1],key,re.IGNORECASE):
-                return True
+            try: 
+                if re.match(sequence[-1],key,re.IGNORECASE):
+                    return True          
+                elif re.search("http://",sequence[-1]) or re.search("#",sequence[-1]):
+                    return has_end(sequence[:-1])
+                else:
+                    return False
             except:
-                return False             
-            if re.search("http://",sequence[-1]) or re.search("#",sequence[-1]):
-                has_end(sequence[:-1])
-            else:
-                return False
-
+                return False 
         newlines = []
 
         for line in self.lines:
             text = line.split(self.delimiter)[column]
-            seq = text.split(" ")
+            seq = text.strip().split(" ")
             if has_end(seq):
-                templist.append(line)
+                newlines.append(line)
 
         self.lines = newlines
 
