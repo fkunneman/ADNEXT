@@ -88,14 +88,14 @@ for i,event in enumerate(events):
     cl = Classifier(train,test,directory = eventdir,classifier=args.c)
     # if args.u:
     #     cl.undersample()
-    if args.f:
-        cl.top_features(args.f)
+    # if args.f:
+    #     cl.top_features(args.f)
     #generate sparse input
-    cl.index_features()
+    cl.index_features(top_frequency = args.f)
     #generate classifiers
     if args.c == "svm" or args.c == "winnow":
         cl.generate_paired_classifiers()
-        cl.classify_pairs_parralel()
+        # cl.classify_pairs_parralel()
 
 # elif validation=="looe":
 #     print "generating train-test"
