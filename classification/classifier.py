@@ -142,9 +142,11 @@ class Classifier():
                 rawinput_train_test = [training,self.test]
                 svminput_train_test = [[[],[]],[[],[]]]
                 for i in [0,1]:
+                    print "train or test", i
                     for instance in rawinput_train_test[i]:
                         vector = zerolist
                         for feature in instance["sparse"]:
+                            print feature
                             vector[feature] = feature_bns[feature]
                         svminput_train_test[i][0].append(vector)
                         svminput_train_test[i][1].append(instance["label"])
