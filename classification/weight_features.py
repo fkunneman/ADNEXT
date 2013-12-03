@@ -12,9 +12,9 @@ def generate_frequencies(instances,feature_string):
     for instance in instances:     
         label = instance["label"]
         label_frequency[label] += 1
-        for i,feature in enumerate(instance[feature_string]):
-            feature_frequency[i] += feature
-            feature_label_frequency[i][label] += feature
+        for feature in instance[feature_string].keys()):
+            feature_frequency[feature] += instance[feature_string][feature]
+            feature_label_frequency[feature][label] += instance[feature_string][feature]
     return label_frequency,feature_frequency,feature_label_frequency
 
 def infogain(label_frequency,feature_frequency,feature_label_frequency):

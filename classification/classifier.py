@@ -99,11 +99,10 @@ class Classifier():
         #feature_frequency_sorted = sorted(feature_frequency.items(), key=lambda x: x[1],reverse=True)
         for i,feature in enumerate(feature_frequency.keys()):
             self.feature_info[feature]=i+ind
-        zerolist = [0] * top_frequency
+        #zerolist = [0] * top_frequency
         instances = self.training + self.test
         for instance in instances:
-            instance["sparse"] = zerolist
-            feature_freq = defaultdict(int)
+            instance["sparse"] = defaultdict(int)
             for feature in instance["features"]:
                 try:
                     index = self.feature_info[feature]
