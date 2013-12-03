@@ -110,6 +110,5 @@ def bns(pair,label_frequency,feature_label_frequency):
         fpr = fp/neg
         bns = round((abs(ltqnorm(tpr) - ltqnorm(fpr))),2)
 #        print feature,pair,tp,pos,fp,neg,tpr,fpr,bns
-        if bns > 0.0:
-            feature_bns[feature] = bns
+        feature_bns[feature] = bns
     return feature_bns
