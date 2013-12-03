@@ -100,6 +100,7 @@ def ltqnorm(p):
 
 def bns(pair,label_frequency,feature_label_frequency):
     feature_bns = {}
+    print label_frequency,feature_label_frequency
     for feature in feature_label_frequency.keys():
         tp = feature_label_frequency[feature][pair[0]]
         pos = label_frequency[pair[0]]

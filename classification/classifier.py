@@ -122,6 +122,7 @@ class Classifier():
             print "pairow"
             for pair in ps:
                 feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
+                print feature_bns
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
@@ -138,7 +139,7 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
-                print training
+                #print training
 
 #                training_instances = [x["sparse"] for x in training]
                 
