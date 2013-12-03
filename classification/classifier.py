@@ -114,7 +114,7 @@ class Classifier():
             # for index in sorted(feature_freq.keys()):
             #     instance["sparse"].append(index)
 
-    def generate_paired_classifiers(self,n):
+    def generate_paired_classifiers(self):
 
         def pairow(ps):
             #generate bns-values per classifier
@@ -137,16 +137,14 @@ class Classifier():
                 negative = lcn.lines
                 training = positive + negative
                 #print training
-                zerolist = [0] * n
+                zerolist = [0] * len(self.feature_info.keys())
 #                training_instances = [x["sparse"] for x in training]
                 rawinput_train_test = [training,self.test]
                 svminput_train_test = [[[],[]],[[],[]]]
                 for i in [0,1]:
-                    print "train or test", i
                     for instance in rawinput_train_test[i]:
                         vector = zerolist
                         for feature in instance["sparse"]:
-                            print feature
                             vector[feature] = feature_bns[feature]
                         svminput_train_test[i][0].append(vector)
                         svminput_train_test[i][1].append(instance["label"])
@@ -155,6 +153,7 @@ class Classifier():
                 clf.fit(svminput_train_test[0][0],svminput_train_test[0][1])
                 #print clf.n_support_
                 #print clf.predict(test)
+#                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
                 for i,t in enumerate(svminput_train_test[1][0]):        
                     print svminput_train_test[1][1][i],clf.predict(t)
 

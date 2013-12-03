@@ -94,7 +94,7 @@ for i,event in enumerate(events):
     cl.index_features()
     #generate classifiers
     if args.c == "svm" or args.c == "winnow":
-        cl.generate_paired_classifiers(args.f)
+        cl.generate_paired_classifiers()
         # cl.classify_pairs_parralel()
 
 # elif validation=="looe":
