@@ -90,7 +90,7 @@ class Classifier():
     #             new_training.extend(sample)
     #     self.training = new_training
 
-    def index_features(self,top_frequency,ind = 0):
+    def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
         for i,instance in enumerate(self.training):
