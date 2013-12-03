@@ -102,26 +102,24 @@ class Classifier():
         #zerolist = [0] * top_frequency
         instances = self.training + self.test
         for instance in instances:
-            instance["sparse"] = defaultdict(int)
+            sparse_features = []
             for feature in instance["features"]:
                 try:
-                    index = self.feature_info[feature]
-                    instance["sparse"][index] += 1
+                    sparse_features.append(self.feature_info[feature])
                     #[index] += 1
                 except:
                     continue
+            instance["sparse"] = list(set(sparse_features))
             # print instance["features"],instance["sparse"]
             # for index in sorted(feature_freq.keys()):
             #     instance["sparse"].append(index)
 
-    def generate_paired_classifiers(self):
+    def generate_paired_classifiers(self,n):
 
         def pairow(ps):
             #generate bns-values per classifier
-            print "pairow"
             for pair in ps:
                 feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
-                print feature_bns
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
@@ -139,20 +137,24 @@ class Classifier():
                 negative = lcn.lines
                 training = positive + negative
                 #print training
-
+                zerolist = [0] * top_frequency
 #                training_instances = [x["sparse"] for x in training]
-                
-                training_csr = csr_matrix(training)
-                training_labels = [x["label"] for x in training]
-                test_instances = [x["sparse"] for x in self.test]
-                test_csr = csr_matrix(test_instances)
-
+                rawinput_train_test = [training,self.test]
+                svminput_train_test = [[[],[]],[[],[]]]
+                for i in [0,1]:
+                    for instance in rawinput_train_test[i]:
+                        vector = zerolist
+                        for feature in instance["sparse"]:
+                            vector[feature] = feature_bns[feature]
+                        svminput_train_test[i][0].append(vector)
+                        svminput_train_test[i][1].append(instance["label"])
+                #training_csr = csr_matrix(training)
                 clf = svm.SVC()
-                clf.fit(training_csr,training_labels)
+                clf.fit(svminput_train_test[0][0],svminput_train_test[0][1])
                 #print clf.n_support_
                 #print clf.predict(test)
-                for i,t in enumerate(self.test):        
-                    print t["label"],clf.predict(test_csr[i])
+                for i,t in enumerate(svminput_train_test[1][0]):        
+                    print svminput_train_test[1][1][i],clf.predict(t)
 
                 # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
                 # d = self.directory + pairstring + "/"
