@@ -188,7 +188,7 @@ class Classifier():
         labels = label_frequency.keys()
         perm = itertools.combinations(labels,2)
         pairs = [list(entry) for entry in perm]
-        pairow(pairs[0])
+        pairow(pairs[:2])
         # chunks = gen_functions.make_chunks(pairs)
         # processes = []
         # for chunk in chunks:
