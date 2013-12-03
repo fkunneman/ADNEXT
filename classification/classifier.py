@@ -137,7 +137,7 @@ class Classifier():
                 negative = lcn.lines
                 training = positive + negative
                 #print training
-                zerolist = [0] * top_frequency
+                zerolist = [0] * n
 #                training_instances = [x["sparse"] for x in training]
                 rawinput_train_test = [training,self.test]
                 svminput_train_test = [[[],[]],[[],[]]]
@@ -188,14 +188,15 @@ class Classifier():
         labels = label_frequency.keys()
         perm = itertools.combinations(labels,2)
         pairs = [list(entry) for entry in perm]
-        chunks = gen_functions.make_chunks(pairs)
-        processes = []
-        for chunk in chunks:
-            p = multiprocessing.Process(target=pairow,args=[chunk])
-            processes.append(p)
-            p.start()
-        for p in processes:
-            p.join()
+        pairow(pairs[0])
+        # chunks = gen_functions.make_chunks(pairs)
+        # processes = []
+        # for chunk in chunks:
+        #     p = multiprocessing.Process(target=pairow,args=[chunk])
+        #     processes.append(p)
+        #     p.start()
+        # for p in processes:
+        #     p.join()
 
         # i = 0
         # while (i+32) < len(pairs):
