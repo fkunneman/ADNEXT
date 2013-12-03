@@ -12,7 +12,7 @@ def generate_frequencies(instances,feature_string):
     for instance in instances:     
         label = instance["label"]
         label_frequency[label] += 1
-        for feature in instance[feature_string].keys()):
+        for feature in instance[feature_string].keys():
             feature_frequency[feature] += instance[feature_string][feature]
             feature_label_frequency[feature][label] += instance[feature_string][feature]
     return label_frequency,feature_frequency,feature_label_frequency
@@ -100,7 +100,7 @@ def ltqnorm(p):
 
 def bns(pair,label_frequency,feature_label_frequency):
     feature_bns = {}
-    print label_frequency,feature_label_frequency
+    #print label_frequency,feature_label_frequency
     for feature in feature_label_frequency.keys():
         tp = feature_label_frequency[feature][pair[0]]
         pos = label_frequency[pair[0]]
