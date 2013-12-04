@@ -150,6 +150,11 @@ class Classifier():
                         svminput_train_test[i][1].append(instance["label"])
                 #training_csr = csr_matrix(training)
                 clf = svm.SVC()
+                param_grid = [
+                    {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
+                    {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']},
+                ]
+                clf = GridSearchCV(SVC(C=1), param_grid, cv=5)
                 clf.fit(svminput_train_test[0][0],svminput_train_test[0][1])
                 #print clf.n_support_
                 #print clf.predict(test)
