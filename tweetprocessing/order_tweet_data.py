@@ -27,6 +27,7 @@ if args.i[-3:] == "xls":
     tweets = gen_functions.excel2lines(args.i,[0],args.header,date=datecolumn)[0]
 else:
     tweets = infile.readlines()
+print tweets
 if args.header:
     tweets.pop()
 for line in tweets:
