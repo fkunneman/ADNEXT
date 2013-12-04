@@ -2,6 +2,7 @@
 
 import codecs
 import argparse
+import gen_functions
 
 """
 Program to put tweet metadata in the right order for tweets_2_features.py
@@ -24,24 +25,30 @@ outfile = codecs.open(args.o,"w","utf-8")
 column_sequence = [args.label,args.id,args.user,args.date,args.time,args.text]
 
 if args.i[-3:] == "xls": 
-    tweets = gen_functions.excel2lines(args.i,[0],args.header,date=datecolumn)[0]
+    tweets = gen_functions.excel2lines(args.i,[0],date=args.date)[0]
 else:
     tweets = infile.readlines()
-print tweets
+#print tweets
+
 if args.header:
-    tweets.pop()
+    tweets.pop(0)
 for line in tweets:
-    tokens = line.split("\t")
+    if not args.i[-3:] == "xls":
+	tokens = line.strip().split("\t")
+    else:
+        tokens = line
     outfields = []
     if args.man:
         outfields.append(args.man)
         column_sequence = column_sequence[1:]
     for column in column_sequence:
         if column != None:
+            if tokens[column] == "":
+                tokens[column] = "-"
             outfields.append(tokens[column])
         else:
             outfields.append("-")
-    outfile.write("\t".join(outfields))
+    outfile.write("\t".join(outfields) + "\n")
 
 infile.close()
 outfile.close()
