@@ -156,6 +156,7 @@ class Classifier():
                 ]
                 clf = GridSearchCV(SVC(C=1), param_grid, cv=5)
                 clf.fit(svminput_train_test[0][0],svminput_train_test[0][1])
+                print dir(clf)
                 #print clf.n_support_
                 #print clf.predict(test)
 #                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
