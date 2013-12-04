@@ -154,8 +154,8 @@ class Classifier():
                 #print clf.n_support_
                 #print clf.predict(test)
 #                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
-                for i,t in enumerate(svminput_train_test[1][0]):        
-                    print svminput_train_test[1][1][i],clf.predict(t)
+                for i,t in enumerate(svminput_train_test[0][0]):        
+                    print svminput_train_test[0][1][i],clf.predict(t)
 
                 # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
                 # d = self.directory + pairstring + "/"
