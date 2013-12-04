@@ -159,10 +159,13 @@ class Classifier():
                 print "fitting with paramgrid"
 #                print svminput_train_test[0][0]
                 clf.fit(svminput_train_test[0][0],numpy.asarray(svminput_train_test[0][1]))
+                print clf.best_params_, clf.best_score_, clf.grid_scores_, clf.best_estimator_
+                exit()
                 #print clf.n_support_
                 #print clf.predict(test)
 #                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
-                for i,t in enumerate(svminput_train_test[1][0]):        
+                for i,t in enumerate(svminput_train_test[1][0]):
+                    print dir(clf.predict(t))        
                     print svminput_train_test[1][1][i],clf.predict(t)
 
                 # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
