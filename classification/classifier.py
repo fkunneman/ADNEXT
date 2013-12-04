@@ -103,14 +103,16 @@ class Classifier():
         #zerolist = [0] * top_frequency
         instances = self.training + self.test
         for instance in instances:
-            sparse_features = []
+            #sparse_features = []
+            sparse_features = defaultdict(int)
             for feature in instance["features"]:
                 try:
-                    sparse_features.append(self.feature_info[feature])
-                    #[index] += 1
+                    #sparse_features.append(self.feature_info[feature])
+                    sparse_features[self.feature_info[feature]] += 1
                 except:
                     continue
-            instance["sparse"] = list(set(sparse_features))
+            #instance["sparse"] = list(set(sparse_features))
+            instance["sparse"] = sparse_features
             # print instance["features"],instance["sparse"]
             # for index in sorted(feature_freq.keys()):
             #     instance["sparse"].append(index)
@@ -120,7 +122,7 @@ class Classifier():
         def pairow(ps):
             #generate bns-values per classifier
             for pair in ps:
-                feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
+                #feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
@@ -145,8 +147,10 @@ class Classifier():
                 for i in [0,1]:
                     for instance in rawinput_train_test[i]:
                         vector = zerolist
-                        for feature in instance["sparse"]:
-                            vector[feature] = feature_bns[feature]
+                        #for feature in instance["sparse"]:
+                            #vector[feature] = feature_bns[feature]
+                        for feature in instance["sparse"].keys():
+                            vector[feature] = instance["sparse"][feature]
                         svminput_train_test[i][0].append(vector)
                         svminput_train_test[i][1].append(instance["label"])
                 #training_csr = csr_matrix(training)
@@ -159,7 +163,7 @@ class Classifier():
                 print "fitting with paramgrid"
 #                print svminput_train_test[0][0]
                 clf.fit(svminput_train_test[0][0],numpy.asarray(svminput_train_test[0][1]))
-                print clf.best_params_, clf.best_score_, clf.grid_scores_, clf.best_estimator_
+                print clf.best_params_, clf.best_score_
                 exit()
                 #print clf.n_support_
                 #print clf.predict(test)
@@ -195,7 +199,7 @@ class Classifier():
                 #     arg[1].close()
 
         #obtain feature and label frequencies
-        label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
+        #label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
         #make a list of each possible label pair
         labels = label_frequency.keys()
         perm = itertools.combinations(labels,2)
