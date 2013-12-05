@@ -119,7 +119,6 @@ class Tweetsfeatures():
 
         for t in self.instances:
             wordsequence = t.text.split(" ")
-            print wordsequence
             t.features.extend(make_ngrams(wordsequence,n))
   
     def add_char_ngrams(self,n,ignore = False):
