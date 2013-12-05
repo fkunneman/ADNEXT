@@ -103,14 +103,16 @@ class Classifier():
         #zerolist = [0] * top_frequency
         instances = self.training + self.test
         for instance in instances:
-            sparse_features = []
+            #sparse_features = []
+            sparse_features = defaultdict(int)
             for feature in instance["features"]:
                 try:
-                    sparse_features.append(self.feature_info[feature])
-                    #[index] += 1
+                    #sparse_features.append(self.feature_info[feature])
+                    sparse_features[self.feature_info[feature]] += 1
                 except:
                     continue
-            instance["sparse"] = list(set(sparse_features))
+            #instance["sparse"] = list(set(sparse_features))
+            instance["sparse"] = sparse_features
             # print instance["features"],instance["sparse"]
             # for index in sorted(feature_freq.keys()):
             #     instance["sparse"].append(index)
@@ -120,7 +122,7 @@ class Classifier():
         def pairow(ps):
             #generate bns-values per classifier
             for pair in ps:
-                feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
+                #feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
                 #up- and downsample to equalize numbers
@@ -138,35 +140,39 @@ class Classifier():
                 negative = lcn.lines
                 training = positive + negative
                 #print training
-                zerolist = [0.0] * len(self.feature_info.keys())
+                zerolist = [0] * len(self.feature_info.keys())
 #                training_instances = [x["sparse"] for x in training]
                 rawinput_train_test = [training,self.test]
                 svminput_train_test = [[[],[]],[[],[]]]
                 for i in [0,1]:
                     for instance in rawinput_train_test[i]:
                         vector = zerolist
-                        for feature in instance["sparse"]:
+                        #for feature in instance["sparse"]:
+                        #for feature in instance["sparse"]:
                             #vector[feature] = feature_bns[feature]
-                            vector[feature] = 1                         
+                        for feature in instance["sparse"].keys():
+                            vector[feature] = instance["sparse"][feature]
                         svminput_train_test[i][0].append(vector)
                         svminput_train_test[i][1].append(instance["label"])
                 #training_csr = csr_matrix(training)
-                #clf = svm.SVC()
+                clf = svm.SVC(probability=True,verbose=True)
                 param_grid = [
                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
                 ]
-                clf = GridSearchCV(svm.SVC(C = 1), param_grid, cv=5, n_jobs=16)
+                #clf = GridSearchCV(svm.SVC(C = 1), param_grid, cv=5, n_jobs=16)
                 print "fitting with paramgrid"
 #                print svminput_train_test[0][0]
-                clf.fit(svminput_train_test[0][0],numpy.asarray(svminput_train_test[0][1]))
-                print clf.best_params_, clf.best_score_, clf.best_estimator_
+                #clf.fit(svminput_train_test[0][0],numpy.asarray(svminput_train_test[0][1]))
+                clf.fit(svminput_train_test[0][0],svminput_train_test[0][1])
+                #print svminput_train_test[0][1],svminput_train_test[0][0][0],svminput_train_test[1][0][0]
+                #print clf.best_params_, clf.best_score_, clf.best_estimator_
                 #print clf.n_support_
                 #print clf.predict(test)
 #                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
                 for i,t in enumerate(svminput_train_test[1][0]):
                     #print t
-                    print svminput_train_test[1][1][i],clf.predict(t)
+                    print svminput_train_test[1][1][i],clf.predict_proba(t)
 
                 # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
                 # d = self.directory + pairstring + "/"
@@ -195,9 +201,9 @@ class Classifier():
                 #     arg[1].close()
 
         #obtain feature and label frequencies
-        label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
+        #label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
         #make a list of each possible label pair
-        labels = label_frequency.keys()
+        labels = list(set([x["label"] for x in self.training]))
         perm = itertools.combinations(labels,2)
         pairs = [list(entry) for entry in perm]
         pairow(pairs[:2])

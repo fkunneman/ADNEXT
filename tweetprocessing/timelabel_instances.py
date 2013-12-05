@@ -22,25 +22,25 @@ parser.add_argument('-b', action = 'store', type=int, required = False, help = "
     "class, specify before which anount of time units this label is given")
 args = parser.parse_args() 
 
-tweetfile = codecs.open(args.i,"utf-8","r")
-outfile = codecs.open(args.o,"utf-8","r")
+tweetfile = codecs.open(args.i,"r","utf-8")
+outfile = codecs.open(args.o,"w","utf-8")
 
 eventhash = time_functions.generate_event_time_hash(args.e)
 event_time = eventhash[args.n]
 for tweet in tweetfile.readlines():
     tokens = tweet.split("\t")
-    time = time_functions.return_datetime(tokens[args.d],tokens[args.t],"vs")
+    tweet_datetime = time_functions.return_datetime(tokens[args.d],tokens[args.t],"vs")
     #Extract the time difference between the tweet and the event 
-    if tweet_datetime < event_datetime_begin:
-        tweet_event_time=time_functions.timerel(event_datetime_begin,tweet_datetime,timeunit) * -1
+    if tweet_datetime < event_time[0]:
+        tweet_event_time=time_functions.timerel(event_time[0],tweet_datetime,args.u) * -1
         if args.b and tweet_event_time < args.b:
             label="early"
         else:
             label=str(tweet_event_time)
     else:
-        if tweet_datetime < event_datetime_end:
+        if tweet_datetime < event_time[1]:
             label="during"
         else:
             label="after"
-    tokens = label + tokens
+    tokens = [label] + tokens
     outfile.write("\t".join(tokens))

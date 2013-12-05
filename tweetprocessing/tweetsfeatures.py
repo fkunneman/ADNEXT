@@ -436,7 +436,6 @@ class Tweetsfeatures():
     class Tweet:
         """Class containing the features and characteristics of a tweet."""
         def __init__(self,tokens):
-            print tokens
             self.label=tokens[0]
             self.id=str(tokens[1])
             self.user=tokens[2]
