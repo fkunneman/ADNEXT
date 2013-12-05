@@ -139,6 +139,9 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
+                for t in training:
+                    print training["label"]["sparse"]
+                exit()
                 #print training
                 zerolist = [0] * len(self.feature_info.keys())
 #                training_instances = [x["sparse"] for x in training]
