@@ -82,7 +82,7 @@ class Tweetsfeatures():
                     t.wordsequence[i]=replace
 
     #Make N-grams of tweets that were set
-    def add_ngrams(self,word=1,n=3):
+    def add_ngrams(self,n):
         """
         Extend features with N-grams.
         Can only be used after 'set_tweets' or 'set_tweets_oneline'
@@ -118,9 +118,9 @@ class Tweetsfeatures():
             return ngram_features
 
         for t in self.instances:
-            features=t.features
-            features.extend(make_ngrams(t.wordsequence,n))
-            t.set_features(features)
+            wordsequence = t.text.split(" ")
+            print wordsequence
+            t.features.extend(make_ngrams(wordsequence,n))
   
     def add_char_ngrams(self,n,ignore = False):
         """
