@@ -82,7 +82,7 @@ class Classifier():
             else:
                 instances = lineconverter.Lineconverter(label_instances[label])
                 if len(instances.lines) < median:
-                    print "up"
+                    print "up", len(instances.lines)
                     instances.sample(median,sample_type="up")
                 else:
                     print "down"
