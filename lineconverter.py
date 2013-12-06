@@ -147,4 +147,3 @@ class Lineconverter():
             elif sample_type=="up":
                 for i in sample:
                     self.lines.append(self.lines[i])
-            print "within", len(self.lines)
