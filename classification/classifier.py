@@ -85,9 +85,10 @@ class Classifier():
                     instances.sample(median,sample_type="up")
                 else:
                     instances.sample(median)
+                print label,instances.lines
                 new_training.extend(instances.lines)
         self.training = new_training
-        print [x["label"] for x in self.training]
+        #print [x["label"] for x in self.training]
         exit()
 
     def index_features(self,ind = 0):
