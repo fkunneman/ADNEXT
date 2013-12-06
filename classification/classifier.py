@@ -81,7 +81,7 @@ class Classifier():
                 new_training.extend(label_instances[label])
             else:
                 instances = lineconverter.Lineconverter(label_instances[label])
-                if len(instances.lines) > median:
+                if len(instances.lines) < median:
                     instances.sample(median,sample_type="up")
                 else:
                     instances.sample(median)
