@@ -93,6 +93,7 @@ for i,event in enumerate(events):
     #     cl.undersample()
     if args.f:
         cl.prune_features_topfrequency(args.f)
+    cl.balance_data()
     #generate sparse input
     cl.index_features()
     #generate classifiers
