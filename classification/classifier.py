@@ -74,8 +74,8 @@ class Classifier():
         for instance in self.training:     
             label = instance["label"]
             label_instances[label].append(instance)
-        mean_instances = int(numpy.mean(numpy.array([len(label_instances[x]) for x in label_instances.keys()])))
-        print mean_instances,[len(label_instances[x]) for x in label_instances.keys()]
+        median_instances = int(numpy.median(numpy.array([len(label_instances[x]) for x in label_instances.keys()])))
+        print median_instances,[len(label_instances[x]) for x in label_instances.keys()]
         exit()
         sorted_labels = sorted(label_frequency, key=label_frequency.get, reverse=True)
         lowest_freq = label_frequency[sorted_labels[-1]]
