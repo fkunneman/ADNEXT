@@ -48,23 +48,26 @@ for ef in args.i:
         values = tweet.strip().split("\t")
         tweets.append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})    
     #generate instance windows based on window- and stepsize
-    features = []
+    #features = []
     i = 0
     while i+args.window < len(tweets):
+        #print len(features)
+        #specify meta of last tweet in window as 'window'
         window = tweets[i+args.window]
-        if len(features) == 0:
-            for tweet in tweets[i:i+args.window]:
-                features.extend(tweet["features"])
-        else:
+        #if len(features) == 0:
+        features = []
+        for tweet in tweets[i:i+args.window]:
+            features.extend(tweet["features"])
+        #else:
             #cut features at beginning of window and add at the rear
             #extract length of step features
-            length = 0
-            for tweet in tweets[i-args.step:i]:
-                length += len(tweet["features"])
-            features = features[length:]
-            for tweet in tweets[i+(args.window-args.step):i+args.window]:
-                features.extend(tweet["features"])
-        i+=args.step
+        #    length = 0
+        #    for tweet in tweets[i-args.step:i]:
+        #        length += len(tweet["features"])
+        #    features = features[length:]
+        #    for tweet in tweets[i+(args.window-args.step):i+args.window]:
+        #        features.extend(tweet["features"])
+        i+=args.step     
         event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
 
 print "Starting classification..."

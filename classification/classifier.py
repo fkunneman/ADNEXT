@@ -8,9 +8,10 @@ import math
 import numpy
 from sklearn import svm
 from sklearn.grid_search import GridSearchCV
+from sklearn import preprocessing
 from scipy.sparse import *
 from scipy import *
-from pylab import *
+#from pylab import *
 import re
 import itertools
 import glob
@@ -125,6 +126,7 @@ class Classifier():
                 #feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
+                labeldict = {pair[0]:1, pair[1]:0}
                 #up- and downsample to equalize numbers
                 dif = abs(len(positive) - len(negative))
                 samplesize = int(dif/2)
@@ -139,44 +141,64 @@ class Classifier():
                 positive = lcp.lines
                 negative = lcn.lines
                 training = positive + negative
-                for t in training:
-                    print training["label"]["sparse"]
-                exit()
+                #for t in training:
+                #    print t["label"],sorted(t["sparse"].keys())
+                #exit()
                 #print training
-                zerolist = [0] * len(self.feature_info.keys())
+                zerolist = [float(0)] * len(self.feature_info.keys())
 #                training_instances = [x["sparse"] for x in training]
                 rawinput_train_test = [training,self.test]
+#                print training, self.test
+#                exit()
                 svminput_train_test = [[[],[]],[[],[]]]
                 for i in [0,1]:
                     for instance in rawinput_train_test[i]:
-                        vector = zerolist
+                        featurev = zerolist[:]
                         #for feature in instance["sparse"]:
                         #for feature in instance["sparse"]:
                             #vector[feature] = feature_bns[feature]
                         for feature in instance["sparse"].keys():
-                            vector[feature] = instance["sparse"][feature]
-                        svminput_train_test[i][0].append(vector)
-                        svminput_train_test[i][1].append(instance["label"])
-                #training_csr = csr_matrix(training)
-                clf = svm.SVC(probability=True,verbose=True)
+                            featurev[feature] = float(instance["sparse"][feature])
+                        #print vector
+                        svminput_train_test[i][0].append(featurev)
+                trainlabels = [labeldict[x["label"]] for x in training]
+                #training_short = svminput_train_test[0][0]
+                #print training_short[1]
+                #training_normalized = preprocessing.normalize(svminput_train_test[0][0], norm="l2")
+                training_csr = csr_matrix(svminput_train_test[0][0])
+                #test_ = preprocessing.normalize(svminput_train_test[1][0], norm="l2")
+                #test_csr = csr_matrix(svminput_train_test[1][0])
+                #test_short = svminput_train_test[1][0]
+                #print training_csr
+                #clf = svm.SVC(probability=True,verbose=True)
                 param_grid = [
                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
                 ]
-                #clf = GridSearchCV(svm.SVC(C = 1), param_grid, cv=5, n_jobs=16)
+                clf = GridSearchCV(svm.SVC(probability=True), param_grid, cv=5, n_jobs=16)
                 print "fitting with paramgrid"
 #                print svminput_train_test[0][0]
-                #clf.fit(svminput_train_test[0][0],numpy.asarray(svminput_train_test[0][1]))
-                clf.fit(svminput_train_test[0][0],svminput_train_test[0][1])
+                clf.fit(training_csr,numpy.asarray(trainlabels))
+                print dir(clf)
+                print clf.best_estimator_,clf.best_params_,clf.best_score_
+                #print training_csr
+                #print len(svminput_train_test[0][0]),len(trainlabels)
+                #clf.fit(svminput_train_test[0][0],trainlabels)
                 #print svminput_train_test[0][1],svminput_train_test[0][0][0],svminput_train_test[1][0][0]
                 #print clf.best_params_, clf.best_score_, clf.best_estimator_
                 #print clf.n_support_
                 #print clf.predict(test)
 #                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
+                print pair
+                #print clf.predict(test_csr)
+                #print svminput_train_test[0][0]
+                #print svminput_train_test[1][0]
                 for i,t in enumerate(svminput_train_test[1][0]):
-                    #print t
-                    print svminput_train_test[1][1][i],clf.predict_proba(t)
-
+                    #print t[40:100]
+#                   print csr_matrix(t)
+                     print self.test[i]["label"],clf.predict(t),clf.predict_proba(t)
+                exit()
+                #print "new", clf.predict_proba
                 # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
                 # d = self.directory + pairstring + "/"
                 # os.system("mkdir " + d)
