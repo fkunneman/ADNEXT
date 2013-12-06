@@ -83,10 +83,10 @@ class Classifier():
                 instances = lineconverter.Lineconverter(label_instances[label])
                 if len(instances.lines) < median:
                     print "up", len(instances.lines)
-                    instances.sample(median,sample_type="up")
+                    instances.sample(median-len(instances.lines),sample_type="up")
                 else:
-                    print "down" len(instances.lines)
-                    instances.sample(median)
+                    print "down", len(instances.lines)
+                    instances.sample(len(instances.lines)-median)
                 print label,len(instances.lines)
                 new_training.extend(instances.lines)
         self.training = new_training
