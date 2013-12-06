@@ -8,7 +8,9 @@ import math
 import numpy
 from sklearn import svm
 from sklearn.grid_search import GridSearchCV
-from sklearn import preprocessing
+#from sklearn import preprocessing
+from sklearn.multiclass import OutputCodeClassifier
+from sklearn.metrics import f1_score
 from scipy.sparse import *
 from scipy import *
 #from pylab import *
@@ -30,7 +32,7 @@ class Classifier():
         self.classifier = classifier
         #self.feature_info=vocabulary
 
-    def top_features(self,n):
+    def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
         feature_freq=defaultdict(int)
         # if classifier == "knn":
@@ -118,15 +120,14 @@ class Classifier():
             # for index in sorted(feature_freq.keys()):
             #     instance["sparse"].append(index)
 
-    def generate_paired_classifiers(self):
+    def generate_paired_svms(self):
 
-        def pairow(ps):
+        def perform_svm(pairs):
             #generate bns-values per classifier
-            for pair in ps:
+            for pair in pairs:
                 #feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
-                labeldict = {pair[0]:1, pair[1]:0}
                 #up- and downsample to equalize numbers
                 dif = abs(len(positive) - len(negative))
                 samplesize = int(dif/2)
@@ -161,6 +162,7 @@ class Classifier():
                             featurev[feature] = float(instance["sparse"][feature])
                         #print vector
                         svminput_train_test[i][0].append(featurev)
+                labeldict = {pair[0]:1, pair[1]:0}
                 trainlabels = [labeldict[x["label"]] for x in training]
                 #training_short = svminput_train_test[0][0]
                 #print training_short[1]
@@ -175,12 +177,14 @@ class Classifier():
                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
                 ]
-                clf = GridSearchCV(svm.SVC(probability=True), param_grid, cv=5, n_jobs=16)
+                model = OutputCodeClassifier(SVC(probability=True))
+                clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
                 print "fitting with paramgrid"
 #                print svminput_train_test[0][0]
                 clf.fit(training_csr,numpy.asarray(trainlabels))
                 print dir(clf)
-                print clf.best_estimator_,clf.best_params_,clf.best_score_
+                print clf.best_params_,clf.best_score_
+                exit()
                 #print training_csr
                 #print len(svminput_train_test[0][0]),len(trainlabels)
                 #clf.fit(svminput_train_test[0][0],trainlabels)

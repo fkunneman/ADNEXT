@@ -92,12 +92,12 @@ for i,event in enumerate(events):
     # if args.u:
     #     cl.undersample()
     if args.f:
-        cl.top_features(args.f)
+        cl.prune_features_topfrequency(args.f)
     #generate sparse input
     cl.index_features()
     #generate classifiers
-    if args.c == "svm" or args.c == "winnow":
-        cl.generate_paired_classifiers()
+    if args.c == "svm":
+        cl.generate_paired_svms()
         # cl.classify_pairs_parralel()
 
 # elif validation=="looe":
