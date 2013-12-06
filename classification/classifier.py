@@ -76,7 +76,7 @@ class Classifier():
             label = instance["label"]
             label_instances[label].append(instance)
         median = int(numpy.median(numpy.array([len(label_instances[x]) for x in label_instances.keys()])))
-        for label in label_instances.keys:
+        for label in label_instances.keys():
             if len(label_instances[label]) == median:
                 new_training.extend(label_instances[label])
             else:
