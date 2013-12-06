@@ -71,24 +71,24 @@ class Classifier():
 
     def balance_data(self):
         label_instances = defaultdict(list)
+        new_training = []
         for instance in self.training:     
             label = instance["label"]
             label_instances[label].append(instance)
-        median_instances = int(numpy.median(numpy.array([len(label_instances[x]) for x in label_instances.keys()])))
-        print median_instances,[len(label_instances[x]) for x in label_instances.keys()]
-        exit()
-        sorted_labels = sorted(label_frequency, key=label_frequency.get, reverse=True)
-        lowest_freq = label_frequency[sorted_labels[-1]]
-        new_training = []
-        for label in label_order:
-            print label
-            if label == sorted_labels[-1]:
+        median = int(numpy.median(numpy.array([len(label_instances[x]) for x in label_instances.keys()])))
+        for label in label_instances.keys:
+            if len(label_instances[label]) == median:
                 new_training.extend(label_instances[label])
             else:
-                lc = lineconverter.Lineconverter(label_instances[label])
-                sample = lc.extract_sample(lowest_freq)
-                new_training.extend(sample)
+                instances = lineconverter.Lineconverter(label_instances[label])
+                if len(instances.lines) > median:
+                    instances.sample(median,sample_type="up")
+                else:
+                    instances.sample(median)
+                new_training.extend(instances.lines)
         self.training = new_training
+        print [x["label"] for x in self.training]
+        exit()
 
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
