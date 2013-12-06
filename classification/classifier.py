@@ -13,6 +13,7 @@ from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 from scipy.sparse import *
 from scipy import *
+import operator
 #from pylab import *
 import re
 import itertools
@@ -247,8 +248,9 @@ class Classifier():
                 #print vector
                 svminput_train_test[i][0].append(featurev)
         labeldict = dict(zip(labels,range(len(labels))))
-        print labeldict
-        trainlabels = [labeldict[x["label"]] for x in training]
+        sorted_x = sorted(labeldict.iteritems(), key=operator.itemgetter(1))
+        print sorted_x
+        trainlabels = [labeldict[x["label"]] for x in self.training]
         #training_short = svminput_train_test[0][0]
         #print training_short[1]
         #training_normalized = preprocessing.normalize(svminput_train_test[0][0], norm="l2")
@@ -258,17 +260,20 @@ class Classifier():
         #test_short = svminput_train_test[1][0]
         #print training_csr
         #clf = svm.SVC(probability=True,verbose=True)
-        param_grid = [
-            {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
-            {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
-        ]
-        model = OutputCodeClassifier(SVC(probability=True))
-        clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
+        #param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048]}
+        model = OutputCodeClassifier(svm.SVC(probability=True,kernel='linear',gamma=0.001,C=5))
+        
+        #clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
         print "fitting with paramgrid"
 #                print svminput_train_test[0][0]
-        clf.fit(training_csr,numpy.asarray(trainlabels))
-        print dir(clf)
-        print clf.best_params_,clf.best_score_
+        model.fit(training_csr,trainlabels)
+        print dir(model)
+        #print clf.best_params_,clf.best_score_
+        for i,t in enumerate(svminput_train_test[1][0]):
+            #print t[40:100]
+#           print csr_matrix(t)
+            print self.test[i]["label"],model.predict(t)
+            
         exit()
 
         #perform_svm(pairs[:2])
