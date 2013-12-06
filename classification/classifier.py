@@ -85,7 +85,7 @@ class Classifier():
                     print "up", len(instances.lines)
                     instances.sample(median,sample_type="up")
                 else:
-                    print "down"
+                    print "down" len(instances.lines)
                     instances.sample(median)
                 print label,len(instances.lines)
                 new_training.extend(instances.lines)
