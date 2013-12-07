@@ -13,6 +13,7 @@ from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 from scipy.sparse import *
 from scipy import *
+import operator
 #from pylab import *
 import re
 import itertools
@@ -24,10 +25,11 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,classifier,directory=False,vocabulary=False):
+    def __init__(self,trainlist,testlist,classifier,scaling="binary",directory=False,vocabulary=False):
         self.training=trainlist
         self.test=testlist
         #self.meta=metalist
+        self.scaling=scaling
         self.directory=directory
         self.classifier = classifier
         #self.feature_info=vocabulary
@@ -117,87 +119,87 @@ class Classifier():
 
     def generate_paired_svms(self):
 
-        def perform_svm(pairs):
-            #generate bns-values per classifier
-            for pair in pairs:
-                #feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
-                positive = [instance for instance in self.training if instance["label"] == pair[0]]
-                negative = [instance for instance in self.training if instance["label"] == pair[1]]
-                #up- and downsample to equalize numbers
-                dif = abs(len(positive) - len(negative))
-                samplesize = int(dif/2)
-                lcp = lineconverter.Lineconverter(positive)
-                lcn = lineconverter.Lineconverter(negative)
-                if len(positive) > len(negative):
-                    lcp.sample(samplesize)
-                    lcn.sample(samplesize,sample_type="up")
-                else:
-                    lcp.sample(samplesize,sample_type="up")
-                    lcn.sample(samplesize)
-                positive = lcp.lines
-                negative = lcn.lines
-                training = positive + negative
-                #for t in training:
-                #    print t["label"],sorted(t["sparse"].keys())
-                #exit()
-                #print training
-                zerolist = [float(0)] * len(self.feature_info.keys())
-#                training_instances = [x["sparse"] for x in training]
-                rawinput_train_test = [training,self.test]
-#                print training, self.test
-#                exit()
-                svminput_train_test = [[[],[]],[[],[]]]
-                for i in [0,1]:
-                    for instance in rawinput_train_test[i]:
-                        featurev = zerolist[:]
-                        #for feature in instance["sparse"]:
-                        #for feature in instance["sparse"]:
-                            #vector[feature] = feature_bns[feature]
-                        for feature in instance["sparse"].keys():
-                            featurev[feature] = float(instance["sparse"][feature])
-                        #print vector
-                        svminput_train_test[i][0].append(featurev)
-                labeldict = {pair[0]:1, pair[1]:0}
-                trainlabels = [labeldict[x["label"]] for x in training]
-                #training_short = svminput_train_test[0][0]
-                #print training_short[1]
-                #training_normalized = preprocessing.normalize(svminput_train_test[0][0], norm="l2")
-                training_csr = csr_matrix(svminput_train_test[0][0])
-                #test_ = preprocessing.normalize(svminput_train_test[1][0], norm="l2")
-                #test_csr = csr_matrix(svminput_train_test[1][0])
-                #test_short = svminput_train_test[1][0]
-                #print training_csr
-                #clf = svm.SVC(probability=True,verbose=True)
-                param_grid = [
-                    {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
-                    {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
-                    {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'degree': [1,2,3,4], 'kernel': ['poly']}
-                ]
-                model = OutputCodeClassifier(SVC(probability=True))
-                clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
-                print "fitting with paramgrid"
-#                print svminput_train_test[0][0]
-                clf.fit(training_csr,numpy.asarray(trainlabels))
-                print dir(clf)
-                print clf.best_params_,clf.best_score_
-                exit()
-                #print training_csr
-                #print len(svminput_train_test[0][0]),len(trainlabels)
-                #clf.fit(svminput_train_test[0][0],trainlabels)
-                #print svminput_train_test[0][1],svminput_train_test[0][0][0],svminput_train_test[1][0][0]
-                #print clf.best_params_, clf.best_score_, clf.best_estimator_
-                #print clf.n_support_
-                #print clf.predict(test)
-#                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
-                print pair
-                #print clf.predict(test_csr)
-                #print svminput_train_test[0][0]
-                #print svminput_train_test[1][0]
-                for i,t in enumerate(svminput_train_test[1][0]):
-                    #print t[40:100]
-#                   print csr_matrix(t)
-                     print self.test[i]["label"],clf.predict(t),clf.predict_proba(t)
-                exit()
+#         def perform_svm(pairs):
+#             #generate bns-values per classifier
+#             for pair in pairs:
+#                 #feature_bns = weight_features.bns(pair,label_frequency, feature_label_frequency)
+#                 positive = [instance for instance in self.training if instance["label"] == pair[0]]
+#                 negative = [instance for instance in self.training if instance["label"] == pair[1]]
+#                 #up- and downsample to equalize numbers
+#                 dif = abs(len(positive) - len(negative))
+#                 samplesize = int(dif/2)
+#                 lcp = lineconverter.Lineconverter(positive)
+#                 lcn = lineconverter.Lineconverter(negative)
+#                 if len(positive) > len(negative):
+#                     lcp.sample(samplesize)
+#                     lcn.sample(samplesize,sample_type="up")
+#                 else:
+#                     lcp.sample(samplesize,sample_type="up")
+#                     lcn.sample(samplesize)
+#                 positive = lcp.lines
+#                 negative = lcn.lines
+#                 training = positive + negative
+#                 #for t in training:
+#                 #    print t["label"],sorted(t["sparse"].keys())
+#                 #exit()
+#                 #print training
+#                 zerolist = [float(0)] * len(self.feature_info.keys())
+# #                training_instances = [x["sparse"] for x in training]
+#                 rawinput_train_test = [training,self.test]
+# #                print training, self.test
+# #                exit()
+#                 svminput_train_test = [[[],[]],[[],[]]]
+#                 for i in [0,1]:
+#                     for instance in rawinput_train_test[i]:
+#                         featurev = zerolist[:]
+#                         #for feature in instance["sparse"]:
+#                         #for feature in instance["sparse"]:
+#                             #vector[feature] = feature_bns[feature]
+#                         for feature in instance["sparse"].keys():
+#                             featurev[feature] = float(instance["sparse"][feature])
+#                         #print vector
+#                         svminput_train_test[i][0].append(featurev)
+#                 labeldict = {pair[0]:1, pair[1]:0}
+#                 trainlabels = [labeldict[x["label"]] for x in training]
+#                 #training_short = svminput_train_test[0][0]
+#                 #print training_short[1]
+#                 #training_normalized = preprocessing.normalize(svminput_train_test[0][0], norm="l2")
+#                 training_csr = csr_matrix(svminput_train_test[0][0])
+#                 #test_ = preprocessing.normalize(svminput_train_test[1][0], norm="l2")
+#                 #test_csr = csr_matrix(svminput_train_test[1][0])
+#                 #test_short = svminput_train_test[1][0]
+#                 #print training_csr
+#                 #clf = svm.SVC(probability=True,verbose=True)
+#                 param_grid = [
+#                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
+#                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
+#                     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'degree': [1,2,3,4], 'kernel': ['poly']}
+#                 ]
+#                 model = OutputCodeClassifier(SVC(probability=True))
+#                 clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
+#                 print "fitting with paramgrid"
+# #                print svminput_train_test[0][0]
+#                 clf.fit(training_csr,numpy.asarray(trainlabels))
+#                 print dir(clf)
+#                 print clf.best_params_,clf.best_score_
+#                 exit()
+#                 #print training_csr
+#                 #print len(svminput_train_test[0][0]),len(trainlabels)
+#                 #clf.fit(svminput_train_test[0][0],trainlabels)
+#                 #print svminput_train_test[0][1],svminput_train_test[0][0][0],svminput_train_test[1][0][0]
+#                 #print clf.best_params_, clf.best_score_, clf.best_estimator_
+#                 #print clf.n_support_
+#                 #print clf.predict(test)
+# #                print svminput_train_test[0][0],svminput_train_test[0][1],svminput_train_test[1][0],svminput_train_test[1][1]
+#                 print pair
+#                 #print clf.predict(test_csr)
+#                 #print svminput_train_test[0][0]
+#                 #print svminput_train_test[1][0]
+#                 for i,t in enumerate(svminput_train_test[1][0]):
+#                     #print t[40:100]
+# #                   print csr_matrix(t)
+#                      print self.test[i]["label"],clf.predict(t),clf.predict_proba(t)
+#                 exit()
                 #print "new", clf.predict_proba
                 # pairstring = re.sub("-","tte",pair[0]) + "_" + re.sub("-","tte",pair[1])
                 # d = self.directory + pairstring + "/"
@@ -226,11 +228,52 @@ class Classifier():
                 #     arg[1].close()
 
 #         #obtain feature and label frequencies
-        label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
+        # label_frequency, feature_frequency, feature_label_frequency = weight_features.generate_frequencies(self.training,"sparse")
         #make a list of each possible label pair
-        labels = list(set([x["label"] for x in self.training]))
-        perm = itertools.combinations(labels,2)
-        pairs = [list(entry) for entry in perm]
+        # svminput_train_test = [[[],[]],[[],[]]]
+        def vectorize(instances):
+            zerolist = [float(0)] * len(self.feature_info.keys())
+            matrix = []
+            for instance in instances:
+                featurev = zerolist[:]
+                #for feature in instance["sparse"]:
+                #for feature in instance["sparse"]:
+                    #vector[feature] = feature_bns[feature]
+                for feature in instance["sparse"].keys():
+                    if self.scaling == "binary":
+                        featurev[feature] = 1.0
+                    elif self.scaling == "log":
+                        featurev[feature] = math.log(instance["sparse"][feature],10)
+                #print vector
+                matrix.append(featurev)
+
+        outfile = codecs.open(self.directory + "classification.txt","w","utf-8")
+        trainlabels = list(set([x["label"] for x in self.training]))
+        testlabels = list(set([x["label"] for x in self.test]))
+        labels = set(trainlabels + testlabels)
+        labeldict = dict(zip(labels,range(len(labels))))
+        labeldict_back = dict(zip(range(len(labels))),labels)
+        trainingvectors = csr_matrix(vectorize(self.training))
+        testvectors = vectorize(self.test)
+        param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
+        model = OutputCodeClassifier(svm.SVC(verbose=True))
+        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
+        paramsearch.fit(training_csr,numpy.asarray(trainlabels))
+        parameters = paramsearch.best_params_
+        outfile.write("best parameter settings:\n")
+        for parameter in parameters.keys():
+            outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
+        outfile.write("\n")
+        clf = svm.SVC(verbose=True,C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
+        multiclf = OutputCodeClassifier(clf)
+        multiclf.fit(training_csr,trainlabels)
+        for i,t in enumerate(testvectors):
+            classification = multiclf.predict(t)
+            classification_label = labeldict_back[classification[0]]
+            outfile.write(self.test[i]["label"] + " " + classification_label)
+
+        # perm = itertools.combinations(labels,2)
+        # pairs = [list(entry) for entry in perm]
 #         zerolist = [float(0)] * len(self.feature_info.keys())
 # #                training_instances = [x["sparse"] for x in training]
 #         rawinput_train_test = [self.training,self.test]
@@ -247,7 +290,7 @@ class Classifier():
 #                     featurev[feature] = float(instance["sparse"][feature])
 #                 #print vector
 #                 svminput_train_test[i][0].append(featurev)
-#         labeldict = dict(zip(labels,range(len(labels))))
+#         
 #         print labeldict
 #         trainlabels = [labeldict[x["label"]] for x in training]
 #         #training_short = svminput_train_test[0][0]
@@ -259,10 +302,15 @@ class Classifier():
 #         #test_short = svminput_train_test[1][0]
 #         #print training_csr
 #         #clf = svm.SVC(probability=True,verbose=True)
-#         param_grid = [
-#             {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
-#             {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
-#         ]
+        #   param_grid = [
+        #       {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
+        #       {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
+        #       {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'degree': [1,2,3,4], 'kernel': ['poly']}
+        #   ]
+        # param_grid = [
+        #     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'kernel': ['linear']},
+        #     {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'kernel': ['rbf']}
+        # ]
 #         model = OutputCodeClassifier(SVC(probability=True))
 #         clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
 #         print "fitting with paramgrid"
@@ -271,9 +319,39 @@ class Classifier():
 #         print dir(clf)
 #         print clf.best_params_,clf.best_score_
 #         exit()
+        
+#                training_instances = [x["sparse"] for x in training]
+        #rawinput_train_test = [self.training,self.test]
+#                print training, self.test
+#                exit()
+
+        #labeldict = dict(zip(labels,range(len(labels))))
+        #sorted_x = sorted(labeldict.iteritems(), key=operator.itemgetter(1))
+        #print sorted_x
+        #trainlabels = [labeldict[x["label"]] for x in self.training]
+        #training_short = svminput_train_test[0][0]
+        #print training_short[1]
+        #training_normalized = preprocessing.normalize(svminput_train_test[0][0], norm="l2")
+        
+        #test_ = preprocessing.normalize(svminput_train_test[1][0], norm="l2")
+        #test_csr = csr_matrix(svminput_train_test[1][0])
+        #test_short = svminput_train_test[1][0]
+        #print training_csr
+        #clf = svm.SVC(probability=True,verbose=True)
+
+        
+        #clf = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
+        #print "fitting with paramgrid"
+#                print svminput_train_test[0][0]
+        #model.fit(training_csr,trainlabels)
+        #print dir(model)
+        #print clf.best_params_,clf.best_score_
+
+            
+        #exit()
 
         #perform_svm(pairs[:2])
-        perform_svm(labels)
+        #perform_svm(labels)
         # chunks = gen_functions.make_chunks(pairs)
         # processes = []
         # for chunk in chunks:
