@@ -82,7 +82,7 @@ for i,event in enumerate(events):
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
     #set up classifier object
-    eventout = args.d + event + "/" + args.scaling + "/" str(args.window) + "_" + str(args.step) + ".txt"
+    eventout = args.d + event + "/" + args.scaling + "/" + str(args.window) + "_" + str(args.step) + ".txt"
     if not os.path.exists(eventdir):
         d = depth
         while d <= -1: 

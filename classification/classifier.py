@@ -247,7 +247,6 @@ class Classifier():
                         featurev[feature] = math.log(instance["sparse"][feature],10)
                 #print vector
                 matrix.append(featurev)
-            print matrix 
             return matrix
 
         outfile = codecs.open(self.directory,"w","utf-8")
@@ -258,11 +257,9 @@ class Classifier():
         labeldict_back = dict(zip(range(len(labels)),labels))
         trainingvectors = vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
-        print len(trainingvectors), len(trainlabels)
         training_csr = csr_matrix(trainingvectors)
         testvectors = vectorize(self.test)
         testlabels = [labeldict[x["label"]] for x in self.test]
-        print len(testvectors),len(testlabels)
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
         model = OutputCodeClassifier(svm.SVC(verbose=True,probability=True))
         paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
@@ -275,7 +272,6 @@ class Classifier():
         clf = svm.SVC(verbose=True, probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
         multiclf = OutputCodeClassifier(clf,n_jobs=16)
         multiclf.fit(training_csr,trainlabels)
-        print len(testvectors),len(self.test)
         for i,t in enumerate(testvectors):
             classification = multiclf.predict(t)
             classification_label = labeldict_back[classification[0]]
