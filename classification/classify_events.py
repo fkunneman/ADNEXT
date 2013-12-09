@@ -82,9 +82,9 @@ for i,event in enumerate(events):
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
     #set up classifier object
-    eventdir = args.d + event + "/" + str(args.window) + "_" + str(args.step) + "/"
+    eventout = args.d + event + "/" + args.scaling + "/" str(args.window) + "_" + str(args.step) + ".txt"
     if not os.path.exists(eventdir):
-        d = depth-1
+        d = depth
         while d <= -1: 
             if not os.path.exists("/".join(eventdir.split("/")[:d])):
                 os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
