@@ -272,8 +272,8 @@ class Classifier():
         for parameter in parameters.keys():
             outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
         outfile.write("best score: " + str(paramsearch.best_score_) + "\n\n")
-        clf = svm.SVC(verbose=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
-        multiclf = OutputCodeClassifier(clf)
+        clf = svm.SVC(verbose=True, probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
+        multiclf = OutputCodeClassifier(clf,n_jobs=16)
         multiclf.fit(training_csr,trainlabels)
         print len(testvectors),len(self.test)
         for i,t in enumerate(testvectors):
