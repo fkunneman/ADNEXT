@@ -243,8 +243,8 @@ class Classifier():
                     if self.scaling == "binary":
                         featurev[feature] = float(1)
                     elif self.scaling == "log": 
-                        featurev[feature] = float(instance["sparse"][feature])
-                        #featurev[feature] = math.log(instance["sparse"][feature],10)
+                        # featurev[feature] = float(instance["sparse"][feature])
+                        featurev[feature] = math.log(instance["sparse"][feature],10)
                 #print vector
                 matrix.append(featurev)
             print matrix 
@@ -271,14 +271,15 @@ class Classifier():
         outfile.write("best parameter settings:\n")
         for parameter in parameters.keys():
             outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
-        outfile.write("\n")
-        clf = svm.SVC(verbose=True, probability=True,C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
+        outfile.write("best score: " + str(paramsearch.best_score_) + "\n\n")
+        clf = svm.SVC(verbose=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
         multiclf = OutputCodeClassifier(clf)
         multiclf.fit(training_csr,trainlabels)
+        print len(testvectors),len(self.test)
         for i,t in enumerate(testvectors):
             classification = multiclf.predict(t)
             classification_label = labeldict_back[classification[0]]
-            outfile.write(self.test[i]["label"] + " " + classification_label)
+            outfile.write(self.test[i]["label"] + " " + classification_label + "\n")
 
         # perm = itertools.combinations(labels,2)
         # pairs = [list(entry) for entry in perm]
