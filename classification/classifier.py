@@ -250,7 +250,7 @@ class Classifier():
             print matrix 
             return matrix
 
-        outfile = codecs.open(self.directory + "classification.txt","w","utf-8")
+        outfile = codecs.open(self.directory,"w","utf-8")
         trainlabels_raw = [x["label"] for x in self.training]
         testlabels_raw = [x["label"] for x in self.test]
         labels = set(trainlabels_raw + testlabels_raw)
