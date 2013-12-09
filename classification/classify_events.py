@@ -37,15 +37,12 @@ depth = args.depth * -1
 #read in instances
 print "Reading in events..."
 event_instances = defaultdict(list)
-print len(args.i)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
     instance_file.close()
     event_txt = "/".join(ef.split("/")[depth:])
     event = re.sub(".txt","",event_txt)
-    print event
-    continue
     #make list of tweet dicts
     tweets = []
     for tweet in instances_raw:
