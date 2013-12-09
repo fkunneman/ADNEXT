@@ -89,7 +89,7 @@ for i,event in enumerate(events):
             if not os.path.exists("/".join(eventdir.split("/")[:d])):
                 os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
             d+=1
-    cl = Classifier(train,test,directory = eventdir,classifier=args.c)
+    cl = Classifier(train,test,directory = eventdir,classifier=args.c,scaling=args.scaling)
     # if args.u:
     #     cl.undersample()
     if args.f:

@@ -25,7 +25,7 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,classifier,scaling="binary",directory=False,vocabulary=False):
+    def __init__(self,trainlist,testlist,classifier,scaling,directory=False,vocabulary=False):
         self.training=trainlist
         self.test=testlist
         #self.meta=metalist
@@ -241,22 +241,30 @@ class Classifier():
                     #vector[feature] = feature_bns[feature]
                 for feature in instance["sparse"].keys():
                     if self.scaling == "binary":
-                        featurev[feature] = 1.0
-                    elif self.scaling == "log":
-                        featurev[feature] = math.log(instance["sparse"][feature],10)
+                        featurev[feature] = float(1)
+                    elif self.scaling == "log": 
+                        featurev[feature] = float(instance["sparse"][feature])
+                        #featurev[feature] = math.log(instance["sparse"][feature],10)
                 #print vector
                 matrix.append(featurev)
+            print matrix 
+            return matrix
 
         outfile = codecs.open(self.directory + "classification.txt","w","utf-8")
-        trainlabels = list(set([x["label"] for x in self.training]))
-        testlabels = list(set([x["label"] for x in self.test]))
-        labels = set(trainlabels + testlabels)
+        trainlabels_raw = [x["label"] for x in self.training]
+        testlabels_raw = [x["label"] for x in self.test]
+        labels = set(trainlabels_raw + testlabels_raw)
         labeldict = dict(zip(labels,range(len(labels))))
-        labeldict_back = dict(zip(range(len(labels))),labels)
-        trainingvectors = csr_matrix(vectorize(self.training))
+        labeldict_back = dict(zip(range(len(labels)),labels))
+        trainingvectors = vectorize(self.training)
+        trainlabels = [labeldict[x["label"]] for x in self.training]
+        print len(trainingvectors), len(trainlabels)
+        training_csr = csr_matrix(trainingvectors)
         testvectors = vectorize(self.test)
+        testlabels = [labeldict[x["label"]] for x in self.test]
+        print len(testvectors),len(testlabels)
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
-        model = OutputCodeClassifier(svm.SVC(verbose=True))
+        model = OutputCodeClassifier(svm.SVC(verbose=True,probability=True))
         paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         parameters = paramsearch.best_params_
@@ -264,7 +272,7 @@ class Classifier():
         for parameter in parameters.keys():
             outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
         outfile.write("\n")
-        clf = svm.SVC(verbose=True,C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
+        clf = svm.SVC(verbose=True, probability=True,C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
         multiclf = OutputCodeClassifier(clf)
         multiclf.fit(training_csr,trainlabels)
         for i,t in enumerate(testvectors):
