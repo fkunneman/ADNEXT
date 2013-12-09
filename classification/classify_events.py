@@ -99,7 +99,7 @@ for i,event in enumerate(events):
     cl.index_features()
     #generate classifiers
     if args.c == "svm":
-        cl.generate_paired_svms()
+        cl.classify_svm()
         # cl.classify_pairs_parralel()
 
 # elif validation=="looe":
