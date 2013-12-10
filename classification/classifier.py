@@ -29,7 +29,7 @@ class Classifier():
         self.classifier = classifier
 
     def count_feature_frequency(self):
-        self.feature_frequency = Counter
+        self.feature_frequency = Counter()
         for instance in self.training:
             self.feature_frequency = self.feature_frequency + Counter(instance["features"]) 
 
