@@ -5,6 +5,7 @@ import codecs
 import os
 import multiprocessing
 from collections import defaultdict
+from collections import Counter
 
 import math
 import numpy
@@ -28,10 +29,9 @@ class Classifier():
         self.classifier = classifier
 
     def count_feature_frequency(self):
-        self.feature_frequency = defaultdict(int)
+        self.feature_frequency = Counter
         for instance in self.training:
-            for feature in instance["features"]:
-                self.feature_frequency[feature] += 1 
+            self.feature_frequency[feature] += Counter(instance["features"]) 
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
