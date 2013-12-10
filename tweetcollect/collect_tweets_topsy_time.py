@@ -12,12 +12,17 @@ import codecs
 time_file = open(sys.argv[1])
 tweet_file = codecs.open(sys.argv[2],"a","utf-8")
 key = sys.argv[3]
-language = sys.argv[4]
+#language = sys.argv[4]
+try: 
+    languagestring="&allow_lang=" + sys.argv[4]
+except:
+    languagestring=""
 
 def s(btu,etu,page):
-    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23" + key + "&mintime=" + btu + "&maxtime=" + etu + "&allow_lang=" + language + "&type=tweet&perpage=100&page=" + str(page)) 
+    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23de%C4%9F" + key + "&mintime=" + btu + "&maxtime=" + etu + languagestring + "&type=tweet&perpage=100&page=" + str(page)) 
     print page
     data = json.load(search)
+    print data
     return data
     
 def collect_tweets(begin_time_unix,end_time_unix):
@@ -35,9 +40,10 @@ def collect_tweets(begin_time_unix,end_time_unix):
 print key
 date_time = time_file.readlines()[0].strip().split(" ")
 begin_time = time_functions.return_datetime(date_time[0],time=date_time[1])
-end_time = begin_time + datetime.timedelta(days=1)
+end_time = begin_time + datetime.timedelta(days=50)
 begin_time_unix = str(int(time.mktime(begin_time.timetuple())))
 end_time_unix = str(int(time.mktime(end_time.timetuple())))
+print begin_time_unix,end_time_unix
 new_tweets = collect_tweets(begin_time_unix,end_time_unix)
 while len(new_tweets) > 0:
     print begin_time_unix,end_time_unix
@@ -45,7 +51,7 @@ while len(new_tweets) > 0:
     for t in new_tweets:
         tweet_file.write(t + "\n")
     begin_time = end_time
-    end_time = begin_time + datetime.timedelta(days=1)
+    end_time = begin_time + datetime.timedelta(days=50)
     begin_time_unix = str(int(time.mktime(begin_time.timetuple())))
     end_time_unix = str(int(time.mktime(end_time.timetuple())))
     new_tweets = collect_tweets(begin_time_unix,end_time_unix)
@@ -53,9 +59,7 @@ while len(new_tweets) > 0:
 print "done"
 tweet_file.close()
 
-
 # begin_time = end_time
 # end_time = begin_time + datetime.timedelta(days=1)
 # begin_time_unix = begin_time.timestamp()
 # end_time_unix = end_time.timestamp()
-
