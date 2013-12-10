@@ -16,6 +16,7 @@ from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 
 import lineconverter
+import gen_functions
 
 class Classifier():
 
@@ -26,27 +27,36 @@ class Classifier():
         self.directory=directory
         self.classifier = classifier
 
+    def count_feature_frequency(self):
+        self.feature_frequency = defaultdict(int)
+        for instance in self.training:
+            feature_frequency[feature] += 1 for feature in instance["features"]
+
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
-        feature_freq=defaultdict(int)
-        for instance in self.training:
-            features=instance["features"]
-            for feature in features:
-                feature_freq[feature] += 1
-        sorted_feature_freq=sorted(feature_freq, key=feature_freq.get, reverse=True)
+        sorted_feature_freq=sorted(self.feature_frequency, key=self.feature_frequency.get, reverse=True)
         boundary=0
         feature_status = {}
-        for i,f in enumerate(sorted_feature_freq):
-            if i <= n:
-                feature_status[f] = True
-            else:
-                feature_status[f] = False
-        for instance in self.training:
-            new_features = []
-            for f in instance["features"]:
-                if feature_status[f]:
-                    new_features.append(f)
-            instance["features"] = new_features
+        feature_status[f] = True for f in sorted_feature_freq[:n]
+        feature_status[f] = False for f in sorted_feature_freq[n:]
+        
+        def prune_features(instances):
+            for instance in instances:
+                new_features = []
+                for f in instance["features"]:
+                    if feature_status[f]:
+                        new_features.append(f)
+                instance["features"] = new_features
+
+        processes = []
+        chunks = gen_functions.make_chunks(self.training)
+        for chunk in chunks:
+            p = multiprocessing.Process(target=prune_features,args=chunk)
+            processes.append(p)
+            p.start()
+
+        for p in processes:
+            p.join()
 
     def balance_data(self):
         label_instances = defaultdict(list)
@@ -70,21 +80,28 @@ class Classifier():
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
-        for i,instance in enumerate(self.training):
-            for feature in instance["features"]:
-                feature_frequency[feature] += 1
-        for i,feature in enumerate(feature_frequency.keys()):
+        for i,feature in enumerate(self.feature_frequency.keys()):
             self.feature_info[feature]=i+ind
-        instances = self.training + self.test
-        for instance in instances:
-            #sparse_features = []
-            sparse_features = defaultdict(int)
-            for feature in instance["features"]:
-                try:
-                    sparse_features[self.feature_info[feature]] += 1
-                except:
-                    continue
-            instance["sparse"] = sparse_features
+        
+        def sparsify(instances):
+            for instance in instances:
+                sparse_features = defaultdict(int)
+                for feature in instance["features"]:
+                    try:
+                        sparse_features[self.feature_info[feature]] += 1
+                    except:
+                        continue
+                instance["sparse"] = sparse_features           
+
+        processes = []
+        chunks = gen_functions.make_chunks(self.training + self.test)
+        for chunk in chunks:
+            p = multiprocessing.Process(target=sparsify,args=chunk)
+            processes.append(p)
+            p.start()
+
+        for p in processes:
+            p.join()
 
     def classify_svm(self):
 
@@ -98,6 +115,8 @@ class Classifier():
                         featurev[feature] = float(1)
                     elif self.scaling == "log": 
                         featurev[feature] = math.log(instance["sparse"][feature],10)
+                    elif self.scaling == "tfidf":
+                        featurev[feature] = instance["sparse"][feature] * self.idf[feature]
                 matrix.append(featurev)
             return matrix
 
@@ -109,6 +128,8 @@ class Classifier():
         labels = set(trainlabels_raw + testlabels_raw)
         labeldict = dict(zip(labels,range(len(labels))))
         labeldict_back = dict(zip(range(len(labels)),labels))
+        if self.scaling == "tfidf":
+            self.idf = weight_features.return_idf(self.training)
         trainingvectors = vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
@@ -117,7 +138,7 @@ class Classifier():
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
         model = OutputCodeClassifier(svm.SVC(probability=True,verbose=True),n_jobs=16)
-        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=2)
+        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
