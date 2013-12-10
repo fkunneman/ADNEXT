@@ -112,3 +112,57 @@ def bns(pair,label_frequency,feature_label_frequency):
 #        print feature,pair,tp,pos,fp,neg,tpr,fpr,bns
         feature_bns[feature] = bns
     return feature_bns
+
+# def tf_idf(train_vectors,test_vectors):
+
+#     # document_term_frequencies = defaultdict(dict)
+#     tficf = defaultdict(list)
+
+#     clusters = cluster_docs.keys()
+#     # clusts = []
+#     # for cluster in clusters:
+#     #     doclist = cluster_docs[cluster]
+#     #     clust_text = ""
+#     #     for doc in doclist:
+#     #         text = " ".join(doc)
+#     #         clust_text = clust_text + text + " "
+#     #     clust_text = clust_text.split(" ")
+#     #     clusts.append(clust_text)
+    
+#     in_clusts = defaultdict(int)
+#     for cluster in clusters:
+#         docdict = defaultdict(int)
+#         texts = cluster_docs[cluster]
+#         for text in texts:
+#             words = text.split(" ")
+#             for word in words:
+#                 if re.search("#",word):
+#                     word = re.sub(r"&#","\\\\",word)
+#                     word = re.sub(r";","",word)
+#                     print word
+#                 if docdict[word] == 0:
+#                     in_clusts[word] += 1
+#                     docdict[word] += 1
+
+#     for cluster in clusters:
+#         clust_tf = defaultdict(int)
+#         texts = cluster_docs[cluster]
+#         for text in texts:
+#             words = text.split(" ")
+#             for word in words:
+#                 if not re.search("#",word):
+#                     clust_tf[word] += 1   
+        
+#         terms = clust_tf.keys()
+#         num_clusters = len(clusters)
+#         scores = []
+#         for term in terms:
+#             icf = math.log(num_clusters / in_clusts[term])
+#             tf = clust_tf[term]
+#             tf_icf = tf * icf
+#             score = (round(tf_icf,2),term)
+#             scores.append(score)
+#         scores = sorted(scores)
+#         tficf[cluster] = scores
+
+#     return tficf

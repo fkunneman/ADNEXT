@@ -103,6 +103,7 @@ class Classifier():
 
         outfile = codecs.open(self.directory,"w","utf-8")
         #generate scipy libsvm input
+        print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
         testlabels_raw = [x["label"] for x in self.test]
         labels = set(trainlabels_raw + testlabels_raw)
@@ -114,18 +115,20 @@ class Classifier():
         testvectors = vectorize(self.test)
         testlabels = [labeldict[x["label"]] for x in self.test]
         #obtain the best parameter settings for an svm outputcode classifier
-        param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.00025, 0.0005, 0.001, 0.002, 0.004, 0.008, 0.16, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
-        model = OutputCodeClassifier(svm.SVC(verbose=True,probability=True))
-        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=16)
+        param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
+        model = OutputCodeClassifier(svm.SVC(probability=True,verbose=True),n_jobs=16)
+        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score, n_jobs=2)
+        print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
+        print "Prediction..."
         parameters = paramsearch.best_params_
         outfile.write("best parameter settings:\n")
         for parameter in parameters.keys():
             outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
         outfile.write("best score: " + str(paramsearch.best_score_) + "\n\n")
         #train an svm outputcode classifier using the best parameters
-        clf = svm.SVC(verbose=True, probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
+        clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
         multiclf = OutputCodeClassifier(clf,n_jobs=16)
         multiclf.fit(training_csr,trainlabels)
         #predict labels and print the to the outfile
