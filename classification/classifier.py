@@ -18,6 +18,7 @@ from sklearn.metrics import f1_score
 
 import lineconverter
 import gen_functions
+import weight_features
 
 class Classifier():
 
@@ -30,11 +31,12 @@ class Classifier():
 
     def count_feature_frequency(self):
 
-        trainingfeatures = []
-        for instance in self.training:
-            trainingfeatures.extend(instance["features"]) 
-        print "Counting..."
-        self.feature_frequency = Counter(trainingfeatures)
+        self.feature_frequency = Counter()
+	instances = len(self.training)
+        for i,instance in enumerate(self.training):
+            print i,"van",instances
+            for feature in instance["features"]:
+                self.feature_frequency[feature] += 1  
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -102,7 +104,7 @@ class Classifier():
         processes = []
         chunks = gen_functions.make_chunks(self.training + self.test)
         for chunk in chunks:
-            p = multiprocessing.Process(target=sparsify,args=chunk)
+            p = multiprocessing.Process(target=sparsify,args=[chunk])
             processes.append(p)
             p.start()
 
