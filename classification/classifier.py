@@ -93,6 +93,7 @@ class Classifier():
         
         def sparsify(instances):
             for instance in instances:
+                #print "before",instance.keys()
                 sparse_features = defaultdict(int)
                 for feature in instance["features"]:
                     try:
@@ -100,6 +101,7 @@ class Classifier():
                     except:
                         continue
                 instance["sparse"] = sparse_features           
+                #print "after",instance.keys()
 
         processes = []
         chunks = gen_functions.make_chunks(self.training + self.test)

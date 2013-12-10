@@ -114,11 +114,11 @@ def bns(pair,label_frequency,feature_label_frequency):
     return feature_bns
 
 def return_idf(train_vectors):
-
     num_docs = len(train_vectors)
     df = defaultdict(int)
     idf = {}
     for instance in train_vectors:
+        print instance.keys()
         features = instance["sparse"]
         for feature in features.keys():
             df[feature] += 1
