@@ -31,7 +31,7 @@ class Classifier():
     def count_feature_frequency(self):
         self.feature_frequency = Counter
         for instance in self.training:
-            self.feature_frequency[feature] += Counter(instance["features"]) 
+            self.feature_frequency += Counter(instance["features"]) 
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
