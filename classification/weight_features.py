@@ -120,7 +120,8 @@ def return_idf(train_vectors):
     idf = {}
     for instance in train_vectors:
         features = instance["sparse"]
-        df[feature] += 1 for feature in features.keys()
+        for feature in features.keys():
+            df[feature] += 1
 
     for feature in df.keys():
         idf[feature] = math.log((num_docs/df[feature]),10)
