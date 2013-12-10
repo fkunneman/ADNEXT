@@ -63,7 +63,8 @@ for i,event in enumerate(events):
     train = sum([event_instances[x] for x in train_events],[])
     test = event_instances[event]
     #set up classifier object
-    eventout = args.d + event + "/" + args.scaling + "/" + str(args.window) + "_" + str(args.step) + ".txt"
+    eventdir = args.d + event + "/" + args.scaling + "/"
+    eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
     if not os.path.exists(eventdir):
         d = depth
         while d <= -1: 
@@ -71,10 +72,18 @@ for i,event in enumerate(events):
                 os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
             d+=1
     print "Classifier " + event + "..."
-    cl = Classifier(train,test,directory = eventdir,classifier=args.c,scaling=args.scaling)
+    cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
+    # if args.u:
+    #     cl.undersample()
     if args.f:
         cl.prune_features_topfrequency(args.f)
+    print "balancing..."
     cl.balance_data()
     cl.index_features()
+    #generate sparse input
+    print "indexing..."
+    cl.index_features()
+    #generate classifiers
+    print "classifying..."
     if args.c == "svm":
         cl.classify_svm()
