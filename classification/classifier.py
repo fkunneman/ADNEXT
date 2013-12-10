@@ -58,10 +58,13 @@ class Classifier():
 
         processes = []
         chunks = gen_functions.make_chunks(self.training)
+        print [len(c) for c in chunks]
+        exit()
         for chunk in chunks:
+
             p = multiprocessing.Process(target=prune_features,args=chunk)
-            processes.append(p)
             p.start()
+            processes.append(p)
 
         for p in processes:
             p.join()
