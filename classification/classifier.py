@@ -60,7 +60,7 @@ class Classifier():
         processes = []
         chunks = gen_functions.make_chunks(self.training,"numbers")
         for chunk in chunks:
-            p = multiprocessing.Process(target=prune_features,args=chunk)
+            p = multiprocessing.Process(target=prune_features,args=[chunk])
             p.start()
             processes.append(p)
 
@@ -113,11 +113,11 @@ class Classifier():
         chunks_training = gen_functions.make_chunks(self.training,"numbers")
         chunks_test = gen_functions.make_chunks(self.test,"numbers")
         for chunk in chunks_training:
-            p = multiprocessing.Process(target=sparsify,args=[chunk,"train"])
+            p = multiprocessing.Process(target=sparsify,args=[[chunk],"train"])
             processes.append(p)
             p.start()
         for chunk in chunks_test:
-            q = multiprocessing.Process(target=sparsify,args=[chunk,"test"])
+            q = multiprocessing.Process(target=sparsify,args=[[chunk],"test"])
             processes.append(q)
             q.start()
 
