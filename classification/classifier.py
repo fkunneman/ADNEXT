@@ -60,7 +60,7 @@ class Classifier():
 
         alt = defaultdict(int)
         for i,instance in enumerate(self.training):
-            #print i,len(instances)
+            print i,len(instances)
             for feature in instance["features"]:
                 alt[feature] += 1
         print "alt len",len(alt.keys())
@@ -79,11 +79,12 @@ class Classifier():
             feature_status[f] = False
         print len(feature_status)
         print len(self.pruned_features)
-        
+        exit()
+
         def prune_features(instances,queue):
             for instance in instances:
                 new_features = []
-                print feature_status
+                #print feature_status
                 for f in instance["features"]:
                     if feature_status[f]:
                         new_features.append(f)
