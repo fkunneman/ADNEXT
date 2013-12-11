@@ -93,37 +93,37 @@ class Classifier():
         for i,feature in enumerate(self.pruned_features):
             self.feature_info[feature]=i+ind
         
-        def sparsify(window,l):
-            for ind in range(window[0],window[1]):
-                if l == "train":
-                    instance = self.training[ind]
-                elif l == "test":
-                    instance = self.test[ind]
+        def sparsify(instances,que):
+            for instance in instances:
                 sparse_features = defaultdict(int)
                 for feature in instance["features"]:
                     try:
                         sparse_features[self.feature_info[feature]] += 1
                     except:
                         continue
-                if l == "train":
-                    self.training[ind]["sparse"] = sparse_features
-                elif l == "test":
-                    self.test[ind]["sparse"] = sparse_features          
+                instance["sparse"] = sparse_features
+                que.put(instance)         
 
         processes = []
-        chunks_training = gen_functions.make_chunks(self.training,"numbers")
-        chunks_test = gen_functions.make_chunks(self.test,"numbers")
+        print "before",len(self.training)
+        q = multiprocessing.Queue()
+        chunks_training = gen_functions.make_chunks(self.training)
         for chunk in chunks_training:
-            p = multiprocessing.Process(target=sparsify,args=[chunk,"train"])
+            p = multiprocessing.Process(target=sparsify,args=[chunk,q])
             processes.append(p)
             p.start()
-        for chunk in chunks_test:
-            q = multiprocessing.Process(target=sparsify,args=[chunk,"test"])
-            processes.append(q)
-            q.start()
 
         for pr in processes:
             pr.join()
+
+        self.training = q.get()
+        print "after",len(self.training)
+
+        print "before test",len(self.test)
+        q = multiprocessing.Queue()
+        sparsify(self.test,q)
+        self.test = q.get()
+        print "after test", len(self.test)
 
     def classify_svm(self):
 
