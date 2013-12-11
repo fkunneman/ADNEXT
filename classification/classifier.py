@@ -103,6 +103,7 @@ class Classifier():
                 instance["sparse"] = sparse_features           
                 #print "after",instance.keys()
 
+        print [instance.keys() for instance in self.training]
         processes = []
         chunks = gen_functions.make_chunks(self.training + self.test)
         for chunk in chunks:
@@ -112,6 +113,7 @@ class Classifier():
 
         for p in processes:
             p.join()
+        print [instance.keys() for instance in self.training]
 
     def classify_svm(self):
 
