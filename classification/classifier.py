@@ -32,11 +32,30 @@ class Classifier():
     def count_feature_frequency(self):
 
         self.feature_frequency = Counter()
-        n_instances = len(self.training)
-        for i,instance in enumerate(self.training):
-            print i,"van",n_instances
-            for feature in instance["features"]:
-                self.feature_frequency[feature] += 1  
+        
+        def ff(instances,que):
+            #n_instances = len(self.training)
+            feature_frequency = Counter()
+            for instance in instances:
+                for feature in instance["features"]:
+                    feature_frequency[feature] += 1
+            que.put(feature_frequency)
+        
+        processes = []
+        q = multiprocessing.Queue()
+        chunks = gen_functions.make_chunks(self.training)
+        for chunk in chunks:
+            p = multiprocessing.Process(target=ff,args=[chunk,q])
+            processes.append(p)
+            p.start()
+
+        for p in processes:
+            p.join()
+
+        counters = q.get()
+        for i,c in enumerate(counters):
+            print "counter",i
+            self.feature_frequency = self.feature_frequency + c
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -59,14 +78,19 @@ class Classifier():
                 self.training[ind]["features"] = new_features
 
         processes = []
-        chunks = gen_functions.make_chunks(self.training,"numbers")
+        print "before",len(self.training)
+        q = multiprocessing.Queue()
+        chunks = gen_functions.make_chunks(self.training)
         for chunk in chunks:
-            p = multiprocessing.Process(target=prune_features,args=[chunk])
-            p.start()
+            p = multiprocessing.Process(target=prune_features,args=[chunk,q])
             processes.append(p)
+            p.start()
 
         for p in processes:
             p.join()
+
+        self.training = q.get()
+        print "after",len(self.training)
 
     def balance_data(self):
         label_instances = defaultdict(list)
