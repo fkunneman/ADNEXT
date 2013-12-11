@@ -32,7 +32,7 @@ class Classifier():
     def count_feature_frequency(self):
 
         self.feature_frequency = Counter()
-	    n_instances = len(self.training)
+        n_instances = len(self.training)
         for i,instance in enumerate(self.training):
             print i,"van",n_instances
             for feature in instance["features"]:
