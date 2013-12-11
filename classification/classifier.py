@@ -41,43 +41,22 @@ class Classifier():
                 print i,len(instances)
                 for feature in instance["features"]:
                     feature_frequency[feature] += 1
-            print "put",type(feature_frequency)
             queue.put(feature_frequency)
-            print "put and done"
-            #queue.task_done()
-            print "closed"
-            #print queue
         
-#        processes = []
         q = multiprocessing.Queue()
         chunks = gen_functions.make_chunks(self.training,16)
         for chunk in chunks:
             p = multiprocessing.Process(target=ff,args=[chunk,q])
             p.start()
-            #processes.append(p)
 
-        #for pr in processes:
-            #pr.join()
-        #while len(q) < len(chunks): # wait for processing to finish
-#        print len(q)
-#        q.join()
-        #print "num active children:", multiprocessing.active_children()
-        #q.join()
         dicts = []
         while True:
             l = q.get()
             dicts.append(l)
             if len(dicts) == len(chunks):
                 break
-        print "ld",len(dicts)
-        #counters = q.get()
-        
-        #print "len counters",len(counters)
-        #for i,c in enumerate(dicts):
-            #print "counter",type(counters[0]),counters[0]
-        self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0]))
-        print self.feature_frequency
-        exit()
+
+        self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0])
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -90,28 +69,30 @@ class Classifier():
         for f in sorted_feature_freq[n:]:
             feature_status[f] = False
         
-        def prune_features(window):
-            for ind in range(window[0],window[1]):
-                instance = self.training[ind]
+        def prune_features(instances,queue):
+            for instance in instances:
                 new_features = []
                 for f in instance["features"]:
                     if feature_status[f]:
                         new_features.append(f)
-                self.training[ind]["features"] = new_features
+                instance["features"] = new_features
+                queue.put(instance)
 
-        processes = []
         print "before",len(self.training)
         q = multiprocessing.Queue()
         chunks = gen_functions.make_chunks(self.training)
         for chunk in chunks:
             p = multiprocessing.Process(target=prune_features,args=[chunk,q])
             p.start()
-            processes.append(p)
 
-        for p in processes:
-            p.join()
+        new_instances = []
+        while True:
+            ins = q.get()
+            new_instances.append(ins)
+            if len(new_instances) == len(chunks):
+                break
 
-        self.training = q.get()
+        self.training = new_instances
         print "after",len(self.training)
 
     def balance_data(self):
@@ -139,7 +120,7 @@ class Classifier():
         for i,feature in enumerate(self.pruned_features):
             self.feature_info[feature]=i+ind
         
-        def sparsify(instances,que):
+        def sparsify(instances,queue):
             for instance in instances:
                 sparse_features = defaultdict(int)
                 for feature in instance["features"]:
@@ -148,28 +129,33 @@ class Classifier():
                     except:
                         continue
                 instance["sparse"] = sparse_features
-                que.put(instance)         
+                queue.put(instance)         
 
-        processes = []
         print "before",len(self.training)
         q = multiprocessing.Queue()
         chunks_training = gen_functions.make_chunks(self.training)
         for chunk in chunks_training:
             p = multiprocessing.Process(target=sparsify,args=[chunk,q])
             p.start()
-            processes.append(p)
 
-        for pr in processes:
-            pr.join()
+        new_instances = []
+        while True:
+            ins = q.get()
+            new_instances.append(ins)
+            if len(new_instances)) == len(chunks):
+                break
 
-        self.training = q.get()
+        self.training = new_instances
         print "after",len(self.training)
 
-        print "before test",len(self.test)
-        q = multiprocessing.Queue()
-        sparsify(self.test,q)
-        self.test = q.get()
-        print "after test", len(self.test)
+        for instance in self.test:
+            sparse_features = defaultdict(int)
+            for feature in instance["features"]:
+                try:
+                    sparse_features[self.feature_info[feature]] += 1
+                except:
+                    continue
+            instance["sparse"] = sparse_features
 
     def classify_svm(self):
 
