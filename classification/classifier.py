@@ -30,32 +30,54 @@ class Classifier():
         self.classifier = classifier
 
     def count_feature_frequency(self):
-
+        
+        counted = 0
         self.feature_frequency = Counter()
         
-        def ff(instances,que):
+        def ff(instances,queue):
             #n_instances = len(self.training)
-            feature_frequency = Counter()
-            for instance in instances:
+            feature_frequency = defaultdict(int)
+            for i,instance in enumerate(instances):
+                print i,len(instances)
                 for feature in instance["features"]:
                     feature_frequency[feature] += 1
-            que.put(feature_frequency)
+            print "put",type(feature_frequency)
+            queue.put(feature_frequency)
+            print "put and done"
+            #queue.task_done()
+            print "closed"
+            #print queue
         
-        processes = []
+#        processes = []
         q = multiprocessing.Queue()
-        chunks = gen_functions.make_chunks(self.training)
+        chunks = gen_functions.make_chunks(self.training,16)
         for chunk in chunks:
             p = multiprocessing.Process(target=ff,args=[chunk,q])
-            processes.append(p)
             p.start()
+            #processes.append(p)
 
-        for p in processes:
-            p.join()
-
-        counters = q.get()
-        for i,c in enumerate(counters):
-            print "counter",i
-            self.feature_frequency = self.feature_frequency + c
+        #for pr in processes:
+            #pr.join()
+        #while len(q) < len(chunks): # wait for processing to finish
+#        print len(q)
+#        q.join()
+        #print "num active children:", multiprocessing.active_children()
+        #q.join()
+        dicts = []
+        while True:
+            l = q.get()
+            dicts.append(l)
+            if len(dicts) == len(chunks):
+                break
+        print "ld",len(dicts)
+        #counters = q.get()
+        
+        #print "len counters",len(counters)
+        #for i,c in enumerate(dicts):
+            #print "counter",type(counters[0]),counters[0]
+        self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0]))
+        print self.feature_frequency
+        exit()
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -83,8 +105,8 @@ class Classifier():
         chunks = gen_functions.make_chunks(self.training)
         for chunk in chunks:
             p = multiprocessing.Process(target=prune_features,args=[chunk,q])
-            processes.append(p)
             p.start()
+            processes.append(p)
 
         for p in processes:
             p.join()
@@ -134,8 +156,8 @@ class Classifier():
         chunks_training = gen_functions.make_chunks(self.training)
         for chunk in chunks_training:
             p = multiprocessing.Process(target=sparsify,args=[chunk,q])
-            processes.append(p)
             p.start()
+            processes.append(p)
 
         for pr in processes:
             pr.join()
