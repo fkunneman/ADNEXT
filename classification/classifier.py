@@ -151,6 +151,7 @@ class Classifier():
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
+        exit()
         trainingvectors = vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
