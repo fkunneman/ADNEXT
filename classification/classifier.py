@@ -61,6 +61,7 @@ class Classifier():
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
         sorted_feature_freq=sorted(self.feature_frequency, key=self.feature_frequency.get, reverse=True)
+        print sorted_feature_freq       
         boundary=0
         feature_status = {}
         self.pruned_features = sorted_feature_freq[:n]
@@ -142,7 +143,7 @@ class Classifier():
         while True:
             ins = q.get()
             new_instances.append(ins)
-            if len(new_instances) == len(chunks):
+            if len(new_instances) == len(chunks_training):
                 break
 
         self.training = new_instances
