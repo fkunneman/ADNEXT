@@ -32,7 +32,7 @@ class Classifier():
     def count_feature_frequency(self):
 
         self.feature_frequency = Counter()
-	n_instances = len(self.training)
+	    n_instances = len(self.training)
         for i,instance in enumerate(self.training):
             print i,"van",n_instances
             for feature in instance["features"]:
@@ -43,6 +43,7 @@ class Classifier():
         sorted_feature_freq=sorted(self.feature_frequency, key=self.feature_frequency.get, reverse=True)
         boundary=0
         feature_status = {}
+        self.pruned_features = sorted_feature_freq[:n]
         for f in sorted_feature_freq[:n]:
             feature_status[f] = True 
         for f in sorted_feature_freq[n:]:
@@ -89,7 +90,7 @@ class Classifier():
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
-        for i,feature in enumerate(self.feature_frequency.keys()):
+        for i,feature in enumerate(self.pruned_features):
             self.feature_info[feature]=i+ind
         
         def sparsify(window,l):
@@ -113,11 +114,11 @@ class Classifier():
         chunks_training = gen_functions.make_chunks(self.training,"numbers")
         chunks_test = gen_functions.make_chunks(self.test,"numbers")
         for chunk in chunks_training:
-            p = multiprocessing.Process(target=sparsify,args=[[chunk],"train"])
+            p = multiprocessing.Process(target=sparsify,args=[chunk,"train"])
             processes.append(p)
             p.start()
         for chunk in chunks_test:
-            q = multiprocessing.Process(target=sparsify,args=[[chunk],"test"])
+            q = multiprocessing.Process(target=sparsify,args=[chunk,"test"])
             processes.append(q)
             q.start()
 
