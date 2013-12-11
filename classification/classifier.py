@@ -57,6 +57,13 @@ class Classifier():
                 break
         
         self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0])
+
+        alt = defaultdict(int)
+        for i,instance in enumerate(self.training):
+            #print i,len(instances)
+            for feature in instance["features"]:
+                alt[feature] += 1
+        print "alt len",len(alt.keys())
         
 
     def prune_features_topfrequency(self,n):
