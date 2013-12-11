@@ -72,12 +72,14 @@ class Classifier():
         print "ld",len(dicts)
         #counters = q.get()
         
+	keys = dicts[0].keys()[:50]
         #print "len counters",len(counters)
         #for i,c in enumerate(dicts):
             #print "counter",type(counters[0]),counters[0]
-        self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0]))
-        print self.feature_frequency
-        exit()
+        self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0])
+ #       for key in keys:
+  #          print dicts[0][key],self.feature_frequency[key]
+#        exit()
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -90,7 +92,7 @@ class Classifier():
         for f in sorted_feature_freq[n:]:
             feature_status[f] = False
         
-        def prune_features(window):
+        def prune_features(instances,queue):
             for ind in range(window[0],window[1]):
                 instance = self.training[ind]
                 new_features = []
