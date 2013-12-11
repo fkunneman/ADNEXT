@@ -55,7 +55,7 @@ class Classifier():
             dicts.append(l)
             if len(dicts) == len(chunks):
                 break
-
+        
         self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0])
 
     def prune_features_topfrequency(self,n):
