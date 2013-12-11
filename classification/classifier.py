@@ -142,7 +142,7 @@ class Classifier():
         while True:
             ins = q.get()
             new_instances.append(ins)
-            if len(new_instances)) == len(chunks):
+            if len(new_instances) == len(chunks):
                 break
 
         self.training = new_instances
