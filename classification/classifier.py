@@ -57,11 +57,12 @@ class Classifier():
                 break
         
         self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0])
+        
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
         sorted_feature_freq=sorted(self.feature_frequency, key=self.feature_frequency.get, reverse=True)
-        print sorted_feature_freq       
+        print len(sorted_feature_freq)       
         boundary=0
         feature_status = {}
         self.pruned_features = sorted_feature_freq[:n]
@@ -69,10 +70,13 @@ class Classifier():
             feature_status[f] = True 
         for f in sorted_feature_freq[n:]:
             feature_status[f] = False
+        print len(feature_status)
+        print len(self.pruned_features)
         
         def prune_features(instances,queue):
             for instance in instances:
                 new_features = []
+                print feature_status
                 for f in instance["features"]:
                     if feature_status[f]:
                         new_features.append(f)
