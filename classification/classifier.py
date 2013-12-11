@@ -49,27 +49,21 @@ class Classifier():
             p = multiprocessing.Process(target=ff,args=[chunk,q])
             p.start()
 
-        dicts = []
+        ds = []
         while True:
             l = q.get()
-            dicts.append(l)
-            if len(dicts) == len(chunks):
+            ds.append(l)
+            if len(ds) == len(chunks):
                 break
         
-        self.feature_frequency = dict((key, sum(d.get(key, 0) for d in dicts)) for key in dicts[0])
-
-        alt = defaultdict(int)
-        for i,instance in enumerate(self.training):
-            print i,len(instances)
-            for feature in instance["features"]:
-                alt[feature] += 1
-        print "alt len",len(alt.keys())
-        
+        self.feature_frequency = defaultdict(int)
+        for d in ds:
+            for k in d:
+                self.feature_frequency[k] += d[k]
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
         sorted_feature_freq=sorted(self.feature_frequency, key=self.feature_frequency.get, reverse=True)
-        print len(sorted_feature_freq)       
         boundary=0
         feature_status = {}
         self.pruned_features = sorted_feature_freq[:n]
@@ -77,9 +71,6 @@ class Classifier():
             feature_status[f] = True 
         for f in sorted_feature_freq[n:]:
             feature_status[f] = False
-        print len(feature_status)
-        print len(self.pruned_features)
-        exit()
 
         def prune_features(instances,queue):
             for instance in instances:
@@ -102,7 +93,7 @@ class Classifier():
         while True:
             ins = q.get()
             new_instances.append(ins)
-            if len(new_instances) == len(chunks):
+            if len(new_instances) == len(self.training):
                 break
 
         self.training = new_instances
@@ -155,7 +146,7 @@ class Classifier():
         while True:
             ins = q.get()
             new_instances.append(ins)
-            if len(new_instances) == len(chunks_training):
+            if len(new_instances) == len(self.training):
                 break
 
         self.training = new_instances
@@ -197,16 +188,15 @@ class Classifier():
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
-        exit()
         trainingvectors = vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
         testvectors = vectorize(self.test)
         testlabels = [labeldict[x["label"]] for x in self.test]
         #obtain the best parameter settings for an svm outputcode classifier
-        param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf','poly'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048], 'estimator__degree': [1,2,3,4]}
-        model = OutputCodeClassifier(svm.SVC(probability=True,verbose=True),n_jobs=16)
-        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score)
+        param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
+        model = OutputCodeClassifier(svm.SVC(probability=True))
+        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score,n_jobs=16,verbose=2)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
@@ -217,7 +207,7 @@ class Classifier():
             outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
         outfile.write("best score: " + str(paramsearch.best_score_) + "\n\n")
         #train an svm outputcode classifier using the best parameters
-        clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],degree=parameters['estimator__degree'])
+        clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
         multiclf = OutputCodeClassifier(clf,n_jobs=16)
         multiclf.fit(training_csr,trainlabels)
         #predict labels and print the to the outfile

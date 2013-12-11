@@ -73,11 +73,13 @@ for i,event in enumerate(events):
             d+=1
     print "Classifier " + event + "..."
     cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
-    cl.count_feature_frequency()
-    if args.f:
-        cl.prune_features_topfrequency(args.f)
     print "balancing..."
     cl.balance_data()
+    print "counting..."
+    cl.count_feature_frequency()
+    if args.f:
+        print "pruning..."
+        cl.prune_features_topfrequency(args.f)
     #generate sparse input
     print "indexing..."
     cl.index_features()

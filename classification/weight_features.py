@@ -118,12 +118,11 @@ def return_idf(train_vectors):
     df = defaultdict(int)
     idf = {}
     for instance in train_vectors:
-        print instance.keys()
-        #features = instance["sparse"]
-        #for feature in features.keys():
-        #    df[feature] += 1
+        features = instance["sparse"]
+        for feature in features.keys():
+            df[feature] += 1
 
-    #for feature in df.keys():
-    #    idf[feature] = math.log((num_docs/df[feature]),10)
+    for feature in df.keys():
+        idf[feature] = math.log((num_docs/df[feature]),10)
 
     return idf
