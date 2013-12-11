@@ -32,9 +32,9 @@ class Classifier():
     def count_feature_frequency(self):
 
         self.feature_frequency = Counter()
-	instances = len(self.training)
+	n_instances = len(self.training)
         for i,instance in enumerate(self.training):
-            print i,"van",instances
+            print i,"van",n_instances
             for feature in instance["features"]:
                 self.feature_frequency[feature] += 1  
 
@@ -48,18 +48,19 @@ class Classifier():
         for f in sorted_feature_freq[n:]:
             feature_status[f] = False
         
-        def prune_features(instances):
-            for instance in instances:
+        def prune_features(window):
+            for ind in range(window[0],window[1]):
+                instance = self.training[ind]
                 new_features = []
                 for f in instance["features"]:
                     if feature_status[f]:
                         new_features.append(f)
-                instance["features"] = new_features
+                self.training[ind]["features"] = new_features
 
         processes = []
-        chunks = gen_functions.make_chunks(self.training)
+        chunks = gen_functions.make_chunks(self.training,"numbers")
         for chunk in chunks:
-            p = multiprocessing.Process(target=prune_features,args=[chunk])
+            p = multiprocessing.Process(target=prune_features,args=chunk)
             p.start()
             processes.append(p)
 
@@ -91,29 +92,37 @@ class Classifier():
         for i,feature in enumerate(self.feature_frequency.keys()):
             self.feature_info[feature]=i+ind
         
-        def sparsify(instances):
-            for instance in instances:
-                #print "before",instance.keys()
+        def sparsify(window,l):
+            for ind in range(window[0],window[1]):
+                if l == "train":
+                    instance = self.training[ind]
+                elif l == "test":
+                    instance = self.test[ind]
                 sparse_features = defaultdict(int)
                 for feature in instance["features"]:
                     try:
                         sparse_features[self.feature_info[feature]] += 1
                     except:
                         continue
-                instance["sparse"] = sparse_features           
-                #print "after",instance.keys()
+                if l == "train":
+                    self.training[ind]["sparse"] = sparse_features
+                elif l == "test":
+                    self.test[ind]["sparse"] = sparse_features          
 
-        print [instance.keys() for instance in self.training]
         processes = []
-        chunks = gen_functions.make_chunks(self.training + self.test)
-        for chunk in chunks:
-            p = multiprocessing.Process(target=sparsify,args=[chunk])
+        chunks_training = gen_functions.make_chunks(self.training,"numbers")
+        chunks_test = gen_functions.make_chunks(self.test,"numbers")
+        for chunk in chunks_training:
+            p = multiprocessing.Process(target=sparsify,args=[chunk,"train"])
             processes.append(p)
             p.start()
+        for chunk in chunks_test:
+            q = multiprocessing.Process(target=sparsify,args=[chunk,"test"])
+            processes.append(q)
+            q.start()
 
-        for p in processes:
-            p.join()
-        print [instance.keys() for instance in self.training]
+        for pr in processes:
+            pr.join()
 
     def classify_svm(self):
 
@@ -142,6 +151,7 @@ class Classifier():
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
+        exit()
         trainingvectors = vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
