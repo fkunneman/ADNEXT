@@ -63,33 +63,36 @@ for i in range(0,len(events),testlen):
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))
-    print events
-    print train_events
-    print test_events
-    # train = sum([event_instances[x] for x in train_events],[])
-    # test = event_instances[event]
-    # #set up classifier object
-    # eventdir = args.d + event + "/" + args.scaling + "/"
-    # eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
-    # if not os.path.exists(eventdir):
-    #     d = depth
-    #     while d <= -1: 
-    #         if not os.path.exists("/".join(eventdir.split("/")[:d])):
-    #             os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
-    #         d+=1
-    # print "Classifier " + event + "..."
-    # cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
-    # print "balancing..."
-    # cl.balance_data()
-    # print "counting..."
-    # cl.count_feature_frequency()
-    # if args.f:
-    #     print "pruning..."
-    #     cl.prune_features_topfrequency(args.f)
-    # #generate sparse input
-    # print "indexing..."
-    # cl.index_features()
-    # #generate classifiers
-    # print "classifying..."
-    # if args.c == "svm":
-    #     cl.classify_svm()
+    train = sum([event_instances[x] for x in train_events],[])
+    test = []
+    for event in test_events:
+        testdict = {}
+        eventdir = args.d + event + "/" + args.scaling + "/"
+        eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
+        if not os.path.exists(eventdir):
+            d = depth
+            while d <= -1: 
+                if not os.path.exists("/".join(eventdir.split("/")[:d])):
+                    os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
+                d+=1
+        testdict["out"] = eventout
+        testdict["instances"] = event_instances[event]
+        test.append(testdict)
+    print test
+    exit()
+    #set up classifier object
+    cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
+    print "balancing..."
+    cl.balance_data()
+    print "counting..."
+    cl.count_feature_frequency()
+    if args.f:
+        print "pruning..."
+        cl.prune_features_topfrequency(args.f)
+    #generate sparse input
+    print "indexing..."
+    cl.index_features()
+    #generate classifiers
+    print "classifying..."
+    if args.c == "svm":
+        cl.classify_svm()
