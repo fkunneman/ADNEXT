@@ -62,10 +62,10 @@ for i in range(0,len(events),testlen):
         test_events = [events[j] for j in range(i,i+testlen)]
     except IndexError:
         train_events = events[:i]
-        test_events = [events[j] for j in range(i,len(events))
-    print events
-    print train_events
-    print test_events
+        test_events = [events[j] for j in range(i,len(events))]
+    #print events
+    print "train",sorted(train_events)
+    print "test",sorted(test_events)
     # train = sum([event_instances[x] for x in train_events],[])
     # test = event_instances[event]
     # #set up classifier object
