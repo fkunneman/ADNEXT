@@ -24,7 +24,7 @@ class Classifier():
 
     def __init__(self,trainlist,testlist,classifier,scaling,directory=False):
         self.training=trainlist
-        self.test=testlist
+        self.test=testlist #self.test should be a list with multiple lists for each testset
         self.scaling=scaling
         self.directory=directory
         self.classifier = classifier
@@ -152,14 +152,15 @@ class Classifier():
         self.training = new_instances
         print "after",len(self.training)
 
-        for instance in self.test:
-            sparse_features = defaultdict(int)
-            for feature in instance["features"]:
-                try:
-                    sparse_features[self.feature_info[feature]] += 1
-                except:
-                    continue
-            instance["sparse"] = sparse_features
+        for tset in self.test:
+            for instance in tset:
+                sparse_features = defaultdict(int)
+                for feature in instance["features"]:
+                    try:
+                        sparse_features[self.feature_info[feature]] += 1
+                    except:
+                        continue
+                instance["sparse"] = sparse_features
 
     def classify_svm(self):
 
@@ -178,12 +179,11 @@ class Classifier():
                 matrix.append(featurev)
             return matrix
 
-        outfile = codecs.open(self.directory,"w","utf-8")
+        
         #generate scipy libsvm input
         print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
-        testlabels_raw = [x["label"] for x in self.test]
-        labels = set(trainlabels_raw + testlabels_raw)
+        labels = set(trainlabels_raw)
         labeldict = dict(zip(labels,range(len(labels))))
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
@@ -191,8 +191,6 @@ class Classifier():
         trainingvectors = vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
-        testvectors = vectorize(self.test)
-        testlabels = [labeldict[x["label"]] for x in self.test]
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
         model = OutputCodeClassifier(svm.SVC(probability=True))
@@ -202,10 +200,13 @@ class Classifier():
         #print the best parameters to the file
         print "Prediction..."
         parameters = paramsearch.best_params_
-        outfile.write("best parameter settings:\n")
+        outstring = "best parameter settings:\n"
         for parameter in parameters.keys():
-            outfile.write(parameter + ": " + str(parameters[parameter]) + "\n")
-        outfile.write("best score: " + str(paramsearch.best_score_) + "\n\n")
+            outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
+        outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
+        for tset in self.test:
+            testvectors = vectorize(self.test)
+            outfile = codecs.open(self.directory,"w","utf-8")
         #train an svm outputcode classifier using the best parameters
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
         multiclf = OutputCodeClassifier(clf,n_jobs=16)
