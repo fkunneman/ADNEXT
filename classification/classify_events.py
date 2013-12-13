@@ -32,7 +32,7 @@ print "Reading in events..."
 event_instances = defaultdict(list)
 test_event_instances = defaultdict(list)
 if args.majority:
-    train_instances defaultdict(list)
+    train_instances = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
@@ -50,7 +50,6 @@ for ef in args.i:
         window = tweets[i+args.window]
         if args.majority:
             event_instances[event].extend([{"features":t["features"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in tweets[i:i+args.window]])
-            print event_instances[event]
         else:
             features = []
             for tweet in tweets[i:i+args.window]:
@@ -59,7 +58,6 @@ for ef in args.i:
         i+=args.step
     if args.majority:
         train_instances[event] = tweets
-    exit()
 
 print "Starting classification..."
 #divide train and test events
