@@ -14,7 +14,7 @@ parser.add_argument('-c', action='store', required=True, choices=["svm","lcs","k
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
-parser.add_argument('--depth', action='store', default=1, type=int, help="[OPTIONAL] specify the depth of file characterizations; [DEFAULT] = 1)")
+parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT] = 1)")
 parser.add_argument('--scaling', action='store', default='binary', help='')
 
 args=parser.parse_args() 
@@ -53,35 +53,43 @@ for ef in args.i:
 print "Starting classification..."
 #divide train and test events
 events = event_instances.keys()
-for i,event in enumerate(events):
+testlen = int(len(events)/10)
+#make folds
+for i in range(0,len(events),testlen):
+#,event in enumerate(events):
     try:
-        train_events = events[:i] + events[i+1:]
+        train_events = events[:i] + events[i+testlen:]
+        test_events = [events[j] for j in range(i,i+testlen)]
     except IndexError:
         train_events = events[:i]
-    train = sum([event_instances[x] for x in train_events],[])
-    test = event_instances[event]
-    #set up classifier object
-    eventdir = args.d + event + "/" + args.scaling + "/"
-    eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
-    if not os.path.exists(eventdir):
-        d = depth
-        while d <= -1: 
-            if not os.path.exists("/".join(eventdir.split("/")[:d])):
-                os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
-            d+=1
-    print "Classifier " + event + "..."
-    cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
-    print "balancing..."
-    cl.balance_data()
-    print "counting..."
-    cl.count_feature_frequency()
-    if args.f:
-        print "pruning..."
-        cl.prune_features_topfrequency(args.f)
-    #generate sparse input
-    print "indexing..."
-    cl.index_features()
-    #generate classifiers
-    print "classifying..."
-    if args.c == "svm":
-        cl.classify_svm()
+        test_events = [events[j] for j in range(i,len(events))
+    print events
+    print train_events
+    print test_events
+    # train = sum([event_instances[x] for x in train_events],[])
+    # test = event_instances[event]
+    # #set up classifier object
+    # eventdir = args.d + event + "/" + args.scaling + "/"
+    # eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
+    # if not os.path.exists(eventdir):
+    #     d = depth
+    #     while d <= -1: 
+    #         if not os.path.exists("/".join(eventdir.split("/")[:d])):
+    #             os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
+    #         d+=1
+    # print "Classifier " + event + "..."
+    # cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
+    # print "balancing..."
+    # cl.balance_data()
+    # print "counting..."
+    # cl.count_feature_frequency()
+    # if args.f:
+    #     print "pruning..."
+    #     cl.prune_features_topfrequency(args.f)
+    # #generate sparse input
+    # print "indexing..."
+    # cl.index_features()
+    # #generate classifiers
+    # print "classifying..."
+    # if args.c == "svm":
+    #     cl.classify_svm()
