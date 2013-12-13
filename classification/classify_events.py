@@ -16,6 +16,7 @@ parser.add_argument('--step', action='store', default=1, type=int, help="specify
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT] = 1)")
 parser.add_argument('--scaling', action='store', default='binary', help='')
+parser.add_argument('--majority', action='store_true', help = 'specify if tweet windows are classified as sets of loose tweets')
 
 args=parser.parse_args() 
 
@@ -29,6 +30,7 @@ depth = args.depth * -1
 #read in instances
 print "Reading in events..."
 event_instances = defaultdict(list)
+test_event_instances = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
@@ -44,11 +46,18 @@ for ef in args.i:
     i = 0
     while i+args.window < len(tweets):
         window = tweets[i+args.window]
-        features = []
-        for tweet in tweets[i:i+args.window]:
-            features.extend(tweet["features"])
-        i+=args.step     
-        event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
+        if args.majority:
+            event_instances[event].extend([{"features":t["features"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in tweets[i:i+args.window]])
+            print event_instances[event]
+        else:
+            features = []
+            for tweet in tweets[i:i+args.window]:
+                features.extend(tweet["features"])     
+            event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
+        i+=args.step
+    if args.majority:
+        train_instances[event] = tweets
+    exit()
 
 print "Starting classification..."
 #divide train and test events
@@ -63,7 +72,10 @@ for i in range(0,len(events),testlen):
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))]
-    train = sum([event_instances[x] for x in train_events],[])
+    if args.majority:
+        train = sum([train_instances[x] for x in train_events],[])
+    else:
+        train = sum([event_instances[x] for x in train_events],[])
     test = []
     for event in test_events:
         testdict = {}
@@ -93,32 +105,4 @@ for i in range(0,len(events),testlen):
     #generate classifiers
     print "classifying..."
     if args.c == "svm":
-        cl.classify_svm()
-    #print events
-    # train = sum([event_instances[x] for x in train_events],[])
-    # test = event_instances[event]
-    # #set up classifier object
-    # eventdir = args.d + event + "/" + args.scaling + "/"
-    # eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
-    # if not os.path.exists(eventdir):
-    #     d = depth
-    #     while d <= -1: 
-    #         if not os.path.exists("/".join(eventdir.split("/")[:d])):
-    #             os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
-    #         d+=1
-    # print "Classifier " + event + "..."
-    # cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
-    # print "balancing..."
-    # cl.balance_data()
-    # print "counting..."
-    # cl.count_feature_frequency()
-    # if args.f:
-    #     print "pruning..."
-    #     cl.prune_features_topfrequency(args.f)
-    # #generate sparse input
-    # print "indexing..."
-    # cl.index_features()
-    # #generate classifiers
-    # print "classifying..."
-    # if args.c == "svm":
-    #     cl.classify_svm()
+        cl.classify_svm(args.majority)
