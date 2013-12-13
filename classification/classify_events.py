@@ -124,4 +124,3 @@ for i in range(0,len(events),testlen):
     # print "classifying..."
     # if args.c == "svm":
     #     cl.classify_svm()
->>>>>>> a0652e9248c0b93d62b78289bffdcde7167c9a72
