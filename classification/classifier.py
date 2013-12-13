@@ -153,7 +153,7 @@ class Classifier():
         print "after",len(self.training)
 
         for tset in self.test:
-            for instance in tset:
+            for instance in tset["instances"]:
                 sparse_features = defaultdict(int)
                 for feature in instance["features"]:
                     try:
@@ -199,23 +199,25 @@ class Classifier():
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
         print "Prediction..."
+        #train an svm outputcode classifier using the best parameters
         parameters = paramsearch.best_params_
         outstring = "best parameter settings:\n"
         for parameter in parameters.keys():
             outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
-        for tset in self.test:
-            testvectors = vectorize(self.test)
-            outfile = codecs.open(self.directory,"w","utf-8")
-        #train an svm outputcode classifier using the best parameters
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
         multiclf = OutputCodeClassifier(clf,n_jobs=16)
         multiclf.fit(training_csr,trainlabels)
-        #predict labels and print the to the outfile
-        for i,t in enumerate(testvectors):
-            classification = multiclf.predict(t)
-            classification_label = labeldict_back[classification[0]]
-            outfile.write(self.test[i]["label"] + " " + classification_label + "\n")
+        for tset in self.test:
+            testvectors = vectorize(tset["instances"])
+            outfile = codecs.open(tset["out"],"w","utf-8")
+            outfile.write(outstring)
+            #predict labels and print them to the outfile
+            for i,t in enumerate(testvectors):
+                classification = multiclf.predict(t)
+                classification_label = labeldict_back[classification[0]]
+                outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
+            outfile.close()
 
     def perform_lcs(self,args,prune,select,timelabels):
         

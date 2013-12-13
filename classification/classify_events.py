@@ -79,9 +79,8 @@ for i in range(0,len(events),testlen):
         testdict["instances"] = event_instances[event]
         test.append(testdict)
     print test
-    exit()
     #set up classifier object
-    cl = Classifier(train,test,directory = eventout,classifier=args.c,scaling=args.scaling)
+    cl = Classifier(train,test,classifier=args.c,scaling=args.scaling)
     print "balancing..."
     cl.balance_data()
     print "counting..."
