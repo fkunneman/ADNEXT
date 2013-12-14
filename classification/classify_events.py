@@ -105,4 +105,4 @@ for i in range(0,len(events),testlen):
     #generate classifiers
     print "classifying..."
     if args.c == "svm":
-        cl.classify_svm(args.majority)
+        cl.classify_svm()
