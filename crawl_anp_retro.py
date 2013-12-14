@@ -23,7 +23,14 @@ while current_date <= end_date:
     current_date += timedelta(days=1)
 date_out = open(sys.argv[1],"w")
 new_date = end_date + timedelta(days=1)
-date_out.write(str(new_date.day) + "-" + str(new_date.month) + "-" + str(new_date.year))
+datewrites = []
+for i,st in enumerate([new_date.day,new_date.month]):
+    if len(st) == 1:
+        datewrites[i] = "0" + str(st)
+    else:
+        datewrites[i] = str(st) 
+date_out.write(st[0] + "-" + st[1] + "-" + str(new_date.year))
+date_out.close()
 
 for date in dates:
     os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
