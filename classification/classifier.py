@@ -44,7 +44,7 @@ class Classifier():
             queue.put(feature_frequency)
         
         q = multiprocessing.Queue()
-        chunks = gen_functions.make_chunks(self.training,16)
+        chunks = gen_functions.make_chunks(self.training,8)
         for chunk in chunks:
             p = multiprocessing.Process(target=ff,args=[chunk,q])
             p.start()
