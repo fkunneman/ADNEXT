@@ -25,11 +25,11 @@ date_out = open(sys.argv[1],"w")
 new_date = end_date + timedelta(days=1)
 datewrites = []
 for i,st in enumerate([new_date.day,new_date.month]):
-    if len(st) == 1:
+    if len(str(st)) == 1:
         datewrites[i] = "0" + str(st)
     else:
         datewrites[i] = str(st) 
-date_out.write(st[0] + "-" + st[1] + "-" + str(new_date.year))
+date_out.write(datewrites[0] + "-" + datewrites[1] + "-" + str(new_date.year))
 date_out.close()
 
 for date in dates:
