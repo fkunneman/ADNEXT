@@ -60,15 +60,16 @@ class Lineconverter():
                 newlines.append(newline)    
         self.lines = newlines
     
-    def delete_string(self,string,column):
+    def delete_string(self,blacklist,column):
         newlines = []
         for line in self.lines:
             black = False
             tokens = line.split(self.delimiter)
-            sequence = tokens[column].split(" ")
+            sequence = tokens[column].strip().split(" ")
             for w in sequence:
-                if re.match(string,w,re.IGNORECASE):
-                    black=True
+                for string in blacklist:
+                    if re.match(string,w,re.IGNORECASE):
+                        black=True
             if not black:
                 newlines.append(line)
         self.lines = newlines
@@ -146,4 +147,4 @@ class Lineconverter():
                     del self.lines[index]
             elif sample_type=="up":
                 for i in sample:
-                    self.lines.append(self.lines[i])
+                    self.lines.append(self.lines[i]) 

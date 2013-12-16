@@ -4,6 +4,7 @@ import lineconverter
 import codecs
 import argparse
 import gen_functions
+import re
 from xlwt import *
 
 parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
@@ -11,11 +12,12 @@ parser.add_argument('-i', action = 'store', required = True, help = "The input f
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
 parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
 # parser.add_argument('-e', action = 'store', required = False, help = "An extra file name (needed for time deletion and the keepfile for extraction).")
-parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","extract","add_time","add_id","filter"], help = "Choose the action to perform.")
+parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","delete_filematch","extract","add_time","add_id","filter"], help = "Choose the action to perform.")
 parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete or filter")
 parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace or delete (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
 parser.add_argument('--extract', action = 'store', required = False, nargs='+', help = "[EXTRACT] specify the number of lines to extract")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
+parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
 parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
 
 args = parser.parse_args() 
@@ -24,6 +26,8 @@ if args.i[-3:] == "xls":
     lines = gen_functions.excel2lines(args.i,[0])[0]
     newlines = []
     for line in lines:
+        for i in range(len(line)):
+            line[i] = re.sub("\n","",line[i])
         newlines.append(args.d.join(line) + "\n")
     lines = newlines
 
@@ -68,7 +72,27 @@ if action == "add_id":
 
 if action == "delete":
     print "num lines before delete:",len(lineconvert.lines)
-    lineconvert.delete_string(args.s, args.c)
+    lineconvert.delete_string([args.s], args.c)
+    print "num lines after delete",len(lineconvert.lines)
+
+if action == "delete_filematch":
+    f = args.filematch[0]
+    matchlist = []
+    if f[-3:] == "xls": 
+        mlines = gen_functions.excel2lines(f,[0])[0]
+        for mline in mlines:
+            match = re.sub("\n","",mline[int(args.filematch[1])])
+            matchlist.append(match)
+    else:
+        matchfile = codecs.open(args.filematch[0],"r","utf-8")
+        matchlines = infile.readlines()
+        infile.close()
+        for matchline in matchlines:
+            tokens = matchline.strip().split(args.d)
+            match = re.sub("\n","",tokens[int(args.filematch[1])])
+            matchlist.append(match)
+    print "num lines before delete:",len(lineconvert.lines)
+    lineconvert.delete_string(matchlist, args.c)
     print "num lines after delete",len(lineconvert.lines)
 
 if action == "filter":
@@ -102,7 +126,11 @@ if args.excel:
     outname = args.o.split("/")[-1].split(".")[0]
     book = Workbook()
     for x,chunk in enumerate(chunks):
-        tab = book.add_sheet(outname + "_" + str(x))
+        tabname = outname + "_" + str(x)
+        if len(tabname) <= 25:
+            tab = book.add_sheet(tabname)
+        else:
+            tab = book.add_sheet(outname[:23] + "_" + str(x))
         for i,line in enumerate(chunk):
             columns = line.split(args.d)
             for j,col in enumerate(columns):
