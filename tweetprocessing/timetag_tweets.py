@@ -41,7 +41,8 @@ for date in date_tweets.keys():
     #os.system("mkdir " + dateout_string)
     date_file[date] = dateout_string
     for tweet in date_tweets[date]:
-        dateout.write(tweet)
+        tokens = tweet.split("\t")
+        dateout.write(tokens[-1])
     dateout.close()
 
 outdir_tags = args.o + "dates_tagged/"
