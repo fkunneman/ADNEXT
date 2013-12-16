@@ -37,6 +37,7 @@ for line in infile.readlines():
 
 for date in date_tweets.keys():
     dateout = open(outdir_date + date,"w")
+    os.system("mkdir " + dateout)
     date_file[date] = dateout
     for tweet in date_tweets[date]:
         dateout.write(tweet)
