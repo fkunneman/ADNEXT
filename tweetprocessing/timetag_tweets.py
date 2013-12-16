@@ -9,7 +9,7 @@ parser.add_argument('-i', action = 'store', required = True, help = "The input f
 parser.add_argument('-o', action = 'store', required = True, help = "The output directory.")
 parser.add_argument('-w', action = 'store', required = True, help = "The heideltime directory.")
 parser.add_argument('-d', action = 'store', type = int, required = True, help = "Specify the column with a date.")
-# parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","delete_filematch","extract","add_time","add_id","filter"], help = "Choose the action to perform.")
+parser.add_argument('--depth', action = 'store', type = int, default = 2, help = "Specify the depth of file characterizations; [DEFAULT] = 2)")
 # parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete or filter")
 # parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace or delete (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
 # parser.add_argument('--extract', action = 'store', required = False, nargs='+', help = "[EXTRACT] specify the number of lines to extract")
@@ -23,6 +23,12 @@ infile = codecs.open(args.i,"r","utf-8")
 date_tweets = defaultdict(list)
 date_tweetfiles = {}
 outdir_date = args.o + "dates/"
+if not os.path.exists(outdir_date):
+    d = args.depth * -1
+    while d <= -1: 
+        if not os.path.exists("/".join(outdir_date.split("/")[:d])):
+            os.system("mkdir " + "/".join(outdir_date.split("/")[:d]))
+        d+=1
 #make a date - tweet dictionary
 for line in infile.readlines():
     tokens = line.strip().split("\t")
