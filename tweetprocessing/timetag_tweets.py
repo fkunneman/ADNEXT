@@ -3,6 +3,7 @@
 import argparse
 import codecs
 from collections import defaultdict
+import os
 
 parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
 parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
