@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 infile = codecs.open(args.i,"r","utf-8")
 date_tweets = defaultdict(list)
-date_tweetfiles = {}
+date_file = {}
 outdir_date = args.o + "dates/"
 if not os.path.exists(outdir_date):
     d = args.depth * -1
@@ -36,16 +36,18 @@ for line in infile.readlines():
     date_tweets[tokens[args.d]].append(line)
 
 for date in date_tweets.keys():
-    dateout = open(outdir_date + date,"w")
-    os.system("mkdir " + dateout)
-    date_file[date] = dateout
+    dateout_string = outdir_date + date + ".txt"
+    dateout = codecs.open(dateout_string,"w","utf-8")
+    #os.system("mkdir " + dateout_string)
+    date_file[date] = dateout_string
     for tweet in date_tweets[date]:
         dateout.write(tweet)
     dateout.close()
 
 outdir_tags = args.o + "dates_tagged/"
-os.chdir(args.h)
+os.system("mkdir " + outdir_tags)
+os.chdir(args.w)
 for date in date_file.keys():
-    tagged_out = outdir_tags + date
+    tagged_out = outdir_tags + date + ".txt"
     os.system("java -jar de.unihd.dbs.heideltime.standalone.jar " + date_file[date] + " -l DUTCH -t NEWS -dct " + date + " > " + tagged_out)
 
