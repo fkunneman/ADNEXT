@@ -124,7 +124,7 @@ class Classifier():
         for i,feature in enumerate(self.pruned_features):
             self.feature_info[feature]=i+ind
         
-        def sparsify(instances,queue):
+        def sparsify(instances):
             for instance in instances:
                 sparse_features = defaultdict(int)
                 for feature in instance["features"]:
@@ -136,18 +136,21 @@ class Classifier():
                 queue.put(instance)         
 
         print "before",len(self.training)
-        q = multiprocessing.Queue()
-        chunks_training = gen_functions.make_chunks(self.training)
-        for chunk in chunks_training:
-            p = multiprocessing.Process(target=sparsify,args=[chunk,q])
-            p.start()
+        # q = multiprocessing.Queue()
+        # chunks_training = gen_functions.make_chunks(self.training)
+        # for chunk in chunks_training:
+        #     p = multiprocessing.Process(target=sparsify,args=[chunk,q])
+        #     p.start()
+
+
 
         new_instances = []
-        while True:
-            ins = q.get()
-            new_instances.append(ins)
-            if len(new_instances) == len(self.training):
-                break
+        sparsify(self.training,new_instances)
+        # while True:
+        #     ins = q.get()
+        #     new_instances.append(ins)
+        #     if len(new_instances) == len(self.training):
+        #         break
 
         self.training = new_instances
         print "after",len(self.training)
