@@ -20,6 +20,7 @@ parser.add_argument('--depth', action = 'store', type = int, default = 2, help =
 
 args = parser.parse_args()
 
+print args.i
 infile = codecs.open(args.i,"r","utf-8")
 date_tweets = defaultdict(list)
 date_file = {}
@@ -49,6 +50,7 @@ outdir_tags = args.o + "dates_tagged/"
 os.system("mkdir " + outdir_tags)
 os.chdir(args.w)
 for date in date_file.keys():
+    print date
     tagged_out = outdir_tags + date + ".txt"
     os.system("java -jar de.unihd.dbs.heideltime.standalone.jar " + date_file[date] + " -l DUTCH -t NEWS -dct " + date + " > " + tagged_out)
 
