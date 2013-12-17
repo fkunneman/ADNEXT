@@ -3,6 +3,8 @@
 import argparse
 from collections import defaultdict
 from os import listdir
+import re
+import codecs
 
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with time-tagged event tweets in a sliding window fashion")
 parser.add_argument('-t', action='store', required=True, help="the directory with time-tagged tweets")
@@ -16,8 +18,19 @@ args = parser.parse_args()
 #extract tweets from datefile and make a date-tweets dict
 date_tweets = defaultdict(list)
 for f in listdir(args.t):
-    print f
+    date = re.sub(".txt","",f)
+    datefile = codecs.open(f)
+    within = False
+    for line in datefile.readlines():
+        if within:
+            if not re.search("</TimeML>",line)
+                if not re.search("RT",line) and not re.match("\n",line):
+                    date_tweets[date].append(line)
+        else:
+            if re.search("<TimeML>"):
+                within = True
 
+print date_tweets
 
 
 #generate windows from the list
