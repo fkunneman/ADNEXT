@@ -39,7 +39,8 @@ for date in sorted(date_tweets.keys()):
     metatweets = codecs.open(args.i + date + ".txt","r","utf-8")
     for i,tweet in enumerate(metatweets.readlines()):
         tokens = tweet.split("\t")
-        ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
+        if not re.search("RT",tokens[-1]):
+            ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
 
 print ordered_tweets
 
