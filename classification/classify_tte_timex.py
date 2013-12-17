@@ -39,7 +39,8 @@ for line in ordered_tweets.readlines():
     instance = {}
     tokens = line.strip().split("\t")
     date = tokens[args.d]
-    tweet = date_tweet[date].pop(0)
+    print date_tweets[date]
+    tweet = date_tweets[date].pop(0)
     print tweet
 
 
