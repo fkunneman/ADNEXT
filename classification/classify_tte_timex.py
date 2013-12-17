@@ -36,19 +36,22 @@ for f in listdir(args.t):
 
 for date in sorted(date_tweets.keys()):
     tagged = date_tweets[date]
-    metatweets = codecs.open(args.i + date + ".txt","r","utf-8")
-    for i,tweet in enumerate(metatweets.readlines()):
-        tokens = tweet.split("\t")
+    metatweets_in = codecs.open(args.i + date + ".txt","r","utf-8")
+    metatweets = metatweets_in.readlines()
+    metatweets_in.close()
+    metatweets_filt = []
+    for t in metatweets:
+        tokens = t.split("\t")
         if not re.search("RT",tokens[-1]):
+            metatweets_filt.append(t)
+    for i,tweet in enumerate(metatweets_filt):
+            tokens = tweet.strip().split("\t")
             try:
                 ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
             except:
-                print i,tagged
-                
+                print date,i,len(tagged)
 
-print ordered_tweets
 
-# exit()
 
 # ordered_tweets_timex = []
 # for line in ordered_tweets.readlines():
