@@ -35,10 +35,13 @@ for f in listdir(args.t):
     datefile.close()
 
 for date in sorted(date_tweets.keys()):
+    tagged = date_tweets[date]
     metatweets = codecs.open(args.i + date + ".txt","r","utf-8")
     for i,tweet in enumerate(metatweets.readlines()):
         tokens = tweet.split("\t")
-        print tokens[-1]
+        ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
+
+print ordered_tweets
 
 # exit()
 
