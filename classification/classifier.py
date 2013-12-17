@@ -195,7 +195,7 @@ class Classifier():
         training_csr = csr_matrix(trainingvectors)
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
-        model = OutputCodeClassifier(svm.SVC(probability=True),n_jobs=-14)
+        model = OutputCodeClassifier(svm.SVC(probability=True),n_jobs=16)
         paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score,verbose=2)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
@@ -208,7 +208,7 @@ class Classifier():
             outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
-        multiclf = OutputCodeClassifier(clf,n_jobs=-14)
+        multiclf = OutputCodeClassifier(clf,n_jobs=16)
         multiclf.fit(training_csr,trainlabels)
         for tset in self.test:
             testvectors = vectorize(tset["instances"])
@@ -368,3 +368,93 @@ class Classifier():
                 os.system("stimbl -v -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -i -D -m 3 -d 1 -k " + k + " < " + test + " > " + classification) 
             else:
                 os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -i -D -m 3 -d 1 -w 2 -k " + k + " < " + test + " > " + classification) 
+
+
+    def perform_lin_reg_event(self,args):
+        
+        def return_standard_deviation(windows):
+            #print windows
+            mean = sum(windows) / len(windows)
+            try:
+                stdef = math.sqrt(sum([((window-mean) * (window-mean)) for window in windows]) / len(windows))
+            except ValueError:
+                stdef = 0
+            return stdef
+
+        def generate_hourly_sequence(instances,instance_dict):
+            last_tfz = int(instances[-1]["meta"][4])
+            instance_dict["sequence"] = []
+            ef = instance_dict["sequence"]
+            for hour in range(last_tfz+1):
+                ef.append(0)
+            est = True
+            for instance in instances:
+                tfz = int(instance["meta"][4])
+                ef[tfz] += 1
+                if est:
+                    timelabel = instance["meta"][3]
+                    if timelabel == "-":
+                        instance_dict["start_time"] = tfz+1
+                        est = False
+
+        def generate_window_output(sequence,outdict,start_time,window,slider,log,test):
+            #half = int(window/2)
+            start = 0
+            end = window 
+            hist = [sum(sequence[start:start+window]),sum(sequence[start+window:start+(window*2)])]
+            stdev_hist = return_standard_deviation(hist)
+            start = start+(window*2)
+            if test:
+                stop = len(sequence)
+            else:
+                stop = start_time
+            while start < stop:
+                hist.append(sum(sequence[start:start+window]))
+                if log == 1:
+                    outdict["stdef"].append(return_standard_deviation(hist))
+                    if hist[-1] == 0:
+                        outdict["value"].append(0)
+                    else:
+                        outdict["value"].append(math.log(hist[-1]) / math.log(2))
+                else:
+                    outdict["value"].append(return_standard_deviation(hist))
+                    outdict["stdef"].append(return_standard_deviation(hist))             
+                outdict["target"].append(int((start_time - start+window)/24))
+                start += window
+
+        #generate input
+        event_tweets = defaultdict(list)
+        event_frequency = defaultdict(lambda : {}) 
+        #generate a list of tweets for each event
+        for instance in self.training:
+            event = instance["meta"][1]
+            event_tweets[event].append(instance)
+        #generate an hourly sequence of tweet frequencies for each event
+        for event in event_tweets.keys():
+            tweets = event_tweets[event]
+            generate_hourly_sequence(tweets,event_frequency[event])
+
+        #slide through windows and generate x-y pairs
+        window = int(args[0])
+        slider = int(args[1])
+        log = int(args[2])
+        training = defaultdict(list)
+        for event in event_frequency.keys():
+            ef = event_frequency[event]["sequence"]
+            event_time = event_frequency[event]["start_time"]
+            generate_window_output(ef,training,event_time,window,slider,log,test=False)
+
+        m = polyfit(training["value"],training["target"],1)
+
+        #make estimations
+        test_dict = {}
+        generate_hourly_sequence(self.test,test_dict)
+        test = defaultdict(list)
+        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log,test=True)
+        for i,window in enumerate(test["value"]):
+            estimation = (m[0]*window) + m[1]
+            try:
+                print test["stdef"][i]/test["stdef"][i-1],test["target"][i],round(estimation,2)
+            except IndexError:
+                print test["target"[i]],round(estimation,2)
+
