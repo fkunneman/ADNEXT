@@ -197,7 +197,7 @@ class Classifier():
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
         model = OutputCodeClassifier(svm.SVC(probability=True))
-        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score,n_jobs=12,verbose=2)
+        paramsearch = GridSearchCV(model, param_grid, cv=5, score_func = f1_score,n_jobs=20,verbose=2)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
