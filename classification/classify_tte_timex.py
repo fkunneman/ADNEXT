@@ -15,11 +15,13 @@ parser.add_argument('--window', action='store', default=100, type=int, help="spe
 
 args = parser.parse_args()
 
+ordered_tweets = []
+windows = [] 
 #generate ordered list of timetagged tweets
 
 #extract tweets from datefile and make a date-tweets dict
 date_tweets = defaultdict(list)
-ordered_tweets = []
+
 for f in listdir(args.t):
     date = re.sub(".txt","",f)
     datefile = codecs.open(args.t + f,"r","utf-8")
@@ -50,6 +52,15 @@ for date in sorted(date_tweets.keys()):
                 ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
             except:
                 print date,i,len(tagged)
+
+i=0
+while i+args.window < len(ordered_tweets):
+    window = ordered_tweets[i+args.window]
+    windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
+
+for w in windows:
+    print w["label"],w["features"]
+
 
 
 
