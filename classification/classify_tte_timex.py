@@ -19,15 +19,15 @@ args = parser.parse_args()
 date_tweets = defaultdict(list)
 for f in listdir(args.t):
     date = re.sub(".txt","",f)
-    datefile = codecs.open(f)
+    datefile = codecs.open(args.t + f,"r","utf-8")
     within = False
     for line in datefile.readlines():
         if within:
-            if not re.search("</TimeML>",line)
+            if not re.search("</TimeML>",line):
                 if not re.search("RT",line) and not re.match("\n",line):
                     date_tweets[date].append(line)
         else:
-            if re.search("<TimeML>"):
+            if re.search("<TimeML>",line):
                 within = True
 
 print date_tweets
