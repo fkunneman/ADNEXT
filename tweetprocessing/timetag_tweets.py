@@ -11,12 +11,6 @@ parser.add_argument('-o', action = 'store', required = True, help = "The output 
 parser.add_argument('-w', action = 'store', required = True, help = "The heideltime directory.")
 parser.add_argument('-d', action = 'store', type = int, required = True, help = "Specify the column with a date.")
 parser.add_argument('--depth', action = 'store', type = int, default = 2, help = "Specify the depth of file characterizations; [DEFAULT] = 2)")
-# parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete or filter")
-# parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace or delete (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
-# parser.add_argument('--extract', action = 'store', required = False, nargs='+', help = "[EXTRACT] specify the number of lines to extract")
-# parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
-# parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
-# parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
 
 args = parser.parse_args()
 
