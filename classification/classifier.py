@@ -208,7 +208,7 @@ class Classifier():
             outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
-        multiclf = OutputCodeClassifier(clf,n_jobs=-15)
+        multiclf = OutputCodeClassifier(clf,n_jobs=-14)
         multiclf.fit(training_csr,trainlabels)
         for tset in self.test:
             testvectors = vectorize(tset["instances"])

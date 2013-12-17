@@ -37,6 +37,7 @@ for f in listdir(args.t):
     datefile.close()
 
 for date in sorted(date_tweets.keys()):
+    print date
     tagged = date_tweets[date]
     metatweets_in = codecs.open(args.i + date + ".txt","r","utf-8")
     metatweets = metatweets_in.readlines()
