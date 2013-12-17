@@ -19,12 +19,14 @@ infile = codecs.open(args.i,"r","utf-8")
 date_tweets = defaultdict(list)
 date_file = {}
 outdir_date = args.o + "dates/"
+outdir_meta = args.o + "dates_meta/"
 if not os.path.exists(outdir_date):
     d = args.depth * -1
     while d <= -1: 
         if not os.path.exists("/".join(outdir_date.split("/")[:d])):
             os.system("mkdir " + "/".join(outdir_date.split("/")[:d]))
         d+=1
+os.system("mkdir " + outdir_meta)
 #make a date - tweet dictionary
 for line in infile.readlines():
     tokens = line.strip().split("\t")
@@ -32,7 +34,7 @@ for line in infile.readlines():
 
 for date in date_tweets.keys():
     dateout_string = outdir_date + date + ".txt"
-    metaout_string = outdir_date + date + "_meta.txt"
+    metaout_string = outdir_meta + date + ".txt"
     dateout = codecs.open(dateout_string,"w","utf-8")
     metaout = codecs.open(metaout_string,"w","utf-8")
     date_file[date] = dateout_string
