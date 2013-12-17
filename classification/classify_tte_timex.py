@@ -40,7 +40,11 @@ for date in sorted(date_tweets.keys()):
     for i,tweet in enumerate(metatweets.readlines()):
         tokens = tweet.split("\t")
         if not re.search("RT",tokens[-1]):
-            ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
+            try:
+                ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
+            except:
+                print i,tagged
+                
 
 print ordered_tweets
 
