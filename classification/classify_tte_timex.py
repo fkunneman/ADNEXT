@@ -9,7 +9,7 @@ import codecs
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with time-tagged event tweets in a sliding window fashion")
 parser.add_argument('-t', action='store', required=True, help="the directory with time-tagged tweets")
 parser.add_argument('-i', action='store', help="the directory with meta-tagged tweets")
-parser.add_argument('-d', action='store', type=int, help="the date-column in the ordered tweetfile")
+# parser.add_argument('-d', action='store', type=int, help="the date-column in the ordered tweetfile")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 
@@ -34,7 +34,11 @@ for f in listdir(args.t):
                 within = True
     datefile.close()
 
-print sorted(date_tweets.keys(),reverse=True)
+for date in sorted(date_tweets.keys()):
+    metatweets = codecs.open(args.i + date + ".txt","r","utf-8")
+    for i,tweet in enumerate(metatweets.readlines()):
+        tokens = tweet.split("\t")
+        print tokens[-1]
 
 # exit()
 
