@@ -32,13 +32,16 @@ for line in infile.readlines():
 
 for date in date_tweets.keys():
     dateout_string = outdir_date + date + ".txt"
+    metaout_string = outdir_date + date + "_meta.txt"
     dateout = codecs.open(dateout_string,"w","utf-8")
-    #os.system("mkdir " + dateout_string)
+    metaout = codecs.open(metaout_string,"w","utf-8")
     date_file[date] = dateout_string
     for tweet in date_tweets[date]:
         tokens = tweet.split("\t")
         dateout.write(tokens[-1])
+        metaout.write(tweet)
     dateout.close()
+    metaout.close()
 
 outdir_tags = args.o + "dates_tagged/"
 os.system("mkdir " + outdir_tags)
