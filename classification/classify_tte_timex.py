@@ -58,6 +58,7 @@ i=0
 while i+args.window < len(ordered_tweets):
     window = ordered_tweets[i+args.window]
     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
+    i+=args.step
 
 for w in windows:
     print w["label"],w["features"]
