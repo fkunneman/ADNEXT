@@ -50,18 +50,25 @@ for date in sorted(date_tweets.keys()):
     for i,tweet in enumerate(metatweets_filt):
             tokens = tweet.strip().split("\t")
             try:
-                ordered_tweets.append({"label":tokens[0],"meta":tokens[:-1],"text":tagged[i]})
+                ordered_tweets.append({"label":tokens[0],"meta":tokens,"text":tagged[i]})
             except:
                 print date,i,len(tagged)
 
 i=0
 while i+args.window < len(ordered_tweets):
-    window = ordered_tweets[i+args.window]
-    windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
-    i+=args.step
+    window = {"label":str(i+args.window) + " " + ordered_tweets[i+args.window]["label"], "meta":ordered_tweets[i+args.window]["meta"]}
+    for t in ordered_tweets[i:i+args.window]:
+        if re.search("<TIMEX3",t["text"]):
+            time_extract = re.search('<TIMEX3(.+)/TIMEX3>', t["text"])
+            time_info = time_extract.group(1)
+            print time_info
 
-for w in windows:
-    print w["label"],w["features"]
+#     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
+#     i+=args.step
+
+# for w in windows:
+
+#     print w["label"],w["features"]
 
 
 
