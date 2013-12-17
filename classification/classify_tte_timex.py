@@ -41,8 +41,9 @@ for line in ordered_tweets.readlines():
     date = tokens[args.d]
     tweet = tokens[-1]
     if not re.search("RT",tweet):
-        tagged_tweet = date_tweet[date].pop(0)
-        print tweet
+        tagged_tweet = date_tweets[date].pop(0)
+        print tagged_tweet
+
 
 
 
