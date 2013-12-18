@@ -22,12 +22,13 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,classifier,scaling,directory=False):
+    def __init__(self,trainlist,testlist,classifier,scaling,jobs=16,directory=False):
         self.training=trainlist
         self.test=testlist #self.test should be a list with multiple lists for each testset
         self.scaling=scaling
         self.directory=directory
         self.classifier = classifier
+        self.jobs = jobs
 
     def count_feature_frequency(self):
         
@@ -42,7 +43,7 @@ class Classifier():
         print len(self.training)
         q = multiprocessing.Queue()
         print len(self.training)
-        chunks = gen_functions.make_chunks(self.training,16)
+        chunks = gen_functions.make_chunks(self.training,self.jobs)
         for chunk in chunks:
             p = multiprocessing.Process(target=ff,args=[chunk,q])
             p.start()
@@ -82,7 +83,7 @@ class Classifier():
 
         print "before",len(self.training)
         q = multiprocessing.Queue()
-        chunks = gen_functions.make_chunks(self.training,16)
+        chunks = gen_functions.make_chunks(self.training,self.jobs)
         for chunk in chunks:
             p = multiprocessing.Process(target=prune_features,args=[chunk,q])
             p.start()
@@ -195,7 +196,7 @@ class Classifier():
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
         model = OutputCodeClassifier(svm.SVC(probability=True))
-        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=16)
+        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
@@ -207,7 +208,7 @@ class Classifier():
             outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
-        multiclf = OutputCodeClassifier(clf,n_jobs=16)
+        multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
         multiclf.fit(training_csr,trainlabels)
         for tset in self.test:
             testvectors = vectorize(tset["instances"])
