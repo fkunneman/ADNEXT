@@ -60,24 +60,26 @@ while i+args.window < len(ordered_tweets):
     for t in ordered_tweets[i:i+args.window]:
         if re.search("<TIMEX3",t["text"]):
             tt = {}
-            time_extract = re.search('<TIMEX3 (.+)</TIMEX3>', t["text"])
-            time_info = time_extract.group(1)
-            meta_word = time_info.split(">")
-            tt["target"] = meta_word[1]
-            if re.search("</TIMEX3",meta_word[1]):
-                print t["text"],meta_word[1]
-            meta = meta_word[0].split(" ")
-            for m in meta:
-                kv = m.split("=")
-#                print meta_word,meta,m,kv
-                tt[kv[0]] = re.sub("\"","",kv[1])
-            window["features"].append(tt)
+            time_extract = re.search('(<TIMEX3 .+</TIMEX3>)', t["text"])
+            print time_extract.group
+#             time_info = time_extract.group(1)
+
+#             meta_word = time_info.split(">")
+#             tt["target"] = meta_word[1]
+#             if re.search("</TIMEX3",meta_word[1]):
+#                 print t["text"],time_info,meta_word
+#             meta = meta_word[0].split(" ")
+#             for m in meta:
+#                 kv = m.split("=")
+# #                print meta_word,meta,m,kv
+#                 tt[kv[0]] = re.sub("\"","",kv[1])
+#             window["features"].append(tt)
 #     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
     i+=args.step
     windows.append(window)
 
-for w in windows[:50]:
-    for f in w["features"]:
+# for w in windows[:50]:
+#     for f in w["features"]:
 	# print w["label"],w["meta"][3],f
 
 
