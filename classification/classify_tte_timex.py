@@ -65,7 +65,7 @@ while i+args.window < len(ordered_tweets):
             meta_word = time_info.split(">")
             tt["target"] = meta_word[1]
             if re.search("</TIMEX3",meta_word[1]):
-                print t["text"],meta_word[1]
+                print t["text"],time_info,meta_word
             meta = meta_word[0].split(" ")
             for m in meta:
                 kv = m.split("=")
