@@ -30,9 +30,8 @@ depth = args.depth * -1
 #read in instances
 print "Reading in events..."
 event_instances = defaultdict(list)
-test_event_instances = defaultdict(list)
-if args.majority:
-    train_instances = defaultdict(list)
+# if args.majority:
+#     train_instances = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
@@ -45,19 +44,20 @@ for ef in args.i:
         values = tweet.strip().split("\t")
         tweets.append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})    
     #generate instance windows based on window- and stepsize
-    i = 0
-    while i+args.window < len(tweets):
-        window = tweets[i+args.window]
-        if args.majority:
-            event_instances[event].extend([{"features":t["features"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in tweets[i:i+args.window]])
-        else:
-            features = []
-            for tweet in tweets[i:i+args.window]:
-                features.extend(tweet["features"])     
-            event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
-        i+=args.step
     if args.majority:
-        train_instances[event] = tweets
+        event_instances[event] = tweets
+    else:
+        i = 0
+        while i+args.window < len(tweets):
+            window = tweets[i+args.window]
+            # if args.majority:
+            #     event_instances[event].extend([{"features":t["features"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in tweets[i:i+args.window]])
+            else:
+                features = []
+                for tweet in tweets[i:i+args.window]:
+                    features.extend(tweet["features"])     
+                event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
+            i+=args.step
 
 print "Starting classification..."
 #divide train and test events
@@ -72,16 +72,16 @@ for i in range(0,len(events),testlen):
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))]
-    if args.majority:
-        train = sum([train_instances[x] for x in train_events],[])
-    else:
-        train = sum([event_instances[x] for x in train_events],[])
+    # if args.majority:
+    #     train = sum([train_instances[x] for x in train_events],[])
+    # else:
+    train = sum([event_instances[x] for x in train_events],[])
     test = []
     for event in test_events:
         testdict = {}
         eventdir = args.d + event + "/" + args.scaling + "/"
         if args.majority:
-            eventout = eventdir + str(args.window) + "_" + str(args.step) + "_loose.txt"
+            eventout = eventdir + "tweet.txt"
         else:
             eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
         if not os.path.exists(eventdir):

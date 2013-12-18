@@ -31,9 +31,6 @@ class Classifier():
 
     def count_feature_frequency(self):
         
-        counted = 0
-        self.feature_frequency = Counter()
-        
         def ff(instances,queue):
             #n_instances = len(self.training)
             feature_frequency = defaultdict(int)
@@ -42,6 +39,7 @@ class Classifier():
                     feature_frequency[feature] += 1
             queue.put(feature_frequency)
         
+        print len(self.training)
         q = multiprocessing.Queue()
         chunks = gen_functions.make_chunks(self.training,16)
         for chunk in chunks:
