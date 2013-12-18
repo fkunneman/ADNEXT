@@ -6,7 +6,6 @@ import datetime
 from collections import defaultdict
 
 def return_datetime(date,time = False,setting = "eu"):
-    print date,time
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
         parse_date = re.compile(r"(\d{2})-(\d{2})-(\d{4})")
