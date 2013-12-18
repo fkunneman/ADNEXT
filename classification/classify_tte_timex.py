@@ -9,7 +9,7 @@ import codecs
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with time-tagged event tweets in a sliding window fashion")
 parser.add_argument('-t', action='store', required=True, help="the directory with time-tagged tweets")
 parser.add_argument('-i', action='store', help="the directory with meta-tagged tweets")
-parser.add_argument('-o', action='store', help="the directory of the outputfile")
+parser.add_argument('-o', action='store', help="the outputfile")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 
@@ -75,39 +75,11 @@ while i+args.window < len(ordered_tweets):
     i+=args.step
     windows.append(window)
 
-P = re.compile(r"P(\d+|X)(WE|W|Y|D|H)")
-d = re.compile(r"\d{4}-\d{2}-\d{2}(TEV)?")
+outfile = codecs.open(args.o + "_" + str(args.window) + "_" + str(args.step) + ".txt","w","utf-8")
+P = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
+d = re.compile(r"\d{4}-\d{2}(-\d{2})?(TEV)?")
 dw = re.compile(r"\d{4}-w\d+")
-for w in windows[:50]:
+for w in windows:
     for f in w["features"]:
         if P.search(f[2]) or d.search(f[2]) or dw.search(f[2]):  
-            print "TRUEEEE",w["label"],w["meta"][3],f
-        else:
-            print "FAAAAAALSE",w["label"],w["meta"][3],f
-
-
-
-
-
-# ordered_tweets_timex = []
-# for line in ordered_tweets.readlines():
-#     instance = {}
-#     tokens = line.strip().split("\t")
-#     date = tokens[args.d]
-#     tweet = tokens[-1]
-#     if not re.search("RT",tweet):
-#         tagged_tweet = date_tweets[date].pop(0)
-#         print tagged_tweet
-
-
-
-
-
-
-
-#generate windows from the list
-
-
-
-
-#print info in window
+            outfile.write(w["label"] + "\t" + "\t".join(f) + "\n")
