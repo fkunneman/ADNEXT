@@ -9,7 +9,7 @@ import codecs
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with time-tagged event tweets in a sliding window fashion")
 parser.add_argument('-t', action='store', required=True, help="the directory with time-tagged tweets")
 parser.add_argument('-i', action='store', help="the directory with meta-tagged tweets")
-# parser.add_argument('-d', action='store', type=int, help="the date-column in the ordered tweetfile")
+parser.add_argument('-o', action='store', help="the directory of the outputfile")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 
@@ -59,9 +59,9 @@ while i+args.window < len(ordered_tweets):
     window = {"label":str(i+args.window) + " " + ordered_tweets[i+args.window]["label"], "meta":ordered_tweets[i+args.window]["meta"],"features":[]}
     for t in ordered_tweets[i:i+args.window]:
         if re.search("<TIMEX3",t["text"]):
-            tt = [t["meta"][3]]
             time_extracts = re.findall('<TIMEX3 (.+?)</TIMEX3>', t["text"])
             for e in time_extracts:
+                tt = [t["meta"][3]]
                 meta_word = e.split(">")
                 tt.append(meta_word[1])
                 meta = meta_word[0].split(" ")
@@ -70,14 +70,20 @@ while i+args.window < len(ordered_tweets):
     #                print meta_word,meta,m,kv
                     if kv[0] == "value":
                         tt.append(re.sub("\"","",kv[1]))
-            window["features"].append(tt)
+                window["features"].append(tt)
 #     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
     i+=args.step
     windows.append(window)
 
+P = re.compile(r"P(\d+|X)(WE|W|Y|D|H)")
+d = re.compile(r"\d{4}-\d{2}-\d{2}(TEV)?")
+dw = re.compile(r"\d{4}-w\d+")
 for w in windows[:50]:
     for f in w["features"]:
-	   print w["label"],w["meta"][3],f
+        if P.search(f[2]) or d.search(f[2]) or dw.search(f[2]):  
+            print "TRUEEEE",w["label"],w["meta"][3],f
+        else:
+            print "FAAAAAALSE",w["label"],w["meta"][3],f
 
 
 
