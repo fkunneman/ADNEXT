@@ -59,16 +59,17 @@ while i+args.window < len(ordered_tweets):
     window = {"label":str(i+args.window) + " " + ordered_tweets[i+args.window]["label"], "meta":ordered_tweets[i+args.window]["meta"],"features":[]}
     for t in ordered_tweets[i:i+args.window]:
         if re.search("<TIMEX3",t["text"]):
-            tt = {}
+            tt = [t["meta"][3]]
             time_extracts = re.findall('<TIMEX3 (.+?)</TIMEX3>', t["text"])
             for e in time_extracts:
                 meta_word = e.split(">")
-                tt["target"] = meta_word[1]
+                tt.append(meta_word[1])
                 meta = meta_word[0].split(" ")
                 for m in meta:
                     kv = m.split("=")
     #                print meta_word,meta,m,kv
-                    tt[kv[0]] = re.sub("\"","",kv[1])
+                    if kv[0] == "value":
+                        tt.append(re.sub("\"","",kv[1]))
             window["features"].append(tt)
 #     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
     i+=args.step
@@ -77,6 +78,7 @@ while i+args.window < len(ordered_tweets):
 for w in windows[:50]:
     for f in w["features"]:
 	   print w["label"],w["meta"][3],f
+
 
 
 
