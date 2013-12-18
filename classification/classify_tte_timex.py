@@ -56,7 +56,7 @@ for date in sorted(date_tweets.keys()):
             except:
                 print date,i,len(tagged)
 
-weekday = re.compile(("maandag"|"dinsdag"|"woensdag"|"donderdag"|"vrijdag"|"zaterdag"|"zondag"),re.IGNORECASE)
+weekday = re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"),re.IGNORECASE)
 weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
 i=0
 while i+args.window < len(ordered_tweets):
