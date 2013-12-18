@@ -5,6 +5,8 @@ from collections import defaultdict
 from os import listdir
 import re
 import codecs
+import datetime
+import time_functions
 
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with time-tagged event tweets in a sliding window fashion")
 parser.add_argument('-t', action='store', required=True, help="the directory with time-tagged tweets")
@@ -54,6 +56,8 @@ for date in sorted(date_tweets.keys()):
             except:
                 print date,i,len(tagged)
 
+weekday = re.compile(("maandag"|"dinsdag"|"woensdag"|"donderdag"|"vrijdag"|"zaterdag"|"zondag"),re.IGNORECASE)
+weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
 i=0
 while i+args.window < len(ordered_tweets):
     window = {"label":str(i+args.window) + " " + ordered_tweets[i+args.window]["label"], "meta":ordered_tweets[i+args.window]["meta"],"features":[]}
@@ -69,7 +73,18 @@ while i+args.window < len(ordered_tweets):
                     kv = m.split("=")
     #                print meta_word,meta,m,kv
                     if kv[0] == "value":
-                        tt.append(re.sub("\"","",kv[1]))
+                        if weekday.search(tt[1]):
+                            date = time_functions.return_datetime(tt[0],setting="vs")
+                            ref_weekday = weekdays.index(tt[1].lower())
+                            tweet_weekday = date.weekday()
+                            if tweet_weekday() < ref_weekday:
+                                dif=ref_weekday - tweet_weekday
+                            else:
+                                dif=ref_weekday + (7-tweet_weekday)
+                            ref_date = date + timedelta(days=dif) 
+                            tt.append(str(ref_date))
+                        else:
+                            tt.append(re.sub("\"","",kv[1]))
                 window["features"].append(tt)
 #     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
     i+=args.step
