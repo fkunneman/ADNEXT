@@ -75,8 +75,8 @@ while i+args.window < len(ordered_tweets):
     i+=args.step
     windows.append(window)
 
-for w in windows[:50]:
-    for f in w["features"]:
+#for w in windows[:50]:
+#    for f in w["features"]:
 	# print w["label"],w["meta"][3],f
 
 
