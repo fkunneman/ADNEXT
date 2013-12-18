@@ -80,7 +80,10 @@ for i in range(0,len(events),testlen):
     for event in test_events:
         testdict = {}
         eventdir = args.d + event + "/" + args.scaling + "/"
-        eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
+        if args.majority:
+            eventout = eventdir + str(args.window) + "_" + str(args.step) + "_loose.txt"
+        else:
+            eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
         if not os.path.exists(eventdir):
             d = depth
             while d <= -1: 
