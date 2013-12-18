@@ -41,6 +41,7 @@ class Classifier():
         
         print len(self.training)
         q = multiprocessing.Queue()
+        print len(self.training)
         chunks = gen_functions.make_chunks(self.training,16)
         for chunk in chunks:
             p = multiprocessing.Process(target=ff,args=[chunk,q])
@@ -81,7 +82,7 @@ class Classifier():
 
         print "before",len(self.training)
         q = multiprocessing.Queue()
-        chunks = gen_functions.make_chunks(self.training)
+        chunks = gen_functions.make_chunks(self.training,16)
         for chunk in chunks:
             p = multiprocessing.Process(target=prune_features,args=[chunk,q])
             p.start()
