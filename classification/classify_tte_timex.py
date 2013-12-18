@@ -64,6 +64,7 @@ while i+args.window < len(ordered_tweets):
             time_info = time_extract.group(1)
             meta_word = time_info.split(">")
             tt["target"] = meta_word[1]
+            print t["text"],meta_word[1]
             meta = meta_word[0].split(" ")
             for m in meta:
                 kv = m.split("=")
@@ -76,7 +77,7 @@ while i+args.window < len(ordered_tweets):
 
 for w in windows[:50]:
     for f in w["features"]:
-	print w["label"],w["meta"][3],f
+	# print w["label"],w["meta"][3],f
 
 
 
