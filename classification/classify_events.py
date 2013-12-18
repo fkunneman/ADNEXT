@@ -52,11 +52,10 @@ for ef in args.i:
             window = tweets[i+args.window]
             # if args.majority:
             #     event_instances[event].extend([{"features":t["features"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in tweets[i:i+args.window]])
-            else:
-                features = []
-                for tweet in tweets[i:i+args.window]:
-                    features.extend(tweet["features"])     
-                event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
+            features = []
+            for tweet in tweets[i:i+args.window]:
+                features.extend(tweet["features"])     
+            event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
             i+=args.step
 
 print "Starting classification..."
