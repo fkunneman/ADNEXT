@@ -91,7 +91,7 @@ while i+args.window < len(ordered_tweets):
     i+=args.step
     windows.append(window)
 
-if not os.path.exists(args.o.split("/")[:-1]):
+if not os.path.exists("/".join(args.o.split("/")[:-1])):
     os.system("mkdir " + "/".join(args.o.split("/")[:-1]))
 outfile = codecs.open(args.o + "_" + str(args.window) + "_" + str(args.step) + ".txt","w","utf-8")
 P = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
