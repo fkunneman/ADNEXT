@@ -2,7 +2,7 @@
 
 import argparse
 from collections import defaultdict
-from os import listdir,path
+import os
 import re
 import codecs
 import datetime
@@ -24,7 +24,7 @@ windows = []
 #extract tweets from datefile and make a date-tweets dict
 date_tweets = defaultdict(list)
 
-for f in listdir(args.t):
+for f in os.listdir(args.t):
     date = re.sub(".txt","",f)
     datefile = codecs.open(args.t + f,"r","utf-8")
     within = False
