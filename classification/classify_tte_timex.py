@@ -17,6 +17,8 @@ parser.add_argument('--window', action='store', default=100, type=int, help="spe
 
 args = parser.parse_args()
 
+print args.o
+
 ordered_tweets = []
 windows = [] 
 #generate ordered list of timetagged tweets
@@ -39,7 +41,6 @@ for f in os.listdir(args.t):
     datefile.close()
 
 for date in sorted(date_tweets.keys()):
-    print date
     tagged = date_tweets[date]
     metatweets_in = codecs.open(args.i + date + ".txt","r","utf-8")
     metatweets = metatweets_in.readlines()
@@ -90,8 +91,8 @@ while i+args.window < len(ordered_tweets):
     i+=args.step
     windows.append(window)
 
-if not os.path.exists(args.o.split("/")[-1]):
-    os.system("mkdir " + "/".join(eventdir.split("/")[:-1]))
+if not os.path.exists(args.o.split("/")[:-1]):
+    os.system("mkdir " + "/".join(args.o.split("/")[:-1]))
 outfile = codecs.open(args.o + "_" + str(args.window) + "_" + str(args.step) + ".txt","w","utf-8")
 P = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
 d = re.compile(r"\d{4}-\d{2}(-\d{2})?(TEV)?")
