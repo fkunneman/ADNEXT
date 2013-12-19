@@ -2,7 +2,7 @@
 
 import argparse
 from collections import defaultdict
-from os import listdir
+from os import listdir,path
 import re
 import codecs
 import datetime
