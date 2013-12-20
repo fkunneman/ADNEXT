@@ -15,12 +15,14 @@ args = parser.parse_args()
 
 for eventfile in args.i:
     window_timetags = defaultdict(list)
-    eventopen = open(args.i)
+    eventopen = open(eventfile)
     for line in eventopen.readlines():
         tokens = line.strip().split("\t")
-        window_timetags[int(tokens[0])].append(tokens[1:])
+        spl = tokens[0].split(" ")
+        vals = [spl[1]] + tokens[1:]
+        window_timetags[int(spl[0])].append(vals)
 
-for window in sorted(window_timetags.keys()):
-    print window
+for window in sorted(window_timetags.keys())[:10]:
+    print window,window_timetags[window]
 
 
