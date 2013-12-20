@@ -14,30 +14,68 @@ import math
 class Evalset():
 
     def __init__(self):
-        self.instances = []
+        self.instance_sets = []
+        self.results = defaultdict(list)
 
-    def set_vocabulary(self,vocabfile):
-        self.vocabulary = {}
-        vocab = codecs.open(vocabfile,"r","utf-8")
-        for line in vocab.readlines():
-            tokens = line.strip().split("\t")
-            self.vocabulary[tokens[0]] = tokens[1]
-        vocab.close()
+    # def set_vocabulary(self,vocabfile):
+    #     self.vocabulary = {}
+    #     vocab = codecs.open(vocabfile,"r","utf-8")
+    #     for line in vocab.readlines():
+    #         tokens = line.strip().split("\t")
+    #         self.vocabulary[tokens[0]] = tokens[1]
+    #     vocab.close()
 
-    def set_meta(self,metafile,metadict,input_type):
-        meta = codecs.open(metafile,"r","utf-8")
-        if input_type == "lcs":
-            self.name_instance = {}
-        for line in meta.readlines():
-            instance = Evalset.Instance()
-            tokens = line.strip().split("\t")
-            for meta_info in metadict.keys():
-                instance.dict[meta_info] = tokens[metadict[meta_info]]
-            if input_type == "lcs":
-                self.name_instance[instance.dict["name"]] = instance
-                instance.set_label(instance.dict["label"])
-            self.instances.append(instance)
-        meta.close()
+    def add_instances(self,instances,form="simple"):
+        instance_set = []
+        for instance_line in instances:
+            instance_set.append(self.return_simple_instance(instance_line))
+        self.instance_sets.append(instance_set)
+
+    def return_simple_instance(self,instr):
+        tokens = line.strip().split(" ")
+        instance = Evalset.Instance()            
+        instance.set_label(tokens[0])
+        instance.set_classification(tokens[1])
+        return instance
+
+    def extract_sliding_window_instances(self,window,incre):
+        #make tfz hash
+        tfz_instances = defaultdict(list)            
+        for instance in self.instances:
+#            print instance.dict
+            tfz_instances[int(instance.dict["tfz"])].append(instance)
+        highest_tfz = sorted(tfz_instances.keys())[-1]
+        slider = [0,0+window]
+        tfz_set = tfz_instances.keys()
+        windows = []
+        while slider[1] <= highest_tfz:
+            windowtweets = []
+            slider_range = range(slider[0],slider[1]+1)
+            for tfz in slider_range:
+                if tfz in tfz_set:            
+                    instances = tfz_instances[tfz]
+                    windowtweets.extend(tfz_instances[tfz])
+            if len(windowtweets) > 0:
+                window = self.Window(windowtweets,seen_instances)
+                windows.append(window)
+            slider[0] += incre
+            slider[1] += incre
+        self.windows = windows
+
+    # def set_meta(self,metafile,metadict,input_type):
+    #     meta = codecs.open(metafile,"r","utf-8")
+    #     if input_type == "lcs":
+    #         self.name_instance = {}
+    #     for line in meta.readlines():
+    #         instance = Evalset.Instance()
+    #         tokens = line.strip().split("\t")
+    #         for meta_info in metadict.keys():
+    #             instance.dict[meta_info] = tokens[metadict[meta_info]]
+    #         if input_type == "lcs":
+    #             self.name_instance[instance.dict["name"]] = instance
+    #             instance.set_label(instance.dict["label"])
+    #         self.instances.append(instance)
+    #     meta.close()
 
     def set_instances_lcs(self,classificationfile,labelfile=False,timelabels = False,threshold = False):         
    
@@ -152,38 +190,9 @@ class Evalset():
         for i,estimation in enumerate(classifications.read().split(" ")):
             self.instances[i].set_time_classification((estimation,0))
 
-    def set_instances_simple(self,label_classificationfile):
-        c_open = open(label_classificationfile)
-        for line in c_open.readlines():
-            tokens = line.strip().split(" ")
-            instance = Evalset.Instance()            
-            instance.set_label(tokens[0])
-            instance.set_classification(tokens[1])
-            self.instances.append(instance)
 
-    def extract_sliding_window_instances(self,window,incre):
-        #make tfz hash
-        tfz_instances = defaultdict(list)            
-        for instance in self.instances:
-#            print instance.dict
-            tfz_instances[int(instance.dict["tfz"])].append(instance)
-        highest_tfz = sorted(tfz_instances.keys())[-1]
-        slider = [0,0+window]
-        tfz_set = tfz_instances.keys()
-        windows = []
-        while slider[1] <= highest_tfz:
-            windowtweets = []
-            slider_range = range(slider[0],slider[1]+1)
-            for tfz in slider_range:
-                if tfz in tfz_set:            
-                    instances = tfz_instances[tfz]
-                    windowtweets.extend(tfz_instances[tfz])
-            if len(windowtweets) > 0:
-                window = self.Window(windowtweets,seen_instances)
-                windows.append(window)
-            slider[0] += incre
-            slider[1] += incre
-        self.windows = windows
+
+
 
     def calculate_rmse(self):
         estimation_sequence = []
