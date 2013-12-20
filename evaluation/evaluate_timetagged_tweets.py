@@ -27,20 +27,20 @@ for eventfile in args.i:
 window_weight = defaultdict(lambda: defaultdict(list))
 date = re.compile(r"\d{4}-\d{2}-\d{2}")
 date_time = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")
-period = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)"))
+period = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
 dateweek = re.compile(r"\d{4}-w\d+")
 for window in sorted(window_timetags.keys())[:10]:
     weights = defaultdict(list)
     timetags = window_timetags[window]
     for timetag in timetags:
         estimation = timetag[-1]
-        if date.match(estimation)
+        if date.match(estimation):
             estimation_date = time_functions.return_datetime(estimation,setting="vs")
             multiplyer = 1
         elif date_time.match(estimation):
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
             multiplyer = 0.5
-        elif period.match(estimation)
+        elif period.match(estimation):
             continue
         elif dateweek.match(estimation):
             continue
