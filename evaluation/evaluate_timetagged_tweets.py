@@ -5,6 +5,8 @@ from evalset import Evalset
 from collections import defaultdict
 import re
 import time_functions
+import datetime
+from dateutil.relativedelta import relativedelta
 
 parser = argparse.ArgumentParser(description = "Program to evaluate the time-to-event of timetagged tweets")
 
@@ -30,26 +32,49 @@ date_time = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")
 period = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
 dateweek = re.compile(r"\d{4}-w\d+")
 for window in sorted(window_timetags.keys())[:10]:
-    weights = defaultdict(list)
+    weights = defaultdict(float)
     timetags = window_timetags[window]
     for timetag in timetags:
+        tweetdate = time_functions.return_datetime(timetag[1],setting="vs")
         #print timetag
         estimation = timetag[-1]
         #print estimation
         if date.match(estimation):
             estimation_date = time_functions.return_datetime(estimation,setting="vs")
-            multiplyer = 1
+            score = 1
         elif date_time.match(estimation):
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
-            multiplyer = 0.5
+            score = 0.5
         elif period.match(estimation):
             cats = period.search(estimation)
             unit = cats.group(2)
             length = cats.group(1)
+            if length == "X":
+                length = 1
+            else:
+                length = int(length)
             if unit == "H":
                 estimation_date = time_functions.return_datetime(timetag[1],setting="vs")
+            elif unit == "D":
+                estimation_date = tweetdate + timedelta(days=length)
+            elif unit == "WE":
+                tweet_weekday = tweetdate.weekday()
+                if tweet_weekday < 5:
+                    dif = 5 - tweet_weekday
+                else:
+                    dif = 5 + (7-tweet_weekday)
+                estimation_date = tweetdate + timedelta(days=dif)
+            elif unit == "W":
+                estimation_date = tweetdate + timedelta(days=7)
+            elif unit == "M":
+                estimation_date = tweetdate + relativedelta(months=1)
+            elif unit == "Y":
+                estimation_date = tweetdate + relativedelta(years=1)
+            score = 0.1
         elif dateweek.match(estimation):
-            print estimation
+            continue
+        tte = time_functions.timerel(tweetdate,estimation_date,unit="day")
+        print timetag,tte,score
+        weight[tte] += score
+    window_weight[window] = weight
 
-        #tte =  - time_functions.return_datetime(timetag[1],setting="vs")
-    #print window,window_timetags[window]
