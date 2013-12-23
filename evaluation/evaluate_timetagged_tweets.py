@@ -85,7 +85,7 @@ for window in sorted(window_timetags.keys())[:20]:
         weights[tte] += score
 
 #        total_weight += score
-    highest = [w,d[w] for w in sorted(weights, key=weights.get, reverse=True)[:2]]
+    highest = [(e,weights[e]) for e in sorted(weights, key=weights.get, reverse=True)[:2]]
     print highest
     window_weight[window] = weights
 
