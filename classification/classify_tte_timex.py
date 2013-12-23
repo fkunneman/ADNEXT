@@ -75,8 +75,8 @@ while i+args.window < len(ordered_tweets):
     #                print meta_word,meta,m,kv
                     if kv[0] == "value":
                         if weekday.match(tt[1]):
-                            date = time_functions.return_datetime(tt[0],setting="vs")
-                            ref_weekday = weekdays.index(tt[1].lower())
+                            date = time_functions.return_datetime(tt[1],setting="vs")
+                            ref_weekday = weekdays.index(tt[2].lower())
                             tweet_weekday = date.weekday()
                             if tweet_weekday < ref_weekday:
                                 dif=ref_weekday - tweet_weekday
