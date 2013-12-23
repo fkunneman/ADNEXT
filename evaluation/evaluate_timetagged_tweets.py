@@ -36,7 +36,8 @@ for window in sorted(window_timetags.keys())[:10]:
     timetags = window_timetags[window]
     for timetag in timetags:
         print timetag
-        tweetdate = time_functions.return_datetime(timetag[1],setting="vs")
+        tweetdate = time_functions.return_datetime(timetag[2],setting="vs")
+        windowdate = time_functions.return_datetime(timetag[1],setting="vs")
         #print timetag
         estimation = timetag[-1]
         #print estimation
@@ -74,7 +75,7 @@ for window in sorted(window_timetags.keys())[:10]:
             score = 0.1
         elif dateweek.match(estimation):
             continue
-        tte = time_functions.timerel(tweetdate,estimation_date,unit="day")
+        tte = time_functions.timerel(windowdate,estimation_date,unit="day")
         #print str(tweetdate),str(estimation_date),tte
         #print timetag,tte,score
         weights[tte] += score
