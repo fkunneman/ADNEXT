@@ -27,14 +27,14 @@ for eventfile in args.i:
         window_timetags[int(spl[0])].append(vals)
 
 window_weight = defaultdict(lambda: defaultdict(list))
-date = re.compile(r"\d{4}-\d{2}-\d{2}(T.+)$")
+date = re.compile(r"\d{4}-\d{2}-\d{2}(T.+)?$")
 date_time = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")
 period = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
 dateweek = re.compile(r"\d{4}-w\d+")
-for window in sorted(window_timetags.keys())[:10]:
+for window in sorted(window_timetags.keys())[:20]:
     weights = defaultdict(float)
     timetags = window_timetags[window]
-    total_weight = 0
+#    total_weight = 0
     for timetag in timetags:
         tweetdate = time_functions.return_datetime(timetag[2],setting="vs")
         windowdate = time_functions.return_datetime(timetag[1],setting="vs")
@@ -42,9 +42,14 @@ for window in sorted(window_timetags.keys())[:10]:
         estimation = timetag[-1]
         #print estimation
         if date.match(estimation):
+            print "ja",estimation
             estimation_date = time_functions.return_datetime(estimation,setting="vs")
-            score = 1
+            if re.match("\w+$",timetag[-2]) or re.search("T",estimation):
+                score = 0.1
+            else:
+                score = 1.0
         elif date_time.match(estimation):
+            print "datetime"
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
             score = 0.5
         elif period.match(estimation):
@@ -67,22 +72,21 @@ for window in sorted(window_timetags.keys())[:10]:
                     dif = 5 + (7-tweet_weekday)
                 estimation_date = tweetdate + datetime.timedelta(days=dif)
             elif unit == "W":
-                estimation_date = tweetdate + datetime.timedelta(days=7)
-            elif unit == "M":
-                estimation_date = tweetdate + relativedelta(months=length)
+                estimation_date = tweetdate + datetime.timedelta(days=7*length)
+#            elif unit == "M":
+#                estimation_date = tweetdate + relativedelta(months=length)
             elif unit == "Y":
                 estimation_date = tweetdate + relativedelta(years=length)
             score = 0.1
-        else:
-            continue
+        print estimation_date
         tte = time_functions.timerel(windowdate,estimation_date,unit="day")
 #        print str(windowdate),str(estimation_date),tte
         print window,timetag,tte,score
         weights[tte] += score
-        total_weight += score
-    for est in weights.keys():
-        rel_score = weights[est] / total_weight
-        weights[est] = rel_score
+#        total_weight += score
+#    for est in weights.keys():
+#        rel_score = round(weights[est] / total_weight,2)
+#        weights[est] = rel_score
     window_weight[window] = weights
 
 for window in sorted(window_weight.keys()):
