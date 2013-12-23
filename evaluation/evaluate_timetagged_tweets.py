@@ -33,7 +33,9 @@ for window in sorted(window_timetags.keys())[:10]:
     weights = defaultdict(list)
     timetags = window_timetags[window]
     for timetag in timetags:
+        #print timetag
         estimation = timetag[-1]
+        #print estimation
         if date.match(estimation):
             estimation_date = time_functions.return_datetime(estimation,setting="vs")
             multiplyer = 1
@@ -42,14 +44,12 @@ for window in sorted(window_timetags.keys())[:10]:
             multiplyer = 0.5
         elif period.match(estimation):
             cats = period.search(estimation)
-            print cats.group(1)
+            unit = cats.group(2)
+            length = cats.group(1)
+            if unit == "H":
+                estimation_date = time_functions.return_datetime(timetag[1],setting="vs")
         elif dateweek.match(estimation):
             print estimation
 
         #tte =  - time_functions.return_datetime(timetag[1],setting="vs")
-
-
-
     #print window,window_timetags[window]
-
-
