@@ -83,10 +83,10 @@ for window in sorted(window_timetags.keys())[:20]:
 #        print str(windowdate),str(estimation_date),tte
         print window,timetag,tte,score
         weights[tte] += score
+
 #        total_weight += score
-#    for est in weights.keys():
-#        rel_score = round(weights[est] / total_weight,2)
-#        weights[est] = rel_score
+    highest = [w,d[w] for w in sorted(weights, key=weights.get, reverse=True)[:2]]
+    print highest
     window_weight[window] = weights
 
 for window in sorted(window_weight.keys()):
