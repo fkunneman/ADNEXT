@@ -31,13 +31,12 @@ date = re.compile(r"\d{4}-\d{2}-\d{2}(T.+)?$")
 date_time = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")
 period = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
 dateweek = re.compile(r"\d{4}-w\d+")
+weights = defaultdict(float)
 for window in sorted(window_timetags.keys())[:20]:
-    weights = defaultdict(float)
     timetags = window_timetags[window]
 #    total_weight = 0
     for timetag in timetags:
         tweetdate = time_functions.return_datetime(timetag[2],setting="vs")
-        windowdate = time_functions.return_datetime(timetag[1],setting="vs")
         #print timetag
         estimation = timetag[-1]
         #print estimation
@@ -48,10 +47,11 @@ for window in sorted(window_timetags.keys())[:20]:
                 score = 0.1
             else:
                 score = 1.0
+            weights[estimation_date] += score
         elif date_time.match(estimation):
             print "datetime"
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
-            score = 0.5
+            weights[estimation_date] += 0.5
         elif period.match(estimation):
             cats = period.search(estimation)
             unit = cats.group(2)
@@ -77,18 +77,32 @@ for window in sorted(window_timetags.keys())[:20]:
 #                estimation_date = tweetdate + relativedelta(months=length)
             elif unit == "Y":
                 estimation_date = tweetdate + relativedelta(years=length)
-            score = 0.1
-        print estimation_date
-        tte = time_functions.timerel(windowdate,estimation_date,unit="day")
+            weights[estimation_date] += 0.1
+        #print estimation_date
+        #tte = time_functions.timerel(windowdate,estimation_date,unit="day")
 #        print str(windowdate),str(estimation_date),tte
-        print window,timetag,tte,score
-        weights[tte] += score
+        #print window,timetag,tte,score
+        #weights[tte] += score
 
 #        total_weight += score
-    highest = [(e,weights[e]) for e in sorted(weights, key=weights.get, reverse=True)[:2]]
-    print highest
+    #highest = [(e,weights[e]) for e in sorted(weights, key=weights.get, reverse=True)[:2]]
+    #print highest
     window_weight[window] = weights
 
 for window in sorted(window_weight.keys()):
-    print window,window_timetags[window][0][0],"\t",window_weight[window]
+#        print str(windowdate),str(estimation_date),tte
+        #print window,timetag,tte,score
+        #weights[tte] += score
+
+#        total_weight += score
+    weights = window_weight[window]
+    topests = [(e,weights[e]) for e in sorted(weights, key=weights.get, reverse=True)[:2]]
+    estdate = topests[0][0]
+    difscore = topests[0][1] - topests[1][1]
+    info = window_timetags[window][0]
+    label = info[0]
+    windowdate = time_functions.return_datetime(info[1],setting="vs")
+    tte = time_functions.timerel(windowdate,estdate,unit="day")
+    #print highest
+    print window,label,estdate,tte,difscore
 
