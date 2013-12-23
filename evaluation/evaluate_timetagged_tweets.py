@@ -41,7 +41,8 @@ for window in sorted(window_timetags.keys())[:10]:
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
             multiplyer = 0.5
         elif period.match(estimation):
-            print timetag[-2],estimation
+            cats = period.search(estimation)
+            print cats.group(1)
         elif dateweek.match(estimation):
             print estimation
 
