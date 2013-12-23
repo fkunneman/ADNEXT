@@ -32,7 +32,7 @@ date_time = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")
 period = re.compile(r"P(\d+|X)(WE|W|M|Y|D|H)")
 dateweek = re.compile(r"\d{4}-w\d+")
 weights = defaultdict(float)
-for window in sorted(window_timetags.keys())[:20]:
+for window in sorted(window_timetags.keys()):
     timetags = window_timetags[window]
 #    total_weight = 0
     for timetag in timetags:
@@ -41,7 +41,6 @@ for window in sorted(window_timetags.keys())[:20]:
         estimation = timetag[-1]
         #print estimation
         if date.match(estimation):
-            print "ja",estimation
             estimation_date = time_functions.return_datetime(estimation,setting="vs")
             if re.match("\w+$",timetag[-2]) or re.search("T",estimation):
                 score = 0.1
@@ -49,7 +48,6 @@ for window in sorted(window_timetags.keys())[:20]:
                 score = 1.0
             weights[estimation_date] += score
         elif date_time.match(estimation):
-            print "datetime"
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
             weights[estimation_date] += 0.5
         elif period.match(estimation):
@@ -87,7 +85,7 @@ for window in sorted(window_timetags.keys())[:20]:
 #        total_weight += score
     #highest = [(e,weights[e]) for e in sorted(weights, key=weights.get, reverse=True)[:2]]
     #print highest
-    window_weight[window] = weights
+    window_weight[window] = weights.copy()
 
 for window in sorted(window_weight.keys()):
 #        print str(windowdate),str(estimation_date),tte
