@@ -34,6 +34,7 @@ dateweek = re.compile(r"\d{4}-w\d+")
 for window in sorted(window_timetags.keys())[:10]:
     weights = defaultdict(float)
     timetags = window_timetags[window]
+    total_weight = 0
     for timetag in timetags:
         tweetdate = time_functions.return_datetime(timetag[2],setting="vs")
         windowdate = time_functions.return_datetime(timetag[1],setting="vs")
@@ -72,13 +73,18 @@ for window in sorted(window_timetags.keys())[:10]:
             elif unit == "Y":
                 estimation_date = tweetdate + relativedelta(years=length)
             score = 0.1
-        elif dateweek.match(estimation):
+        else:
             continue
         tte = time_functions.timerel(windowdate,estimation_date,unit="day")
 #        print str(windowdate),str(estimation_date),tte
         print window,timetag,tte,score
         weights[tte] += score
+        total_weight += score
+    for est in weights.keys():
+        rel_score = weights[est] / total_weight
+        weights[est] = rel_score
     window_weight[window] = weights
+
 for window in sorted(window_weight.keys()):
     print window,window_timetags[window][0][0],"\t",window_weight[window]
 
