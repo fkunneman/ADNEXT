@@ -35,6 +35,7 @@ for window in sorted(window_timetags.keys())[:10]:
     weights = defaultdict(float)
     timetags = window_timetags[window]
     for timetag in timetags:
+        print timetag
         tweetdate = time_functions.return_datetime(timetag[1],setting="vs")
         #print timetag
         estimation = timetag[-1]
@@ -56,16 +57,16 @@ for window in sorted(window_timetags.keys())[:10]:
             if unit == "H":
                 estimation_date = time_functions.return_datetime(timetag[1],setting="vs")
             elif unit == "D":
-                estimation_date = tweetdate + timedelta(days=length)
+                estimation_date = tweetdate + datetime.timedelta(days=length)
             elif unit == "WE":
                 tweet_weekday = tweetdate.weekday()
                 if tweet_weekday < 5:
                     dif = 5 - tweet_weekday
                 else:
                     dif = 5 + (7-tweet_weekday)
-                estimation_date = tweetdate + timedelta(days=dif)
+                estimation_date = tweetdate + datetime.timedelta(days=dif)
             elif unit == "W":
-                estimation_date = tweetdate + timedelta(days=7)
+                estimation_date = tweetdate + datetime.timedelta(days=7)
             elif unit == "M":
                 estimation_date = tweetdate + relativedelta(months=1)
             elif unit == "Y":
@@ -74,7 +75,8 @@ for window in sorted(window_timetags.keys())[:10]:
         elif dateweek.match(estimation):
             continue
         tte = time_functions.timerel(tweetdate,estimation_date,unit="day")
-        print timetag,tte,score
-        weight[tte] += score
-    window_weight[window] = weight
+        #print str(tweetdate),str(estimation_date),tte
+        #print timetag,tte,score
+        weights[tte] += score
+    window_weight[window] = weights
 

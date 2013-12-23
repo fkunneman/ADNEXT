@@ -88,6 +88,7 @@ while i+args.window < len(ordered_tweets):
                             tt.append(re.sub("\"","",kv[1]))
                 window["features"].append(tt)
 #     windows.extend([{"features":t["text"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in ordered_tweets[i:i+args.window]])
+    
     i+=args.step
     windows.append(window)
 
@@ -99,5 +100,5 @@ d = re.compile(r"\d{4}-\d{2}(-\d{2})?(TEV)?")
 dw = re.compile(r"\d{4}-w\d+")
 for w in windows:
     for f in w["features"]:
-        if P.search(f[2]) or d.search(f[2]) or dw.search(f[2]):  
+        if P.search(f[3]) or d.search(f[3]):
             outfile.write(w["label"] + "\t" + "\t".join(f) + "\n")
