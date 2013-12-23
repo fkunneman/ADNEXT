@@ -66,7 +66,7 @@ while i+args.window < len(ordered_tweets):
         if re.search("<TIMEX3",t["text"]):
             time_extracts = re.findall('<TIMEX3 (.+?)</TIMEX3>', t["text"])
             for e in time_extracts:
-                tt = [t["meta"][3]]
+                tt = [window["meta"][3],t["meta"][3]]
                 meta_word = e.split(">")
                 tt.append(meta_word[1])
                 meta = meta_word[0].split(" ")
