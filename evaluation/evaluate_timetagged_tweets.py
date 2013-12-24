@@ -12,8 +12,8 @@ parser = argparse.ArgumentParser(description = "Program to evaluate the time-to-
 
 parser.add_argument('-i', action = 'store', required = True, nargs='+', help = "the timetagged files")
 parser.add_argument('-e', action='store', required = True, help = "the file with scores and estimations")
-parser.add_argument('-o', action='store', required = True, help = "the results file")
-parser.add_argument('-t', action='store', type=float, default = 1.0, help = "The threshold parameter")
+#parser.add_argument('-o', action='store', required = True, help = "the results file")
+#parser.add_argument('-t', action='store', type=float, default = 1.0, help = "The threshold parameter")
 
 args = parser.parse_args()
 
@@ -74,7 +74,10 @@ for window in sorted(window_timetags.keys()):
 #            elif unit == "M":
 #                estimation_date = tweetdate + relativedelta(months=length)
             elif unit == "Y":
-                estimation_date = tweetdate + relativedelta(years=length)
+                try:
+                    estimation_date = tweetdate + relativedelta(years=length)
+                except:
+                    continue
             weights[estimation_date] += 0.1
         #print estimation_date
         #tte = time_functions.timerel(windowdate,estimation_date,unit="day")
@@ -87,6 +90,7 @@ for window in sorted(window_timetags.keys()):
     #print highest
     window_weight[window] = weights.copy()
 
+outfile = open(args.e,"w")
 for window in sorted(window_weight.keys()):
 #        print str(windowdate),str(estimation_date),tte
         #print window,timetag,tte,score
@@ -96,11 +100,14 @@ for window in sorted(window_weight.keys()):
     weights = window_weight[window]
     topests = [(e,weights[e]) for e in sorted(weights, key=weights.get, reverse=True)[:2]]
     estdate = topests[0][0]
-    difscore = topests[0][1] - topests[1][1]
+    try:
+        difscore = topests[0][1] - topests[1][1]
+    except:
+        difscore = topests[0][1] - 0
     info = window_timetags[window][0]
     label = info[0]
     windowdate = time_functions.return_datetime(info[1],setting="vs")
     tte = time_functions.timerel(windowdate,estdate,unit="day")
     #print highest
-    print window,label,estdate,tte,difscore
+    outfile.write("\t".join([str(f) for f in [window,label,estdate,tte,difscore]]) + "\n")
 

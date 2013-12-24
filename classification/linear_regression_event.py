@@ -2,6 +2,8 @@
 
 import argparse
 from collections import defaultdict
+import re
+import math
 from itertools import chain
 import numpy
 
@@ -22,12 +24,12 @@ for ef in args.i:
     instance_file = open(ef)
     instances_raw=instance_file.readlines()
     instance_file.close()
-    event_txt = "/".join(ef.split("/")[depth:])
+    event_txt = "/".join(ef.split("/")[-1])
     event = re.sub(".txt","",event_txt)
     tte_tweets = defaultdict(int)
     for tweet in instances_raw:
         values = tweet.strip().split("\t")
-        tte = values[args.d]
+        tte = values[args.l]
         tte_tweets[tte] += 1
     #make pairs of the time_to_event and the (logged) number of tweets in this period 
     buckets = [(tte,math.log(tte_tweets[tte],2)) for tte in tte_tweets.keys()]
@@ -43,7 +45,6 @@ for i in range(0,len(events),testlen):
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))]
-    train = sum([event_instances[x] for x in train_events],[])
     test = []
     for event in test_events:
         testdict = {}
@@ -52,12 +53,12 @@ for i in range(0,len(events),testlen):
         testdict["instances"] = event_buckets[event]
         test.append(testdict)
     #make model
-    trainbuckets = list(chain([event_buckets[e] for e in train_events]))
+    trainbuckets = list(chain(*[event_buckets[e] for e in train_events]))
     targetvect = [t[0] for t in trainbuckets]
-    valuevect = [t[1]] for t in trainbuckets]
-    print trainbuckets
-    print targetvect
-    print valuevect
+    valuevect = [t[1] for t in trainbuckets]
+    #print trainbuckets
+    #print targetvect
+    #print valuevect
     print len(targetvect),len(valuevect)
 
 
