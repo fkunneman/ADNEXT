@@ -14,8 +14,8 @@ import math
 class Evalset():
 
     def __init__(self):
-        self.instance_sets = []
-        self.results = defaultdict(list)
+        self.instances = []
+        # self.results = defaultdict(list)
 
     # def set_vocabulary(self,vocabfile):
     #     self.vocabulary = {}
@@ -26,10 +26,9 @@ class Evalset():
     #     vocab.close()
 
     def add_instances(self,instances,form="simple"):
-        instance_set = []
-        for instance_line in instances:
-            instance_set.append(self.return_simple_instance(instance_line))
-        self.instance_sets.append(instance_set)
+        if form == "simple":
+            for instance_line in instances:
+                self.instances.append(self.return_simple_instance(instance_line))
 
     def return_simple_instance(self,instr):
         tokens = line.strip().split(" ")
@@ -37,6 +36,28 @@ class Evalset():
         instance.set_label(tokens[0])
         instance.set_classification(tokens[1])
         return instance
+
+    def calculate_rmse(self):
+        estimation_sequence = []
+        responsiveness_vals = []
+        rmse_vals = []
+        for instance in self.instances:
+            target = instance.label
+            prediction = instance.classification
+            estimation_sequence.append((target,prediction))
+            if not target == "during" and not target == "after":
+                if prediction == "during" or prediction == "after":
+                    responsiveness_vals.append(0)
+                else:
+                    if int(predictions) > 0:
+                        responsiveness_vals.append(0)
+                    else:
+                        responsiveness_vals.append(1)
+                        dif = abs(int(target) - int(prediction))
+                        rmse_vals.append(dif*dif)
+        responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
+        rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
+        return (rmse,responsiveness)
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
@@ -194,44 +215,44 @@ class Evalset():
 
 
 
-    def calculate_rmse(self):
-        estimation_sequence = []
-        correct_abstain_vals = [0,0]
-        responsiveness_vals = [0,0]
-        rmse_vals = [0,0]
-        for window in self.windows:
-            target = window.label
-            prediction = window.classification
-            estimation_sequence.append((target,prediction))
-            if target == "-" or target == "early":
-                correct_abstain_vals[0] += 1
-                if prediction == "abstain":
-                    correct_abstain_vals[1] += 1
-            else:
-                responsiveness_vals[0] += 1
-                rmse_vals[0] += 1
-                #before += 1
-                if prediction == "abstain":
-                    continue
-                    window.set_error("NaN")
-                else:
-                    responsiveness_vals[1] += 1
-                    target = int(target)
-                    prediction = int(prediction)
-                    dif = target - prediction
-                    if dif < 0:
-                        dif = dif * -1
-                    window.set_error(str(dif))
-                    se = dif * dif
-                    rmse_vals[1] += se
-        try:
-            correct_abstain = round(correct_abstain_vals[1]/correct_abstain_vals[0],2)
-        except ZeroDivisionError:
-            correct_abstain = 0
-        responsiveness = round(responsiveness_vals[1]/responsiveness_vals[0],2)  
-        rmse = round(math.sqrt(rmse_vals[1] / rmse_vals[0]),1)
+    # def calculate_rmse(self):
+    #     estimation_sequence = []
+    #     correct_abstain_vals = [0,0]
+    #     responsiveness_vals = [0,0]
+    #     rmse_vals = [0,0]
+    #     for window in self.windows:
+    #         target = window.label
+    #         prediction = window.classification
+    #         estimation_sequence.append((target,prediction))
+    #         if target == "-" or target == "early":
+    #             correct_abstain_vals[0] += 1
+    #             if prediction == "abstain":
+    #                 correct_abstain_vals[1] += 1
+    #         else:
+    #             responsiveness_vals[0] += 1
+    #             rmse_vals[0] += 1
+    #             #before += 1
+    #             if prediction == "abstain":
+    #                 continue
+    #                 window.set_error("NaN")
+    #             else:
+    #                 responsiveness_vals[1] += 1
+    #                 target = int(target)
+    #                 prediction = int(prediction)
+    #                 dif = target - prediction
+    #                 if dif < 0:
+    #                     dif = dif * -1
+    #                 window.set_error(str(dif))
+    #                 se = dif * dif
+    #                 rmse_vals[1] += se
+    #     try:
+    #         correct_abstain = round(correct_abstain_vals[1]/correct_abstain_vals[0],2)
+    #     except ZeroDivisionError:
+    #         correct_abstain = 0
+    #     responsiveness = round(responsiveness_vals[1]/responsiveness_vals[0],2)  
+    #     rmse = round(math.sqrt(rmse_vals[1] / rmse_vals[0]),1)
 
-        return (estimation_sequence,rmse,responsiveness,correct_abstain)
+    #     return (estimation_sequence,rmse,responsiveness,correct_abstain)
 
     def extract_timelabel(self,timelabel_freq,timelabel_rank,score_timelabel,score_rank):
 

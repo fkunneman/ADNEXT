@@ -456,4 +456,3 @@ class Classifier():
                 print test["stdef"][i]/test["stdef"][i-1],test["target"][i],round(estimation,2)
             except IndexError:
                 print test["target"[i]],round(estimation,2)
-
