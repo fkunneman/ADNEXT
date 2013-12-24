@@ -2,7 +2,6 @@
 
 import argparse
 from collections import defaultdict
-import re
 import math
 from itertools import chain
 import numpy
@@ -24,8 +23,7 @@ for ef in args.i:
     instance_file = open(ef)
     instances_raw=instance_file.readlines()
     instance_file.close()
-    event_txt = "/".join(ef.split("/")[-1])
-    event = re.sub(".txt","",event_txt)
+    event = "/".join(ef.split("/")[-1])
     tte_tweets = defaultdict(int)
     for tweet in instances_raw:
         values = tweet.strip().split("\t")
@@ -45,29 +43,16 @@ for i in range(0,len(events),testlen):
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))]
-    test = []
-    for event in test_events:
-        testdict = {}
-        eventout = args.d + event + ".txt"
-        testdict["out"] = eventout
-        testdict["instances"] = event_buckets[event]
-        test.append(testdict)
     #make model
     trainbuckets = list(chain(*[event_buckets[e] for e in train_events]))
     targetvect = [t[0] for t in trainbuckets]
     valuevect = [t[1] for t in trainbuckets]
-    #print trainbuckets
-    #print targetvect
-    #print valuevect
-    print len(targetvect),len(valuevect)
-
-
-
-#predict tte
-
-
-
-
-
-
-
+    model = numpy.polyfit(valuevect,targetvect,1)
+    #predict tte
+    for event in test_events:
+        eventout = open(args.d + event,"w")
+        targets = [t[0] for t in event_buckets[event]]
+        values = [t[1] for t in event_buckets[event]]
+        for j,value in enumerate(values):
+            estimation = int(round((model[0]*value) + model[1],0))
+            eventout.write("\t".join([str(targets[j]),str(estimation)]) + "\n")
