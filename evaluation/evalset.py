@@ -25,17 +25,12 @@ class Evalset():
     #         self.vocabulary[tokens[0]] = tokens[1]
     #     vocab.close()
 
-    def add_instances(self,instances,form="simple"):
-        if form == "simple":
-            for instance_line in instances:
-                self.instances.append(self.return_simple_instance(instance_line))
-
-    def return_simple_instance(self,instr):
-        tokens = line.strip().split(" ")
-        instance = Evalset.Instance()            
-        instance.set_label(tokens[0])
-        instance.set_classification(tokens[1])
-        return instance
+    def add_instances(self,instances):
+        for instance_line in instances:
+            instance = Evalset.Instance()
+            instance.set_label(instance_line[0])
+            instance.set_classification(instance_line[1])
+            self.instances.append(instance)
 
     def calculate_rmse(self):
         estimation_sequence = []
@@ -49,7 +44,7 @@ class Evalset():
                 if prediction == "during" or prediction == "after":
                     responsiveness_vals.append(0)
                 else:
-                    if int(predictions) > 0:
+                    if int(prediction) > 0:
                         responsiveness_vals.append(0)
                     else:
                         responsiveness_vals.append(1)

@@ -2,6 +2,7 @@
 
 import argparse
 import evalset
+import re
 
 parser = argparse.ArgumentParser(description = "Program to score window estimations")
 
@@ -34,7 +35,7 @@ for ef in args.i:
     # generate target-evaluation list 
     estimations_file = open(ef)
     event_estimations = []
-    for estimation in estimations_file.readlines()
+    for estimation in estimations_file.readlines():
         tokens = estimation.strip().split("\t")
         target = tokens[args.t]
         classification = tokens[args.c]
@@ -43,12 +44,13 @@ for ef in args.i:
     # return RMSE, responsiveness and prediction@
     es = evalset.Evalset()
     es.add_instances(event_estimations)
-    rmse = es.calculate_rmse
+    rmse = es.calculate_rmse()
     rmses.append(rmse)
-    outfile.write("\t".join([event,rmse[0],rmse[1]]) + "\n")
+    outfile.write("\t".join([event,str(rmse[0]),str(rmse[1])]) + "\n")
     # write to file and keeplist  
 
-rmse_all,responsiveness_all = [x[0],x[1] for x in rmses]
-rmse_mean = sum(rmse_all) / len(rmse_all)
-responsiveness_mean = sum(responsiveness_all) / len(responsiveness_all)
-outfile.write("\t".join(["mean",rmse_mean,responsiveness_mean] + "\n")
+rmse_all,responsiveness_all = zip(*rmses)
+rmse_mean = str(sum(rmse_all) / len(rmse_all))
+responsiveness_mean = str(sum(responsiveness_all) / len(responsiveness_all))
+outfile.write("\t".join(["mean",rmse_mean,responsiveness_mean]) + "\n")
+outfile.close()
