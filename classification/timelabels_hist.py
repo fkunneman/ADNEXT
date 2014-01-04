@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-import evalset
-import re
+from collections import defaultdict
 
 parser = argparse.ArgumentParser(description = "Program to add historic knowledge to time-to-event estimations")
 
@@ -22,9 +21,13 @@ weights = defaultdict(float)
 window_weights = []
 for estimation in estimations_file.readlines()[args.s:]:
     tokens = estimation.strip().split(args.d)
-    target = tokens[args.t]
-    classification = tokens[args.c]
-    weights[classification-target] += 1
+    try:
+        target = int(tokens[args.t])
+        classification = int(tokens[args.c])
+        dif = classification-target
+        weights[target+dif] += 1
+    except:
+        weights[classification] += 1
     window_weights.append((target,weights.copy()))
 estimations_file.close()
 # return RMSE, responsiveness and prediction@
