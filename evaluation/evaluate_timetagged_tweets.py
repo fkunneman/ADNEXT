@@ -34,6 +34,7 @@ dateweek = re.compile(r"\d{4}-w\d+")
 weights = defaultdict(float)
 for window in sorted(window_timetags.keys()):
     timetags = window_timetags[window]
+    windate = window[0][1]
 #    total_weight = 0
     for timetag in timetags:
         tweetdate = time_functions.return_datetime(timetag[2],setting="vs")
@@ -42,11 +43,12 @@ for window in sorted(window_timetags.keys()):
         #print estimation
         if date.match(estimation):
             estimation_date = time_functions.return_datetime(estimation,setting="vs")
-            if re.match("\w+$",timetag[-2]) or re.search("T",estimation):
-                score = 0.1
-            else:
-                score = 1.0
-            weights[estimation_date] += score
+            if not abs(time_functions.timerel(windate,estdate,unit="day")) > 178:
+                if re.match("\w+$",timetag[-2]) or re.search("T",estimation):
+                    score = 0.1
+                else:
+                    score = 1.0
+                weights[estimation_date] += score
         elif date_time.match(estimation):
             estimation_date = time_functions.return_datetime(estimation.split(" ")[0],setting="vs")
             weights[estimation_date] += 0.5
@@ -108,8 +110,6 @@ for window in sorted(window_weight.keys()):
     label = info[0]
     windowdate = time_functions.return_datetime(info[1],setting="vs")
     tte = time_functions.timerel(windowdate,estdate,unit="day")
-    if tte < -175:
-        tte = time_functions.timerel(estdate,windowdate,unit="day")
     #print highest
     outfile.write("\t".join([str(f) for f in [window,label,estdate,tte,difscore]]) + "\n")
 
