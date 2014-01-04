@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description = "Program to score window estimati
 
 parser.add_argument('-i', action = 'store', required = True, nargs='+', help = "the files with estimations")
 parser.add_argument('-r', action='store', required=True, help = "the file to write results to")
+parser.add_argument('-p', action='store', required=False, help = "[OPTIONAL] the file to write error plot coördinates to")
 parser.add_argument('-t', action='store', type = int, default = 0, help = "the target column")
 parser.add_argument('-c', action='store', type = int, default = 1, help = "the estimation column")
 parser.add_argument('-s', action='store', type = int, default = 0, help = "specify the first line of classification files to process from [DEFAULT = 0]")
@@ -20,6 +21,7 @@ depth = args.depth * -1
 outfile = open(args.r,"w")
 outfile.write("\n\n")
 rmses = []
+plotvals = defaultdict(list)
 # for each file
 for ef in args.i:
     # extract event + windowname
@@ -40,6 +42,9 @@ for ef in args.i:
     rmse = es.calculate_rmse()
     rmses.append(rmse)
     outfile.write("\t".join([event,str(rmse[0]),str(rmse[1])]) + "\n")
+    if args.p:
+        for pv in rmse[2]:
+            plotvals[pv[0]].append(pv[1])
     # write to file and keeplist  
 
 rmse_all,responsiveness_all = zip(*rmses)
@@ -47,3 +52,7 @@ rmse_mean = str(sum(rmse_all) / len(rmse_all))
 responsiveness_mean = str(sum(responsiveness_all) / len(responsiveness_all))
 outfile.write("\t".join(["mean",rmse_mean,responsiveness_mean]) + "\n")
 outfile.close()
+if args.p:
+    plotfile = open(args.p,"w")
+    mean_plotvals = [(v,(sum(plotvals[v]) / len(plotvals[v]))) for v in sorted(plotvals.keys())]
+    print mean_plotvals

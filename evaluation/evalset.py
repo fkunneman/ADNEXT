@@ -58,9 +58,7 @@ class Evalset():
         except:
             rmse = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) for v in sorted(plot_vals.keys())]
-        print plot_vals_mean
-        exit()
-        return (rmse,responsiveness,plot_vals)
+        return (rmse,responsiveness,plot_vals_mean)
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
