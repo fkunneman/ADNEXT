@@ -73,6 +73,8 @@ class Evalset():
                 if score > value:
                     dif = abs(int(target) - int(prediction))
                     return (int(target),int(prediction),dif)
+            elif target == "during" or target == "after":
+                return None
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
