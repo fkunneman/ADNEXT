@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import Division
 import argparse
 import evalset
 import re
@@ -57,9 +58,10 @@ outfile.write("\nMeans:\n")
 for v in args.v:
     outfile.write("scores for prediction at " + args.a + " " + v + "\n")
     timeat_all,prediction_all,dif_all = zip(*aats[v])
-    print dif_all
     timeat_mean = str(sum(timeat_all) / len(timeat_all))
     prediction_mean = str(sum(prediction_all) / len(prediction_all))
     dif_mean = str(sum(dif_all) / len(dif_all))
-    outfile.write(" ".join([timeat_mean,prediction_mean,dif_mean]) + "\n")
+    zeros = [x for x in dif_aal if x == 0]
+    acc = str(zeros / len(dif_all))
+    outfile.write(" ".join([timeat_mean,prediction_mean,dif_mean,acc]) + "\n")
 outfile.close()
