@@ -25,22 +25,22 @@ class Evalset():
     #         self.vocabulary[tokens[0]] = tokens[1]
     #     vocab.close()
 
-    def add_instances(self,instances):
+    def add_instances(self,instances,score=False):
         for instance_line in instances:
             instance = Evalset.Instance()
             instance.set_label(instance_line[0])
             instance.set_classification(instance_line[1])
+            if score:
+                instance.set_score(instance_line[3])
             self.instances.append(instance)
 
     def calculate_rmse(self):
-        estimation_sequence = []
         responsiveness_vals = []
         rmse_vals = []
         plot_vals = defaultdict(list)
         for instance in self.instances:
             target = instance.label
             prediction = instance.classification
-            estimation_sequence.append((target,prediction))
             if not target == "during" and not target == "after":
                 if prediction == "during" or prediction == "after":
                     responsiveness_vals.append(0)
@@ -59,6 +59,21 @@ class Evalset():
             rmse = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) for v in sorted(plot_vals.keys())]
         return (rmse,responsiveness,plot_vals_mean)
+
+    def accuracy_at(self,value,condition):
+        for instance in self.instances:
+            target = instance.label
+            prediction = instance.classification
+            estimation_sequence.append((target,prediction))
+            if condition == "estimation":
+                if prediction == value:
+                    dif = abs(int(target) - int(prediction))
+                    return (target,prediction,dif)
+            elif condition == "threshold":
+                score = instance.score
+                if score > value:
+                    dif = abs(int(target) - int(prediction))
+                    return (target,prediction,dif)
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
