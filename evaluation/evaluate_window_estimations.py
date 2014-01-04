@@ -9,7 +9,7 @@ parser.add_argument('-i', action = 'store', required = True, nargs='+', help = "
 parser.add_argument('-r', action='store', required=True, help = "the file to write results to")
 parser.add_argument('-t', action='store', type = int, default = 0, help = "the target column")
 parser.add_argument('-c', action='store', type = int, default = 1, help = "the estimation column")
-parser.add_argument('-s', action='store', type = int, default = 0, help = "specify the first line of classification files to process from [DEFAULT = 1]")
+parser.add_argument('-s', action='store', type = int, default = 0, help = "specify the first line of classification files to process from [DEFAULT = 0]")
 parser.add_argument('-d', action = 'store', default = "\t", help="specify the delimiter of target and estimator columns [DEFAULT = \'\\t\']")
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT = 1]")
 

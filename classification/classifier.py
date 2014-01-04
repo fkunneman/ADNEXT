@@ -163,7 +163,7 @@ class Classifier():
                         continue
                 instance["sparse"] = sparse_features
 
-    def classify_svm(self):
+    def classify_svm(self,classweight = None):
 
         def vectorize(instances):
             zerolist = [float(0)] * len(self.feature_info.keys())
@@ -194,7 +194,7 @@ class Classifier():
         training_csr = csr_matrix(trainingvectors)
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000], 'estimator__kernel': ['linear','rbf'], 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
-        model = OutputCodeClassifier(svm.SVC(probability=True))
+        model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
         paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
@@ -206,7 +206,7 @@ class Classifier():
         for parameter in parameters.keys():
             outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
-        clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'])
+        clf = svm.SVC(probability=True, C=parameters['estimator__C'],kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],class_weight=classweight)
         multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
         multiclf.fit(training_csr,trainlabels)
         for tset in self.test:
