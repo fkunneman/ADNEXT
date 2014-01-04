@@ -3,6 +3,7 @@
 import argparse
 import evalset
 import re
+from collections import defaultdict
 
 parser = argparse.ArgumentParser(description = "Program to score window estimations")
 
@@ -40,7 +41,7 @@ for ef in args.i:
     es = evalset.Evalset()
     es.add_instances(event_estimations)
     rmse = es.calculate_rmse()
-    rmses.append(rmse)
+    rmses.append(rmse[:2])
     outfile.write("\t".join([event,str(rmse[0]),str(rmse[1])]) + "\n")
     if args.p:
         for pv in rmse[2]:
