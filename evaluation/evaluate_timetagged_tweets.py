@@ -108,8 +108,8 @@ for window in sorted(window_weight.keys()):
     label = info[0]
     windowdate = time_functions.return_datetime(info[1],setting="vs")
     tte = time_functions.timerel(windowdate,estdate,unit="day")
-    if tte < 175:
-        tte = tiome_functions.timerel(estdate,windowdate,unit="day")
+    if tte < -175:
+        tte = time_functions.timerel(estdate,windowdate,unit="day")
     #print highest
     outfile.write("\t".join([str(f) for f in [window,label,estdate,tte,difscore]]) + "\n")
 
