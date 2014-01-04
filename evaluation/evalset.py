@@ -51,7 +51,10 @@ class Evalset():
                         dif = abs(int(target) - int(prediction))
                         rmse_vals.append(dif*dif)
         responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
-        rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
+        try:
+            rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
+        except:
+            rmse = 0
         return (rmse,responsiveness)
 
     def extract_sliding_window_instances(self,window,incre):
