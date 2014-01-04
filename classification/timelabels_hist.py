@@ -38,9 +38,10 @@ for ww in window_weights:
         during = True
     c = ww[1]
     if during:
-        print t,c
+        outfile.write(str(t) + "\t" + str(c) + "\n")
     else:
         d = ww[2]
         topest = [e for e in sorted(d, key=d.get, reverse=True)][0]
         est = t + topest
-        print t,c,topest,est 
+        outfile.write(str(t) + "\t" + str(est) + "\n")
+outfile.close() 
