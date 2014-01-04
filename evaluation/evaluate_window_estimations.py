@@ -57,5 +57,5 @@ if args.p:
     plotfile = open(args.p,"w")
     mean_plotvals = [(v,(sum(plotvals[v]) / len(plotvals[v]))) for v in sorted(plotvals.keys())]
     for mp in mean_plotvals:
-        plotfile.write(str(mp[0]) + " " + mp[1] + "\n")
+        plotfile.write(str(mp[0]) + "\t" + str(mp[1]) + "\n")
     plotfile.close()

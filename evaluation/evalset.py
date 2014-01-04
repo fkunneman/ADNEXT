@@ -64,16 +64,15 @@ class Evalset():
         for instance in self.instances:
             target = instance.label
             prediction = instance.classification
-            estimation_sequence.append((target,prediction))
             if condition == "estimation":
                 if prediction == value:
                     dif = abs(int(target) - int(prediction))
-                    return (target,prediction,dif)
+                    return (int(target),int(prediction),dif)
             elif condition == "threshold":
                 score = instance.score
                 if score > value:
                     dif = abs(int(target) - int(prediction))
-                    return (target,prediction,dif)
+                    return (int(target),int(prediction),dif)
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash

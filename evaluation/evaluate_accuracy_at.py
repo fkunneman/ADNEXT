@@ -13,7 +13,7 @@ parser.add_argument('-t', action='store', type = int, default = 0, help = "the t
 parser.add_argument('-c', action='store', type = int, default = 1, help = "the estimation column")
 parser.add_argument('-o', action='store', type = int, required=False, help = "[OPTIONAL] the score column")
 parser.add_argument('-a', action='store', choices = ["estimation","threshold"], help = "the domain of the stop condition (estimation or threshold)")
-parser.add_argument('-v', action='store', type = int, nargs='+', required = True, help = "the value(s) at which to stop")
+parser.add_argument('-v', action='store', nargs='+', required = True, help = "the value(s) at which to stop")
 parser.add_argument('-s', action='store', type = int, default = 0, help = "specify the first line of classification files to process from [DEFAULT = 0]")
 parser.add_argument('-d', action = 'store', default = "\t", help="specify the delimiter of target and estimator columns [DEFAULT = \'\\t\']")
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT = 1]")
@@ -48,16 +48,17 @@ for ef in args.i:
     outfile.write(event + "\n\t")
     for v in args.v:
         aat = es.accuracy_at(v,args.a)
-        aats[v].append(aat)
-        outfile.write(" ".join([str(v),str(aat[0]),str(aat[1]),str(aat[2])]) + "\t") 
+        if aat:
+            aats[v].append(aat)
+            outfile.write(" ".join([v,str(aat[0]),str(aat[1]),str(aat[2])]) + "\t") 
     outfile.write("\n")
 
 outfile.write("\nMeans:\n")
 for v in args.v:
-    outfile.write("scores for prediction at " + args.a + " " + str(v) + "\n")
+    outfile.write("scores for prediction at " + args.a + " " + v + "\n")
     timeat_all,prediction_all,dif_all = zip(*aats[v])
     timeat_mean = str(sum(timeat_all) / len(timeat_all))
     prediction_mean = str(sum(prediction_all) / len(prediction_all))
     dif_mean = str(sum(dif_all) / len(dif_all))
-    outfile.write(" ".join([str(v),str(timeat_mean),str(prediction_mean),str(dif_mean)]) + "\n")
+    outfile.write(" ".join([v,str(timeat_mean),str(prediction_mean),str(dif_mean)]) + "\n")
 outfile.close()

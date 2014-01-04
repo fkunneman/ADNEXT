@@ -5,7 +5,7 @@ from pylab import *
 outplot = sys.argv[1]
 xlabel = sys.argv[2]
 ylabel = sys.argv[3]
-plotfiles = sys.argv[4:]
+plotfiles = sys.argv[5:]
 
 #linestyles = ['-.', '-', '--', ':']
 half = len(plotfiles)/2
@@ -20,7 +20,7 @@ for i,pf in enumerate(plotfiles[:half]):
         if tokens[1] == "NaN":
             ytoken = NaN
         else:
-            ytoken = int(tokens[1])
+            ytoken = float(tokens[1])
         y.append(ytoken)
     print x
     print y
