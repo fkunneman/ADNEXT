@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import Division
+from __future__ import division
 import argparse
 import evalset
 import re
