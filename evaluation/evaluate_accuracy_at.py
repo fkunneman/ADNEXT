@@ -23,7 +23,7 @@ args = parser.parse_args()
 
 depth = args.depth * -1
 outfile = open(args.r,"w")
-outfile.write(args.a + "\n")
+outfile.write(args.a + " (value, target time, prediction time, difference)\n")
 aats = defaultdict(list)
 # for each file
 for ef in args.i:
@@ -54,7 +54,7 @@ for ef in args.i:
             outfile.write(" ".join([v,str(aat[0]),str(aat[1]),str(aat[2])]) + "\t") 
     outfile.write("\n")
 
-outfile.write("\nMeans:\n")
+outfile.write("\nMeans: (time at prediction, prediction, mean difference, percent perfect, num predictions)\n")
 for v in args.v:
     outfile.write("scores for prediction at " + args.a + " " + v + "\n")
     timeat_all,prediction_all,dif_all = zip(*aats[v])
@@ -63,5 +63,5 @@ for v in args.v:
     dif_mean = str(sum(dif_all) / len(dif_all))
     zeros = [x for x in dif_all if x == 0]
     acc = str(len(zeros) / len(dif_all))
-    outfile.write(" ".join([timeat_mean,prediction_mean,dif_mean,acc]) + "\n")
+    outfile.write(" ".join([timeat_mean,prediction_mean,dif_mean,acc,str(len(timeat_all))]) + "\n")
 outfile.close()
