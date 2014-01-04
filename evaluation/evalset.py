@@ -71,8 +71,8 @@ class Evalset():
                     dif = abs(int(target) - int(prediction))
                     return (int(target),int(prediction),dif)
             if condition == "threshold":
-                score = instance.score
-                if score > value:
+                score = int(instance.score)
+                if score > int(value):
                     dif = abs(int(target) - int(prediction))
                     return (int(target),int(prediction),dif)
 
