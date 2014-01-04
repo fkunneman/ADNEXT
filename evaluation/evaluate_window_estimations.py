@@ -4,6 +4,7 @@ import argparse
 import evalset
 import re
 from collections import defaultdict
+import gen_functions
 
 parser = argparse.ArgumentParser(description = "Program to score window estimations")
 
@@ -50,8 +51,9 @@ for ef in args.i:
 
 rmse_all,responsiveness_all = zip(*rmses)
 rmse_mean = str(sum(rmse_all) / len(rmse_all))
+rmse_stdef = gen_functions.return_standard_deviation(rmse_all)
 responsiveness_mean = str(sum(responsiveness_all) / len(responsiveness_all))
-outfile.write("\t".join(["mean",rmse_mean,responsiveness_mean]) + "\n")
+outfile.write("\t".join(["mean",rmse_mean,rmse_stdef,responsiveness_mean]) + "\n")
 outfile.close()
 if args.p:
     plotfile = open(args.p,"w")
