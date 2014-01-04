@@ -36,6 +36,7 @@ class Evalset():
         estimation_sequence = []
         responsiveness_vals = []
         rmse_vals = []
+        plot_vals = defaultdict(list)
         for instance in self.instances:
             target = instance.label
             prediction = instance.classification
@@ -50,12 +51,16 @@ class Evalset():
                         responsiveness_vals.append(1)
                         dif = abs(int(target) - int(prediction))
                         rmse_vals.append(dif*dif)
+                        plot_vals[int(target)].append(dif)
         responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
         try:
             rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
         except:
             rmse = 0
-        return (rmse,responsiveness)
+        plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v])) for v in sorted(plot_vals.keys(),reverse=True)]
+        print plot_vals_mean
+        exit()
+        return (rmse,responsiveness,plot_vals)
 
     def extract_sliding_window_instances(self,window,incre):
         #make tfz hash
