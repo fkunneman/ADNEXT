@@ -61,7 +61,7 @@ for v in args.v:
     timeat_mean = str(sum(timeat_all) / len(timeat_all))
     prediction_mean = str(sum(prediction_all) / len(prediction_all))
     dif_mean = str(sum(dif_all) / len(dif_all))
-    zeros = [x for x in dif_aal if x == 0]
-    acc = str(zeros / len(dif_all))
+    zeros = [x for x in dif_all if x == 0]
+    acc = str(len(zeros) / len(dif_all))
     outfile.write(" ".join([timeat_mean,prediction_mean,dif_mean,acc]) + "\n")
 outfile.close()
