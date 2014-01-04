@@ -21,17 +21,24 @@ weights = defaultdict(float)
 window_weights = []
 for estimation in estimations_file.readlines()[args.s:]:
     tokens = estimation.strip().split(args.d)
+    classification = tokens[args.c]
+    target = tokens[args.t]
     try:
-        target = int(tokens[args.t])
-        classification = int(tokens[args.c])
-        dif = classification-target
-        weights[target+dif] += 1
+        target = int(target)
+        classification = int(classification)
+        weights[classification-target] += 1
     except:
         weights[classification] += 1
-    window_weights.append((target,weights.copy()))
+    window_weights.append((target,classification,weights.copy()))
 estimations_file.close()
 # return RMSE, responsiveness and prediction@
-print window_weights
+for ww in window_weights:
+    t = ww[0]
+    c = ww[1]
+    d = ww[2]
+    topest = [(e,d[e]) for e in sorted(d, key=d.get, reverse=True)[0]]
+    est = t + topest
+    print t,c,topest,est 
 
 # es = evalset.Evalset()
 # es.add_instances(event_estimations)
