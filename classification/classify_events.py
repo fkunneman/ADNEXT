@@ -17,7 +17,8 @@ parser.add_argument('--window', action='store', default=100, type=int, help="spe
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT] = 1)")
 parser.add_argument('--scaling', action='store', default='binary', help='')
 parser.add_argument('--majority', action='store_true', help = 'specify if tweet windows are classified as sets of loose tweets')
-parser.add_argument('--jobs', action = 'store', type = int, required=False, help = 'specify the number of cores to use')
+parser.add_argument('--jobs', action='store', type = int, required=False, help = 'specify the number of cores to use')
+parser.add_argument('--cw', action='store_true', help = 'choose to set class weights based on training frequency (instead of balancing the training data)' )
 
 args=parser.parse_args() 
 
@@ -98,8 +99,9 @@ for i in range(0,len(events),testlen):
         cl = Classifier(train,test,classifier=args.c,jobs=args.jobs,scaling=args.scaling)
     else:
         cl = Classifier(train,test,classifier=args.c,scaling=args.scaling)
-    print "balancing..."
-    cl.balance_data()
+    if not args.cw:
+        print "balancing..."
+        cl.balance_data()
     print "counting..."
     cl.count_feature_frequency()
     if args.f:
@@ -111,4 +113,7 @@ for i in range(0,len(events),testlen):
     #generate classifiers
     print "classifying..."
     if args.c == "svm":
-        cl.classify_svm()
+        if args.cw:
+            cl.classify_svm(classweight="auto")
+        else:
+            cl.classify_svm()
