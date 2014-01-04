@@ -64,4 +64,4 @@ for i in range(0,len(events),testlen):
         values = [t[1] for t in event_buckets[event]]
         for j,target in enumerate(sorted(targets)):
             estimation = int(round((model[0]*values[j]) + model[1],0))
-            eventout.write("\t".join([str(target),str(estimation)]) + "\n")
+            eventout.write("\t".join([str(target),str(estimation),str(values[j])]) + "\n")
