@@ -57,8 +57,9 @@ outfile.write("\nMeans:\n")
 for v in args.v:
     outfile.write("scores for prediction at " + args.a + " " + v + "\n")
     timeat_all,prediction_all,dif_all = zip(*aats[v])
+    print dif_all
     timeat_mean = str(sum(timeat_all) / len(timeat_all))
     prediction_mean = str(sum(prediction_all) / len(prediction_all))
     dif_mean = str(sum(dif_all) / len(dif_all))
-    outfile.write(" ".join([v,str(timeat_mean),str(prediction_mean),str(dif_mean)]) + "\n")
+    outfile.write(" ".join([timeat_mean,prediction_mean,dif_mean]) + "\n")
 outfile.close()
