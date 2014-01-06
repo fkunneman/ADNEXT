@@ -39,13 +39,16 @@ for ef in args.i:
         classification = tokens[args.c]
         if args.o:
             score = tokens[args.o]
-            event_estimations.append((target,estimation,score))
+            event_estimations.append((target,classification,score))
         else:
             event_estimations.append((target,classification))
     estimations_file.close()
     # return RMSE, responsiveness and prediction@
     es = evalset.Evalset()
-    es.add_instances(event_estimations)
+    if args.o:
+        es.add_instances(event_estimations,score=True)
+    else:
+        es.add_instances(event_estimations,)
     outfile.write(event + "\n\t")
     for v in args.v:
         aat = es.accuracy_at(v,args.a)
