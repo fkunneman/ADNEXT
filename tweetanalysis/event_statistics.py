@@ -20,7 +20,7 @@ counts = []
 tte_at_frame = []
 for f in args.i:
     tweets = tweetsfeatures.Tweetsfeatures(f)
-    tweets.add_ngrams(n=1)
+    tweets.set_wordsequences()
     tweets.filter_tweets(["rt"])
     counts.append(len(tweets.instances))
     tte_at_frame.append(int(tweets.instances[args.f].label))
