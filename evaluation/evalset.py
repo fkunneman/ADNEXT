@@ -31,7 +31,7 @@ class Evalset():
             instance.set_label(instance_line[0])
             instance.set_classification(instance_line[1])
             if score:
-                instance.set_score(instance_line[3])
+                instance.set_score(instance_line[2])
             self.instances.append(instance)
 
     def calculate_rmse(self):
@@ -71,7 +71,7 @@ class Evalset():
                     dif = abs(int(target) - int(prediction))
                     return (int(target),int(prediction),dif)
             if condition == "threshold":
-                score = int(instance.score)
+                score = float(instance.score)
                 if score > int(value):
                     dif = abs(int(target) - int(prediction))
                     return (int(target),int(prediction),dif)
