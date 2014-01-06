@@ -24,7 +24,10 @@ for line in fileread.readlines():
     tweet_datetime = timefunctions.return_datetime(tokens[args.d],time=tokens[args.t],setting="vs")
     tweetdict[tweet_datetime].append(line)
 
+outfile = codecs.open(args.o,"r","utf-8")
 for dt in sorted(tweetdict):
     print dt
-
-
+    exit()
+    for tweet in tweetdict[dt]:
+        outfile.write(tweet)
+outfile.close()
