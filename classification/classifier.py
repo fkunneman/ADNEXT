@@ -2,10 +2,8 @@
 
 from __future__ import division
 import codecs
-import os
 import multiprocessing
 from collections import defaultdict
-from collections import Counter
 
 import math
 import numpy
@@ -22,11 +20,11 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,classifier,scaling,jobs=16,directory=False):
-        self.training=trainlist
-        self.test=testlist #self.test should be a list with multiple lists for each testset
-        self.scaling=scaling
-        self.directory=directory
+    def __init__(self,trainlist,testlist,classifier,scaling = False,jobs=16,directory=False):
+        self.training = trainlist
+        self.test = testlist #self.test should be a list with multiple lists for each testset
+        self.scaling = scaling
+        self.directory = directory
         self.classifier = classifier
         self.jobs = jobs
 
@@ -140,8 +138,6 @@ class Classifier():
         #     p = multiprocessing.Process(target=sparsify,args=[chunk,q])
         #     p.start()
 
-
-
         new_instances = []
         sparsify(self.training,new_instances)
         # while True:
@@ -180,7 +176,6 @@ class Classifier():
                 matrix.append(featurev)
             return matrix
 
-        
         #generate scipy libsvm input
         print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
@@ -219,240 +214,3 @@ class Classifier():
                 classification_label = labeldict_back[classification[0]]
                 outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
             outfile.close()
-
-    def perform_lcs(self,args,prune,select,timelabels):
-        
-        def performer():
-            os.system("lcs --verbose --directory " + classification_dir)
-            os.system("mv " + classification_dir + "data " + self.directory)
-            os.system("mv " + classification_dir + "test.* " + self.directory)
-            os.system("mv " + classification_dir + "lcsg* " + self.directory)
-            os.system("mv " + classification_dir + "lcsd* " + self.directory)
-            os.system("mv " + classification_dir + "lcs.log " + self.directory)
-            os.system("mv " + classification_dir + "train " + self.directory)
-            os.system("mv " + classification_dir + "test " + self.directory)
-            os.system("mv " + classification_dir + "stoplist.txt " + self.directory)
-            os.system("mv " + classification_dir + "keeplist.txt " + self.directory)
-            os.system("mv " + classification_dir + "index " + self.directory)
-        
-        try:
-            classification_dir=args[0]
-        except IndexError:
-            print "not enough arguments for LCS, exiting program..."
-            exit()
-        
-        if prune:
-            self.prune_features(int(prune),"lcs")
-        if select:
-            self.select_features(int(select),int(prune),"lcs")
-        
-        train=codecs.open(classification_dir + "train","w","utf-8")
-        for t in self.training:
-#            print t
-            train.write(" ".join([t["features"][0],t["label"]]) + "\n")
-        train.close()
-        test=codecs.open(classification_dir + "test","w","utf-8")
-        for t in self.test:
-            test.write(" ".join([t["features"][0],t["label"]]) + "\n")
-        test.close()
-        meta = self.directory + "meta"
-        metaout = codecs.open(meta,"w","utf-8")
-        for line in self.meta:
-            metaout.write(line)
-        if prune or select:
-            stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
-            for feature in self.stoplist:
-                stoplist.write(feature + "\n")
-            stoplist.close()
-        performer()
-        
-        if timelabels:
-            self.directory=self.directory + "timelabels/"
-            os.system("mkdir " + self.directory)
-            train=codecs.open(classification_dir + "train","w","utf-8")
-            for i,t in enumerate(self.training):
-                label = t["label"]
-                if label == "before":
-                    tl=t["meta"][4]
-                    train.write(" ".join([t["features"][0],tl]) + "\n")
-            train.close()
-            test=codecs.open(classification_dir + "test","w","utf-8")
-            for i,t in enumerate(self.test):
-                tl=t["meta"][4]
-                test.write(" ".join([t["features"][0],tl]) + "\n")
-            test.close()
-            if prune or select:
-                stoplist=codecs.open(classification_dir + "stoplist.txt","w","utf-8")
-                for feature in self.stoplist:
-                    stoplist.write(feature + "\n")
-                stoplist.close()
-            performer()
-
-    def perform_knn(self,klist,prune,select,timelabels):
-        
-        # if prune:
-        #     print "pruning features..."
-        #     self.prune_features(int(prune),"knn")
-        # if select:
-        #     print "selecting features..."
-        #     self.select_features(int(select),int(prune),"knn")
-
-        #if set on, add timelabels as features to instances
-        if timelabels:
-            time_label_vocab={}
-            timelabel_list = []
-            #generate a list of all time labels
-            for instance in self.training:
-                if instance["label"] == "before":
-                    timelabel = instance["meta"][3]
-                    timelabel_list.append(timelabel)
-            time_label_set=set(timelabel_list)
-            #make a new feature_info_dict ending with the timelabels as features  
-            num_feats = len(self.feature_info.keys())
-            for i,tl in enumerate(time_label_set):
-                tl_index = str(num_feats+i)
-                self.feature_info[tl_index]=[tl,"0","0"]
-                time_label_vocab[tl]=tl_index
-            #add the timelabel to each set of features
-            for instance in self.training:
-                if instance["label"] == "before":
-                    timelabel = instance["meta"][3]
-                    instance["features"].append(time_label_vocab[timelabel])
-            for instance in self.test:
-                if instance["label"] == "before":
-                    timelabel = instance["meta"][3]
-                    instance["features"].append(time_label_vocab[timelabel])
-            #output a weightfile with feature weights
-            weight = self.directory + "weights"
-            try:
-                weightout=codecs.open(weight,"w","utf-8")
-            except IOError:
-                os.system("mkdir " + "/".join(self.directory.split("/")[:-2]))
-                os.system("mkdir " + "/".join(self.directory.split("/")[:-1]))
-                weightout=codecs.open(weight,"w","utf-8")
-
-            sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
-            for numeric_feature in sorted_features:
-                feature = str(numeric_feature)
-                weightout.write(":" + feature + " STIMBLWEIGHT=" + str(self.feature_info[feature][-1]) + "\n")
-            weightout.close()
-
-        train = self.directory + "train"
-        test = self.directory + "test"
-        meta = self.directory + "meta"
-        trainingout=open(train,"w")
-        testout=open(test,"w")
-        metaout=codecs.open(meta,"w","utf-8")
-        feature_info_out=codecs.open(self.directory + "vocabulary","w","utf-8")
-        for instance in self.training:
-            trainingout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
-        for instance in self.test:
-            testout.write(",".join(instance["features"]) + "," + instance["label"] + "\n")
-        for line in self.meta:
-            metaout.write(line)
-        sorted_features = sorted([int(feature) for feature in self.feature_info.keys()])
-        for numeric_feature in sorted_features:
-            feature = str(numeric_feature)
-            feature_info_out.write(feature + "\t" + "\t".join(self.feature_info[feature]) + "\n")
-        trainingout.close()
-        testout.close()
-        metaout.close()
-        feature_info_out.close()
-
-        print "performing knn..."
-        for k in klist:
-            print "k=",k
-            classification=self.directory + "classification" + k + " .txt"
-            if timelabels:
-                os.system("stimbl -v -n " + str(len(self.feature_info)+1) + " -f " + train + " -W " + weight + " -i -D -m 3 -d 1 -k " + k + " < " + test + " > " + classification) 
-            else:
-                os.system("stimbl -n " + str(len(self.feature_info)+1) + " -f " + train + " -i -D -m 3 -d 1 -w 2 -k " + k + " < " + test + " > " + classification) 
-
-
-    def perform_lin_reg_event(self,args):
-        
-        def return_standard_deviation(windows):
-            #print windows
-            mean = sum(windows) / len(windows)
-            try:
-                stdef = math.sqrt(sum([((window-mean) * (window-mean)) for window in windows]) / len(windows))
-            except ValueError:
-                stdef = 0
-            return stdef
-
-        def generate_hourly_sequence(instances,instance_dict):
-            last_tfz = int(instances[-1]["meta"][4])
-            instance_dict["sequence"] = []
-            ef = instance_dict["sequence"]
-            for hour in range(last_tfz+1):
-                ef.append(0)
-            est = True
-            for instance in instances:
-                tfz = int(instance["meta"][4])
-                ef[tfz] += 1
-                if est:
-                    timelabel = instance["meta"][3]
-                    if timelabel == "-":
-                        instance_dict["start_time"] = tfz+1
-                        est = False
-
-        def generate_window_output(sequence,outdict,start_time,window,slider,log,test):
-            #half = int(window/2)
-            start = 0
-            end = window 
-            hist = [sum(sequence[start:start+window]),sum(sequence[start+window:start+(window*2)])]
-            stdev_hist = return_standard_deviation(hist)
-            start = start+(window*2)
-            if test:
-                stop = len(sequence)
-            else:
-                stop = start_time
-            while start < stop:
-                hist.append(sum(sequence[start:start+window]))
-                if log == 1:
-                    outdict["stdef"].append(return_standard_deviation(hist))
-                    if hist[-1] == 0:
-                        outdict["value"].append(0)
-                    else:
-                        outdict["value"].append(math.log(hist[-1]) / math.log(2))
-                else:
-                    outdict["value"].append(return_standard_deviation(hist))
-                    outdict["stdef"].append(return_standard_deviation(hist))             
-                outdict["target"].append(int((start_time - start+window)/24))
-                start += window
-
-        #generate input
-        event_tweets = defaultdict(list)
-        event_frequency = defaultdict(lambda : {}) 
-        #generate a list of tweets for each event
-        for instance in self.training:
-            event = instance["meta"][1]
-            event_tweets[event].append(instance)
-        #generate an hourly sequence of tweet frequencies for each event
-        for event in event_tweets.keys():
-            tweets = event_tweets[event]
-            generate_hourly_sequence(tweets,event_frequency[event])
-
-        #slide through windows and generate x-y pairs
-        window = int(args[0])
-        slider = int(args[1])
-        log = int(args[2])
-        training = defaultdict(list)
-        for event in event_frequency.keys():
-            ef = event_frequency[event]["sequence"]
-            event_time = event_frequency[event]["start_time"]
-            generate_window_output(ef,training,event_time,window,slider,log,test=False)
-
-        m = polyfit(training["value"],training["target"],1)
-
-        #make estimations
-        test_dict = {}
-        generate_hourly_sequence(self.test,test_dict)
-        test = defaultdict(list)
-        generate_window_output(test_dict["sequence"],test,test_dict["start_time"],window,slider,log,test=True)
-        for i,window in enumerate(test["value"]):
-            estimation = (m[0]*window) + m[1]
-            try:
-                print test["stdef"][i]/test["stdef"][i-1],test["target"][i],round(estimation,2)
-            except IndexError:
-                print test["target"[i]],round(estimation,2)

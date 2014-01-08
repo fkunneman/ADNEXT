@@ -14,6 +14,9 @@ parser.add_argument('-i', action = 'store', required = False, help = "the input 
 parser.add_argument('--target', action = 'store', required = False, help = "if the target hashtag is different from the training hashtag, specify it here")  
 parser.add_argument('--frog', action = 'store', required = False, help = "to frog, specify the port of the Frog server")
 parser.add_argument('--classify', action = 'store', required = False, help = "to perform classification (and prepare training and test), give the directory in which classification is performed; without this parameter, only evaluation will be performed")
+parser.add_argument('--tfeatures', action = 'store_true', help = "choose to extract top_features from the training model")
+parser.add_argument('--fp_sample', action = 'store_true', help = "choose to extract a sample of false positives for annotation")
+parser.add_argument('--sample_training', action = 'store_true', help = "choose to extract a sample from the training data for annotation")
 
 args = parser.parse_args() 
 
@@ -31,18 +34,22 @@ if args.i:
     tweets = args.i
     if args.frog:
         print "frogging tweets..."
-        frogged_file = "/".join(tweets.split("/")[:-2]) + "/frogged_tweets/frogged_" + tweets.split("/")[-1]
-        #print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + frogged_file + "--text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel"
+        frogged_file = "/".join(tweets.split("/")[:-2]) + "/frogged_tweets/emotion" + tweets.split("/")[-1]
+        print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + frogged_file + "--text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel"
         os.system("python ~/ADNEXT/frog_tweets.py -i " + tweets + " -p " + args.frog + " -w " + frogged_file + " --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel")
     else:
         frogged_file = tweets
         
-    #print frogged_file
-#set tweets to lcs features
+    print frogged_file
+    #set tweets to lcs features
     #print "python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -t tweet -rb " + label + " \#" + label + " -ur -us -o lcs -w " + args.f + " " + label[:2] + " 25000 " + label_parts + " " + directory + label + "/meta.txt" + " --parralel"
     print "setting features..."
-    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -t tweet -rb " + target + " \#" + target + " -ri rt -ur -us -o lcs -w " + args.f + " " + label[:2] + " 25000 " + label_parts + " " + directory + "/meta.txt" + " --parralel")
+    outfile = args.d + "data/" + tweets.split("/")[-1]
+    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -rb " + target + " \#" + target + " -ri rt -ur -us -o " + outfile)
     
+    print "converting to lcs files"
+    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + outfile + " -d " + args.f + " -w " + args.d + " -l " + args.l)
+
 if args.classify:
     print "setting test..."
     #set test in background tweets
@@ -98,16 +105,21 @@ if args.classify:
 print "evaluating..."
 results = directory + "results_" + target + ".txt"
 fp = directory + "fp_" + target + ".txt"
-os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 250 " + args.f)
+if args.fp_sample:
+    os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 250 " + args.f)
+else:
+    os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs")
 #extract top features
-print "extracting top features..."
-top_features = directory + "top_features_" + label + ".txt"
-top_features_sorted = directory + "top_features_" + label + "_sorted.txt"
-os.system("tail -n +7 " + directory + "data/" + label + "_3.mitp > " + top_features)
-os.system("campyon -k 1,2 -T -Z 2 " + top_features + " | head -500 > " + top_features_sorted)
-#extract training sample
-print "extracting training sample..."
-sample = directory + "sample_" + label + ".txt"
-os.system("python ~/ADNEXT/convert_lines.py -i " + directory + "meta.txt -o " + sample + " -a extract --extract 250")
-os.system("campyon -k 8 -T " + sample + " > " + directory + "sample_" + label + "_text.txt")
+if args.tfeatures:
+    print "extracting top features..."
+    top_features = directory + "top_features_" + label + ".txt"
+    top_features_sorted = directory + "top_features_" + label + "_sorted.txt"
+    os.system("tail -n +7 " + directory + "data/" + label + "_3.mitp > " + top_features)
+    os.system("campyon -k 1,2 -T -Z 2 " + top_features + " | head -500 > " + top_features_sorted)
+#extract annotation sample
+if args.sample_training:
+    print "extracting annotation sample..."
+    sample = directory + "sample_" + label + ".txt"
+    os.system("python ~/ADNEXT/convert_lines.py -i " + directory + "meta.txt -o " + sample + " -a extract --extract 250")
+    os.system("campyon -k 8 -T " + sample + " > " + directory + "sample_" + label + "_text.txt")
 

@@ -18,11 +18,7 @@ parser.add_argument('-rp', action = 'store', required = False, nargs = '+', help
 parser.add_argument('-ur', action = 'store_true', default = False, help = "[OPTIONAL] choose whether url's are normalized")
 parser.add_argument('-us', action = 'store_true', default = False, help = "[OPTIONAL] choose whether usernames are normalized")
 parser.add_argument('-lo', action = 'store_true', default = False, help = "[OPTIONAL] choose whether words are standardized to lower case")
-#parser.add_argument('-a', action = 'store', required = False, help = "[OPTIONAL] in order to aggregate instances by time the size of the window (in number of tweets) here")
-# parser.add_argument('-o', action = 'store', required = True, choices = ["sparse","sparsebin","lcs","big","lda"], help = "specify the output type")
 parser.add_argument('-o', action = 'store', required = True, help = "specify the output file")
-# parser.add_argument('--prefix', action='store', required = False, help = "specify a prefix to characterize files in the directory")
-# parser.add_argument('--parralel', action = 'store_true', help = "choose if parralel processing is done while writing to files")
 parser.add_argument('--eos', action = 'store_true', help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed (the marker will be added to previous word)")
 args = parser.parse_args() 
 
@@ -50,20 +46,6 @@ if args.n:
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
 
-# if args.a:
-#     print "Aggregating instances..."
-#     tf.aggregate_instances(int(args.a))
-tf.set_meta()
-
 print "Writing classifier input..."
+tf.set_meta()
 tf.output_features(args.o)
-
-# if output_type == "lcs":    
-#     tf.features2standard(args.d,args.prefix,args.parralel)
-# elif output_type == "sparsebin":
-#     tf.features2sparsebinary(target[0],target[1],target[2])
-# elif output_type == "big":
-#     tf.features_2_bigdoc(target[0])
-# elif output_type == "lda":
-#     tf.features_2_lda(target[0])
-#tf.print_data(outfile)

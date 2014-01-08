@@ -16,7 +16,8 @@ parser = argparse.ArgumentParser(description = "Program to process a file contai
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
 parser.add_argument('-p', action = 'store', type=int, required = True, help = "specify the port of the Frog server")
 parser.add_argument('-w', action = 'store', required = True, help = "the output file")
-parser.add_argument('-d', action = 'store', default = "\t", help = "the delimiter, given that the lines contain fields (default is \'\\t\')") 
+parser.add_argument('-d', action = 'store', default = "\t", help = "the delimiter, given that the lines contain fields (default is \'\\t\')")
+parser.add_argument('-v', action = 'store_true', help = "set the print output to verbose")
 parser.add_argument('--header', action = 'store_true', default = "False", help = "choose to ignore the first line of the input-file")
 parser.add_argument('--text', action = 'store', type=int, required = False, help = "give the field on a line that contains the text (starting with 0 (the third column would be given by '2'). If the lines only contain text, give '0'.")
 parser.add_argument('--user', action = 'store', type=int, required = False, help = "if one of the fields contain a username, specify its column.")
@@ -124,7 +125,8 @@ while True:
     l = q.get()
     frogged_tweets.append(l)
     outfile.write(l)
-    print len(frogged_tweets)
+    if args.v:
+        print len(frogged_tweets)
     if len(frogged_tweets) == len(tweets):
         break
 
