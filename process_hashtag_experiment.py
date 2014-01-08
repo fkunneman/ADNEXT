@@ -14,8 +14,9 @@ parser.add_argument('-i', action = 'store', required = False, help = "the input 
 parser.add_argument('--target', action = 'store', required = False, help = "if the target hashtag is different from the training hashtag, specify it here")  
 parser.add_argument('--frog', action = 'store', required = False, help = "to frog, specify the port of the Frog server")
 parser.add_argument('--classify', action = 'store', required = False, help = "to perform classification (and prepare training and test), give the directory in which classification is performed; without this parameter, only evaluation will be performed")
+parser.add_argument('--config', action = 'store', required = False, help = "name of standard config file (needed for classification)")
 parser.add_argument('--tfeatures', action = 'store_true', help = "choose to extract top_features from the training model")
-parser.add_argument('--fp_sample', action = 'store_true', help = "choose to extract a sample of false positives for annotation")
+# parser.add_argument('--fp_sample', action = 'store_true', help = "choose to extract a sample of false positives for annotation")
 parser.add_argument('--sample_training', action = 'store_true', help = "choose to extract a sample from the training data for annotation")
 
 args = parser.parse_args() 
@@ -75,7 +76,7 @@ if args.classify:
     label_parts_file = open(label_parts)
     size = len(label_parts_file.readlines())
     label_parts_file.close()
-    extracted_lines = lineconvert.extract_sample(size)
+    extracted_lines = lineconvert.sample(size)
     for line in extracted_lines:
         bg_training_out.write(line + "\n")
     bg_training_out.close()
@@ -99,16 +100,17 @@ if args.classify:
     os.system("rm -r " + args.classify + "index/")
     #perform classification
     print "performing classification..."
-    os.system("python ~/ADNEXT/classification/classify.py -i " + training + " -v test -t " + test + " -c lcs -a " + args.classify + " " + args.f)
+    os.system("python ~/ADNEXT/classification/classify_lcs.py -p " + training + " -t " + test + " -d " + args.classify + " -c " + args.config + " -f " + args.f)
 
 #perform evaluation
 print "evaluating..."
 results = directory + "results_" + target + ".txt"
-fp = directory + "fp_" + target + ".txt"
-if args.fp_sample:
-    os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 250 " + args.f)
-else:
-    os.system("python ~/ADNEXT/evaluation/evaluate.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs")
+# if args.fp_sample:
+#     fp = directory + "fp_" + target + ".txt"
+#     os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 250 " + args.f)
+# else:
+os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -t " + test + "-c " + directory + "test.rnk" + " -w " + results)
+
 #extract top features
 if args.tfeatures:
     print "extracting top features..."

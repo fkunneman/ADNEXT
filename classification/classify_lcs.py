@@ -17,6 +17,8 @@ parser.add_argument('--learning_curve', action = 'store_true', help = "choose to
 
 args = parser.parse_args() 
 
+expdir = "/".join(args.p.split("/")[:-1]) + "/"
+
 #set config
 config_file = codecs.open(args.config,"r","utf-8")
 config = {}
@@ -43,18 +45,6 @@ if args.t:
     os.system("cp " + args.t + " " + args.d)
 
 #classify
-
-
-    def performer():
-        os.system("lcs --verbose --directory " + classification_dir)
-        os.system("mv " + classification_dir + "data " + self.directory)
-        os.system("mv " + classification_dir + "test.* " + self.directory)
-        os.system("mv " + classification_dir + "lcsg* " + self.directory)
-        os.system("mv " + classification_dir + "lcsd* " + self.directory)
-        os.system("mv " + classification_dir + "lcs.log " + self.directory)
-        os.system("mv " + classification_dir + "train " + self.directory)
-        os.system("mv " + classification_dir + "test " + self.directory)
-        os.system("mv " + classification_dir + "stoplist.txt " + self.directory)
-        os.system("mv " + classification_dir + "keeplist.txt " + self.directory)
-        os.system("mv " + classification_dir + "index " + self.directory)
-
+os.chdir(args.d)
+os.system("lcs --verbose ")
+os.system("mv * " + expdir)

@@ -32,8 +32,6 @@ depth = args.depth * -1
 #read in instances
 print "Reading in events..."
 event_instances = defaultdict(list)
-# if args.majority:
-#     train_instances = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
@@ -52,8 +50,6 @@ for ef in args.i:
         i = 0
         while i+args.window < len(tweets):
             window = tweets[i+args.window]
-            # if args.majority:
-            #     event_instances[event].extend([{"features":t["features"],"label":str(i+args.window) + " " + window["label"],"meta":window["meta"]} for t in tweets[i:i+args.window]])
             features = []
             for tweet in tweets[i:i+args.window]:
                 features.extend(tweet["features"])     
@@ -66,16 +62,12 @@ events = event_instances.keys()
 testlen = int(len(events)/10)
 #make folds
 for i in range(0,len(events),testlen):
-#,event in enumerate(events):
     try:
         train_events = events[:i] + events[i+testlen:]
         test_events = [events[j] for j in range(i,i+testlen)]
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))]
-    # if args.majority:
-    #     train = sum([train_instances[x] for x in train_events],[])
-    # else:
     train = sum([event_instances[x] for x in train_events],[])
     test = []
     for event in test_events:

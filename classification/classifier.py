@@ -31,7 +31,6 @@ class Classifier():
     def count_feature_frequency(self):
         
         def ff(instances,queue):
-            #n_instances = len(self.training)
             feature_frequency = defaultdict(int)
             for i,instance in enumerate(instances):
                 for feature in instance["features"]:
@@ -59,7 +58,8 @@ class Classifier():
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
-        sorted_feature_freq=sorted(self.feature_frequency, key=self.feature_frequency.get, reverse=True)
+        sorted_feature_freq = sorted(self.feature_frequency, key=self.feature_frequency.get, 
+            reverse=True)
         boundary=0
         feature_status = {}
         self.pruned_features = sorted_feature_freq[:n]
