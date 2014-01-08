@@ -35,8 +35,8 @@ if args.i:
     tweets = args.i
     if args.frog:
         print "frogging tweets..."
-        frogged_file = "/".join(tweets.split("/")[:-2]) + "/frogged_tweets/emotion" + tweets.split("/")[-1]
-        print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + frogged_file + "--text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel"
+        frogged_file = "/".join(tweets.split("/")[:-3]) + "/frogged_tweets/emotion/" + tweets.split("/")[-1]
+        print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + frogged_file + "--header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel"
         os.system("python ~/ADNEXT/frog_tweets.py -i " + tweets + " -p " + args.frog + " -w " + frogged_file + " --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel")
     else:
         frogged_file = tweets
@@ -51,6 +51,7 @@ if args.i:
     print "converting to lcs files"
     os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + outfile + " -d " + args.f + " -w " + args.d + " -l " + args.l)
 
+exit()
 if args.classify:
     print "setting test..."
     #set test in background tweets

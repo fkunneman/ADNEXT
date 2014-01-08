@@ -28,14 +28,13 @@ for f in args.i:
 #calculate mean and median and write to file
 print counts
 print tte_at_frame
-exit()
 
 fileout = open(args.o,"a")
 fileout.write("\nStatistics of " + args.s + "\n")
 cmean = sum(counts) / len(counts)
-cmedian = sorted(counts)[int(counts/2)]
+cmedian = sorted(counts)[int(len(counts)/2)]
 cstdev = gen_functions.return_standard_deviation(counts)
 tmean = sum(tte_at_frame) / len(tte_at_frame)
-tmedian = sorted(tte_at_frame)[int(tte_at_frame/2)]
+tmedian = sorted(tte_at_frame)[int(len(tte_at_frame)/2)]
 tstdev = gen_functions.return_standard_deviation(tte_at_frame)
-fileout.write()
+fileout.write("count statistics: mean - " + str(cmean) + " standard deviation - " + str(cstdev) + " median " + str(cmedian) + "\ntte statistics: mean - " + str(tmean) + " standard deviation " + str(tstdev) + " median " + str(tmedian) + "\n")
