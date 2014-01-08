@@ -42,7 +42,7 @@ if args.i[-3:] == "xls":
     pre_tweets = gen_functions.excel2lines(args.i,[0],args.header,date=datecolumn)[0]
 else:
     lines = infile.readlines()
-    if args.header():
+    if args.header:
         lines.pop()
     pre_tweets = [line.strip().split(args.d) for line in lines]
     infile.close()
