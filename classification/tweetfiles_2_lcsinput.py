@@ -28,7 +28,8 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
     print "starting chunk",chunkindex
     i = 0
     while i < (len(instances)):
-        filesdir = args.d + args.l + str(i)
+        subdir = str(chunkindex) + "_" + args.l + str(i) + "/"
+        filesdir = args.d + subdir
         os.system("mkdir " + filesdir)
         file_index,dirsize=0,25000
         if i+dirsize < len(instances):
@@ -43,17 +44,17 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
             while j < zeros:
                 file_name="0" + file_name
                 j += 1
-            outfile=codecs.open(filesdir + "/" + file_name,"w","utf-8")
+            outfile=codecs.open(filesdir + file_name,"w","utf-8")
             tokens = tweet.strip().split("\t")
             features = tokens[-1].split(" ")
             label = tokens[1]
             outfile.write("\n".join(features))
             outfile.close()
             #queue file name and label to the partsfile
-            instanceline = file_name + " " + label + "\n"
+            instanceline = subdir + file_name + " " + label + "\n"
             partsqueue.put(instanceline)
             #queue file name and meta to metafile
-            metaline = file_name + "\t" + "\t".join(tokens) + "\n"
+            metaline = subdir + file_name + "\t" + "\t".join(tokens) + "\n"
             metaqueue.put(metaline)
             file_index += 1
         i += dirsize
