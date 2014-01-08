@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
+import os
 import codecs
 import multiprocessing
+
+import gen_functions
 
 """
 Script to convert a file with tweetfeatures to the format needed for LCS Balanced Winnow classification.
@@ -40,7 +43,7 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
             while j < zeros:
                 file_name="0" + file_name
                 j += 1
-            outfile=codecs.open(args.d + filesdir + "/" + file_name,"w","utf-8")
+            outfile=codecs.open(filesdir + "/" + file_name,"w","utf-8")
             tokens = tweet.strip().split("\t")
             features = tokens[-1].split(" ")
             label = tokens[1]
@@ -60,7 +63,7 @@ q = multiprocessing.Queue()
 r = multiprocessing.Queue()
 tweet_chunks = gen_functions.make_chunks(instances)
 for i,c in enumerate(tweet_chunks):
-    p=multiprocessing.Process(target=filewriter,args=[c,i,q,r])
+    p=multiprocessing.Process(target=lcswriter,args=[c,i,q,r])
     p.start()
 
 qwrites=[]

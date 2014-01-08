@@ -43,7 +43,7 @@ if args.i[-3:] == "xls":
 else:
     lines = infile.readlines()
     if args.header:
-        lines.pop()
+        lines.pop(0)
     pre_tweets = [line.strip().split(args.d) for line in lines]
     infile.close()
 tweets = []

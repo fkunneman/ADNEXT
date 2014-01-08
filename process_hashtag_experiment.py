@@ -49,9 +49,8 @@ if args.i:
     os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -rb " + target + " \#" + target + " -ri rt -ur -us -o " + outfile)
     
     print "converting to lcs files"
-    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_lcsinput.py -i " + outfile + " -d " + args.f + " -w " + args.d + " -l " + args.l)
+    os.system("python ~/ADNEXT/classification/tweetfiles_2_lcsinput.py -i " + outfile + " -d " + args.f + " -w " + args.d + " -l " + args.l)
 
-exit()
 if args.classify:
     print "setting test..."
     #set test in background tweets
