@@ -11,7 +11,8 @@ import gen_functions
 class Tweetsfeatures():
     """
     Container of tweetfeatures.
-    It is instantiated with a .txt file, that contains tweets or tweettokens as a result of Frog processing. 
+    It is instantiated with a .txt file, that contains tweets or tweettokens as a 
+    result of Frog processing. 
     The file should be in the right format: 
     - One tweet per line
     - data seperated by tabs
@@ -19,9 +20,9 @@ class Tweetsfeatures():
     Instances can be outputted in different formats, like sparse.
     
     Example usage:
-        collection=tweetsfeatures.Tweetsfeatures(tweets.txt)
-        collection.set_tweets(p=1)
-        collection.add_ngrams(n=3)
+        collection = tweetsfeatures.Tweetsfeatures(tweets.txt)
+        collection.set_tweets(p = 1)
+        collection.add_ngrams(n = 3)
         collection.features2sparsebinary(out.txt)
     """
     
@@ -35,32 +36,32 @@ class Tweetsfeatures():
             - u-urls
         By default nothing is removed, specify '1' for each category to choose for removal
         """
-        self.instances=[]
+        self.instances = []
         
         lines = codecs.open(infile,"r","utf-8")
-        tweets=lines.readlines()
+        tweets = lines.readlines()
         lines.close()
    
         for line in tweets:
-            tokens=line.strip().split("\t")
-            tweet=Tweetsfeatures.Tweet(tokens)
+            tokens = line.strip().split("\t")
+            tweet = Tweetsfeatures.Tweet(tokens)
             self.instances.append(tweet)
 
     def filter_label(self,label):
         """Remove tweets with the given label."""
-        templist=[]
+        templist = []
         for t in self.instances:
-            if t.label==label:
+            if t.label == label:
                 templist.append(t)           
-        self.instances=templist
+        self.instances = templist
     
-    def set_wordsequences(self,ht=False,u=False,lower=False):
-        hashtag=re.compile(r"#")
-        url=re.compile(r"http:")
+    def set_wordsequences(self,ht = False,u = False,lower = False):
+        hashtag = re.compile(r"#")
+        url = re.compile(r"http:")
         for t in self.instances:
             if lower: 
                 t.text = t.text.lower()
-            words=t.text.split(" ") 
+            words = t.text.split(" ") 
             for word in words:
                 if (ht and hashtag.search(word)) or (u and url.search(word)):
                     continue
@@ -69,17 +70,20 @@ class Tweetsfeatures():
 
     def normalize(self,cat):
         """Normalize diverse word types like url's and usernames to one standard form"""
-        if cat=="url":
-            find=re.compile("http://")
-            replace="URL"
-        elif cat=="user":
-            find=re.compile("@")
-            replace="USER"
+        if cat == "url":
+            find = re.compile(r"http://")
+            replace = "URL"
+        elif cat == "user":
+            find = re.compile(r"@")
+            replace = "USER"
         
+        new_wordsequence
         for t in self.instances:
-            for i,w in enumerate(t.wordsequence):
+            for w in t.wordsequence:
                 if find.search(w):
-                    t.wordsequence[i]=replace
+                    new_wordsequence.append(replace)
+                else:
+                    new_wordsequence.append(w)
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
@@ -88,31 +92,33 @@ class Tweetsfeatures():
         Can only be used after 'set_tweets' or 'set_tweets_oneline'
         A choice can be made for the three units word, lemma and pos
         The size of N can be chosen for each feature (only does one N a time)
-        For several N-gram types per unit (eg. unigrams and bigrams) call this function several times.
+        For several N-gram types per unit (eg. unigrams and bigrams) call this function several 
+        times.
         
         Example usage:
-            collection=Tweetsfeatures.tweetsfeatures(infile)
-            collection.set_tweet(p=1)
-            collection.add_ngrams(word=2,lemma=3)
+            collection = Tweetsfeatures.tweetsfeatures(infile)
+            collection.set_tweet(p = 1)
+            collection.add_ngrams(word = 2,lemma = 3)
         """
         def make_ngrams(sequence,n):
-            """sub-function to generate N-grams based on a specific sequence (words,lemma's,pos's) and a given N."""
-            ngram_features=[]
-            if n==1:
+            """sub-function to generate N-grams based on a specific sequence (words,lemma's,pos's) 
+            and a given N."""
+            ngram_features = []
+            if n == 1:
                 for token in sequence:
                     ngram_features.append(token)
             else:
-                temp_lines=[]
+                temp_lines = []
                 temp_lines.extend(sequence)
                 temp_lines.append("<s>")
                 temp_lines.insert(0,"<s>")
-                if n==2:
+                if n == 2:
                     for i,token in enumerate(temp_lines[:len(temp_lines)-1]):
-                        bigram="_".join([token,temp_lines[i+1]])
+                        bigram = "_".join([token,temp_lines[i+1]])
                         ngram_features.append(bigram)
-                elif n==3:
+                elif n == 3:
                     for i,token in enumerate(temp_lines[:len(temp_lines)-2]):
-                        trigram="_".join([token, temp_lines[i+1], temp_lines[i+2]])
+                        trigram = "_".join([token, temp_lines[i+1], temp_lines[i+2]])
                         ngram_features.append(trigram)
 
             return ngram_features
@@ -126,15 +132,15 @@ class Tweetsfeatures():
         add character ngrams to the featurespace of each tweet 
         """        
         def make_char_ngrams(text,n):
-            ngrams=[]
+            ngrams = []
             for string in text:
-                index=n
+                index = n
                 while index < len(string):
                     char_ngram = string[index-n:index]
                     char_ngram = re.sub(" ","_",char_ngram)
                     if len(char_ngram) == n: 
                         ngrams.append(char_ngram)
-                    index += 1
+                    index +=  1
             return ngrams
 
         def rm_string(inputstrings,rmstrings):
@@ -157,24 +163,26 @@ class Tweetsfeatures():
                 t.features.extend(make_char_ngrams(text,int(n_val)))
   
     def filter_tweets(self,blacklist):
-        """Filter tweets from this container if they contain a marker in a given list, like an event reference or RT"""
+        """Filter tweets from this container if they contain a marker in a given list, like an 
+        event reference or RT"""
         print "removing tweets containing",blacklist
         print "freq tweets before", len(self.instances)
-        templist=[]
+        templist = []
         for t in self.instances:
-            black=False
+            black = False
             for w in t.wordsequence:
                 for b in blacklist:
                     if re.match(b,w,re.IGNORECASE):
-                        black=True
+                        black = True
             if not black:
                 templist.append(t)
 
-        self.instances=templist
+        self.instances = templist
         print "freq tweets after", len(self.instances)
 
     def filter_tweets_reflexive_hashtag(self,hashtag):
-        """filter tweets from this container if they do not contain a given hashtag at the end (may still proceed other hashtags or a url"""
+        """filter tweets from this container if they do not contain a given hashtag at the end 
+        (may still proceed other hashtags or a url)"""
         print "filtering to tweets with",hashtag,"at the end"
         print "freq tweets before", len(self.instances)
         templist = []
@@ -202,41 +210,42 @@ class Tweetsfeatures():
         
     def filter_tweets_timepoint(self,timepoint,split):
         """Filter tweets that are posted before or after a chosen timepoint"""
-        print "splitting tweets to " + split + " " + timepoint + ",tweets before:",len(self.instances)
-        filtered_tweets=[]
-        point_datetime=time_functions.return_datetime(timepoint)
+        print "splitting tweets to " + split + " " + timepoint + 
+            ",tweets before:",len(self.instances)
+        filtered_tweets = []
+        point_datetime = time_functions.return_datetime(timepoint)
         for t in self.instances:
             #Get the time of the event mentioned in the tweet 
-            tweet_datetime=time_functions.return_datetime(t.date,t.time,"vs")
+            tweet_datetime = time_functions.return_datetime(t.date,t.time,"vs")
             #Extract the time difference between the tweet and the event 
-            if tweet_datetime<point_datetime:
-                if split=="before":
+            if tweet_datetime < point_datetime:
+                if split == "before":
                     filtered_tweets.append(t)
             else:    
-                if split=="after":
+                if split == "after":
                     filtered_tweets.append(t)
                         
-        self.instances=filtered_tweets
+        self.instances = filtered_tweets
         print "tweets after",len(self.instances)
 
     def remove_blacklist(self,blacklist,eos):
         """Remove a feature if it contains a word in the blacklist."""
         for t in self.instances:
-            removed_features=[]
+            removed_features = []
             for i,feature in enumerate(t.features):
-                parts=feature.split("_")
+                parts = feature.split("_")
                 for term in blacklist:
-                    match=False
+                    match = False
                     for p in parts:
                         if re.search(term,p,re.IGNORECASE):
-                            match=True
+                            match = True
                     if match:
                         removed_features.append(i)
                         break
             if eos:
                 offset = 0
                 for index in removed_features:
-                    index -= offset
+                    index -=  offset
                     if re.search("_<s>",t.features[index]):
                         pre_last_feature = t.features[index-1]
                         parts = pre_last_feature.split("_")
@@ -248,11 +257,11 @@ class Tweetsfeatures():
                         t.features[index] = new_feature
                     else:
                         del(t.features[index])
-                        offset += 1
+                        offset +=  1
 
             else:
                 for offset,index in enumerate(removed_features):
-                    index -= offset
+                    index - =  offset
                     del(t.features[index])
 
     def aggregate_instances(self,size):
@@ -261,17 +270,17 @@ class Tweetsfeatures():
         windows = []
         features = []
         i = 0
-        while i+size < len(self.instances):
-            window = self.instances[i+size]
+        while i + size < len(self.instances):
+            window = self.instances[i + size]
             if len(features) == 0:
-                for instance in self.instances[i:i+size]:
+                for instance in self.instances[i:i + size]:
                     features.extend(instance.features)
             else:
-                features = features[len(self.instances[i-1].features):]
-                features.extend(self.instances[i+size].features)
+                features = features[len(self.instances[i - 1].features):]
+                features.extend(self.instances[i + size].features)
             window.features = features
             windows.append(window)
-            i+=1
+            i += 1
         self.instances = windows
 
     def set_meta(self):
@@ -282,10 +291,10 @@ class Tweetsfeatures():
     def output_features(self, outfile):
         if not os.path.exists("/".join(outfile.split("/")[:-1])):
             d = -4
-            while d <= -1: 
+            while d < = -1: 
                 if not os.path.exists("/".join(outfile.split("/")[:d])):
                     os.system("mkdir " + "/".join(outfile.split("/")[:d]))
-                d+=1
+                d += 1
         out = codecs.open(outfile,"w","utf-8")
         for i in self.instances:
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
@@ -303,24 +312,25 @@ class Tweetsfeatures():
     # def features_2_lda(self,outfile):
     #     out = codecs.open(outfile,"w","utf-8")
     #     for tweet in self.instances:
-    #         line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + "\t" + " ".join(tweet.wordsequence) + "\n"
+    #         line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + 
+    #   "\t" + " ".join(tweet.wordsequence) + "\n"
     #         out.write(line)
     #     out.close()
 
     class Tweet:
         """Class containing the features and characteristics of a tweet."""
         def __init__(self,tokens):
-            self.label=tokens[0]
-            self.id=str(tokens[1])
-            self.user=tokens[2]
-            self.date=str(tokens[3])
-            self.time=str(tokens[4])
-            self.text=tokens[5]
-            self.wordsequence=[]
+            self.label = tokens[0]
+            self.id = str(tokens[1])
+            self.user = tokens[2]
+            self.date = str(tokens[3])
+            self.time = str(tokens[4])
+            self.text = tokens[5]
+            self.wordsequence = []
             self.features = []
 
         def set_meta(self):
-            self.meta=[self.id,self.label,self.user,self.date,self.time]
+            self.meta = [self.id,self.label,self.user,self.date,self.time]
 
         def get_datetime(self):
             return time_functions.return_datetime(self.date,self.time,"vs")
