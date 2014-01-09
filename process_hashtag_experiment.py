@@ -96,12 +96,12 @@ if args.classify:
     label_parts_file.close()
     extracted_lines = lineconvert.sample(sample_size=size,return_sample=True)
     for line in extracted_lines:
-        bg_training_out.write(line + "\n")
+        bg_training_out.write(line)
     bg_training_out.close()
     bg_test_remains = directory + "parts_test_background_remains.txt"
     keep_out = codecs.open(bg_test_remains,"w","utf-8")
     for line in lineconvert.lines:
-        keep_out.write(line + "\n")
+        keep_out.write(line)
     keep_out.close()
     #prepare training and test
     training = directory + "parts_train.txt"
