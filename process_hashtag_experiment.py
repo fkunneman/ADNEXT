@@ -78,7 +78,7 @@ if args.classify:
     label_parts_file = open(label_parts)
     size = len(label_parts_file.readlines())
     label_parts_file.close()
-    extracted_lines = lineconvert.sample(sample_size=size)
+    extracted_lines = lineconvert.sample(sample_size=size,return_sample=True)
     for line in extracted_lines:
         bg_training_out.write(line + "\n")
     bg_training_out.close()

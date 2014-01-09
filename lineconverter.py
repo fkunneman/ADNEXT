@@ -126,7 +126,7 @@ class Lineconverter():
 
         self.lines = newlines
 
-    def sample(self,sample_size,sample_method = "random",sample_type="down"):
+    def sample(self,sample_size,sample_method = "random",sample_type="down",return_sample=False):
         num_lines = len(self.lines)
         sample = []
         if sample_method == "steps":
@@ -141,7 +141,10 @@ class Lineconverter():
                     sample.extend(range(num_lines))
                     sample_size -= num_lines
             sample.extend(sorted(random.sample(range(num_lines), sample_size)))
+            if return_sample:
+                return [self.lines[i] for i in sample]
             if sample_type=="down": 
+                print "down del"
                 for offset, index in enumerate(sample):
                     index -= offset
                     del self.lines[index]
