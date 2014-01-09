@@ -261,7 +261,7 @@ class Tweetsfeatures():
 
             else:
                 for offset,index in enumerate(removed_features):
-                    index - =  offset
+                    index -=  offset
                     del(t.features[index])
 
     def aggregate_instances(self,size):
