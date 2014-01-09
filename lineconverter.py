@@ -140,6 +140,7 @@ class Lineconverter():
                 while sample_size > num_lines:
                     sample.extend(range(num_lines))
                     sample_size -= num_lines
+            print num_lines,sample_size
             sample.extend(sorted(random.sample(range(num_lines), sample_size)))
             if sample_type=="down": 
                 for offset, index in enumerate(sample):
