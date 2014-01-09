@@ -5,12 +5,19 @@ import argparse
 import lineconverter
 import codecs
 
-parser = argparse.ArgumentParser(description = "")
-parser.add_argument('-d', action = 'store', required = True, help = "the directory of the experiment")
-parser.add_argument('-l', action = 'store', required = True, help = "the label linked to the hashtag")
-parser.add_argument('-b', action = 'store', required = True, help = "the directory for background tweets")
-parser.add_argument('-f', action = 'store', required = True, help = "the directory in which lcs files are stored")
-parser.add_argument('-i', action = 'store', required = False, help = "the input file (if starting from tweets or frogged tweets), application of \'tweets_2_features.py\' is implied")
+parser = argparse.ArgumentParser(description = "pipe-line to perform a distant supervision \
+    experiment based on tweets with a common hashtag")
+
+parser.add_argument('-d', action = 'store', required = True, 
+    help = "the directory of the experiment")
+parser.add_argument('-l', action = 'store', required = True, 
+    help = "the label linked to the hashtag")
+parser.add_argument('-b', action = 'store', required = True, 
+    help = "the directory for background tweets")
+parser.add_argument('-f', action = 'store', required = True, 
+    help = "the directory in which lcs files are stored")
+parser.add_argument('-i', action = 'store', required = False, 
+    help = "the input file (if starting from tweets or frogged tweets), application of \'tweets_2_features.py\' is implied")
 parser.add_argument('--target', action = 'store', required = False, help = "if the target hashtag is different from the training hashtag, specify it here")  
 parser.add_argument('--frog', action = 'store', required = False, help = "to frog, specify the port of the Frog server")
 parser.add_argument('--classify', action = 'store', required = False, help = "to perform classification (and prepare training and test), give the directory in which classification is performed; without this parameter, only evaluation will be performed")

@@ -5,16 +5,25 @@ import os
 import codecs
 
 """
-Script to perform lcs classification with chosen parameters. The used data should be in the right format.
+Script to perform lcs classification with chosen parameters. 
+The used data should be in the right format.
 """
-parser = argparse.ArgumentParser(description = "Script to perform lcs classification with chosen parameters. The used data should be in the right format.")
-parser.add_argument('-p', action = 'store', required = True, help = "partsfile with either all instances or training instances")
-parser.add_argument('-t', action = 'store', required = False, help = "partsfile for test data (no testfile means ten-fold cross-validation is performed)")
-parser.add_argument('-d', action = 'store', required = True, help = "the directory in which classification is performed")
-parser.add_argument('-c', action = 'store', required = True, help = "give the name of a standard config file")
-parser.add_argument('-f', action = 'store', required = True, help = "the directory with feature files")
-parser.add_argument('--config', action = 'store', required = True, help = "specify the name of the standard config file")
-parser.add_argument('--learning_curve', action = 'store_true', help = "choose to classify by learning curve")
+parser = argparse.ArgumentParser(description = "Script to perform lcs classification with chosen \
+    parameters. The used data should be in the right format.")
+parser.add_argument('-p', action = 'store', required = True, 
+    help = "partsfile with either all instances or training instances")
+parser.add_argument('-t', action = 'store', required = False, 
+    help = "partsfile for test data (no testfile means ten-fold cross-validation is performed)")
+parser.add_argument('-d', action = 'store', required = True, 
+    help = "the directory in which classification is performed")
+parser.add_argument('-c', action = 'store', required = True, 
+    help = "give the name of a standard config file")
+parser.add_argument('-f', action = 'store', required = True, 
+    help = "the directory with feature files")
+parser.add_argument('--config', action = 'store', required = True, 
+    help = "specify the name of the standard config file")
+parser.add_argument('--learning_curve', action = 'store_true', 
+    help = "choose to classify by learning curve")
 
 args = parser.parse_args() 
 

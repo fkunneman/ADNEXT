@@ -144,11 +144,9 @@ class Lineconverter():
             if return_sample:
                 sample_out = [self.lines[i] for i in sample]
             if sample_type=="down": 
-                print "down del"
                 for offset, index in enumerate(sample):
                     index -= offset
                     del self.lines[index]
-                return sample
             elif sample_type=="up":
                 for i in sample:
                     self.lines.append(self.lines[i]) 
