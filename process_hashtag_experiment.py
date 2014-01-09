@@ -17,14 +17,21 @@ parser.add_argument('-b', action = 'store', required = True,
 parser.add_argument('-f', action = 'store', required = True, 
     help = "the directory in which lcs files are stored")
 parser.add_argument('-i', action = 'store', required = False, 
-    help = "the input file (if starting from tweets or frogged tweets), application of \'tweets_2_features.py\' is implied")
-parser.add_argument('--target', action = 'store', required = False, help = "if the target hashtag is different from the training hashtag, specify it here")  
-parser.add_argument('--frog', action = 'store', required = False, help = "to frog, specify the port of the Frog server")
-parser.add_argument('--classify', action = 'store', required = False, help = "to perform classification (and prepare training and test), give the directory in which classification is performed; without this parameter, only evaluation will be performed")
-parser.add_argument('--config', action = 'store', required = False, help = "name of standard config file (needed for classification)")
-parser.add_argument('--tfeatures', action = 'store_true', help = "choose to extract top_features from the training model")
-# parser.add_argument('--fp_sample', action = 'store_true', help = "choose to extract a sample of false positives for annotation")
-parser.add_argument('--sample_training', action = 'store_true', help = "choose to extract a sample from the training data for annotation")
+    help = "the input file (if starting from tweets or frogged tweets), application of \
+    \'tweets_2_features.py\' is implied")
+parser.add_argument('--target', action = 'store', required = False, 
+    help = "if the target hashtag is different from the training hashtag, specify it here")  
+parser.add_argument('--frog', action = 'store', required = False, 
+    help = "to frog, specify the port of the Frog server")
+parser.add_argument('--classify', action = 'store', required = False, 
+    help = "to perform classification (and prepare training and test), give the directory in \
+    which classification is performed; without this parameter, only evaluation will be performed")
+parser.add_argument('--config', action = 'store', required = False, 
+    help = "name of standard config file (needed for classification)")
+parser.add_argument('--tfeatures', action = 'store_true', 
+    help = "choose to extract top_features from the training model")
+parser.add_argument('--sample_training', action = 'store_true', 
+    help = "choose to extract a sample from the training data for annotation")
 
 args = parser.parse_args() 
 
@@ -42,7 +49,8 @@ if args.i:
     tweets = args.i
     if args.frog:
         print "frogging tweets..."
-        frogged_file = "/".join(tweets.split("/")[:-3]) + "/frogged_tweets/emotion/" + tweets.split("/")[-1]
+        frogged_file = "/".join(tweets.split("/")[:-3]) + "/frogged_tweets/emotion/" 
+        frogged_file = frogged_file + tweets.split("/")[-1]
         print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + frogged_file + " --header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel"
         os.system("python ~/ADNEXT/frog_tweets.py -i " + tweets + " -p " + args.frog + " -w " + frogged_file + " --header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel")
     else:
@@ -103,10 +111,14 @@ if args.classify:
     os.system("cat " + background_label_parts + " >> " + test)
 
     #clean up some files
-    os.system("rm -r " + directory + "data/")
-    os.system("rm -r " + directory + "index/")
-    os.system("rm -r " + args.classify + "data/")
-    os.system("rm -r " + args.classify + "index/")
+    if os.path.exists(directory + "data/"):
+        os.system("rm -r " + directory + "data/")
+    if os.path.exists(directory + "index/"):
+        os.system("rm -r " + directory + "index/")
+    if os.path.exists(args.classify + "data/"):
+        os.system("rm -r " + args.classify + "data/")
+    if os.path.exists(args.classify + "index/"):
+        os.system("rm -r " + args.classify + "index/")
     #perform classification
     print "performing classification..."
     os.system("python ~/ADNEXT/classification/classify_lcs.py -p " + training + " -t " + test + " -d " + args.classify + " -c " + args.config + " -f " + args.f)
