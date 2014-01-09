@@ -72,7 +72,9 @@ if args.classify:
     print "setting train..."
     background_training = directory + "parts_training_background.txt"
     bg_training_out = open(background_training,"w")
-    lineconvert = lineconverter.Lineconverter(background_parts," ")
+    background_parts_file = open(background_parts)
+    lineconvert = lineconverter.Lineconverter(background_parts_file.readlines()," ")
+    background_parts_file.close()
     label_parts_file = open(label_parts)
     size = len(label_parts_file.readlines())
     label_parts_file.close()
