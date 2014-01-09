@@ -145,6 +145,7 @@ class Lineconverter():
                 for offset, index in enumerate(sample):
                     index -= offset
                     del self.lines[index]
+                return sample
             elif sample_type=="up":
                 for i in sample:
                     self.lines.append(self.lines[i]) 
