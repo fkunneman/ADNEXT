@@ -71,6 +71,7 @@ class Tweetsfeatures():
                     new_wordsequence.append(replace)
                 else:
                     new_wordsequence.append(w)
+            t.wordsequence = new_wordsequence
 
     def set_wordsequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
