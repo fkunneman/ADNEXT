@@ -292,7 +292,7 @@ class Tweetsfeatures():
     def output_features(self, outfile):
         if not os.path.exists("/".join(outfile.split("/")[:-1])):
             d = -4
-            while d < = -1: 
+            while d <= -1: 
                 if not os.path.exists("/".join(outfile.split("/")[:d])):
                     os.system("mkdir " + "/".join(outfile.split("/")[:d]))
                 d += 1
