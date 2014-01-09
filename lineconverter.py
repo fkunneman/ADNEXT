@@ -4,17 +4,19 @@ import re
 import datetime
 import random
 
-
-# Class to convert the lines in a file in a number of ways and/or make a filtering of these.
+""" 
+Class to convert the lines in a file in a number of ways and/or make a 
+filtering of these.
+"""
 class Lineconverter():
-
-    # Give the file with lines and the standard delimiter between fields on a line (also if there is 
-    #    only one field)
+    # Give the file with lines and the standard delimiter between fields 
+    #    on a line (also if there is only one field)
     def __init__(self,lines,delimiter = "\t"):
         self.lines = lines
         self.delimiter = delimiter
 
-    # Add the same string to the back or front of each line (argument [place] can be 'front' or 'back')
+    # Add the same string to the back or front of each line 
+    #   (argument [place] can be 'front' or 'back')
     def add_string(self,string,place):
         newlines = []
         for line in self.lines:
@@ -38,8 +40,9 @@ class Lineconverter():
 
         self.lines = newlines
 
-    # replace a specified field ([column]) in a line with a new string ([replace]) if it matches one of the 
-    #    strings in [match] (when [match] == [], any string is replaced)
+    # replace a specified field ([column]) in a line with a new string 
+    #   ([replace]) if it matches one of the strings in [match] 
+    #   (when [match] == [], any string is replaced)
     def replace_string(self,replace,c,m = []):
         newlines = []
         for line in self.lines:
@@ -74,7 +77,9 @@ class Lineconverter():
                 newlines.append(line)
         self.lines = newlines
 
-    # for lines with temporal characteristics (especially describing an event), add an amount of hours to the date and time, and either append the new date and time to the line, or replace the current ones
+    # for lines with temporal characteristics (especially describing an 
+    #    event), add an amount of hours to the date and time, and either 
+    #   append the new date and time to the line, or replace the current ones
     def add_time(self,value,datecolumn = 1,timecolumn = 2, add = "append", datetype = "eu"):
         newlines = []
         for line in self.lines:
@@ -84,15 +89,19 @@ class Lineconverter():
             dateparts = date.split("-")
             timeparts = time.split(":")
             if datetype == "eu":
-                date_time = datetime.datetime(int(dateparts[2]),int(dateparts[1]),int(dateparts[0]),int(timeparts[0]),int(timeparts[1]),0)                
+                date_time = datetime.datetime(int(dateparts[2]),int(dateparts[1]),
+                    int(dateparts[0]),int(timeparts[0]),int(timeparts[1]),0)                
                 new_date_time = date_time + datetime.timedelta(hours=value)        
             elif datetype == "vs":
-                date_time = datetime.datetime(int(dateparts[0]),int(dateparts[1]),int(dateparts[2]),int(timeparts[0]),int(timeparts[1]),0)                
+                date_time = datetime.datetime(int(dateparts[0]),int(dateparts[1]),
+                    int(dateparts[2]),int(timeparts[0]),int(timeparts[1]),0)                
                 new_date_time = date_time + datetime.timedelta(hours=2)                            
             if datetype == "eu":    
-                new_date = str(new_date_time.day) + "-" + str(new_date_time.month) + "-" + str(new_date_time.year)    
+                new_date = str(new_date_time.day) + "-" + str(new_date_time.month) + "-" + \
+                    str(new_date_time.year)    
             elif datetype == "vs":
-                new_date = str(new_date_time.year) + "-" + str(new_date_time.month) + "-" + str(new_date_time.day)    
+                new_date = str(new_date_time.year) + "-" + str(new_date_time.month) + "-" + \
+                    str(new_date_time.day)    
             new_time = str(new_date_time.hour) + ":" + str(new_date_time.minute)
         
             if add == "append":

@@ -37,7 +37,11 @@ for line in config_file.readlines():
     config_order.append(tokens[0])
 config_file.close()
 files_split = args.f.split("/")
+filewrite = "/".join(files_split[:-1]) + "./" + files_split[-1]
+print files_split,"/".join(files_split[:-1],file_write
+exit()
 config["general.files"] = "/".join(files_split[:-1]) + "./" + files_split[-1]
+
 config["general.data"] = args.d + "./data"
 config["general.index"] = args.d + "./data/index"
 #optional parametersettings

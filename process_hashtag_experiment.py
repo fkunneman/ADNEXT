@@ -64,10 +64,12 @@ if args.i:
     #set tweets to features and lcs input
     print "setting features..."
     outfile = args.d + tweets.split("/")[-1]
-    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -rb " + target + " \#" + target + " -ri rt -ur -us -o " + outfile)
+    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + \
+        " -n 1 2 3 -rb " + target + " \#" + target + " -ri rt -ur -us -o " + outfile)
     
     print "converting to lcs files"
-    os.system("python ~/ADNEXT/classification/tweetfiles_2_lcsinput.py -i " + outfile + " -d " + args.f + " -w " + args.d + " -l " + args.l)
+    os.system("python ~/ADNEXT/classification/tweetfiles_2_lcsinput.py -i " + outfile + " -d " \
+        + args.f + " -w " + args.d + " -l " + args.l)
 
 if args.classify:
     print "setting test..."
@@ -76,17 +78,13 @@ if args.classify:
     new_parts = directory + "parts_test_total.txt"
     background_parts = directory + "parts_test_background.txt"
     background_label_parts = directory + "parts_test_" + target + ".txt"
-    #print meta_grep, new_parts, background_parts, background_label_parts
-    #print "grep \#" + label + " " + background_dir + "meta.txt > " + meta_grep
-    #print "python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + label
-    #print "grep " + label + " " + new_parts + " > " + background_label_parts
-    #print "grep -v " + label + " " + new_parts + " > " + background_parts
     os.system("grep \#" + target + " " + background_dir + "meta.txt > " + meta_grep)
-    os.system("python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + "parts.txt " + meta_grep + " " + new_parts + " " + label)
+    os.system("python ~/ADNEXT/classification/synchronize_meta_parts_lcs.py " + background_dir + \
+        "parts.txt " + meta_grep + " " + new_parts + " " + label)
     os.system("grep " + label + " " + new_parts + " > " + background_label_parts)
     os.system("grep -v " + label + " " + new_parts + " > " + background_parts)
     
-    #draw train sample from background tweets
+    #sample training tweets from background tweets
     print "setting train..."
     background_training = directory + "parts_training_background.txt"
     bg_training_out = open(background_training,"w")
@@ -124,16 +122,14 @@ if args.classify:
         os.system("rm -r " + args.classify + "index/")
     #perform classification
     print "performing classification..."
-    os.system("python ~/ADNEXT/classification/classify_lcs.py -p " + training + " -t " + test + " -d " + args.classify + " -c " + args.config + " -f " + args.f)
+    os.system("python ~/ADNEXT/classification/classify_lcs.py -p " + training + " -t " + test + \
+        " -d " + args.classify + " -c " + args.config + " -f " + args.f)
 
 #perform evaluation
 print "evaluating..."
 results = directory + "results_" + target + ".txt"
-# if args.fp_sample:
-#     fp = directory + "fp_" + target + ".txt"
-#     os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -l " + directory + "test -c " + directory + "test.rnk -o " + results + " -i lcs -fp " + fp + " " + label + " 250 " + args.f)
-# else:
-os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -t " + test + "-c " + directory + "test.rnk" + " -w " + results)
+os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -t " + test + "-c " + directory + \
+    "test.rnk" + " -w " + results)
 
 #extract top features
 if args.tfeatures:
@@ -146,6 +142,7 @@ if args.tfeatures:
 if args.sample_training:
     print "extracting annotation sample..."
     sample = directory + "sample_" + label + ".txt"
-    os.system("python ~/ADNEXT/convert_lines.py -i " + directory + "meta.txt -o " + sample + " -a extract --extract 250")
+    os.system("python ~/ADNEXT/convert_lines.py -i " + directory + "meta.txt -o " + sample + \
+        " -a extract --extract 250")
     os.system("campyon -k 8 -T " + sample + " > " + directory + "sample_" + label + "_text.txt")
 
