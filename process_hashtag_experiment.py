@@ -45,7 +45,7 @@ if args.i:
     #set tweets to lcs features
     #print "python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -t tweet -rb " + label + " \#" + label + " -ur -us -o lcs -w " + args.f + " " + label[:2] + " 25000 " + label_parts + " " + directory + label + "/meta.txt" + " --parralel"
     print "setting features..."
-    outfile = args.d + "data/" + tweets.split("/")[-1]
+    outfile = args.d + tweets.split("/")[-1]
     os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -rb " + target + " \#" + target + " -ri rt -ur -us -o " + outfile)
     
     print "converting to lcs files"
