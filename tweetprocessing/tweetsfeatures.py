@@ -210,8 +210,8 @@ class Tweetsfeatures():
         
     def filter_tweets_timepoint(self,timepoint,split):
         """Filter tweets that are posted before or after a chosen timepoint"""
-        print "splitting tweets to " + split + " " + timepoint + 
-            ",tweets before:",len(self.instances)
+        print "splitting tweets to " + split + " " + timepoint 
+            + ",tweets before:",len(self.instances)
         filtered_tweets = []
         point_datetime = time_functions.return_datetime(timepoint)
         for t in self.instances:
