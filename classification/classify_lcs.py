@@ -13,6 +13,7 @@ parser.add_argument('-t', action = 'store', required = False, help = "partsfile 
 parser.add_argument('-d', action = 'store', required = True, help = "the directory in which classification is performed")
 parser.add_argument('-c', action = 'store', required = True, help = "give the name of a standard config file")
 parser.add_argument('-f', action = 'store', required = True, help = "the directory with feature files")
+parser.add_argument('--config', action = 'store', required = True, help = "specify the name of the standard config file")
 parser.add_argument('--learning_curve', action = 'store_true', help = "choose to classify by learning curve")
 
 args = parser.parse_args() 

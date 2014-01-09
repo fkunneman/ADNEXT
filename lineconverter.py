@@ -142,7 +142,7 @@ class Lineconverter():
                     sample_size -= num_lines
             sample.extend(sorted(random.sample(range(num_lines), sample_size)))
             if return_sample:
-                return [self.lines[i] for i in sample]
+                sample_out = [self.lines[i] for i in sample]
             if sample_type=="down": 
                 print "down del"
                 for offset, index in enumerate(sample):
@@ -152,3 +152,5 @@ class Lineconverter():
             elif sample_type=="up":
                 for i in sample:
                     self.lines.append(self.lines[i]) 
+            if return_sample:
+                return sample_out
