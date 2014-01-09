@@ -55,39 +55,25 @@ class Tweetsfeatures():
                 templist.append(t)           
         self.instances = templist
 
-    def normalize(self,cat):
-        """Normalize diverse word types like url's and usernames to one standard form"""
-        if cat == "url":
-            find = re.compile(r"http://")
-            replace = "URL"
-        elif cat == "user":
-            find = re.compile(r"@")
-            replace = "USER"
-        
-        new_wordsequence = []
-        for t in self.instances:
-            for w in t.wordsequence:
-                if find.search(w):
-                    new_wordsequence.append(replace)
-                else:
-                    new_wordsequence.append(w)
-            t.wordsequence = new_wordsequence
-
     def set_wordsequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
         url = re.compile(r"http://")
         user = re.compile(r"@")
+        #print "user",us,"url",ur
         for t in self.instances:
             if lower: 
                 t.text = t.text.lower()
             words = t.text.split(" ") 
             for word in words:
+         #       print word
                 if (ht and hashtag.search(word)):
                     continue
                 elif ur and url.search(word):
                     t.wordsequence.append("URL")
+          #          print "url",t.wordsequence
                 elif us and user.search(word):
                     t.wordsequence.append("USER")
+           #         print "user", t.wordsequence
                 else:
                     t.wordsequence.append(word)        
 
