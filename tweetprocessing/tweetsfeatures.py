@@ -77,7 +77,7 @@ class Tweetsfeatures():
             find = re.compile(r"@")
             replace = "USER"
         
-        new_wordsequence
+        new_wordsequence = []
         for t in self.instances:
             for w in t.wordsequence:
                 if find.search(w):
