@@ -49,16 +49,19 @@ if args.i:
     tweets = args.i
     if args.frog:
         print "frogging tweets..."
-        frogged_file = "/".join(tweets.split("/")[:-3]) + "/frogged_tweets/emotion/" 
-        frogged_file = frogged_file + tweets.split("/")[-1]
-        print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + frogged_file + " --header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel"
-        os.system("python ~/ADNEXT/frog_tweets.py -i " + tweets + " -p " + args.frog + " -w " + frogged_file + " --header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + label + " --parralel")
+        frogged_file = ("/".join(tweets.split("/")[:-3]) + "/frogged_tweets/emotion/" +b \
+            tweets.split("/")[-1])
+        print "python ~/ADNEXT/frog_tweets -i " + tweets + " -p " + args.frog + " -w " + \
+            frogged_file + " --header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + \
+                label + " --parralel"
+        os.system("python ~/ADNEXT/frog_tweets.py -i " + tweets + " -p " + args.frog + " -w " + \
+            frogged_file + " --header --text 7 --user 6 --date 2 --time 3 --id 1 --man " + \
+                label + " --parralel")
     else:
         frogged_file = tweets
         
     print frogged_file
-    #set tweets to lcs features
-    #print "python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -t tweet -rb " + label + " \#" + label + " -ur -us -o lcs -w " + args.f + " " + label[:2] + " 25000 " + label_parts + " " + directory + label + "/meta.txt" + " --parralel"
+    #set tweets to features and lcs input
     print "setting features..."
     outfile = args.d + tweets.split("/")[-1]
     os.system("python ~/ADNEXT/tweetprocessing/tweets_2_features.py -i " + frogged_file + " -n 1 2 3 -rb " + target + " \#" + target + " -ri rt -ur -us -o " + outfile)

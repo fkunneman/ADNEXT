@@ -49,8 +49,8 @@ for key in config_order:
 
 #prepare train and test
 if args.t:
-    os.system("cp " + args.p + " " + args.d)
-    os.system("cp " + args.t + " " + args.d)
+    os.system("cp " + args.p + " " + args.d + "/train")
+    os.system("cp " + args.t + " " + args.d + "/test") 
 
 #classify
 os.chdir(args.d)
