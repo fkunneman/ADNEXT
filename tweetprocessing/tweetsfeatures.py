@@ -54,19 +54,6 @@ class Tweetsfeatures():
             if t.label == label:
                 templist.append(t)           
         self.instances = templist
-    
-    def set_wordsequences(self,ht = False,u = False,lower = False):
-        hashtag = re.compile(r"#")
-        url = re.compile(r"http:")
-        for t in self.instances:
-            if lower: 
-                t.text = t.text.lower()
-            words = t.text.split(" ") 
-            for word in words:
-                if (ht and hashtag.search(word)) or (u and url.search(word)):
-                    continue
-                else:
-                    t.wordsequence.append(word)        
 
     def normalize(self,cat):
         """Normalize diverse word types like url's and usernames to one standard form"""
@@ -84,6 +71,24 @@ class Tweetsfeatures():
                     new_wordsequence.append(replace)
                 else:
                     new_wordsequence.append(w)
+
+    def set_wordsequences(self, ht = False, lower = False, us = False, ur = False):
+        hashtag = re.compile(r"#")
+        url = re.compile(r"http://")
+        user = re.compile(r"@")
+        for t in self.instances:
+            if lower: 
+                t.text = t.text.lower()
+            words = t.text.split(" ") 
+            for word in words:
+                if (ht and hashtag.search(word)):
+                    continue
+                elif ur and url.search(word):
+                    t.wordsequence.append("URL")
+                elif us and user.search(word):
+                    t.wordsequence.append("USER")
+                else:
+                    t.wordsequence.append(word)        
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):

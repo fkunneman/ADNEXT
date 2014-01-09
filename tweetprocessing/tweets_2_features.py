@@ -40,7 +40,7 @@ parser.add_argument('--eos', action = 'store_true',
 args = parser.parse_args() 
 
 tf = Tweetsfeatures(args.i)
-tf.set_wordsequences(lower=args.lo)
+tf.set_wordsequences(lower=args.lo,us=args.us,ur=args.ur)
 
 if args.ri:
     tf.filter_tweets(args.ri)
@@ -48,11 +48,6 @@ if args.re:
     tf.filter_tweets_reflexive_hashtag(args.re)
 if args.rp:
     tf.filter_tweets_timepoint(args.rp[0],args.rp[1])
-
-if args.ur:
-    tf.normalize("url")
-if args.us:
-    tf.normalize("user")
 
 print "Generating features..."    
 if args.n:
