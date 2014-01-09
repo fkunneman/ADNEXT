@@ -84,6 +84,7 @@ class Tweetsfeatures():
                     new_wordsequence.append(replace)
                 else:
                     new_wordsequence.append(w)
+            t.wordsequence = new_wordsequence
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
