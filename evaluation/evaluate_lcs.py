@@ -43,6 +43,6 @@ outfile = open(args.w,"w")
 for label in outcomes:
     columns = []
     for entry in label:
-        columns.append('{0: <15}'.format(entry)
+        columns.append('{0: <15}'.format(entry))
     outfile.write("".join(columns) + "\n")
 outfile.close()
