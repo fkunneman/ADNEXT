@@ -16,9 +16,9 @@ class Evalset():
 
     def add_instances(self,instances,score=False):
         for instance_tokens in instances:
-            instance = Evalset.Instance(instance_token[0],instance_token[1])
+            instance = Evalset.Instance(instance_tokens[0],instance_tokens[1])
             if score:
-                instance.set_score(instance_token[3])
+                instance.set_score(instance_tokens[3])
             self.instances.append(instance)
 
     def calculate_general(self):
