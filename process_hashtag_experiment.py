@@ -128,7 +128,7 @@ if args.classify:
 #perform evaluation
 print "evaluating..."
 results = directory + "results_" + target + ".txt"
-os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -t " + test + "-c " + directory + \
+os.system("python ~/ADNEXT/evaluation/evaluate_lcs.py -t " + test + " -c " + directory + \
     "test.rnk" + " -w " + results)
 
 #extract top features
