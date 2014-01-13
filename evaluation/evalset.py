@@ -23,7 +23,8 @@ class Evalset():
 
     def calculate_general(self):
         ce = evaluation.ClassEvaluation()
-        ce.append(instance.label,instance.classification) for instance in self.instances
+        for instance in self.instances:
+            ce.append(instance.label,instance.classification) 
         results = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples",
             "Classifications","Correct"]
         for label in sorted(list(set(ce.goals))):
