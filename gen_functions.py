@@ -19,10 +19,10 @@ def make_chunks(lines,nc=16):
     chunks.append(lines[i:])
     return chunks
 
-def format_list(columns,sep=15):
+def format_list(columns):
     outlist = []
     for value in columns:
-        outlist.append('{0: <' + str(sep) + '}'.format(value))
+        outlist.append('{0: <20}'.format(value))
     return outlist
 
 def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=False):
