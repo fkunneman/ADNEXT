@@ -35,7 +35,7 @@ class Evalset():
             results.append([label] + [round(x,2) for x in label_results])
         micro_results = [ce.precision(),ce.recall(),ce.fscore(),ce.tp_rate(),ce.fp_rate(),
             auc([0,ce.fp_rate(),1],[0,ce.tp_rate(),1]),len(ce.observations),len(ce.observations)]
-        results.append("micro" + [str(round(x,2)) for x in micro_results] + " ")
+        results.append(["micro"] + [str(round(x,2)) for x in micro_results] + [" "])
         return results
 
     def calculate_rmse(self):
