@@ -26,7 +26,7 @@ class Evalset():
         for instance in self.instances:
             ce.append(instance.label,instance.classification) 
         results = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples",
-            "Classifications","Correct"]
+            "Classifications","Correct"]]
         for label in sorted(list(set(ce.goals))):
             label_results = [ce.precision(cls=label),ce.recall(cls=label),ce.fscore(cls=label),
                 ce.tp_rate(cls=label),ce.fp_rate(cls=label),ce.auc(cls=label),
