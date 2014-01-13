@@ -30,7 +30,7 @@ class Evalset():
         for label in sorted(list(set(ce.goals))):
             label_results = [ce.precision(cls=label),ce.recall(cls=label),ce.fscore(cls=label),
                 ce.tp_rate(cls=label),ce.fp_rate(cls=label),ce.auc(cls=label),
-                ce.tp[label] + ce.fn[label]),(ce.tp[label] + ce.fp[label]),ce.tp[label]]
+                (ce.tp[label] + ce.fn[label]),(ce.tp[label] + ce.fp[label]),ce.tp[label]]
             results.append([label] + [round(x,2) for x in label_results])
         micro_results = [ce.precision(),ce.recall(),ce.fscore(),ce.tp_rate(),ce.fp_rate(),
             ce.auc(),len(ce.observations),len(ce.observations)]
