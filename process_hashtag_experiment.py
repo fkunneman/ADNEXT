@@ -71,6 +71,7 @@ if args.i:
     os.system("python ~/ADNEXT/classification/tweetfiles_2_lcsinput.py -i " + outfile + " -d " \
         + args.f + " -w " + args.d + " -l " + args.l)
 
+test = directory + "parts_test.txt"
 if args.classify:
     print "setting test..."
     #set test in background tweets
@@ -105,7 +106,6 @@ if args.classify:
     keep_out.close()
     #prepare training and test
     training = directory + "parts_train.txt"
-    test = directory + "parts_test.txt"
     os.system("cat " + label_parts + " > " + training)
     os.system("cat " + background_training + " >> " + training)
     os.system("cat " + bg_test_remains + " > " + test)
