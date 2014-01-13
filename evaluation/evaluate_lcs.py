@@ -2,7 +2,6 @@
 
 import argparse
 import re
-import format
 
 from evalset import Evalset
 
