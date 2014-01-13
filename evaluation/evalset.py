@@ -34,7 +34,7 @@ class Evalset():
                 (ce.tp[label] + ce.fn[label]),(ce.tp[label] + ce.fp[label]),ce.tp[label]]
             results.append([label] + [round(x,2) for x in label_results])
         micro_results = [ce.precision(),ce.recall(),ce.fscore(),ce.tp_rate(),ce.fp_rate(),
-            ce.auc(),len(ce.observations),len(ce.observations)]
+            auc([0,ce.fp_rate(),1],[0,ce.tp_rate(),1]),len(ce.observations),len(ce.observations)]
         results.append("micro" + [str(round(x,2)) for x in micro_results] + " ")
         return results
 
