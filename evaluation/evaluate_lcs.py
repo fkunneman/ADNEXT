@@ -4,6 +4,7 @@ import argparse
 import re
 
 from evalset import Evalset
+import gen_functions
 
 parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
     performance")
@@ -40,8 +41,6 @@ outcomes = evaluation.calculate_general()
 #write results
 outfile = open(args.w,"w")
 for label in outcomes:
-    columns = []
-    for entry in label:
-        columns.append('{0: <15}'.format(entry))
+    columns = gen_functions.format_list(label,20):
     outfile.write("".join(columns) + "\n")
 outfile.close()
