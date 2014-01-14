@@ -65,8 +65,9 @@ if args.t:
             extract = args.n - len(sampled)
         else:
             extract = int(round(len(htweets)/len(tweets),0))      
-        sampled.extend(random.sample(htweets, extract))
-        print extract,len(htweets),len(sampled)
+        sample = random.sample(htweets, extract)
+        print sample
+        sampled.extend(sample)
     for line in sampled:
         outfile.write(line)
 
