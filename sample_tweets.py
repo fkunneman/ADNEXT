@@ -19,6 +19,7 @@ args = parser.parse_args()
 tweets = []
 #open files
 for i in args.i:
+    print i
     if i[-2:] == "gz":
         infile = gzip.open(i,"rb")
     else:
