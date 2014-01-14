@@ -21,8 +21,10 @@ tweets = []
 for i in args.i:
     if i[-2:] == "gz":
         infile = gzip.open(i,"rb")
-        tweets.extend(infile.readlines())
-        infile.close
+    else:
+        infile = codecs.open(i,"r","utf-8")
+    tweets.extend(infile.readlines())
+    infile.close
     print len(tweets)
 
 #count tweets
