@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+from __future__ import division
 import argparse
 import gzip
 import codecs
@@ -32,10 +33,12 @@ for i in args.i:
     print i
     if i[-2:] == "gz":
         infile = gzip.open(i,"rb")
+        tweets.extend([x.decode('utf-8') for x in infile.readlines()])
+	infile.close()
     else:
         infile = codecs.open(i,"r","utf-8")
-    tweets.extend(infile.readlines())
-    infile.close
+    	tweets.extend(infile.readlines())
+    	infile.close
 
 outfile = codecs.open(args.o,"w","utf-8")
 #if smooth: 
@@ -45,23 +48,27 @@ if args.t:
     hour_tweets = defaultdict(list)
     for tweet in tweets:
         tokens = tweet.split(" ")
-        dt = time_functions.return_datetime(date = tokens[args.d],time=tokens[args.m],setting="vs")
-        hour_tweets[dt.hour].append(tweet)
+        if tokens[0] == "dutch":
+            try:
+                dt = time_functions.return_datetime(date = tokens[args.d],time=tokens[args.m],setting="vs")
+                hour_tweets[dt.hour].append(tweet)
+            except:
+                print tokens
 
     print "extracting samples and writing to file..."
     percent = args.n / len(tweets)
-    remains = len(tweets)
+    sampled = []
     for i,hour in enumerate(hour_tweets.keys()):
         print hour
         htweets = hour_tweets[hour]
         if i == 23:
-            extract = remains
+            extract = args.n - len(sampled)
         else:
-            extract = int(round(percent * len(htweets),0))
-            remains -= extract
-        sample = random.sample(htweets, extract)
-        for line in sample:
-            outfile.write(line)
+            extract = int(round(len(htweets)/len(tweets),0))      
+        sampled.extend(random.sample(htweets, extract))
+        print extract,len(htweets),len(sampled)
+    for line in sampled:
+        outfile.write(line)
 
 # else sample randomly from all
 else:
