@@ -24,6 +24,7 @@ args = parser.parse_args()
 
 tweets = []
 #open files
+print "reading in files..."
 for i in args.i:
     print i
     if i[-2:] == "gz":
@@ -37,14 +38,17 @@ outfile = codecs.open(args.o,"w","utf-8")
 #if smooth: 
 if args.t:
     #make time dict of day-hours
+    print "dividing data in hours..."
     hour_tweets = defaultdict(list)
     for tweet in tweets:
         dt = time_functions.return_datetime(time=True,setting="vs")
         hour_tweets[dt.hour].append(tweet)
 
+    print "extracting samples and writing to file..."
     percent = args.n / len(tweets)
     remains = len(tweets)
     for i,hour in enumerate(hour_tweets.keys()):
+        print hour
         htweets = hour_tweets[hour]
         if i == 23:
             extract = remains
@@ -57,6 +61,7 @@ if args.t:
 
 # else sample randomly from all
 else:
+    print "extracting sample and writing to file..."
     sample = random.sample(tweets,args.n)
     for line in sample:
         outfile.write(line)
