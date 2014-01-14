@@ -30,7 +30,6 @@ tweets = []
 #open files
 print "reading in files..."
 for i in args.i:
-    print i
     if i[-2:] == "gz":
         infile = gzip.open(i,"rb")
         tweets.extend([x.decode('utf-8') for x in infile.readlines()])
@@ -41,6 +40,7 @@ for i in args.i:
     	infile.close
 
 outfile = codecs.open(args.o,"w","utf-8")
+dutch_tweets = 0
 #if smooth: 
 if args.t:
     #make time dict of day-hours
@@ -52,6 +52,7 @@ if args.t:
             try:
                 dt = time_functions.return_datetime(date = tokens[args.d],time=tokens[args.m],setting="vs")
                 hour_tweets[dt.hour].append(tweet)
+                dutch_tweets += 1
             except:
                 print tokens
 
@@ -59,16 +60,14 @@ if args.t:
     percent = args.n / len(tweets)
     sampled = []
     for i,hour in enumerate(hour_tweets.keys()):
-        print hour
         htweets = hour_tweets[hour]
         if i == 23:
             extract = args.n - len(sampled)
         else:
-            extract = int(round(len(htweets)/len(tweets),0))      
+            percent = len(htweets)/dutch_tweets
+            extract = int(round(percent*args.n,0))
         sample = random.sample(htweets, extract)
-        print len(sample),len(sampled),sample[1]
         sampled.extend(sample)
-        print len(sampled)
     for line in sampled:
         outfile.write(line)
 
