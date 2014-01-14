@@ -17,8 +17,11 @@ parser.add_argument('-o', action = 'store', required = True,
     help = "the output file")
 parser.add_argument('-n', action = 'store', type = int, required = True, 
     help = "the number of tweets to sample")
-parser.add_argument('-t', action = 'store_true', required = True, 
-    help = "choose to smooth sample over time")
+parser.add_argument('-t', action = 'store_true', help = "choose to smooth sample over time")
+parser.add_argument('-d', action = 'store', type = int, required = False,
+    help = "the column with date information (for time smoothing)")
+parser.add_argument('-m', action = 'store', type = int, required = False,
+    help = "the column with time information (for time smoothing)")
 
 args = parser.parse_args()
 
@@ -41,7 +44,8 @@ if args.t:
     print "dividing data in hours..."
     hour_tweets = defaultdict(list)
     for tweet in tweets:
-        dt = time_functions.return_datetime(time=True,setting="vs")
+        tokens = tweet.split(" ")
+        dt = time_functions.return_datetime(date = tokens[args.d],time=tokens[args.m],setting="vs")
         hour_tweets[dt.hour].append(tweet)
 
     print "extracting samples and writing to file..."
