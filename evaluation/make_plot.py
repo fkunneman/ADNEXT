@@ -5,7 +5,7 @@ from pylab import *
 outplot = sys.argv[1]
 xlabel = sys.argv[2]
 ylabel = sys.argv[3]
-plotfiles = sys.argv[5:]
+plotfiles = sys.argv[4:]
 
 linestyles = ['-.', '-', '--', ':']
 half = len(plotfiles)/2
@@ -24,7 +24,7 @@ for i,pf in enumerate(plotfiles[:half]):
         y.append(ytoken)
     print x
     print y
-    plt.plot(x,y,linestyle=linestyles[i])
+    plt.plot(x,y,linestyle=linestyles[i],linewidth=4,)
 legend = plotfiles[half:]
 plt.legend(legend,loc = "upper right",ncol = 2)
 plt.ylabel(ylabel)
