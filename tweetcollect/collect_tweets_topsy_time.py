@@ -32,6 +32,7 @@ def collect_tweets(begin_time_unix,end_time_unix):
     while len(d["response"]["list"]) > 0:
         for entry in d["response"]["list"]:
 #            print entry["content"]
+            print entry
             datetweets.append("\t".join([str(entry["topsy_trackback_url"].split("/")[-1]),time.strftime("%D %H:%M", time.localtime(entry["date"])),entry["trackback_author_nick"],re.sub("\n"," | ",entry["content"])]))
         p += 1
         d = s(begin_time_unix,end_time_unix,p)
