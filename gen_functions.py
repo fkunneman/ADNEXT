@@ -50,9 +50,11 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
             #collect annotation values
             if annotation:
                 for value in sheet.row_values(rownum):
+                    if not type(value) == float:
+                        value = value.strip()                 
                     try:
-                        if int(value) in range(2):
-                            values.append(value)
+                        if float(value) in range(2):
+                            values.append(float(value))
                     except ValueError:
                         continue
                 if num_annotators:
