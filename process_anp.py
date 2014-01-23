@@ -9,5 +9,5 @@ for infile in infiles:
     op = codecs.open(infile,"r","utf-8")
     read = op.read()
     ps = read.split("<p>")
-    for chunk in ps:
-        print chunk.split("</p>")[0]
+    for chunk in ps[1:4]:
+        print "chunk\n",chunk.split("</p>")[0]

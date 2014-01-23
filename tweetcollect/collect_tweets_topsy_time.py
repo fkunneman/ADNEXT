@@ -19,8 +19,8 @@ except:
     languagestring=""
 
 def s(btu,etu,page):
-    print "http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23de%C4%9F" + key + "&mintime=" + btu + "&maxtime=" + etu + languagestring + "&type=tweet&perpage=100&page=" + str(page)
-    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=%23de%C4%9F" + key + "&mintime=" + btu + "&maxtime=" + etu + languagestring + "&type=tweet&perpage=100&page=" + str(page)) 
+    print "http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=" + key + "&mintime=" + btu + "&maxtime=" + etu + languagestring + "&type=tweet&perpage=100&page=" + str(page)
+    search = urllib2.urlopen("http://otter.topsy.com/searchdate.json?apikey=HXKHTJKDA7J5Z3LDSAHAAAAAAC2GJE5XVVJAAAAAAAAFQGYA&q=" + key + "&mintime=" + btu + "&maxtime=" + etu + languagestring + "&type=tweet&perpage=100&page=" + str(page)) 
     print page
     data = json.load(search)
     print data
