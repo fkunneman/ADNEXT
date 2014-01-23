@@ -2,11 +2,13 @@
 
 import sys
 import codecs
-import xml.etree.ElementTree as ET
+import re
 
 infiles = sys.argv[1:]
 
 for infile in infiles:
-    tree = ET.parse(infile)
-    root = tree.getroot()
-    print root
+    opened_file = open(infile)
+    read_file = opened_file.read()
+    opened_file.close()
+    ids = re.findall(r'id=(\d+)\"', line, re.S)
+    print ids
