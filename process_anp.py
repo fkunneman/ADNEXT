@@ -10,5 +10,5 @@ for infile in infiles:
     opened_file = open(infile)
     read_file = opened_file.read()
     opened_file.close()
-    ids = re.findall(r'id=(\d+)\"', line, re.S)
+    ids = re.findall(r'id=(\d+)\"', read_file, re.S)
     print ids
