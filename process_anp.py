@@ -6,7 +6,7 @@ import re
 import os
 
 outdir = sys.argv[1]
-infiles = sys.argv[1:]
+infiles = sys.argv[2:]
 
 for infile in infiles:
     date = infile.split("/")[-1]
