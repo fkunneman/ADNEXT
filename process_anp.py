@@ -22,4 +22,4 @@ for infile in infiles:
     opened_file.close()
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
     for id_ in ids:
-        os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + outdir_logs + " -O " + outdir_files
+        os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + outdir_logs + " -O " + outdir_files)
