@@ -11,7 +11,15 @@ infiles = sys.argv[2:]
 for infile in infiles:
     date = infile.split("/")[-1]
     dateinfo = re.search(r"(\d{4})-(\d+)-(\d+)",date)
-    print dateinfo.groups()
+    year = dateinfo.groups()[0]
+    month = dateinfo.groups()[1]
+    day = dateinfo.groups()[2]
+    if len(month) == 1:
+        month = "0" + month
+    if len(day) == 1:
+        day = "0" + day
+    date_cleaned = year + "-" + month + "-" + day
+    print date_cleaned
     quit()
 
     datedir = outdir + date + "/"
