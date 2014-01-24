@@ -4,14 +4,17 @@ import sys
 import codecs
 import re
 import os
+from datetime import date, timedelta, datetime
+import time_functions
 
 datefile = open(sys.argv[1])
-outdir = sys.argv[2]
-logs = sys.argv[3]
+indir = sys.argv[2]
+outdir = sys.argv[3]
+logs = sys.argv[4]
 
 datelines = datefile.readlines()
 current_date = time_functions.return_datetime(datelines[0].strip())
-end_date = begin_date + timedelta(days=10)
+end_date = current_date + timedelta(days=10)
 datefile.close()
 
 dates = []
@@ -44,9 +47,9 @@ for date in dates:
     date_out = outdir + date_cleaned + "/"
     date_log = logs + date_cleaned
     os.system("mkdir " + date_out)
-    opened_file = open(infile)
-    read_file = opened_file.read()
-    opened_file.close()
+    open_file = open(indir + date)
+    read_file = open_file.read()
+    open_file.close()
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
     for id_ in ids:
         os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + date_log + " -O " + date_out + id_)
