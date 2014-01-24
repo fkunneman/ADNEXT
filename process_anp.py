@@ -5,12 +5,33 @@ import codecs
 import re
 import os
 
-outdir = sys.argv[1]
-logs = sys.argv[2]
-infiles = sys.argv[3:]
+datefile = open(sys.argv[1])
+outdir = sys.argv[2]
+logs = sys.argv[3]
 
-for infile in infiles:
-    date = infile.split("/")[-1]
+datelines = datefile.readlines()
+current_date = time_functions.return_datetime(datelines[0].strip())
+end_date = begin_date + timedelta(days=10)
+datefile.close()
+
+dates = []
+while current_date <= end_date:
+    date = str(current_date.year) + "-" + str(current_date.month) + "-" + str(current_date.day)
+    dates.append(date)
+    current_date += timedelta(days=1)
+
+date_out = open(sys.argv[1],"w")
+new_date = end_date + timedelta(days=1)
+datewrites = []
+for i,st in enumerate([new_date.day,new_date.month]):
+    if len(str(st)) == 1:
+        datewrites.append("0" + str(st))
+    else:
+        datewrites.append(str(st))
+date_out.write(datewrites[0] + "-" + datewrites[1] + "-" + str(new_date.year))
+date_out.close()
+
+for date in dates:
     dateinfo = re.search(r"(\d{4})-(\d+)-(\d+)",date)
     year = dateinfo.groups()[0]
     month = dateinfo.groups()[1]
