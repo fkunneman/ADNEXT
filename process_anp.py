@@ -6,7 +6,8 @@ import re
 import os
 
 outdir = sys.argv[1]
-infiles = sys.argv[2:]
+logs = sys.argv[2]
+infiles = sys.argv[3:]
 
 for infile in infiles:
     date = infile.split("/")[-1]
@@ -19,15 +20,12 @@ for infile in infiles:
     if len(day) == 1:
         day = "0" + day
     date_cleaned = year + "-" + month + "-" + day
-    print date_cleaned
-    quit()
-
-    datedir = outdir + date + "/"
-    print datedir
-    os.system("mkdir " + outdir + date)
+    date_out = outdir + date_cleaned + "/"
+    date_log = logs + date_cleaned
+    os.system("mkdir " + date_out)
     opened_file = open(infile)
     read_file = opened_file.read()
     opened_file.close()
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
     for id_ in ids:
-        os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + outdir_logs + " -O " + outdir_files)
+        os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + logs + " -O " + date_out + id_)
