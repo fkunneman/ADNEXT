@@ -53,7 +53,7 @@ for date in dates:
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
     try:
         for id_ in ids:
-            os.system("wget -w 0.4 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + date_log + " -O " + date_out + id_)
+            os.system("wget -w 0.7 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + date_log + " -O " + date_out + id_)
     except:
         print "no response for",date
         continue
