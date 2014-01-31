@@ -55,7 +55,7 @@ for date in dates:
     print ids
     try:
         for id_ in ids:
-            os.system("wget -w 0.4 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -O " + date_out + id_)
+            os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -O " + date_out + id_)
     except:
         print "no response for",date
         continue
