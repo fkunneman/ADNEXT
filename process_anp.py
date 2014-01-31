@@ -14,7 +14,7 @@ logs = sys.argv[4]
 
 datelines = datefile.readlines()
 current_date = time_functions.return_datetime(datelines[0].strip())
-end_date = current_date + timedelta(days=5)
+end_date = current_date + timedelta(days=60)
 datefile.close()
 
 dates = []
@@ -54,7 +54,7 @@ for date in dates:
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
     try:
         for id_ in ids:
-            os.system("wget -w 0.2 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + logs + date_cleaned + " -O " + date_out + id_)
+            os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + logs + date_cleaned + " -O " + date_out + id_)
     except:
         print "no response for",date
         continue
