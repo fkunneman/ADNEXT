@@ -46,11 +46,13 @@ for date in dates:
     date_cleaned = year + "-" + month + "-" + day
     date_out = outdir + date_cleaned + "/"
     date_log = logs + date_cleaned
+    os.system("rm -r " + date_out)
     os.system("mkdir " + date_out)
     open_file = open(indir + date)
     read_file = open_file.read()
     open_file.close()
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
+    print ids
     try:
         for id_ in ids:
             os.system("wget -w 0.7 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + date_log + " -O " + date_out + id_)
