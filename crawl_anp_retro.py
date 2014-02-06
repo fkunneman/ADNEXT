@@ -11,7 +11,7 @@ outdir_files = sys.argv[3]
 
 datelines = datefile.readlines()
 begin_date = time_functions.return_datetime(datelines[0].strip())
-end_date = begin_date + timedelta(days=10)
+end_date = begin_date + timedelta(days=1461)
 datefile.close()
 
 dates = []
@@ -33,4 +33,4 @@ date_out.write(datewrites[0] + "-" + datewrites[1] + "-" + str(new_date.year))
 date_out.close()
 
 for date in dates:
-    os.system("wget -w 0.1 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
+    os.system("wget -w 0.5 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
