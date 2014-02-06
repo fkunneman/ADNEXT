@@ -11,7 +11,7 @@ outdir_files = sys.argv[3]
 
 datelines = datefile.readlines()
 begin_date = time_functions.return_datetime(datelines[0].strip())
-end_date = begin_date + timedelta(days=1461)
+end_date = begin_date + timedelta(days=230)
 datefile.close()
 
 dates = []
