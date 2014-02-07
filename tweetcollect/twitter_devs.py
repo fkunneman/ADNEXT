@@ -13,9 +13,9 @@ def extract_tweets(keyword,api,l):
     for tweet in tweets:
         user = tweet["user"]["screen_name"]
         time = tweet["created_at"]
-        text = re.sub("\n"," ",tweet["text"])
+        text = tweet["text"]
         tweet_id = tweet["id"]
-        output = [tweet_id,keyword[1:-1] + "\t" + str(tweet_id) + "\t" + user + "\t" + time + "\t" + text + "\n"]
+        output = [tweet_id,"\t".join([keyword[1:-1],str(tweet_id),user,time,text])]
         tweets_output.append(output)
 
     return tweets_output
