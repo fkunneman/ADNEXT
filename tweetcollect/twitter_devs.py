@@ -11,11 +11,12 @@ def extract_tweets(keyword,api,l):
     keyword = "\"" + keyword + "\""
     tweets = api.search(q = keyword, result_type = "mixed", lang = l)["statuses"]
     for tweet in tweets:
+        print tweet
         user = tweet["user"]["screen_name"]
         time = tweet["created_at"]
-        text = tweet["text"]
+        text = re.sub("\n","",tweet["text"])
         tweet_id = tweet["id"]
-        output = [tweet_id,"\t".join([keyword[1:-1],str(tweet_id),user,time,text])]
+        output = [tweet_id,"\t".join([keyword[1:-1],str(tweet_id),user,time,text]) + "\n"]
         tweets_output.append(output)
 
     return tweets_output
