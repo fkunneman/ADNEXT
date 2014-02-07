@@ -61,9 +61,9 @@ def collect_user_topsy(username,kw):
             except UnicodeEncodeError:
                 print "ascii..."
                 continue
-            except urllib2.HTTPError:
-                print "break..."
-                break
+        except urllib2.HTTPError:
+            print "break..."
+            break
     return tweetlist
 
 def collect_tweets_topsy(term):
