@@ -52,9 +52,9 @@ for date in dates:
     read_file = open_file.read()
     open_file.close()
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
-    try:
-        for id_ in ids:
+    for id_ in ids:
+        try:
             os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + logs + date_cleaned + " -O " + date_out + id_)
-    except:
-        print "no response for",date
-        continue
+        except:
+            print "no response for",date
+            continue
