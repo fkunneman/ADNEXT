@@ -78,10 +78,10 @@ def collect_tweets_topsy(term):
             tweet = item.content
             tweettokens = [tweetuser,str(tweetdate),tweet]
             tweetlist.append(tweettokens)
-        except UnicodeEncodeError:
-                print "ascii..."
-                continue
-    except urllib2.HTTPError:
-            print "break..."
-            break
+    #     except UnicodeEncodeError:
+    #             print "ascii..."
+    #             continue
+    # except urllib2.HTTPError:
+    #         print "break..."
+    #         break
     return tweetlist
