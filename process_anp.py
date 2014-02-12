@@ -14,7 +14,7 @@ logs = sys.argv[4]
 
 datelines = datefile.readlines()
 current_date = time_functions.return_datetime(datelines[0].strip())
-end_date = current_date + timedelta(days=60)
+end_date = current_date + timedelta(days=49)
 datefile.close()
 
 dates = []
@@ -34,7 +34,8 @@ for i,st in enumerate([new_date.day,new_date.month]):
 date_out.write(datewrites[0] + "-" + datewrites[1] + "-" + str(new_date.year))
 date_out.close()
 
-for date in dates:
+for x,date in enumerate(dates):
+#    print date,"no",x,"of",len(dates)
     dateinfo = re.search(r"(\d{4})-(\d+)-(\d+)",date)
     year = dateinfo.groups()[0]
     month = dateinfo.groups()[1]
@@ -52,9 +53,10 @@ for date in dates:
     read_file = open_file.read()
     open_file.close()
     ids = re.findall(r'id=(\d+)\"', read_file, re.S)
-    for id_ in ids:
+    for y,id_ in enumerate(ids):
+#        print id_,"no",y,"of",len(ids)
         try:
-            os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -o " + logs + date_cleaned + " -O " + date_out + id_)
+            os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -O " + date_out + id_ + " -o " + logs + date)
         except:
             print "no response for",date
             continue
