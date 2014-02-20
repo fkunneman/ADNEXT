@@ -5,7 +5,7 @@ import codecs
 import datetime
 from collections import defaultdict
 
-def return_datetime(date,time = False,minute=True,setting = "eu"):
+def return_datetime(date,time = False,minute = True,setting = "eu"):
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
         parse_date = re.compile(r"(\d{2})-(\d{2})-(\d{4})")
