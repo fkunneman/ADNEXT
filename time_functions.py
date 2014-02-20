@@ -5,7 +5,7 @@ import codecs
 import datetime
 from collections import defaultdict
 
-def return_datetime(date,time = False,setting = "eu"):
+def return_datetime(date,time = False,minute=True,setting = "eu"):
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
         parse_date = re.compile(r"(\d{2})-(\d{2})-(\d{4})")
@@ -16,7 +16,10 @@ def return_datetime(date,time = False,setting = "eu"):
     if time:
         parse_time = re.compile(r"(\d{2}):(\d{2})")
         timeparse = parse_time.search(time).groups(1)
-        datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),int(timeparse[0]),int(timeparse[1]),0)
+        if minute:
+            datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),int(timeparse[0]),int(timeparse[1]),0)
+        else:
+            datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),int(timeparse[0]),0,0)
     else:
         datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),0,0,0)
     return datetime_obj
@@ -45,7 +48,6 @@ def generate_event_time_hash(events,delimiter="\t"):
         event_date_begin = tokens[1]
         event_time_begin = tokens[2]
         event_datetime_begin = return_datetime(event_date_begin,event_time_begin)
-        
         event_date_end = tokens[3]
         event_time_end = tokens[4]
         event_datetime_end = return_datetime(event_date_end,event_time_end)
