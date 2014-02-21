@@ -18,7 +18,7 @@ parser.add_argument('-p', action = 'store', type=int, required = True, help = "s
 parser.add_argument('-w', action = 'store', required = True, help = "the output file")
 parser.add_argument('-d', action = 'store', default = "\t", help = "the delimiter, given that the lines contain fields (default is \'\\t\')")
 parser.add_argument('-v', action = 'store_true', help = "set the print output to verbose")
-parser.add_argument('--header', action = 'store_true', default = "False", help = "choose to ignore the first line of the input-file")
+parser.add_argument('--header', action = 'store_true', help = "choose to ignore the first line of the input-file")
 parser.add_argument('--text', action = 'store', type=int, required = False, help = "give the field on a line that contains the text (starting with 0 (the third column would be given by '2'). If the lines only contain text, give '0'.")
 parser.add_argument('--user', action = 'store', type=int, required = False, help = "if one of the fields contain a username, specify its column.")
 parser.add_argument('--date', action = 'store', type=int, required = False, help = "if one of the fields contain a date, specify its column.")
@@ -70,13 +70,16 @@ def frogger(t,o,i):
         if args.txtdelim:
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
             tokens = tokens[:column_sequence[-1]+1]
-        outfields = []
-        for column in column_sequence:
-            if column:
-                try:
-                    outfields.append(tokens[column])
-                except IndexError:
-                    continue
+        if args.text == 0:
+            outfields = [tokens]
+        else:
+            outfields = []
+            for column in column_sequence:
+                if column:
+                    try:
+                        outfields.append(tokens[column])
+                    except IndexError:
+                        continue
 
         try:
             text = outfields[-1]
@@ -87,8 +90,10 @@ def frogger(t,o,i):
         else:
             outstring = ""
         words = []        
-
+        
+        print text
         for output in fc.process(text):
+            print output
             if output[0] == None or (args.punct and output[3] == "LET()"):
                 continue
             else:    
@@ -97,7 +102,8 @@ def frogger(t,o,i):
                         if re.search(output[0],hashtag):
                             outstring = output[0]
                             break
-                if args.ne and output[4] != 0:
+                if args.ne and output[4] != "O":
+                    print output[4]
                     cat = re.search(r"B-([^_]+)",output[4])
                     word = "[" + cat.groups()[0] + " " + output[0] + "]"
                 else:
@@ -121,9 +127,11 @@ frogged_tweets = []
 if args.parralel:
     tweets_chunks = gen_functions.make_chunks(tweets)
 else:
-    tweets_chunks = [tweets]
-    
+    tweets_chunks = tweets
+
+print tweets_chunks    
 for i in range(len(tweets_chunks)):
+    print tweets_chunks[i]
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
 
