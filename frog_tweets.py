@@ -30,6 +30,7 @@ parser.add_argument('--parralel', action = 'store_true', default = False, help =
 parser.add_argument('--events', action = 'store', required = False, help = "if the event of a tweet should be given as a label, give a file containing the events")
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
+parser.add_argument('--ne', action = 'store_true', help = "choose to highlight named entities")
 
 args = parser.parse_args() 
 outfile = codecs.open(args.w,"w","utf-8")
@@ -64,7 +65,7 @@ if args.events:
       
 #Function to tokenize the inputfile
 def frogger(t,o,i):
-    fc = pynlpl.clients.frogclient.FrogClient('localhost',args.p)
+    fc = pynlpl.clients.frogclient.FrogClient('localhost',args.p,returnall = True)
     for tokens in t:
         if args.txtdelim:
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
@@ -87,15 +88,20 @@ def frogger(t,o,i):
             outstring = ""
         words = []        
 
-        for word,lemma,morph,pos in fc.process(text):
-            if word == None or (args.punct and pos == "LET()"):
+        for output in fc.process(text):
+            if output[0] == None or (args.punct and output[3] == "LET()"):
                 continue
             else:    
                 if args.events:
                     for hashtag in events:
-                        if re.search(word,hashtag):
-                            outstring = word
+                        if re.search(output[0],hashtag):
+                            outstring = output[0]
                             break
+                if args.ne and output[4] != 0:
+                    cat = re.search(r"B-([^_]+)",output[4])
+                    word = "[" + cat.groups()[0] + " " + output[0] + "]"
+                else:
+                    word = output[0]
                 words.append(word)    
     
         outfields[-1] = " ".join(words)
