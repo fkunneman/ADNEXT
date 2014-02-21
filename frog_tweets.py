@@ -32,6 +32,8 @@ parser.add_argument('--man', action = 'store', required = False, help = "specify
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
 parser.add_argument('--ne', action = 'store_true', help = "choose to highlight named entities")
 
+print args.i
+
 args = parser.parse_args() 
 outfile = codecs.open(args.w,"w","utf-8")
 if args.i[-2:] == "gz":
@@ -91,9 +93,7 @@ def frogger(t,o,i):
             outstring = ""
         words = []        
         
-        print text
         for output in fc.process(text):
-            print output
             if output[0] == None or (args.punct and output[3] == "LET()"):
                 continue
             else:    
@@ -103,7 +103,6 @@ def frogger(t,o,i):
                             outstring = output[0]
                             break
                 if args.ne and output[4] != "O":
-                    print output[4]
                     cat = re.search(r"B-([^_]+)",output[4])
                     word = "[" + cat.groups()[0] + " " + output[0] + "]"
                 else:
@@ -119,7 +118,8 @@ def frogger(t,o,i):
 
         outstring = outstring + "\n"
         o.put(outstring)
-    print "Chunk " + str(i) + " done."
+    if args.v:
+        print "Chunk " + str(i) + " done."
 
 print "Processing tweets."
 q = multiprocessing.Queue()
@@ -129,9 +129,7 @@ if args.parralel:
 else:
     tweets_chunks = tweets
 
-print tweets_chunks    
 for i in range(len(tweets_chunks)):
-    print tweets_chunks[i]
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
 
