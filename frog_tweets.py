@@ -32,9 +32,8 @@ parser.add_argument('--man', action = 'store', required = False, help = "specify
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
 parser.add_argument('--ne', action = 'store_true', help = "choose to highlight named entities")
 
-print args.i
-
 args = parser.parse_args() 
+print args.i
 outfile = codecs.open(args.w,"w","utf-8")
 if args.i[-2:] == "gz":
     infile = gzip.open(args.i,"rb")
