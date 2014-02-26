@@ -20,13 +20,12 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,classifier,scaling = False,jobs=16,directory=False):
+    def __init__(self,trainlist,testlist,scaling = False,jobs=16,directory=False):
         self.training = trainlist
         self.test = testlist #self.test should be a list with multiple lists for each testset
         self.scaling = scaling
-        self.directory = directory
-        self.classifier = classifier
         self.jobs = jobs
+        self.directory = directory
 
     def count_feature_frequency(self):
         
@@ -160,23 +159,22 @@ class Classifier():
                         continue
                 instance["sparse"] = sparse_features
 
-    def classify_svm(self,classweight = None):
+    def vectorize(instances):
+        zerolist = [float(0)] * len(self.feature_info.keys())
+        matrix = []
+        for instance in instances:
+            featurev = zerolist[:]
+            for feature in instance["sparse"].keys():
+                if self.scaling == "binary":
+                    featurev[feature] = float(1)
+                elif self.scaling == "log": 
+                    featurev[feature] = math.log(instance["sparse"][feature],10)
+                elif self.scaling == "tfidf":
+                    featurev[feature] = instance["sparse"][feature] * self.idf[feature]
+            matrix.append(featurev)
+        return matrix
 
-        def vectorize(instances):
-            zerolist = [float(0)] * len(self.feature_info.keys())
-            matrix = []
-            for instance in instances:
-                featurev = zerolist[:]
-                for feature in instance["sparse"].keys():
-                    if self.scaling == "binary":
-                        featurev[feature] = float(1)
-                    elif self.scaling == "log": 
-                        featurev[feature] = math.log(instance["sparse"][feature],10)
-                    elif self.scaling == "tfidf":
-                        featurev[feature] = instance["sparse"][feature] * self.idf[feature]
-                matrix.append(featurev)
-            return matrix
-
+    def classify_svm(self,t = "discrete",classweight = None):
         #generate scipy libsvm input
         print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
@@ -185,14 +183,18 @@ class Classifier():
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
-        trainingvectors = vectorize(self.training)
+        trainingvectors = self.vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
-            'estimator__kernel': ['linear','rbf'], 
-            'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048]}
-        model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
+            'estimator__kernel': ['linear','rbf','poly'], 
+            'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
+            'estimator__degree': [1,2,3,4]}
+        if t == "continuous":
+            model = OutputCodeClassifier(svm.SVR(probability=True,class_weight=classweight))
+        else:
+            model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
         paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
@@ -204,13 +206,17 @@ class Classifier():
         for parameter in parameters.keys():
             outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
+        if t == "continuous":
+            clf = svm.SVR(probability=True, C=parameters['estimator__C'],
+            kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
+            degree=parametors['estimator__degree'],class_weight=classweight)
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],
             kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-            class_weight=classweight)
+            degree=parametors['estimator__degree'],class_weight=classweight)
         multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
         multiclf.fit(training_csr,trainlabels)
         for tset in self.test:
-            testvectors = vectorize(tset["instances"])
+            testvectors = self.vectorize(tset["instances"])
             outfile = codecs.open(tset["out"],"w","utf-8")
             outfile.write(outstring)
             #predict labels and print them to the outfile

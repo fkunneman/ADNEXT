@@ -10,7 +10,7 @@ import re
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with event tweets in a sliding window fashion")
 parser.add_argument('-i', action='store', nargs='+', required=True, help="the files with tweets per event")
 parser.add_argument('-d', action='store', help="the directory in which to write classification files")
-parser.add_argument('-c', action='store', required=True, choices=["svm","lcs","knn","winnow","ibt","dist","random","majority"], help="the classifier")
+parser.add_argument('-c', action='store', required=True, choices=["svm","svr"], help="the classifier")
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
@@ -52,8 +52,16 @@ for ef in args.i:
             window = tweets[i+args.window]
             features = []
             for tweet in tweets[i:i+args.window]:
-                features.extend(tweet["features"])     
-            event_instances[event].append({"features":features,"label":window["label"],"meta":window["meta"]})
+                features.extend(tweet["features"])
+            if args.c = "svc":
+                try:
+                    lab = int(window["label"])     
+                except:
+                    if window["label"] == "during" or lab == "after":
+                        break
+            else:
+                lab = window["label"]
+            event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
             i+=args.step
 
 print "Starting classification..."
@@ -88,9 +96,9 @@ for i in range(0,len(events),testlen):
         test.append(testdict)
     #set up classifier object
     if args.jobs:
-        cl = Classifier(train,test,classifier=args.c,jobs=args.jobs,scaling=args.scaling)
+        cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
     else:
-        cl = Classifier(train,test,classifier=args.c,scaling=args.scaling)
+        cl = Classifier(train,test,scaling=args.scaling)
     if not args.cw:
         print "balancing..."
         cl.balance_data()
@@ -109,3 +117,8 @@ for i in range(0,len(events),testlen):
             cl.classify_svm(classweight="auto")
         else:
             cl.classify_svm()
+    elif args.c == "svc":
+        if args.cw:
+            cl.classify_svm(t="continuous",classweight="auto")
+        else:
+            cl.classify_svm(t="continuous")

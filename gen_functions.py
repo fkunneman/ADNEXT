@@ -63,6 +63,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
                         exit()
                 else:
                     num_annotators = len(values)
+                    print num_annotators, "annotators"
             else:
                 rowvals = sheet.row_values(rownum)
                 if date:
