@@ -88,9 +88,11 @@ for i in range(0,len(events),testlen):
         if not os.path.exists(eventdir):
             d = depth
             while d <= -1: 
+                print eventdir
                 if not os.path.exists("/".join(eventdir.split("/")[:d])):
+                    print "mkdir " + "/".join(eventdir.split("/")[:d]))
                     os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
-                d+=1
+                    d+=1
         testdict["out"] = eventout
         testdict["instances"] = event_instances[event]
         test.append(testdict)
