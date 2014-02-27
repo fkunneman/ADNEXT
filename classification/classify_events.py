@@ -53,7 +53,7 @@ for ef in args.i:
             features = []
             for tweet in tweets[i:i+args.window]:
                 features.extend(tweet["features"])
-            if args.c = "svc":
+            if args.c == "svc":
                 try:
                     lab = int(window["label"])     
                 except:
