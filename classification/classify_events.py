@@ -53,9 +53,9 @@ for ef in args.i:
             features = []
             for tweet in tweets[i:i+args.window]:
                 features.extend(tweet["features"])
-            if args.c == "svc":
+            if args.c == "svr":
                 try:
-                    lab = int(window["label"])     
+                    lab = float(window["label"])     
                 except:
                     if window["label"] == "during" or lab == "after":
                         break
