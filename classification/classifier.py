@@ -159,7 +159,7 @@ class Classifier():
                         continue
                 instance["sparse"] = sparse_features
 
-    def vectorize(instances):
+    def vectorize(self,instances):
         zerolist = [float(0)] * len(self.feature_info.keys())
         matrix = []
         for instance in instances:
@@ -210,7 +210,8 @@ class Classifier():
             clf = svm.SVR(probability=True, C=parameters['estimator__C'],
             kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
             degree=parametors['estimator__degree'],class_weight=classweight)
-        clf = svm.SVC(probability=True, C=parameters['estimator__C'],
+        else:
+            clf = svm.SVC(probability=True, C=parameters['estimator__C'],
             kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
             degree=parametors['estimator__degree'],class_weight=classweight)
         multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)

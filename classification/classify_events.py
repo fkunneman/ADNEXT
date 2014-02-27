@@ -81,21 +81,24 @@ for i in range(0,len(events),testlen):
     for event in test_events:
         print event
         testdict = {}
-        eventdir = args.d + event + "/" + args.scaling + "/"
+        eventparts = event.split("/").append(args.scaling)
+        for part in eventparts:
+            eventdir = args.d + part + "/"
+            if not os.path.exists(eventdir):
+                os.system("mkdir " + eventdir)
         print eventdir
-	continue
         if args.majority:
             eventout = eventdir + "tweet.txt"
         else:
             eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
-        if not os.path.exists(eventdir):
-            d = depth
-            while d <= -1: 
-#                print eventdir
-                if not os.path.exists("/".join(eventdir.split("/")[:d])):
-                    print "mkdir " + "/".join(eventdir.split("/")[:d])
-                    os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
-                    d+=1
+#         if not os.path.exists(eventdir):
+#             d = depth
+#             while d <= -1: 
+# #                print eventdir
+#                 if not os.path.exists("/".join(eventdir.split("/")[:d])):
+#                     print "mkdir " + "/".join(eventdir.split("/")[:d])
+#                     os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
+#                     d+=1
         testdict["out"] = eventout
         testdict["instances"] = event_instances[event]
         test.append(testdict)
