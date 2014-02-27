@@ -84,8 +84,9 @@ for i in range(0,len(events),testlen):
         eventparts = event.split("/") + [args.scaling]
 #        print eventparts
 #        quit()
+        eventdir = args.d 
         for part in eventparts:
-            eventdir = eventdir + args.d + part + "/"
+            eventdir = eventdir + part + "/"
             if not os.path.exists(eventdir):
                 os.system("mkdir " + eventdir)
         print eventdir
