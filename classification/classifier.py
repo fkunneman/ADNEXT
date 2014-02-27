@@ -192,7 +192,7 @@ class Classifier():
             'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
             'estimator__degree': [1,2,3,4]}
         if t == "continuous":
-            model = OutputCodeClassifier(svm.SVR(probability=True,class_weight=classweight))
+            model = OutputCodeClassifier(svm.SVR(probability=True))
         else:
             model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
         paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)

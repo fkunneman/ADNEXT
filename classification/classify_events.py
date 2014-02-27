@@ -81,7 +81,9 @@ for i in range(0,len(events),testlen):
     for event in test_events:
         print event
         testdict = {}
-        eventparts = event.split("/").append(args.scaling)
+        eventparts = event.split("/") + [args.scaling]
+#        print eventparts
+#        quit()
         for part in eventparts:
             eventdir = args.d + part + "/"
             if not os.path.exists(eventdir):
