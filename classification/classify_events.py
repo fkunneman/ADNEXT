@@ -79,8 +79,11 @@ for i in range(0,len(events),testlen):
     train = sum([event_instances[x] for x in train_events],[])
     test = []
     for event in test_events:
+        print event
         testdict = {}
         eventdir = args.d + event + "/" + args.scaling + "/"
+        print eventdir
+	continue
         if args.majority:
             eventout = eventdir + "tweet.txt"
         else:
@@ -88,9 +91,9 @@ for i in range(0,len(events),testlen):
         if not os.path.exists(eventdir):
             d = depth
             while d <= -1: 
-                print eventdir
+#                print eventdir
                 if not os.path.exists("/".join(eventdir.split("/")[:d])):
-                    print "mkdir " + "/".join(eventdir.split("/")[:d]))
+                    print "mkdir " + "/".join(eventdir.split("/")[:d])
                     os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
                     d+=1
         testdict["out"] = eventout
@@ -119,7 +122,8 @@ for i in range(0,len(events),testlen):
             cl.classify_svm(classweight="auto")
         else:
             cl.classify_svm()
-    elif args.c == "svc":
+    elif args.c == "svr":
+        print "svr"
         if args.cw:
             cl.classify_svm(t="continuous",classweight="auto")
         else:
