@@ -85,7 +85,7 @@ for i in range(0,len(events),testlen):
 #        print eventparts
 #        quit()
         for part in eventparts:
-            eventdir = args.d + part + "/"
+            eventdir = eventdir + args.d + part + "/"
             if not os.path.exists(eventdir):
                 os.system("mkdir " + eventdir)
         print eventdir

@@ -215,7 +215,7 @@ class Classifier():
         # else:
         clf = svm.SVC(probability=True, C=parameters['estimator__C'],
         kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-        degree=parametors['estimator__degree'],class_weight=classweight)
+        degree=parameters['estimator__degree'],class_weight=classweight)
         multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
         multiclf.fit(training_csr,trainlabels)
         # clf.fit(training_csr,trainlabels)
