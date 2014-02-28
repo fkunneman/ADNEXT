@@ -60,6 +60,7 @@ class Tweetsfeatures():
         url = re.compile(r"http://")
         user = re.compile(r"@")
         for t in self.instances:
+            ws = []
             if lower: 
                 t.text = t.text.lower()
             words = t.text.split(" ") 
@@ -67,11 +68,28 @@ class Tweetsfeatures():
                 if (ht and hashtag.search(word)):
                     continue
                 elif ur and url.search(word):
-                    t.wordsequence.append("URL")
+                    ws.append("URL")
                 elif us and user.search(word):
-                    t.wordsequence.append("USER")
+                    ws.append("USER")
                 else:
-                    t.wordsequence.append(word)        
+                    ws.append(word)   
+            t.wordsequence = [ts]     
+
+    def extract_listfeatures(self,l):
+        """
+        Extract features from a list and single them out
+        """
+        #make dictionary of list
+        for t in self.instances:
+            words = " ".join(t.wordsequence[0])
+            for it in l:
+                if re.search(it,words):
+                    t.features.append(it)
+                    print it,words.split(it)
+                    #words = " ".join(words.split(it))
+                    t.wordsequence = words.split(it)
+                    break
+
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
