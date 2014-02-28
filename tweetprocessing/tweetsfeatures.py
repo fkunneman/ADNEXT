@@ -82,7 +82,7 @@ class Tweetsfeatures():
         def extract(inst,ind):
             for t in inst:
                 print "before",t.features
-                words = " ".join(t.wordsequence[0])
+                words = " ".join(t.wordsequence)
                 for it in l:
                     if re.search(it,words):
                         t.features.append(it)
@@ -95,8 +95,10 @@ class Tweetsfeatures():
 
         chunks = gen_functions.make_chunks(self.instances)
         for i in range(len(chunks)):
-            p = multiprocessing.Process(target=extract,args=[chunks[i]],i)
+            p = multiprocessing.Process(target=extract,args=[chunks[i],i])
             p.start()
+
+        p.join()
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):

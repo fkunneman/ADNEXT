@@ -57,6 +57,7 @@ if args.e:
     extractfile = codecs.open(args.e,"r","utf-8")
     extracts = extractfile.readlines()
     tf.extract_listfeatures(extracts)
+print "door"
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
