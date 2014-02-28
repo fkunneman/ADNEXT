@@ -62,11 +62,11 @@ class Classifier():
         feature_labellist = defaultdict(list)
         for instance in self.training:
             try:
-                label = int(instance["label"])
+                label = int(instance["label"])       
+                for feature in instance["features"]:
+                    feature_labellist[feature].append(label)
             except:
-                label = -1       
-            for feature in instance["features"]:
-                feature_labellist[feature].append(label)
+                continue
         self.feature_labellist = feature_labellist
 
     def prune_features(self):
@@ -74,8 +74,11 @@ class Classifier():
             new_features = []
             #print feature_status
             for f in instance["features"]:
-                if self.feature_status[f]:
-                    new_features.append(f)
+                try:
+                    if self.feature_status[f]:
+                        new_features.append(f)
+                except
+                    continue
             instance["features"] = new_features
             # queue.put(instance)
 
@@ -83,13 +86,11 @@ class Classifier():
         self.make_feature_labellist()
         new_features = []
         for feature in self.feature_labellist.keys():
-            print feature,self.feature_labellist[feature]
             if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
                 self.feature_status[feature] = False
             else:
                 self.feature_status[feature] = True
                 new_features.append(feature)
-        quit()
         self.prune_features()
         self.features = new_features
 
