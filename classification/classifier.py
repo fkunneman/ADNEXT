@@ -76,7 +76,7 @@ class Classifier():
             instance["features"] = new_features
             # queue.put(instance)
 
-    def filter_stdef(self,threshold):
+    def filter_stdev(self,threshold):
         self.make_feature_labellist()
         for feature in self.feature_labellist.keys():
             print feature,gen_functions.return_standard_deviation(self.feature_labellist[feature])
