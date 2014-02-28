@@ -19,7 +19,8 @@ parser.add_argument('--depth', action='store', default=1, type=int, help="specif
 parser.add_argument('--scaling', action='store', default='binary', help='')
 parser.add_argument('--majority', action='store_true', help = 'specify if tweet windows are classified as sets of loose tweets')
 parser.add_argument('--jobs', action='store', type = int, required=False, help = 'specify the number of cores to use')
-parser.add_argument('--cw', action='store_true', help = 'choose to set class weights based on training frequency (instead of balancing the training data)' )
+parser.add_argument('--cw', action='store_true', help = 'choose to set class weights based on training frequency (instead of balancing the training data)')
+parser.add_argument('--balance', action='store_true', help = 'choose to balance class frequency')
 
 args=parser.parse_args() 
 
@@ -111,7 +112,7 @@ for i in range(0,len(events),testlen):
         cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
     else:
         cl = Classifier(train,test,scaling=args.scaling)
-    if not args.cw:
+    if args.balance:
         print "balancing..."
         cl.balance_data()
     print "counting..."
