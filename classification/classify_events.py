@@ -12,6 +12,7 @@ parser.add_argument('-i', action='store', nargs='+', required=True, help="the fi
 parser.add_argument('-d', action='store', help="the directory in which to write classification files")
 parser.add_argument('-c', action='store', required=True, choices=["svm","svr"], help="the classifier")
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
+parser.add_argument('--featurecol', action='store', required=False, type=int, help="the column of features")
 parser.add_argument('--stdev', action='store', required = False, type=float, help = "choose to remove features with a standard deviation above the given threshold")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
@@ -44,7 +45,11 @@ for ef in args.i:
     tweets = []
     for tweet in instances_raw:
         values = tweet.strip().split("\t")
-        tweets.append({"features":(values[-1].split(" ")),"label":values[1],"meta":values[:-1]})    
+        try:
+            features = (values[args.featurecol].split(" "))
+        except:
+            features = ()
+        tweets.append({"features":features,"label":values[1],"meta":values[:-1]})    
     #generate instance windows based on window- and stepsize
     if args.majority:
         event_instances[event] = tweets
