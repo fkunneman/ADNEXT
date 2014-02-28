@@ -81,12 +81,15 @@ class Classifier():
 
     def filter_stdev(self,threshold):
         self.make_feature_labellist()
+        new_features = []
         for feature in self.feature_labellist.keys():
             if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
                 self.feature_status[feature] = False
             else:
                 self.feature_status[feature] = True
+                new_features.append(feature)
         self.prune_features()
+        self.features = new_features
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -139,7 +142,7 @@ class Classifier():
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
         self.feature_info={}      
-        for i,feature in enumerate(self.pruned_features):
+        for i,feature in enumerate(self.features):
             self.feature_info[feature]=i+ind
         
         def sparsify(instances,writelist):
