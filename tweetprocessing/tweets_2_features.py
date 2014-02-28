@@ -55,9 +55,12 @@ print "Generating features..."
 if args.e:
     #generate list
     extractfile = codecs.open(args.e,"r","utf-8")
-    extracts = extractfile.readlines()
-    tf.extract_listfeatures(extracts)
-print "door"
+    #extracts = extractfile.readlines()
+    #print extracts
+    ep = extractfile.read().split("\n")
+    print ep
+    #tf.extract_listfeatures(extracts)
+    extractfile.close()
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))

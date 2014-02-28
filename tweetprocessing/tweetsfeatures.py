@@ -79,26 +79,33 @@ class Tweetsfeatures():
         """
         Extract features from a list and single them out
         """
-        def extract(inst,ind):
-            for t in inst:
-                print "before",t.features
-                words = " ".join(t.wordsequence)
-                for it in l:
-                    if re.search(it,words):
-                        t.features.append(it)
-                        #print it,words.split(it)
-                        #words = " ".join(words.split(it))
-                        #t.wordsequence = words.split(it)
-                        break
-                print "after",t.features
-            print "chunk",ind,"done"
+        # def extract(inst,ind):
 
-        chunks = gen_functions.make_chunks(self.instances)
-        for i in range(len(chunks)):
-            p = multiprocessing.Process(target=extract,args=[chunks[i],i])
-            p.start()
 
-        p.join()
+        #     for t in inst:
+        #         print "before",t.features
+        #         words = " ".join(t.wordsequence[0])
+        #         for it in l:
+        #             if re.search(it,words):
+        #                 t.features.append(it)
+        #                 #print it,words.split(it)
+        #                 #words = " ".join(words.split(it))
+        #                 #t.wordsequence = words.split(it)
+        #                 break
+        #         print "after",t.features
+        #     print "chunk",ind,"done"
+
+        # chunks = gen_functions.make_chunks(self.instances)
+        # for i in range(len(chunks)):
+        #     p = multiprocessing.Process(target=extract,args=[chunks[i]],i)
+        #     p.start()
+
+#        occTmx = [oT for oT in occTmx if oT not in excludeList]
+#        occTmx = sorted(occTmx, key=len, reverse=True)
+#        occTmx = [tx.replace('.','\.') for tx in occTmx] # not to match anything with . (dot)
+#        occTmx_ptrn = re.compile('\\b'+'\\b|\\b'.join(occTmx)+'\\b')
+
+#        p.join()
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
