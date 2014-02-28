@@ -63,11 +63,10 @@ class Classifier():
         for instance in self.training:
             try:
                 label = int(instance["label"])
-                print label       
-                for feature in instance["features"]:
-                    feature_labellist[feature].append(label)
             except:
-                continue
+                label = -1       
+            for feature in instance["features"]:
+                feature_labellist[feature].append(label)
         self.feature_labellist = feature_labellist
 
     def prune_features(self):
