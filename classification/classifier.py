@@ -70,7 +70,7 @@ class Classifier():
         self.feature_labellist = feature_labellist
 
     def prune_features(self):
-        for instance in instances:
+        for instance in self.training:
             new_features = []
             #print feature_status
             for f in instance["features"]:
@@ -82,8 +82,11 @@ class Classifier():
     def filter_stdev(self,threshold):
         self.make_feature_labellist()
         for feature in self.feature_labellist.keys():
-            print feature,gen_functions.return_standard_deviation(self.feature_labellist[feature])
-        quit()
+            if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
+                self.feature_status[feature] = False
+            else:
+                self.feature_status[feature] = True
+        self.prune_features()
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
@@ -110,8 +113,8 @@ class Classifier():
         #     if len(new_instances) == len(self.training):
         #         break
 
-        self.training = new_instances
-        print "after",len(self.training)
+        # self.training = new_instances
+        # print "after",len(self.training)
 
     def balance_data(self):
         label_instances = defaultdict(list)
