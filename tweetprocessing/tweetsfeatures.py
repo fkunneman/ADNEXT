@@ -100,11 +100,10 @@ class Tweetsfeatures():
         #     p = multiprocessing.Process(target=extract,args=[chunks[i]],i)
         #     p.start()
 
-#        occTmx = [oT for oT in occTmx if oT not in excludeList]
-#        occTmx = sorted(occTmx, key=len, reverse=True)
-#        occTmx = [tx.replace('.','\.') for tx in occTmx] # not to match anything with . (dot)
-#        occTmx_ptrn = re.compile('\\b'+'\\b|\\b'.join(occTmx)+'\\b')
-
+        li = sorted(l, key=len, reverse=True)
+        li = [tx.replace('.','\.') for tx in li] # not to match anything with . (dot)
+        patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
+        print patterns
 #        p.join()
 
     #Make N-grams of tweets that were set
