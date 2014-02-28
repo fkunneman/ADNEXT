@@ -104,10 +104,11 @@ class Tweetsfeatures():
         li = sorted(l, key=len, reverse=True)
         li = [tx.replace('.','\.') for tx in li] # not to match anything with . (dot)
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
-        start = timeit.default_timer()
+        # start = timeit.default_timer()
         for t in self.instances:
-            t.features.extend(re.findall(patterns," ".join(t.wordsequence)))
-        stop = timeit.default_timer()
+            print re.findall(patterns," ".join(t.wordsequence))
+            #t.features.extend(re.findall(patterns," ".join(t.wordsequence)))
+        # stop = timeit.default_timer()
         # print "lasted",stop - start 
         # print patterns
 #        p.join()
