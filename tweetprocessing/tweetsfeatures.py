@@ -108,7 +108,7 @@ class Tweetsfeatures():
         for t in self.instances:
             t.features.extend(re.findall(patterns," ".join(t.wordsequence)))
         stop = timeit.default_timer()
-        print "lasted",stop - start 
+        # print "lasted",stop - start 
         # print patterns
 #        p.join()
 
