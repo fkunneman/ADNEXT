@@ -61,9 +61,12 @@ class Classifier():
     def make_feature_labellist(self):
         feature_labellist = defaultdict(list)
         for instance in self.training:
-            label = instance["label"]
-            for feature in instance["features"]:
-                feature_labellist[feature].append(label)
+            try:
+                label = int(instance["label"])       
+                for feature in instance["features"]:
+                    feature_labellist[feature].append(label)
+            except:
+                continue
         self.feature_labellist = feature_labellist
 
     def prune_features(self):
