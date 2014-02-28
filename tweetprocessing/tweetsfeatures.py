@@ -7,6 +7,8 @@ import datetime
 from collections import defaultdict
 import time_functions
 import gen_functions
+import multiprocessing
+import gen_functions
 
 class Tweetsfeatures():
     """
@@ -60,7 +62,6 @@ class Tweetsfeatures():
         url = re.compile(r"http://")
         user = re.compile(r"@")
         for t in self.instances:
-            ws = []
             if lower: 
                 t.text = t.text.lower()
             words = t.text.split(" ") 
@@ -68,28 +69,34 @@ class Tweetsfeatures():
                 if (ht and hashtag.search(word)):
                     continue
                 elif ur and url.search(word):
-                    ws.append("URL")
+                    t.wordsequence.append("URL")
                 elif us and user.search(word):
-                    ws.append("USER")
+                    t.wordsequence.append("USER")
                 else:
-                    ws.append(word)   
-            t.wordsequence = [ws]     
+                    t.wordsequence.append(word)      
 
     def extract_listfeatures(self,l):
         """
         Extract features from a list and single them out
         """
-        #make dictionary of list
-        for t in self.instances:
-            words = " ".join(t.wordsequence[0])
-            for it in l:
-                if re.search(it,words):
-                    t.features.append(it)
-                    print it,words.split(it)
-                    #words = " ".join(words.split(it))
-                    t.wordsequence = words.split(it)
-                    break
+        def extract(inst,ind):
+            for t in inst:
+                print "before",t.features
+                words = " ".join(t.wordsequence[0])
+                for it in l:
+                    if re.search(it,words):
+                        t.features.append(it)
+                        #print it,words.split(it)
+                        #words = " ".join(words.split(it))
+                        #t.wordsequence = words.split(it)
+                        break
+                print "after",t.features
+            print "chunk",ind,"done"
 
+        chunks = gen_functions.make_chunks(self.instances)
+        for i in range(len(chunks)):
+            p = multiprocessing.Process(target=extract,args=[chunks[i]],i)
+            p.start()
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
