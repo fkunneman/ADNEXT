@@ -103,7 +103,9 @@ class Tweetsfeatures():
         li = sorted(l, key=len, reverse=True)
         li = [tx.replace('.','\.') for tx in li] # not to match anything with . (dot)
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
-        print patterns
+        for t in self.instances:
+            print t.wordsequence,re.findall(patterns," ".join(t.wordsequence))
+        # print patterns
 #        p.join()
 
     #Make N-grams of tweets that were set
