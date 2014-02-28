@@ -83,11 +83,13 @@ class Classifier():
         self.make_feature_labellist()
         new_features = []
         for feature in self.feature_labellist.keys():
+            print feature,self.feature_labellist[feature]
             if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
                 self.feature_status[feature] = False
             else:
                 self.feature_status[feature] = True
                 new_features.append(feature)
+        quit()
         self.prune_features()
         self.features = new_features
 
