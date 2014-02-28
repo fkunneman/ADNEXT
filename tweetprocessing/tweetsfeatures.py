@@ -106,8 +106,8 @@ class Tweetsfeatures():
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         # start = timeit.default_timer()
         for t in self.instances:
-            print re.findall(patterns," ".join(t.wordsequence))
-            #t.features.extend(re.findall(patterns," ".join(t.wordsequence)))
+            features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
+            t.features.extend(features)
         # stop = timeit.default_timer()
         # print "lasted",stop - start 
         # print patterns
