@@ -12,6 +12,8 @@ parser = argparse.ArgumentParser(description = "Script to generate instances wit
     features, based on a file with lines of tweets, and output these in a specified format.")
 parser.add_argument('-i', action = 'store', required = True, 
     help = "the input file")  
+parser.add_argument('-e', action = 'store', required = False, 
+    help = "choose to extract features based on the phrases in a file")
 parser.add_argument('-n', action = 'store', nargs = '+', required = False, 
     help = "to include word n-grams, specify the values of \'n\'")
 parser.add_argument('-cn', action = 'store', nargs = '+', required = False, 
@@ -49,7 +51,12 @@ if args.re:
 if args.rp:
     tf.filter_tweets_timepoint(args.rp[0],args.rp[1])
 
-print "Generating features..."    
+print "Generating features..." 
+if args.e:
+    #generate list
+    extractfile = codecs.open(args.e,"r","utf-8")
+    extracts = extractfile.readlines()
+    tf.extract_listfeatures(extracts)
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
