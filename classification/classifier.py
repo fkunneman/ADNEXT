@@ -26,6 +26,7 @@ class Classifier():
         self.scaling = scaling
         self.jobs = jobs
         self.directory = directory
+        self.feature_status = {}
 
     def count_feature_frequency(self):
         
@@ -54,42 +55,57 @@ class Classifier():
         for d in ds:
             for k in d:
                 self.feature_frequency[k] += d[k]
+        self.sorted_features = sorted(self.feature_frequency, key=self.feature_frequency.get, 
+            reverse=True)
+
+    def make_feature_labellist(self):
+        feature_labellist = defaultdict(list)
+        for instance in self.training:
+            label = instance["label"]
+            for feature in instance["features"]:
+                feature_labellist[feature].append(label)
+        self.feature_labellist = feature_labellist
+
+    def prune_features(self):
+        for instance in instances:
+            new_features = []
+            #print feature_status
+            for f in instance["features"]:
+                if self.feature_status[f]:
+                    new_features.append(f)
+            instance["features"] = new_features
+            # queue.put(instance)
+
+    def filter_stdef(self,threshold):
+        self.make_feature_labellist()
+        for feature in self.feature_labellist.keys():
+            print feature,gen_functions.return_standard_deviation(self.feature_labellist[feature])
+        quit()
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
-        sorted_feature_freq = sorted(self.feature_frequency, key=self.feature_frequency.get, 
-            reverse=True)
-        boundary=0
-        feature_status = {}
-        self.pruned_features = sorted_feature_freq[:n]
-        for f in sorted_feature_freq[:n]:
+        boundary = 0
+        for f in self.features[:n]:
             feature_status[f] = True 
-        for f in sorted_feature_freq[n:]:
+        for f in self.features[n:]:
             feature_status[f] = False
+        self.features = self.features[:n]
+        self.prune_features()
 
-        def prune_features(instances,queue):
-            for instance in instances:
-                new_features = []
-                #print feature_status
-                for f in instance["features"]:
-                    if feature_status[f]:
-                        new_features.append(f)
-                instance["features"] = new_features
-                queue.put(instance)
 
-        print "before",len(self.training)
-        q = multiprocessing.Queue()
-        chunks = gen_functions.make_chunks(self.training,self.jobs)
-        for chunk in chunks:
-            p = multiprocessing.Process(target=prune_features,args=[chunk,q])
-            p.start()
+        # print "before",len(self.training)
+        # q = multiprocessing.Queue()
+        # chunks = gen_functions.make_chunks(self.training,self.jobs)
+        # for chunk in chunks:
+        #     p = multiprocessing.Process(target=prune_features,args=[chunk,q])
+        #     p.start()
 
-        new_instances = []
-        while True:
-            ins = q.get()
-            new_instances.append(ins)
-            if len(new_instances) == len(self.training):
-                break
+        # new_instances = []
+        # while True:
+        #     ins = q.get()
+        #     new_instances.append(ins)
+        #     if len(new_instances) == len(self.training):
+        #         break
 
         self.training = new_instances
         print "after",len(self.training)

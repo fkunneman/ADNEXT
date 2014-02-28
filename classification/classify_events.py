@@ -12,6 +12,7 @@ parser.add_argument('-i', action='store', nargs='+', required=True, help="the fi
 parser.add_argument('-d', action='store', help="the directory in which to write classification files")
 parser.add_argument('-c', action='store', required=True, choices=["svm","svr"], help="the classifier")
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
+parser.add_argument('--stdev', action='store', required = False, type=float, help = "choose to remove features with a standard deviation above the given threshold")
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT] = 1)")
@@ -115,6 +116,8 @@ for i in range(0,len(events),testlen):
         cl.balance_data()
     print "counting..."
     cl.count_feature_frequency()
+    if args.stdev:
+        cl.filter_stdev(args.stdev)
     if args.f:
         print "pruning..."
         cl.prune_features_topfrequency(args.f)
