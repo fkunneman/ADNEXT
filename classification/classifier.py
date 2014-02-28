@@ -62,7 +62,8 @@ class Classifier():
         feature_labellist = defaultdict(list)
         for instance in self.training:
             try:
-                label = int(instance["label"])       
+                label = int(instance["label"])
+                print label       
                 for feature in instance["features"]:
                     feature_labellist[feature].append(label)
             except:
