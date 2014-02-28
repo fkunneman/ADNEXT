@@ -77,7 +77,7 @@ class Classifier():
                 try:
                     if self.feature_status[f]:
                         new_features.append(f)
-                except
+                except:
                     continue
             instance["features"] = new_features
             # queue.put(instance)
