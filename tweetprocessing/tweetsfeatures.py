@@ -73,7 +73,7 @@ class Tweetsfeatures():
                     ws.append("USER")
                 else:
                     ws.append(word)   
-            t.wordsequence = [ts]     
+            t.wordsequence = [ws]     
 
     def extract_listfeatures(self,l):
         """
