@@ -80,38 +80,15 @@ class Tweetsfeatures():
         """
         Extract features from a list and single them out
         """
-        # def extract(inst,ind):
-
-
-        #     for t in inst:
-        #         print "before",t.features
-        #         words = " ".join(t.wordsequence[0])
-        #         for it in l:
-        #             if re.search(it,words):
-        #                 t.features.append(it)
-        #                 #print it,words.split(it)
-        #                 #words = " ".join(words.split(it))
-        #                 #t.wordsequence = words.split(it)
-        #                 break
-        #         print "after",t.features
-        #     print "chunk",ind,"done"
-
-        # chunks = gen_functions.make_chunks(self.instances)
-        # for i in range(len(chunks)):
-        #     p = multiprocessing.Process(target=extract,args=[chunks[i]],i)
-        #     p.start()
-
         li = sorted(l, key=len, reverse=True)
         li = [tx.replace('.','\.') for tx in li] # not to match anything with . (dot)
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
-        # start = timeit.default_timer()
+        neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         for t in self.instances:
             features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
+            inverse = t.wordsequence.split(features)
+            print features,inverse
             t.features.extend(features)
-        # stop = timeit.default_timer()
-        # print "lasted",stop - start 
-        # print patterns
-#        p.join()
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
