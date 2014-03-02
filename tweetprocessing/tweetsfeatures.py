@@ -86,8 +86,6 @@ class Tweetsfeatures():
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         for t in self.instances:
             features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            inverse = t.wordsequence.split(features)
-            print features,inverse
             t.features.extend(features)
 
     #Make N-grams of tweets that were set

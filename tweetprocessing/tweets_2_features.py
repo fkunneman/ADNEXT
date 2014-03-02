@@ -58,7 +58,6 @@ if args.e:
     extracts = extractfile.read().split("\n")
     extractfile.close()
     tf.extract_listfeatures(extracts)
-    quit()
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
