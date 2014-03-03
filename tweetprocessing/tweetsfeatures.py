@@ -116,22 +116,31 @@ class Tweetsfeatures():
                 # print sh.groups()[:2]
             elif days1.search(ws):
                 sh = days1.search(ws)
+                m = True
             elif days2.search(ws):
                 sh = days2.search(ws)
+                m = True
             elif days3.search(ws):
                 sh = days3.search(ws)
+                m = True
             elif days4.search(ws):
                 sh = days4.search(ws)
+                m = True
             elif days5.search(ws):
                 sh = days5.search(ws)
+                m = True
             elif days6.search(ws):
                 sh = days6.search(ws)
+                m = True
             elif days7.search(ws):
                 sh = days7.search(ws)
+                m = True
             elif days8.search(ws):
                 sh = days8.search(ws)
+                m = True
             elif days9.search(ws):
                 sh = days9.search(ws)
+                m = True
             if m:
                 for unit in sh.groups():
                     if unit in convert_nums.keys():
