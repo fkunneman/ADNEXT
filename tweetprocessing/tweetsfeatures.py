@@ -89,7 +89,7 @@ class Tweetsfeatures():
             t.features.extend(features)
 
     def extract_timefeatures(self):
-        check = re.compile(r"(dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE))
+        check = re.compile(r"(dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         days = re.compile(r"over iets (meer|minder) dan (\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         days1 = re.compile(r"(over|nog) pakweg (\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         days2 = re.compile(r"nog slechts (een kleine )?(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
