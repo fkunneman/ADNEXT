@@ -158,7 +158,7 @@ class Tweetsfeatures():
     def extract_date(self):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
         convert_month = {"jan":1, "januari":1, "feb":2, "februari":0, "maa":3, "mrt":3, "maart":3, "apr":4, "april":4, "mei":5, "jun":6, "juni":6, "jul":7, "juli":7, "aug":8, "augustus":8, "sep":9, "september":9, "okt":10, "oktober":10, "nov":11, "november":11, "dec":12, "december":12}
-        dates = re.compile(r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (jan|januari|feb|februari|maa|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|nov|november|dec|december))",re.IGNORECASE)
+        dates = re.compile(r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (jan|januari|feb|februari|maa|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|nov|november|dec|december)",re.IGNORECASE)
         for instance in self.instances:
             ws = " ".join(instance.wordsequence)
             if dates.search(ws):
