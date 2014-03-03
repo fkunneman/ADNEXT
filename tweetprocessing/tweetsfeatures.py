@@ -143,12 +143,13 @@ class Tweetsfeatures():
                 m = True
             if m:
                 for unit in sh.groups():
-                    if unit in convert_nums.keys():
-                        num = convert_nums[unit]
-                    elif re.match(r"\d+",unit):
-                        num = int(unit)
-                    elif unit in convert_tu.keys():
-                        tu = convert_tu[unit]
+                    if unit != None:
+                        if unit in convert_nums.keys():
+                            num = convert_nums[unit]
+                        elif re.match(r"\d+",unit):
+                            num = int(unit)
+                        elif unit in convert_tu.keys():
+                            tu = convert_tu[unit]
                 feature = num * tu
                 print sh.groups(),feature  
         quit()
