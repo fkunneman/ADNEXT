@@ -96,12 +96,13 @@ class Classifier():
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
-        boundary = 0
+        print n,"len",len(self.features)
         for f in self.features[:n]:
             self.feature_status[f] = True 
         for f in self.features[n:]:
             self.feature_status[f] = False
         self.features = self.features[:n]
+        print "len2",len(self.features)
         self.prune_features()
 
 
@@ -146,6 +147,7 @@ class Classifier():
         feature_frequency=defaultdict(int)
         self.feature_info={}      
         for i,feature in enumerate(self.features):
+            print feature,i+ind
             self.feature_info[feature]=i+ind
         
         def sparsify(instances,writelist):
