@@ -55,7 +55,7 @@ class Classifier():
         for d in ds:
             for k in d:
                 self.feature_frequency[k] += d[k]
-        self.sorted_features = sorted(self.feature_frequency, key=self.feature_frequency.get, 
+        self.features = sorted(self.feature_frequency, key=self.feature_frequency.get, 
             reverse=True)
 
     def make_feature_labellist(self):
