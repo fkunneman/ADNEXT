@@ -89,16 +89,44 @@ class Tweetsfeatures():
             t.features.extend(features)
 
     def extract_timefeatures(self):
-        days = re.compile(r"(met ?(over|nog( slechts)?)( maar| een kleine| pakweg| iets (meer|minder) dan)? )(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)?",re.IGNORECASE)
-        days2 = re.compile(r"(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)",re.IGNORECASE)
+        days = re.compile(r"over iets (meer|minder) dan (\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
+        days1 = re.compile(r"(over|nog) pakweg (\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
+        days2 = re.compile(r"nog slechts (een kleine )?(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
+        days3 = re.compile(r"(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes) tot",re.IGNORECASE)
+        days4 = re.compile(r"met nog een kleine (week|maand)",re.IGNORECASE)
+        days5 = re.compile(r"(met )?nog (een kleine )?(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
+        days6 = re.compile(r"nog (maar )?(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
+        days7 = re.compile(r"(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)",re.IGNORECASE)
+        days8 = re.compile(r"over (\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         dates = re.compile(r"([1-31] (jan|januari|feb|februari|maa|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|nov|november|dec|december))",re.IGNORECASE)
         for instance in self.instances:
             ws = " ".join(instance.wordsequence)
             if days.search(ws):
                 sh = days.search(ws)
                 print ws,sh.groups()
+            if days1.search(ws):
+                sh = days1.search(ws)
+                print ws,sh.groups()
             if days2.search(ws):
                 sh = days2.search(ws)
+                print ws,sh.groups()
+            if days3.search(ws):
+                sh = days3.search(ws)
+                print ws,sh.groups()
+            if days4.search(ws):
+                sh = days4.search(ws)
+                print ws,sh.groups()
+            if days5.search(ws):
+                sh = days5.search(ws)
+                print ws,sh.groups()
+            if days6.search(ws):
+                sh = days6.search(ws)
+                print ws,sh.groups()
+            if days7.search(ws):
+                sh = days7.search(ws)
+                print ws,sh.groups()
+            if days8.search(ws):
+                sh = days8.search(ws)
                 print ws,sh.groups()
         quit()
 
