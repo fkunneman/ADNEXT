@@ -97,7 +97,7 @@ class Tweetsfeatures():
             if days.search(ws):
                 sh = days.search(ws)
                 print ws,sh.groups()
-            elif days2.search(ws):
+            if days2.search(ws):
                 sh = days2.search(ws)
                 print ws,sh.groups()
         quit()
