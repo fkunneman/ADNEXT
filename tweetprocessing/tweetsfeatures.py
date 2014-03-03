@@ -108,34 +108,34 @@ class Tweetsfeatures():
             #     print "check",ws,sh.groups()
             if days.search(ws):
                 sh = days.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days1.search(ws):
                 sh = days1.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days2.search(ws):
                 sh = days2.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days3.search(ws):
                 sh = days3.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days4.search(ws):
                 sh = days4.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days5.search(ws):
                 sh = days5.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days6.search(ws):
                 sh = days6.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days7.search(ws):
                 sh = days7.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days8.search(ws):
                 sh = days8.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
             elif days9.search(ws):
                 sh = days9.search(ws)
-                print sh.groups()[-2:]
+                print sh.groups()[:2]
         quit()
 
 
