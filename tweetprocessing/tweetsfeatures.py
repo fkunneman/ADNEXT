@@ -89,14 +89,17 @@ class Tweetsfeatures():
             t.features.extend(features)
 
     def extract_timefeatures(self):
-        days = re.compile(r"(met ?(over|nog( slechts)?)( maar| een kleine| pakweg| iets (meer|minder) dan)? )?(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)?",re.IGNORECASE)
+        days = re.compile(r"(met ?(over|nog( slechts)?)( maar| een kleine| pakweg| iets (meer|minder) dan)? )(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)?",re.IGNORECASE)
+        days2 = re.compile(r"(\d+) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)",re.IGNORECASE))
         dates = re.compile(r"([1-31] (jan|januari|feb|februari|maa|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|nov|november|dec|december))",re.IGNORECASE)
         for instance in self.instances:
             ws = " ".join(instance.wordsequence)
-            print ws
             if days.search(ws):
                 sh = days.search(ws)
-                print sh.groups()
+                print ws,sh.groups()
+            elif days2.search(ws):
+                sh = days2.search(ws)
+                print ws,sh.groups()
         quit()
 
 
