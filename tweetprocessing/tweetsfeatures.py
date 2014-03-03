@@ -97,7 +97,7 @@ class Tweetsfeatures():
         days4 = re.compile(r"met nog een kleine (week|maand)",re.IGNORECASE)
         days5 = re.compile(r"(met )?nog (een kleine )?(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         days6 = re.compile(r"nog (maar )?(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
-        days7 = re.compile(r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)?( tot)?",re.IGNORECASE)
+        days7 = re.compile(r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)( slapen)? tot",re.IGNORECASE)
         days8 = re.compile(r"over (\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         days9 = re.compile(r"over een kleine (\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
         
