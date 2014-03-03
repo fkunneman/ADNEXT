@@ -96,12 +96,13 @@ class Tweetsfeatures():
             print ws
             if days.search(ws):
                 sh = days.search(ws)
-                print sh.groups()   
+                print sh.groups()
+        quit()
 
 
 
 
-    def match_rulelist(self,l):    
+    # def match_rulelist(self,l):    
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
