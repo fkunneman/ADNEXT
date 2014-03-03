@@ -16,6 +16,8 @@ parser.add_argument('-e', action = 'store', required = False,
     help = "choose to extract features based on the phrases in a file")
 parser.add_argument('-n', action = 'store', nargs = '+', required = False, 
     help = "to include word n-grams, specify the values of \'n\'")
+parser.add_argument('-r', action = 'store_true',
+    help = "extract time features based on rules")
 parser.add_argument('-cn', action = 'store', nargs = '+', required = False, 
     help = "to include character n-grams, specify the values of \'n\'")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, 
@@ -58,6 +60,8 @@ if args.e:
     extracts = extractfile.read().split("\n")
     extractfile.close()
     tf.extract_listfeatures(extracts)
+if args.r:
+    tf.extract_timefeatures()
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
