@@ -18,6 +18,8 @@ parser.add_argument('-n', action = 'store', nargs = '+', required = False,
     help = "to include word n-grams, specify the values of \'n\'")
 parser.add_argument('-r', action = 'store_true',
     help = "extract time features based on rules")
+parser.add_argument('-d', action = 'store_true',
+    help = "extract dates as time_features")
 parser.add_argument('-cn', action = 'store', nargs = '+', required = False, 
     help = "to include character n-grams, specify the values of \'n\'")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, 
@@ -62,6 +64,8 @@ if args.e:
     tf.extract_listfeatures(extracts)
 if args.r:
     tf.extract_timefeatures()
+if args.d:
+    tf.extract_date()
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
