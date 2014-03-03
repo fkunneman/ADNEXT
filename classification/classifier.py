@@ -98,9 +98,9 @@ class Classifier():
         #generate feature_frequency dict
         boundary = 0
         for f in self.features[:n]:
-            feature_status[f] = True 
+            self.feature_status[f] = True 
         for f in self.features[n:]:
-            feature_status[f] = False
+            self.feature_status[f] = False
         self.features = self.features[:n]
         self.prune_features()
 
