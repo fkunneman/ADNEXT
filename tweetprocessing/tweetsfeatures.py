@@ -153,6 +153,7 @@ class Tweetsfeatures():
                         elif unit in convert_tu.keys():
                             tu = convert_tu[unit]
                 feature = str(num * tu) + "_days"
+                print ws,feature                
                 instance.features.append(feature)
                   
 #        quit()
