@@ -190,11 +190,11 @@ class Tweetsfeatures():
         matched_rules = [x.strip().split("\t") for x in l if x.split("\t")[0] in relevant_ids]
         matched_tweets = [x for x in self.instances if x.id in relevant_ids]
         for t in matched_tweets:
-            tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
+            tweet_datetime = time_functions.return_datetime(t.date,time=t.time,setting="vs")
             dif = [x for x in matched_rules if x[0] == t.id][0][-1]
-            event_datetime = tweet_datetime + datetime.delta(hours = int(dif))
+            event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)))
             feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
-            print " ".join(wordsequence),tweet_datetime.weekday(),feature
+            print " ".join(t.wordsequence),tweet_datetime.weekday(),feature
                    
  #print len(matched_tweets),len(self.instances)
 
