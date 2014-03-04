@@ -194,7 +194,7 @@ class Tweetsfeatures():
             dif = [x for x in matched_rules if x[0] == t.id][0][-1]
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)))
             feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
-            print " ".join(t.wordsequence),tweet_datetime.weekday(),feature
+            print t.wordsequence,tweet_datetime.weekday(),event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
                    
  #print len(matched_tweets),len(self.instances)
 
