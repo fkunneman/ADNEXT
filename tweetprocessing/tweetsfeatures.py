@@ -192,7 +192,7 @@ class Tweetsfeatures():
         for t in matched_tweets:
             tweet_datetime = time_functions.return_datetime(t.date,time=t.time,setting="vs")
             dif = [x for x in matched_rules if x[0] == t.id][0][-1]
-            event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)))
+            event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
             feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
                    
