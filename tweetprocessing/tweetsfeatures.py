@@ -173,9 +173,12 @@ class Tweetsfeatures():
                 else:
                     day = convert_nums[sh.groups()[0]]
                 month = convert_month[sh.groups()[1]]
-#                print sh.groups(),day,month
-                print month,ws,sh.groups()
-                date = datetime.datetime(tweet_date.year,month,day,0,0,0)
+#                
+                #print month,ws,sh.groups()
+                try:
+                    date = datetime.datetime(tweet_date.year,month,day,0,0,0)
+                except:
+                    print sh.groups(),ws,day,month
                 dif = time_functions.timerel(date,tweet_date,"day")
                 if dif < 0:
                     date += datetime.timedelta(days=365)
