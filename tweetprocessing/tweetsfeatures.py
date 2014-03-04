@@ -153,7 +153,7 @@ class Tweetsfeatures():
                         elif unit in convert_tu.keys():
                             tu = convert_tu[unit]
                 feature = str(num * tu) + "_days"
-                print ws,feature                
+                #print ws,feature                
                 instance.features.append(feature)
                   
 #        quit()
@@ -174,12 +174,13 @@ class Tweetsfeatures():
                     day = convert_nums[sh.groups()[0]]
                 month = convert_month[sh.groups()[1]]
 #                print sh.groups(),day,month
+                print month,sh.groups()
                 date = datetime.datetime(tweet_date.year,month,day,0,0,0)
                 dif = time_functions.timerel(date,tweet_date,"day")
                 if dif < 0:
                     date += datetime.timedelta(days=365)
                 feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
-                print sh.groups(),feature
+                #print sh.groups(),feature
                 instance.features.append(feature)  
         # quit()
 
@@ -194,13 +195,8 @@ class Tweetsfeatures():
             dif = [x for x in matched_rules if x[0] == t.id][0][-1]
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
             feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
-            print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
-                   
- #print len(matched_tweets),len(self.instances)
-
-        quit()
-    #tweet_date_time = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
-
+            #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
+            t.features.append(feature)
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
