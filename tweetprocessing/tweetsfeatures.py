@@ -187,8 +187,13 @@ class Tweetsfeatures():
     def match_rulelist(self,l):    
     # 1: match ids
         relevant_ids = set([x.id for x in self.instances]) & set([x.split("\t")[0] for x in l])
+        matched_rules = [x.strip().split("\t") for x in l if x.split("\t")[0] in relevant_ids]
         matched_tweets = [x for x in self.instances if x.id in relevant_ids]
-        print [x.wordsequence for x in matched_tweets]
+        for t in matched_tweets:
+            print t.wordsequence,t.date,t.time,[x for x in matched_rules if x[0] == t.id]
+                   
+ #print len(matched_tweets),len(self.instances)
+
         quit()
     #tweet_date_time = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
 
