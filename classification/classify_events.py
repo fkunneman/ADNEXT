@@ -122,7 +122,6 @@ for i in range(0,len(events),testlen):
         cl.balance_data()
     print "counting..."
     cl.count_feature_frequency()
-    print cl.features
     if args.stdev:
         cl.filter_stdev(args.stdev)
     if args.f:
