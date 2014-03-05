@@ -255,6 +255,7 @@ class Classifier():
             outfile = codecs.open(tset["out"],"w","utf-8")
             outfile.write(outstring)
             for i,t in enumerate(tset):
+                print t
                 classification = multiclf.predict(t)
                 # classification = clf.predict(t)
                 classification_label = labeldict_back[classification[0]]
