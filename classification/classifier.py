@@ -249,22 +249,23 @@ class Classifier():
         multiclf.fit(training_csr,trainlabels)
         # clf.fit(training_csr,trainlabels)
 
-        def predict(ts,mc):
-            testvectors = self.vectorize(ts["instances"])
-            outfile = codecs.open(ts["out"],"w","utf-8")
+        for tset in self.test:
+        # def predict(ts,mc):
+            testvectors = self.vectorize(tset["instances"])
+            outfile = codecs.open(tset["out"],"w","utf-8")
             outfile.write(outstring)
-            for i,t in enumerate(ts):
+            for i,t in enumerate(tset):
                 classification = multiclf.predict(t)
                 # classification = clf.predict(t)
                 classification_label = labeldict_back[classification[0]]
                 # print tset["instances"][i]["label"], classification
-                outfile.write(ts["instances"][i]["label"] + " " + classification_label + "\n")
+                outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
             outfile.close()
 
-        for tset in self.test:
-            p = multiprocessing.Process(target=predict,args=[tset,multiclf])
-            p.start()
-        p.join()
+        # for tset in self.test:
+        #     p = multiprocessing.Process(target=predict,args=[tset,multiclf])
+        #     p.start()
+        # p.join()
 
             # testvectors = self.vectorize(tset["instances"])
             # outfile = codecs.open(tset["out"],"w","utf-8")
