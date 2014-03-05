@@ -248,18 +248,36 @@ class Classifier():
         multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
         multiclf.fit(training_csr,trainlabels)
         # clf.fit(training_csr,trainlabels)
-        for tset in self.test:
-            print 'testing'
-            testvectors = self.vectorize(tset["instances"])
-            outfile = codecs.open(tset["out"],"w","utf-8")
+
+        def predict(ts,mc):
+            testvectors = self.vectorize(ts["instances"])
+            outfile = codecs.open(ts["out"],"w","utf-8")
             outfile.write(outstring)
-            #predict labels and print them to the outfile
-            for i,t in enumerate(testvectors):
+            for i,t in enumerate(tv):
                 classification = multiclf.predict(t)
                 # classification = clf.predict(t)
-                
                 classification_label = labeldict_back[classification[0]]
                 # print tset["instances"][i]["label"], classification
-                outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
+                outfile.write(ts["instances"][i]["label"] + " " + classification_label + "\n")
             outfile.close()
+
+        for tset in self.test:
+            p = multiprocessing.Process(target=predict,args=[tset,multiclf])
+            p.start()
+            p.join()
+
+            # testvectors = self.vectorize(tset["instances"])
+            # outfile = codecs.open(tset["out"],"w","utf-8")
+            # outfile.write(outstring)
+            # #predict labels and print them to the outfile
+            # for i,t in enumerate(testvectors):
+            #     classification = multiclf.predict(t)
+            #     # classification = clf.predict(t)
+                
+            #     classification_label = labeldict_back[classification[0]]
+            #     # print tset["instances"][i]["label"], classification
+            #     outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
+            # outfile.close()
         # quit()
+
+
