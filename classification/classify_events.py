@@ -58,13 +58,11 @@ for ef in args.i:
     else:
         j = 0
         while j+args.window < len(tweets):
-            print j
             window = tweets[j+args.window]
             features = []
             for tweet in tweets[j:j+args.window]:
                 features_tweet = tweet["features"]
                 if args.date:
-                    print "before",features_tweet
                     for i,feature in enumerate(features_tweet):
                         if re.search(r"date_",feature):
                             windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
@@ -73,7 +71,6 @@ for ef in args.i:
                             features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
                         else:
                             break
-                    print "after",features_tweet
                 features.extend(features_tweet)
             if args.c == "svr":
                 try:
@@ -83,9 +80,7 @@ for ef in args.i:
                         break
             else:
                 lab = window["label"]
-            print "total",features
             if len(features) > 0:
-                print "yes"
                 event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
             j+=args.step
 
