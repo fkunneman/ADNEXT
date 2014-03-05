@@ -249,6 +249,7 @@ class Classifier():
         multiclf.fit(training_csr,trainlabels)
         # clf.fit(training_csr,trainlabels)
         for tset in self.test:
+            print 'testing'
             testvectors = self.vectorize(tset["instances"])
             outfile = codecs.open(tset["out"],"w","utf-8")
             outfile.write(outstring)
