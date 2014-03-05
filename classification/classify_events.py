@@ -47,10 +47,10 @@ for ef in args.i:
     tweets = []
     for tweet in instances_raw:
         values = tweet.strip().split("\t")
-        # try:
-        features = (values[args.featurecol].split(" "))
-        # except:
-        #     features = ()
+        try:
+            features = (values[args.featurecol].split(" "))
+        except:
+            features = ()
         tweets.append({"features":features,"label":values[1],"meta":values[:-1]})    
     #generate instance windows based on window- and stepsize
     if args.majority:
@@ -58,21 +58,22 @@ for ef in args.i:
     else:
         i = 0
         while i+args.window < len(tweets):
+            print i
             window = tweets[i+args.window]
             features = []
             for tweet in tweets[i:i+args.window]:
                 features_tweet = tweet["features"]
                 if args.date:
-                    print features_tweet
-                    for feature,i in enumerate(features_tweet):
+                    print "before",features_tweet
+                    for i,feature in enumerate(features_tweet):
                         if re.search(r"date_",feature):
                             windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
                             date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
                             refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
-                            features_tweet[i] = time_functions.timerel(refdate,windowdate,"day") + "_days"
+                            features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
                         else:
                             break
-                    print features_tweet
+                    print "after",features_tweet
                 features.extend(features_tweet)
             if args.c == "svr":
                 try:
@@ -82,7 +83,7 @@ for ef in args.i:
                         break
             else:
                 lab = window["label"]
-            print features
+            print "total",features
             if len(features) > 0:
                 print "yes"
                 event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
