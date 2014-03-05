@@ -87,7 +87,9 @@ for ef in args.i:
             if len(features) > 0:
                 print "yes"
                 event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
+            print i,args.step
             i+=args.step
+            print i
 
 quit()
 
