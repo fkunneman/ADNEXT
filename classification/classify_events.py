@@ -67,6 +67,7 @@ for ef in args.i:
                         if re.match(r"date_\d{2}-\d{2}-\d{4}",feature):
                             windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
                             date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
+                            print feature
                             refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                             features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
                         else:
