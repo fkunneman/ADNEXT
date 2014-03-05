@@ -6,6 +6,7 @@ from collections import defaultdict
 import codecs
 import os
 import re
+import time_functions
 
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with event tweets in a sliding window fashion")
 parser.add_argument('-i', action='store', nargs='+', required=True, help="the files with tweets per event")
@@ -22,13 +23,14 @@ parser.add_argument('--majority', action='store_true', help = 'specify if tweet 
 parser.add_argument('--jobs', action='store', type = int, required=False, help = 'specify the number of cores to use')
 parser.add_argument('--cw', action='store_true', help = 'choose to set class weights based on training frequency (instead of balancing the training data)')
 parser.add_argument('--balance', action='store_true', help = 'choose to balance class frequency')
+parser.add_argument('--date', action='store', type = int, required=False,help='specify the date column to convert time features')
 
 args=parser.parse_args() 
 
 print "Window",args.window,"step",args.step
 
 if len(args.i) <= 1:
-    print "not enough event  files, exiting program..."
+    print "not enough event files, exiting program..."
     exit()
 depth = args.depth * -1
 
@@ -45,10 +47,10 @@ for ef in args.i:
     tweets = []
     for tweet in instances_raw:
         values = tweet.strip().split("\t")
-        try:
-            features = (values[args.featurecol].split(" "))
-        except:
-            features = ()
+        # try:
+        features = (values[args.featurecol].split(" "))
+        # except:
+        #     features = ()
         tweets.append({"features":features,"label":values[1],"meta":values[:-1]})    
     #generate instance windows based on window- and stepsize
     if args.majority:
@@ -59,7 +61,19 @@ for ef in args.i:
             window = tweets[i+args.window]
             features = []
             for tweet in tweets[i:i+args.window]:
-                features.extend(tweet["features"])
+                features_tweet = tweet["features"]
+                if args.date:
+                    print features_tweet
+                    for feature,i in enumerate(features_tweet):
+                        if re.search(r"date_",feature):
+                            windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
+                            date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
+                            refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
+                            features_tweet[i] = time_functions.timerel(refdate,windowdate,"day")) + "_days"
+                        else:
+                            break
+                    print features_tweet
+                features.extend(features_tweet)
             if args.c == "svr":
                 try:
                     lab = float(window["label"])     
@@ -68,8 +82,13 @@ for ef in args.i:
                         break
             else:
                 lab = window["label"]
-            event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
+            print features
+            if len(features) > 0:
+                print "yes"
+                event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
             i+=args.step
+
+quit()
 
 print "Starting classification..."
 #divide train and test events
