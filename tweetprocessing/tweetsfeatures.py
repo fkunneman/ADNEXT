@@ -152,7 +152,10 @@ class Tweetsfeatures():
                             num = int(unit)
                         elif unit in convert_tu.keys():
                             tu = convert_tu[unit]
-                feature = str(num * tu) + "_days"
+                days_ahead = num*tu
+                tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
+                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
+                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
                   
@@ -177,12 +180,13 @@ class Tweetsfeatures():
                 #print month,ws,sh.groups()
                 try:
                     date = datetime.datetime(tweet_date.year,month,day,0,0,0)
+                    feature = "date_" + date.strftime("%d-%m-%Y")
                 except:
                     continue
-                dif = time_functions.timerel(date,tweet_date,"day")
-                if dif < 0:
-                    date += datetime.timedelta(days=365)
-                feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
+                # dif = time_functions.timerel(date,tweet_date,"day")
+                # if dif < 0:
+                #     date += datetime.timedelta(days=365)
+                # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
                 #print sh.groups(),feature
                 instance.features.append(feature)  
         # quit()
@@ -197,7 +201,8 @@ class Tweetsfeatures():
             tweet_datetime = time_functions.return_datetime(t.date,time=t.time,setting="vs")
             dif = [x for x in matched_rules if x[0] == t.id][0][-1]
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
-            feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
+            feature = "date_" + event_datetime.strftime("%d-%m-%Y")
+            # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
             t.features.append(feature)
 
