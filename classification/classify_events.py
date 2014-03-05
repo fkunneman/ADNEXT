@@ -69,7 +69,7 @@ for ef in args.i:
                             windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
                             date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
                             refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
-                            features_tweet[i] = time_functions.timerel(refdate,windowdate,"day")) + "_days"
+                            features_tweet[i] = time_functions.timerel(refdate,windowdate,"day") + "_days"
                         else:
                             break
                     print features_tweet
