@@ -264,7 +264,7 @@ class Classifier():
         for tset in self.test:
             p = multiprocessing.Process(target=predict,args=[tset,multiclf])
             p.start()
-            p.join()
+        p.join()
 
             # testvectors = self.vectorize(tset["instances"])
             # outfile = codecs.open(tset["out"],"w","utf-8")
