@@ -84,8 +84,6 @@ for ef in args.i:
                 event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
             j+=args.step
 
-quit()
-
 print "Starting classification..."
 #divide train and test events
 events = event_instances.keys()
