@@ -56,12 +56,12 @@ for ef in args.i:
     if args.majority:
         event_instances[event] = tweets
     else:
-        i = 0
-        while i+args.window < len(tweets):
-            print i
-            window = tweets[i+args.window]
+        j = 0
+        while j+args.window < len(tweets):
+            print j
+            window = tweets[j+args.window]
             features = []
-            for tweet in tweets[i:i+args.window]:
+            for tweet in tweets[j:j+args.window]:
                 features_tweet = tweet["features"]
                 if args.date:
                     print "before",features_tweet
@@ -87,9 +87,7 @@ for ef in args.i:
             if len(features) > 0:
                 print "yes"
                 event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
-            print i,args.step
-            i+=args.step
-            print i
+            j+=args.step
 
 quit()
 
