@@ -17,6 +17,7 @@ parser.add_argument('-c', action='store', type = int, default = 1, help = "the e
 parser.add_argument('-s', action='store', type = int, default = 0, help = "specify the first line of classification files to process from [DEFAULT = 0]")
 parser.add_argument('-d', action = 'store', default = "\t", help="specify the delimiter of target and estimator columns [DEFAULT = \'\\t\']")
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT = 1]")
+parser.add_argument('--hist', action='store_true',help='choose to incorporate history knowledge in evaluation')
 
 args = parser.parse_args()
 
@@ -42,13 +43,15 @@ for ef in args.i:
     # return RMSE, responsiveness and prediction@
     es = evalset.Evalset()
     es.add_instances(event_estimations)
-    rmse = es.calculate_rmse()
+    rmse = es.calculate_rmse(args.hist)
+    continue
     rmses.append(rmse[:-1])
     outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]]) + "\n")
     if args.p:
         for pv in rmse[-1]:
             plotvals[pv[0]].append(pv[1])
     # write to file and keeplist  
+quit()
 
 rmse_all,mae_all,first_all,before_all,responsiveness_all = zip(*rmses)
 rmse_mean = str(sum(rmse_all) / len(rmse_all))
