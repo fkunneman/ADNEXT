@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import argparse
-import evalset
 import re
 from collections import defaultdict
+
+import evalset
 import gen_functions
 
 parser = argparse.ArgumentParser(description = "Program to score window estimations")
@@ -42,18 +43,24 @@ for ef in args.i:
     es = evalset.Evalset()
     es.add_instances(event_estimations)
     rmse = es.calculate_rmse()
-    rmses.append(rmse[:2])
-    outfile.write("\t".join([event,str(rmse[0]),str(rmse[1])]) + "\n")
+    rmses.append(rmse[:-1])
+    outfile.write("\t".join([event] + rmse[:-1])) + "\n")
     if args.p:
-        for pv in rmse[2]:
+        for pv in rmse[-1]:
             plotvals[pv[0]].append(pv[1])
     # write to file and keeplist  
 
-rmse_all,responsiveness_all = zip(*rmses)
+rmse_all,mae_all,first_all,before_all,responsiveness_all = zip(*rmses)
 rmse_mean = str(sum(rmse_all) / len(rmse_all))
 rmse_stdef = str(gen_functions.return_standard_deviation(rmse_all))
+mae_mean = str(sum(mae_all) / len(mae_all))
+maee_stdef = str(gen_functions.return_standard_deviation(mae_all))
+first_mean = str(sum(first_all) / len(first_all))
+first_stdef = str(gen_functions.return_standard_deviation(first_all))
+before_mean = str(sum(before_all) / len(before_all))
+before_stdef = str(gen_functions.return_standard_deviation(before_all))
 responsiveness_mean = str(sum(responsiveness_all) / len(responsiveness_all))
-outfile.write("\t".join(["mean",rmse_mean,rmse_stdef,responsiveness_mean]) + "\n")
+outfile.write("\t".join(["mean",rmse_mean,rmse_stdef,mae_mean,mae_stdef,first_mean,first_stdef,before_mean,before_stdef,responsiveness_mean]) + "\n")
 outfile.close()
 if args.p:
     plotfile = open(args.p,"w")

@@ -41,9 +41,15 @@ class Evalset():
     def calculate_rmse(self):
         responsiveness_vals = []
         rmse_vals = []
+        ae_vals = []
         plot_vals = defaultdict(list)
-        for instance in self.instances:
+        d = False
+        before = 0
+        for i,instance in enumerate(self.instances):
             target = instance.label
+            if (target == "during" or target == "after") and not d:
+                before = i
+                d = True
             prediction = instance.classification
             if not target == "during" and not target == "after":
                 if prediction == "during" or prediction == "after":
@@ -54,16 +60,18 @@ class Evalset():
                     else:
                         responsiveness_vals.append(1)
                         dif = abs(int(target) - int(prediction))
+                        ae_vals.append(dif)
                         rmse_vals.append(dif*dif)
                         plot_vals[int(target)].append(dif)
         responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
-        try:
-            rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
-        except:
-            rmse = 0
+        # try:
+        rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
+        ae = round(sum(ae_vals)/len(ae_vals),2)
+        # except:
+        #     rmse = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) \
             for v in sorted(plot_vals.keys())]
-        return (rmse,responsiveness,plot_vals_mean)
+        return (rmse,ae,self.instances[0].label,before,responsiveness,plot_vals_mean)
 
     def accuracy_at(self,value,condition):
         for instance in self.instances:
