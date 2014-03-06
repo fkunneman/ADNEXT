@@ -44,14 +44,12 @@ for ef in args.i:
     es = evalset.Evalset()
     es.add_instances(event_estimations)
     rmse = es.calculate_rmse(args.hist)
-    continue
     rmses.append(rmse[:-1])
     outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]]) + "\n")
     if args.p:
         for pv in rmse[-1]:
             plotvals[pv[0]].append(pv[1])
     # write to file and keeplist  
-quit()
 
 rmse_all,mae_all,first_all,before_all,responsiveness_all = zip(*rmses)
 rmse_mean = str(sum(rmse_all) / len(rmse_all))

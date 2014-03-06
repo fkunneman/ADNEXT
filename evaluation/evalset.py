@@ -38,25 +38,19 @@ class Evalset():
         results.append(["micro"] + [str(round(x,2)) for x in micro_results] + [" "])
         return results
 
-    def calculate_rmse(self,hist = False):
+    def calculate_rmse(self):
         responsiveness_vals = []
         rmse_vals = []
         ae_vals = []
         plot_vals = defaultdict(list)
         d = False
         before = 0
-        history_dict = defaultdict(int)
-        current_estimation = 1
         for i,instance in enumerate(self.instances):
             target = instance.label
             if (target == "during" or target == "after") and not d:
                 before = i
                 d = True
             prediction = instance.classification
-            if hist:
-                history_dict[prediction] += 1
-                prediction = max(history_dict, key=history_dict.get)
-                print prediction,history_dict
             if not target == "during" and not target == "after":
                 if prediction == "during" or prediction == "after":
                     responsiveness_vals.append(0)
