@@ -57,7 +57,6 @@ class Evalset():
                 history_dict[prediction] += 1
                 prediction = max(history_dict, key=history_dict.get)
                 print prediction
-                continue
             if not target == "during" and not target == "after":
                 if prediction == "during" or prediction == "after":
                     responsiveness_vals.append(0)
