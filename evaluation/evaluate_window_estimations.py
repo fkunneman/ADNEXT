@@ -60,7 +60,7 @@ first_stdef = str(gen_functions.return_standard_deviation(first_all))
 before_mean = str(sum(before_all) / len(before_all))
 before_stdef = str(gen_functions.return_standard_deviation(before_all))
 responsiveness_mean = str(sum(responsiveness_all) / len(responsiveness_all))
-outfile.write("\t".join(["mean",rmse_mean,rmse_stdef,mae_mean,mae_stdef,first_mean,first_stdef,before_mean,before_stdef,responsiveness_mean]) + "\n")
+outfile.write("\t".join(["mean",rmse_mean + "(" + rmse_stdef + ")",mae_mean + "(" + mae_stdef + ")",first_mean + "(" + first_stdef + ")",before_mean + "(" + before_stdef + ")",responsiveness_mean]) + "\n")
 outfile.close()
 if args.p:
     plotfile = open(args.p,"w")
