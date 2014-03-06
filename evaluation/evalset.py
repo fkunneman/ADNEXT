@@ -64,11 +64,13 @@ class Evalset():
                         rmse_vals.append(dif*dif)
                         plot_vals[int(target)].append(dif)
         responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
-        # try:
-        rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
-        ae = round(sum(ae_vals)/len(ae_vals),2)
-        # except:
-        #     rmse = 0
+        try:
+            rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
+            ae = round(sum(ae_vals)/len(ae_vals),2)
+        except:
+            print [(x.label,x.classification) for x in self.instances]
+            quit()
+                #     rmse = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) \
             for v in sorted(plot_vals.keys())]
         return [rmse,ae,int(self.instances[0].label),before,responsiveness,plot_vals_mean]
