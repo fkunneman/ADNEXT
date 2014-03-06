@@ -44,7 +44,7 @@ for ef in args.i:
     es.add_instances(event_estimations)
     rmse = es.calculate_rmse()
     rmses.append(rmse[:-1])
-    outfile.write("\t".join([event] + rmse[:-1])) + "\n")
+    outfile.write("\t".join([event] + rmse[:-1]) + "\n")
     if args.p:
         for pv in rmse[-1]:
             plotvals[pv[0]].append(pv[1])
