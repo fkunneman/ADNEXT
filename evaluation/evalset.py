@@ -69,8 +69,8 @@ class Evalset():
             ae = round(sum(ae_vals)/len(ae_vals),2)
         except:
             print [(x.label,x.classification) for x in self.instances]
-            quit()
-                #     rmse = 0
+            rmse = 0
+            mae = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) \
             for v in sorted(plot_vals.keys())]
         return [rmse,ae,int(self.instances[0].label),before,responsiveness,plot_vals_mean]
