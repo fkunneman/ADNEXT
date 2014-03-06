@@ -71,7 +71,7 @@ class Evalset():
         #     rmse = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) \
             for v in sorted(plot_vals.keys())]
-        return [rmse,ae,self.instances[0].label,before,responsiveness,plot_vals_mean]
+        return [rmse,ae,int(self.instances[0].label),before,responsiveness,plot_vals_mean]
 
     def accuracy_at(self,value,condition):
         for instance in self.instances:
