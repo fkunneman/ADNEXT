@@ -102,9 +102,9 @@ class Classifier():
                     self.feature_status[feature] = False
                 else:
                     self.feature_status[feature] = True
-                    feature_convert[feature] = numpy.median(feature_labellist[feature]
-                    new_features.append(numpy.median(feature_labellist[feature])
-                    print feature, numpy.median(feature_labellist[feature]
+                    feature_convert[feature] = numpy.median(feature_labellist[feature])
+                    new_features.append(numpy.median(feature_labellist[feature]))
+                    print feature, numpy.median(feature_labellist[feature])
             else:
                 new_features.append(feature)
         self.prune_features()
