@@ -213,11 +213,9 @@ class Classifier():
     def vectorize(self,instances):
         zerolist = [float(0)] * len(self.feature_info.keys())
         matrix = []
-        print self.feature_info
         for instance in instances:
             featurev = zerolist[:]
             for feature in instance["sparse"].keys():
-                print feature,len(featurev)
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
                 elif self.scaling == "log": 
