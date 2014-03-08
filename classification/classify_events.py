@@ -69,7 +69,6 @@ for ef in args.i:
                             date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
                             refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                             features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
-                            print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
                 features.extend(features_tweet)
             if args.c == "svr":
                 try:
