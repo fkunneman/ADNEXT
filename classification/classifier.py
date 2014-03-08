@@ -5,6 +5,7 @@ import codecs
 import multiprocessing
 from collections import defaultdict
 
+import re
 import math
 import numpy
 from scipy.sparse import *
