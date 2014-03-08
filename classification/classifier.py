@@ -105,7 +105,7 @@ class Classifier():
                     self.feature_status[feature] = True
                     feature_convert[feature] = str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days"
                     new_features.append(str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days")
-                    print feature, self.feature_labellist[feature]numpy.median(self.feature_labellist[feature])
+                    print feature, self.feature_labellist[feature], numpy.median(self.feature_labellist[feature])
             else:
                 self.feature_status[feature] = True
                 new_features.append(feature)
