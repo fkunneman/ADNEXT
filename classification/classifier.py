@@ -82,16 +82,33 @@ class Classifier():
             instance["features"] = new_features
             # queue.put(instance)
 
-    def filter_stdev(self,threshold):
+    def convert_features(self,convert_list):
+        for instance in self.training:
+            new_features = []
+            #print feature_status
+            print instance["features"]
+            for i,f in enumerate(instance["features"]):
+                if f in convert_list.keys():
+                     instance["features"][i] = convert_list[f]
+            print instance["features"]
+
+    def filter_stdev(self,threshold,prop):
         self.make_feature_labellist()
+        feature_convert = {}
         new_features = []
         for feature in self.feature_labellist.keys():
-            if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
-                self.feature_status[feature] = False
+            if re.search(r"^" + prop,feature):
+                if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
+                    self.feature_status[feature] = False
+                else:
+                    self.feature_status[feature] = True
+                    feature_convert[feature] = numpy.median(feature_labellist[feature]
+                    new_features.append(numpy.median(feature_labellist[feature])
+                    print feature, numpy.median(feature_labellist[feature]
             else:
-                self.feature_status[feature] = True
                 new_features.append(feature)
         self.prune_features()
+        self.convert_features(feature_convert)
         self.features = new_features
 
     def prune_features_topfrequency(self,n):

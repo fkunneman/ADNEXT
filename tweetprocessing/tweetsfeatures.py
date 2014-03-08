@@ -86,7 +86,7 @@ class Tweetsfeatures():
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         for t in self.instances:
             features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            t.features.extend(features)
+            t.features.extend(["timex_" + x for x in features])
 
     def extract_timefeatures(self):
         convert_nums = {"enige":3,"enkele":3,"een paar":3, "een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
