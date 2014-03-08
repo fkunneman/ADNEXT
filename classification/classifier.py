@@ -165,8 +165,10 @@ class Classifier():
 
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
-        self.feature_info={}      
+        self.feature_info={}
+        print self.features      
         for i,feature in enumerate(self.features):
+            print i, feature
             self.feature_info[feature]=i+ind
         
         def sparsify(instances,writelist):
