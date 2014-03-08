@@ -112,7 +112,7 @@ class Classifier():
                 new_features.append(feature)
         self.convert_features(feature_convert)
         self.prune_features()
-        self.features = set(list(new_features))
+        self.features = list(set(new_features))
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
