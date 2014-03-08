@@ -87,11 +87,11 @@ class Classifier():
         for instance in self.training:
             new_features = []
             #print feature_status
-            print instance["features"]
+            #print instance["features"]
             for i,f in enumerate(instance["features"]):
                 if f in convert_list.keys():
                      instance["features"][i] = convert_list[f]
-            print instance["features"]
+            #print instance["features"]
 
     def filter_stdev(self,threshold,prop):
         self.make_feature_labellist()
@@ -105,7 +105,7 @@ class Classifier():
                     self.feature_status[feature] = True
                     feature_convert[feature] = str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days"
                     new_features.append(str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days")
-                    print feature, self.feature_labellist[feature], numpy.median(self.feature_labellist[feature])
+                    #print feature, self.feature_labellist[feature], numpy.median(self.feature_labellist[feature])
             else:
                 self.feature_status[feature] = True
                 new_features.append(feature)
