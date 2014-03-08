@@ -102,15 +102,16 @@ class Classifier():
                 if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
                     self.feature_status[feature] = False
                 else:
-                    self.feature_status[feature] = True
-                    feature_convert[feature] = str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days"
-                    new_features.append(str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days")
+                    new_feature = str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days"
+                    feature_convert[feature] = new_feature
+                    new_features.append(new_feature)
+                    self.feature_status[new_feature] = True
                     #print feature, self.feature_labellist[feature], numpy.median(self.feature_labellist[feature])
             else:
                 self.feature_status[feature] = True
                 new_features.append(feature)
-        self.prune_features()
         self.convert_features(feature_convert)
+        self.prune_features()
         self.features = new_features
 
     def prune_features_topfrequency(self,n):
