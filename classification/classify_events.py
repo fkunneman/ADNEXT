@@ -136,7 +136,7 @@ for i in range(0,len(events),testlen):
     print "counting..."
     cl.count_feature_frequency()
     if args.stdev:
-        cl.filter_stdev(args.stdev)
+        cl.filter_stdev(args.stdev, "timex_")
         quit()
     if args.f:
         print "pruning..."
