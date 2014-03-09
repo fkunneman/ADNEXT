@@ -128,16 +128,17 @@ for i in range(0,len(events),testlen):
         cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
     else:
         cl = Classifier(train,test,scaling=args.scaling)
+    if args.stdev:
+        cl.filter_stdev(args.stdev, "timex_")
     if args.balance:
         print "balancing..."
         cl.balance_data()
     print "counting..."
     cl.count_feature_frequency()
-    if args.stdev:
-        cl.filter_stdev(args.stdev, "timex_")
     if args.f:
         print "pruning..."
         cl.prune_features_topfrequency(args.f)
+    print cl.features
     #generate sparse input
     print "indexing..."
     cl.index_features()
