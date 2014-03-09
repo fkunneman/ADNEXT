@@ -95,6 +95,7 @@ class Evalset():
         correct = 0
         for i,instance in enumerate(self.instances):
             if instance.label == "during" or instance.label == "after":
+                print i-1
                 return round((correct/i-1),2)
                 break
             if instance.label == instance.classification:
