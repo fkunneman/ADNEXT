@@ -24,6 +24,7 @@ depth = args.depth * -1
 outfile = open(args.r,"w")
 outfile.write("\n\n")
 rmses = []
+accuracies = []
 plotvals = defaultdict(list)
 # for each file
 for ef in args.i:
@@ -44,23 +45,28 @@ for ef in args.i:
     es.add_instances(event_estimations)
     rmse = es.calculate_rmse()
     rmses.append(rmse[:-1])
-    outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]]) + "\n")
+    accuracy = es.calculate_accuracy()
+    accuracies.append(accuracy)
+    outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]] + [accuracy]) + "\n")
     if args.p:
         for pv in rmse[-1]:
             plotvals[pv[0]].append(pv[1])
     # write to file and keeplist  
 
 rmse_all,mae_all,first_all,before_all,responsiveness_all = zip(*rmses)
-rmse_mean = str(sum(rmse_all) / len(rmse_all))
+rmse_mean = str(round(sum(rmse_all) / len(rmse_all),2))
 rmse_stdef = str(gen_functions.return_standard_deviation(rmse_all))
-mae_mean = str(sum(mae_all) / len(mae_all))
+mae_mean = str(round((sum(mae_all) / len(mae_all)),2))
 mae_stdef = str(gen_functions.return_standard_deviation(mae_all))
-first_mean = str(sum(first_all) / len(first_all))
+first_mean = str(round(sum(first_all) / len(first_all),2))
 first_stdef = str(gen_functions.return_standard_deviation(first_all))
-before_mean = str(sum(before_all) / len(before_all))
+before_mean = str(round(sum(before_all) / len(before_all),2))
 before_stdef = str(gen_functions.return_standard_deviation(before_all))
-responsiveness_mean = str(sum(responsiveness_all) / len(responsiveness_all))
-outfile.write("\t".join(["mean",rmse_mean + "(" + rmse_stdef + ")",mae_mean + "(" + mae_stdef + ")",first_mean + "(" + first_stdef + ")",before_mean + "(" + before_stdef + ")",responsiveness_mean]) + "\n")
+responsiveness_mean = str(round(sum(responsiveness_all) / len(responsiveness_all),2))
+accuracy_mean = str(round((sum(accuracies) / len(accuracies)),2))
+accuracy_stdev = str(gen_functions.return_standard_deviation(accuracies))
+outfile.write("\t".join(["mean",rmse_mean + "(" + rmse_stdef + ")",mae_mean + "(" + mae_stdef + ")",first_mean + "(" + first_stdef + ")",before_mean + "(" + before_stdef + ")",responsiveness_mean,accuracy_mean + "(" + accuracy
+     + ")"]) + "\n")
 outfile.close()
 if args.p:
     plotfile = open(args.p,"w")

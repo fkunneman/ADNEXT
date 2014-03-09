@@ -91,6 +91,16 @@ class Evalset():
                     dif = abs(int(target) - int(prediction))
                     return (int(target),int(prediction),dif)
 
+    def calculate_accuracy(self):
+        correct = 0
+        for i,instance in enumerate(self.instances):
+            if instance.label == "during" or instance.label == "after":
+                return round((correct/i-1),2)
+                break
+            if instance.label == instance.classification:
+                correct += 1
+        
+
     class Instance():
         
         def __init__(self,label,classification):
