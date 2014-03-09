@@ -99,7 +99,7 @@ class Classifier():
         new_features = []
         for feature in self.feature_labellist.keys():
             if re.search(r"^" + prop,feature):
-                if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold:
+                if gen_functions.return_standard_deviation(self.feature_labellist[feature]) > threshold or len(self.feature_labellist[feature]) <= 2:
                     self.feature_status[feature] = False
                 else:
                     new_feature = str(abs(int(numpy.median(self.feature_labellist[feature])))) + "_days"
