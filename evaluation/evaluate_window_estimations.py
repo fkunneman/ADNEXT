@@ -65,8 +65,7 @@ before_stdef = str(gen_functions.return_standard_deviation(before_all))
 responsiveness_mean = str(round(sum(responsiveness_all) / len(responsiveness_all),2))
 accuracy_mean = str(round((sum(accuracies) / len(accuracies)),2))
 accuracy_stdev = str(gen_functions.return_standard_deviation(accuracies))
-outfile.write("\t".join(["mean",rmse_mean + "(" + rmse_stdef + ")",mae_mean + "(" + mae_stdef + ")",first_mean + "(" + first_stdef + ")",before_mean + "(" + before_stdef + ")",responsiveness_mean,accuracy_mean + "(" + accuracy
-     + ")"]) + "\n")
+outfile.write("\t".join(["mean",rmse_mean + "(" + rmse_stdef + ")",mae_mean + "(" + mae_stdef + ")",first_mean + "(" + first_stdef + ")",before_mean + "(" + before_stdef + ")",responsiveness_mean,accuracy_mean + "(" + accuracy_stdev + ")"]) + "\n")
 outfile.close()
 if args.p:
     plotfile = open(args.p,"w")
