@@ -47,7 +47,7 @@ for ef in args.i:
     rmses.append(rmse[:-1])
     accuracy = es.calculate_accuracy()
     accuracies.append(accuracy)
-    outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]] + [accuracy]) + "\n")
+    outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]] + [str(accuracy)]) + "\n")
     if args.p:
         for pv in rmse[-1]:
             plotvals[pv[0]].append(pv[1])
