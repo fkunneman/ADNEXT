@@ -14,7 +14,7 @@ import gen_functions
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with event tweets in a sliding window fashion")
 parser.add_argument('-i', action='store', nargs='+', required=True, help="the files with tweets per event")
 parser.add_argument('-d', action='store', help="the directory in which to write classification files")
-parser.add_argument('-c', action='store', required=True, choices=["svm","svr"], help="the classifier")
+parser.add_argument('-c', action='store', required=True, choices=["svm","svr","median_baseline"], help="the classifier")
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
 parser.add_argument('--featurecol', action='store', required=False, type=int, help="the column of features")
 parser.add_argument('--stdev', action='store', required = False, type=float, help = "choose to remove features with a standard deviation above the given threshold")
@@ -168,34 +168,55 @@ for i in range(0,len(events),testlen):
         testdict["out"] = eventout
         testdict["instances"] = event_instances[event]
         test.append(testdict)
-    #set up classifier object
-    if args.jobs:
-        cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
+    if args.c == "median_baseline":
+        for td in test:
+            outfile = open(td["out"],"w")
+            instances = td["instances"]
+            for instance in instances:
+                #extract day_estimations
+                ests = []
+                for feature in instance["features"]:
+                    if re.search(r"days",feature):
+                        ests.append(feature)
+                if len(ests) > 0:
+                    labelcount = defaultdict(int)
+                    for est in ests:
+                        labelcount[est] += 1
+                    topest = [e for e in sorted(labelcount, key=labelcount.get, reverse=True)][0]
+                    num = re.search(r"(-?\d+)_days",topest).groups()[0]
+                else:
+                    num = "during"
+                outfile.write(instance["label"] + " " + str(num) + "\n")
+            outfile.close() 
     else:
-        cl = Classifier(train,test,scaling=args.scaling)
-    if args.stdev:
-        cl.filter_stdev(args.stdev, "timex_")
-    if args.balance:
-        print "balancing..."
-        cl.balance_data()
-    print "counting..."
-    cl.count_feature_frequency()
-    if args.f:
-        print "pruning..."
-        cl.prune_features_topfrequency(args.f)
-    #generate sparse input
-    print "indexing..."
-    cl.index_features()
-    #generate classifiers
-    print "classifying..."
-    if args.c == "svm":
-        if args.cw:
-            cl.classify_svm(classweight="auto")
+        #set up classifier object
+        if args.jobs:
+            cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
         else:
-            cl.classify_svm()
-    elif args.c == "svr":
-        print "svr"
-        if args.cw:
-            cl.classify_svm(t="continuous",classweight="auto")
-        else:
-            cl.classify_svm(t="continuous")
+            cl = Classifier(train,test,scaling=args.scaling)
+        if args.stdev:
+            cl.filter_stdev(args.stdev, "timex_")
+        if args.balance:
+            print "balancing..."
+            cl.balance_data()
+        print "counting..."
+        cl.count_feature_frequency()
+        if args.f:
+            print "pruning..."
+            cl.prune_features_topfrequency(args.f)
+        #generate sparse input
+        print "indexing..."
+        cl.index_features()
+        #generate classifiers
+        print "classifying..."
+        if args.c == "svm":
+            if args.cw:
+                cl.classify_svm(classweight="auto")
+            else:
+                cl.classify_svm()
+        elif args.c == "svr":
+            print "svr"
+            if args.cw:
+                cl.classify_svm(t="continuous",classweight="auto")
+            else:
+                cl.classify_svm(t="continuous")
