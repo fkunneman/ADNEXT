@@ -60,32 +60,31 @@ for ef in args.i:
     #generate instance windows based on window- and stepsize
     if args.majority or args.median:
         event_instances_loose[event] = tweets
-    else:
-        j = 0
-        while j+args.window < len(tweets):
-            window = tweets[j+args.window]
-            features = []
-            for tweet in tweets[j:j+args.window]:
-                features_tweet = tweet["features"]
-                if args.date:
-                    for i,feature in enumerate(features_tweet):
-                        if re.match(r"date_\d{2}-\d{2}-\d{4}",feature):
-                            windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
-                            date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
-                            refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
-                            features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
-                features.extend(features_tweet)
-            if args.c == "svr":
-                try:
-                    lab = float(window["label"])     
-                except:
-                    if window["label"] == "during" or lab == "after":
-                        break
-            else:
-                lab = window["label"]
-            if len(features) > 0:
-                event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
-            j+=args.step
+    j = 0
+    while j+args.window < len(tweets):
+        window = tweets[j+args.window]
+        features = []
+        for tweet in tweets[j:j+args.window]:
+            features_tweet = tweet["features"]
+            if args.date:
+                for i,feature in enumerate(features_tweet):
+                    if re.match(r"date_\d{2}-\d{2}-\d{4}",feature):
+                        windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
+                        date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
+                        refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
+                        features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
+            features.extend(features_tweet)
+        if args.c == "svr":
+            try:
+                lab = float(window["label"])     
+            except:
+                if window["label"] == "during" or lab == "after":
+                    break
+        else:
+            lab = window["label"]
+        if len(features) > 0:
+            event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
+        j+=args.step
 
 print "Starting classification..."
 #divide train and test events
