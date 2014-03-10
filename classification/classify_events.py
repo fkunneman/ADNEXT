@@ -6,7 +6,9 @@ from collections import defaultdict
 import codecs
 import os
 import re
+
 import time_functions
+import gen_functions
 
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with event tweets in a sliding window fashion")
 parser.add_argument('-i', action='store', nargs='+', required=True, help="the files with tweets per event")
@@ -24,6 +26,7 @@ parser.add_argument('--jobs', action='store', type = int, required=False, help =
 parser.add_argument('--cw', action='store_true', help = 'choose to set class weights based on training frequency (instead of balancing the training data)')
 parser.add_argument('--balance', action='store_true', help = 'choose to balance class frequency')
 parser.add_argument('--date', action='store', type = int, required=False,help='specify the date column to convert time features')
+parser.add_argument('--median', action='store_true', type = int, required=False,help='choose to calculate median time to event of time expressions')
 
 args=parser.parse_args() 
 
@@ -53,8 +56,8 @@ for ef in args.i:
             features = ()
         tweets.append({"features":features,"label":values[1],"meta":values[:-1]})    
     #generate instance windows based on window- and stepsize
-    if args.majority:
-        event_instances[event] = tweets
+    if args.majority or args.median:
+        event_instances_loose[event] = tweets
     else:
         j = 0
         while j+args.window < len(tweets):
@@ -84,7 +87,7 @@ for ef in args.i:
 
 print "Starting classification..."
 #divide train and test events
-events = event_instances.keys()
+events = sorted(event_instances.keys())
 testlen = int(len(events)/10)
 #make folds
 for i in range(0,len(events),testlen):
@@ -94,6 +97,37 @@ for i in range(0,len(events),testlen):
     except IndexError:
         train_events = events[:i]
         test_events = [events[j] for j in range(i,len(events))]
+    if args.median:
+        #generate feature_tte list
+        print "generating feature_tte list"
+        feature_tte = defaultdict(list)
+        for ev in train_events:
+            for tweet in event_instances_loose[ev]:
+                for feature in tweet["features"]:
+                    if re.search(r"timex_",feature)
+                        feature_tte[feature].append(tweet["label"])
+        #calculate_median
+        print "calculating median"
+        feature_new = {}
+        for feature in feature_tte.keys():
+            if gen_functions.return_standard_deviation(feature_tte[feature]) < threshold and len(self.feature_labellist[feature]) >= 2:
+                feature_new[feature] = str(abs(int(numpy.median(feature_tte[feature])))) + "_days"
+            else:
+                feature_new[feature] = feature
+        #convert features
+        print "converting features"
+        for ev in train_events:
+            for instance in event_instances[ev]:
+                for r,feature in enumerate(instance["features"]):
+                    if re.search(r"timex_",feature)
+                        instance["features"][r] = feature_new[feature]
+        for ev in test_events:
+            for instance in event_instances[ev]:
+                for r,feature in enumerate(instance["features"]):
+                    if re.search(r"timex_",feature)
+                        instance["features"][r] = feature_new[feature]
+    quit()
+
     train = sum([event_instances[x] for x in train_events],[])
     test = []
     for event in test_events:
@@ -123,6 +157,9 @@ for i in range(0,len(events),testlen):
         testdict["out"] = eventout
         testdict["instances"] = event_instances[event]
         test.append(testdict)
+    print "Calculating medians"
+
+
     #set up classifier object
     if args.jobs:
         cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
