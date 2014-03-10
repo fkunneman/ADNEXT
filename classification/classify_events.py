@@ -26,7 +26,7 @@ parser.add_argument('--jobs', action='store', type = int, required=False, help =
 parser.add_argument('--cw', action='store_true', help = 'choose to set class weights based on training frequency (instead of balancing the training data)')
 parser.add_argument('--balance', action='store_true', help = 'choose to balance class frequency')
 parser.add_argument('--date', action='store', type = int, required=False,help='specify the date column to convert time features')
-parser.add_argument('--median', action='store_true', type = int, required=False,help='choose to calculate median time to event of time expressions')
+parser.add_argument('--median', action='store_true',help='choose to calculate median time to event of time expressions')
 
 args=parser.parse_args() 
 
@@ -40,6 +40,8 @@ depth = args.depth * -1
 #read in instances
 print "Reading in events..."
 event_instances = defaultdict(list)
+if args.majority or args.median:
+    event_instances_loose = defaultdict(list)
 for ef in args.i:
     instance_file=codecs.open(ef,"r","utf-8")
     instances_raw=instance_file.readlines()
@@ -104,7 +106,7 @@ for i in range(0,len(events),testlen):
         for ev in train_events:
             for tweet in event_instances_loose[ev]:
                 for feature in tweet["features"]:
-                    if re.search(r"timex_",feature)
+                    if re.search(r"timex_",feature):
                         feature_tte[feature].append(tweet["label"])
         #calculate_median
         print "calculating median"
@@ -119,12 +121,12 @@ for i in range(0,len(events),testlen):
         for ev in train_events:
             for instance in event_instances[ev]:
                 for r,feature in enumerate(instance["features"]):
-                    if re.search(r"timex_",feature)
+                    if re.search(r"timex_",feature):
                         instance["features"][r] = feature_new[feature]
         for ev in test_events:
             for instance in event_instances[ev]:
                 for r,feature in enumerate(instance["features"]):
-                    if re.search(r"timex_",feature)
+                    if re.search(r"timex_",feature):
                         instance["features"][r] = feature_new[feature]
     quit()
 
