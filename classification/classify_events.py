@@ -6,6 +6,7 @@ from collections import defaultdict
 import codecs
 import os
 import re
+import numpy
 
 import time_functions
 import gen_functions
@@ -106,12 +107,15 @@ for i in range(0,len(events),testlen):
             for tweet in event_instances_loose[ev]:
                 for feature in tweet["features"]:
                     if re.search(r"timex_",feature):
-                        feature_tte[feature].append(tweet["label"])
+                        try:
+                            feature_tte[feature].append(int(tweet["label"]))
+                        except:
+                            continue
         #calculate_median
         print "calculating median"
         feature_new = {}
         for feature in feature_tte.keys():
-            if gen_functions.return_standard_deviation(feature_tte[feature]) < threshold and len(self.feature_labellist[feature]) >= 2:
+            if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 2:
                 feature_new[feature] = str(abs(int(numpy.median(feature_tte[feature])))) + "_days"
             else:
                 feature_new[feature] = feature
@@ -121,13 +125,19 @@ for i in range(0,len(events),testlen):
             for instance in event_instances[ev]:
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
+                        #print feature
                         instance["features"][r] = feature_new[feature]
+                        #print instance["features"][r]
         for ev in test_events:
             for instance in event_instances[ev]:
+#                print instance["features"]
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
-                        instance["features"][r] = feature_new[feature]
-    quit()
+                        try:
+                            instance["features"][r] = feature_new[feature]
+                        except:
+                            continue
+#                print instance["features"]
 
     train = sum([event_instances[x] for x in train_events],[])
     test = []

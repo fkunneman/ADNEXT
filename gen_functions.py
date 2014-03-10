@@ -169,5 +169,8 @@ def read_lcs_files(partsfile,filesdir):
     return featuresets
 
 def return_standard_deviation(v):
-    mean = sum(v) / len(v)
-    return round(math.sqrt(sum([((e-mean)*(e-mean)) for e in v]) / len(v)),2)
+    if sum(v) == 0:
+        return 0
+    else:
+        mean = sum(v) / len(v)
+        return round(math.sqrt(sum([((e-mean)*(e-mean)) for e in v]) / len(v)),2)
