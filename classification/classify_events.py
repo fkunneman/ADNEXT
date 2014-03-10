@@ -168,9 +168,6 @@ for i in range(0,len(events),testlen):
         testdict["out"] = eventout
         testdict["instances"] = event_instances[event]
         test.append(testdict)
-    print "Calculating medians"
-
-
     #set up classifier object
     if args.jobs:
         cl = Classifier(train,test,jobs=args.jobs,scaling=args.scaling)
@@ -186,7 +183,6 @@ for i in range(0,len(events),testlen):
     if args.f:
         print "pruning..."
         cl.prune_features_topfrequency(args.f)
-    print cl.features
     #generate sparse input
     print "indexing..."
     cl.index_features()
