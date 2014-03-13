@@ -43,6 +43,7 @@ outfile = codecs.open(args.o,"w","utf-8")
 
 lineconvert = lineconverter.Lineconverter(lines,delimiter)
 if action == "add":
+
     if args.c:
         place = int(args.c)
     else:
@@ -134,7 +135,11 @@ if args.excel:
         for i,line in enumerate(chunk):
             columns = line.split(args.d)
             for j,col in enumerate(columns):
-                tab.write(i,j,col)
+                if re.search("https://twitter.com",col):
+                    ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
+                    tab.write(i,j, Formula(ucol))
+                else:
+                    tab.write(i,j,col)
     book.save(args.o)
         
 else:

@@ -14,7 +14,7 @@ logs = sys.argv[4]
 
 datelines = datefile.readlines()
 current_date = time_functions.return_datetime(datelines[0].strip())
-end_date = current_date + timedelta(days=49)
+end_date = current_date + timedelta(days=31)
 datefile.close()
 
 dates = []
