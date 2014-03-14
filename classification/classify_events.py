@@ -117,7 +117,7 @@ for i in range(0,len(events),testlen):
                 for feature in tweet["features"]:
                     if re.search(r"timex_",feature):
                         try:
-                            feature_tte[feature].append(int(tweet["label"]))
+                            feature_tte["_".join(feature.split("_")[:-1])].append(int(tweet["label"]))
                         except:
                             continue
         #calculate_median
