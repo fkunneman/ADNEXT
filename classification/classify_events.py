@@ -117,22 +117,19 @@ for i in range(0,len(events),testlen):
         for feature in feature_tte.keys():
             if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 2:
                 feature_new[feature] = str(int(numpy.median(feature_tte[feature]))) + "_days"
-                print "yes",feature,feature_tte[feature],str(int(numpy.median(feature_tte[feature]))) + "_days"
             else:
                 feature_new[feature] = feature
-                print "no", feature, feature_tte[feature]
-            #print feature,feature_tte[feature],feature_new[feature],gen_functions.return_standard_deviation(feature_tte[feature])
-        quit()
         #convert features
         print "converting features"
         for ev in train_events:
             for instance in event_instances[ev]:
+                print instance["features"]
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
                         #print feature
                         instance["features"][r] = feature_new[feature]
-                        print feature, feature_new[feature]
                         #print instance["features"][r]
+                print instance["features"]
         for ev in test_events:
             for instance in event_instances[ev]:
 #                print instance["features"]
