@@ -141,8 +141,8 @@ for i in range(0,len(events),testlen):
                         featureo = "_".join(feature.split("_")[:-1])
                         if not re.search(r"timex_",feature_new[featureo]):
                             extra_reg = int(feature.split("_")[-1])
-                            new_feature = "timex_" + str(int(feature_new[feature].split("_")[1]) + extra) + "days"
-                            new_features.append(new_feature)     
+                            new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "days"
+                            new_features.append(new_feature)
                         #instance["features"][r] = feature_new[feature]
                         #print instance["features"][r]
                     else:
