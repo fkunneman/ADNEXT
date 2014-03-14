@@ -75,7 +75,7 @@ for ef in args.i:
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                         features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
                         #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
-            if args.median
+            if args.median:
                 for i,feature in enumerate(features_tweet):
                     if re.search(r"timex_",feature):
                         windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
