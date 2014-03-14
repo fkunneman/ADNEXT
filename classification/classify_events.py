@@ -119,7 +119,7 @@ for i in range(0,len(events),testlen):
                 feature_new[feature] = str(abs(int(numpy.median(feature_tte[feature])))) + "_days"
             else:
                 feature_new[feature] = feature
-            print feature,feature_tte.keys(),feature_new[feature],gen_functions.return_standard_deviation(feature_tte[feature])
+            print feature,feature_tte[feature],feature_new[feature],gen_functions.return_standard_deviation(feature_tte[feature])
         quit()
         #convert features
         print "converting features"
