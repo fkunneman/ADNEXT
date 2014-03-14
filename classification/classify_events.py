@@ -111,6 +111,8 @@ for i in range(0,len(events),testlen):
                             feature_tte[feature].append(int(tweet["label"]))
                         except:
                             continue
+                        print feature,feature_tte[feature]
+        quit()
         #calculate_median
         print "calculating median"
         feature_new = {}
