@@ -66,7 +66,7 @@ for ef in args.i:
         window = tweets[j+args.window]
         features = []
         for tweet in tweets[j:j+args.window]:
-            features_tweet = tweet["features"]
+            features_tweet = tweet["features"][:]
             if args.date:
                 for i,feature in enumerate(features_tweet):
                     if re.match(r"date_\d{2}-\d{2}-\d{4}",feature):
@@ -75,8 +75,7 @@ for ef in args.i:
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                         features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
                         #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
-                        #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
-            features.extend(features_tweet)
+                  #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
             if args.median:
                 for i,feature in enumerate(features):
                     if re.search(r"timex_",feature):
@@ -84,6 +83,8 @@ for ef in args.i:
                         tweetdate = time_functions.return_datetime(tweet["meta"][args.date],setting="vs")
                         extra = time_functions.timerel(windowdate,tweetdate,"day")
                         features[i] = feature + "_" + str(extra)
+            features.extend(features_tweet)
+
         if args.c == "svr":
             try:
                 lab = float(window["label"])     
@@ -118,8 +119,8 @@ for i in range(0,len(events),testlen):
                     if re.search(r"timex_",feature):
                         print "before",feature
                         try:
-                            feature_tte["_".join(feature.split("_")[:-1])].append(int(tweet["label"]))
-                            print "after","_".join(feature.split("_")[:-1])
+                            feature_tte[feature].append(int(tweet["label"]))
+                            # print "after","_".join(feature.split("_")[:-1])
                         except:
                             print "after_continue"
                             continue
