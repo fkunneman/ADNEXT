@@ -115,10 +115,12 @@ for i in range(0,len(events),testlen):
         print "calculating median"
         feature_new = {}
         for feature in feature_tte.keys():
-            if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 1:
+            if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 2:
                 feature_new[feature] = str(abs(int(numpy.median(feature_tte[feature])))) + "_days"
             else:
                 feature_new[feature] = feature
+            print feature,feature_tte.keys(),feature_new[feature],gen_functions.return_standard_deviation(feature_tte[feature])
+        quit()
         #convert features
         print "converting features"
         for ev in train_events:
