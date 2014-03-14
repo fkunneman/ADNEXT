@@ -75,15 +75,15 @@ for ef in args.i:
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                         features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
                         #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
+                        #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
+            features.extend(features_tweet)
             if args.median:
-                for i,feature in enumerate(features_tweet):
+                for i,feature in enumerate(features):
                     if re.search(r"timex_",feature):
                         windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
                         tweetdate = time_functions.return_datetime(tweet["meta"][args.date],setting="vs")
                         extra = time_functions.timerel(windowdate,tweetdate,"day")
-                        features_tweet[i] = feature + "_" + str(extra)
-                        #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
-            features.extend(features_tweet)
+                        features[i] = feature + "_" + str(extra)
         if args.c == "svr":
             try:
                 lab = float(window["label"])     
