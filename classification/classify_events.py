@@ -123,22 +123,33 @@ for i in range(0,len(events),testlen):
         print "converting features"
         for ev in train_events:
             for instance in event_instances[ev]:
-                print instance["features"]
+                print "before", instance["features"]
+                new_features = []
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
                         #print feature
-                        instance["features"][r] = feature_new[feature]
+                        if not re.search(r"timex_",feature_new[feature]):
+                            new_features.append(feature_new[feature])     
+                        #instance["features"][r] = feature_new[feature]
                         #print instance["features"][r]
-                print instance["features"]
+                    else:
+                        new_features.append(feature)
+                instance["features"] = new_features
+                print "after", instance["features"]
         for ev in test_events:
             for instance in event_instances[ev]:
 #                print instance["features"]
+                new_features = []
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
                         try:
-                            instance["features"][r] = feature_new[feature]
+                            if not re.search(r"timex_",feature_new[feature]):
+                                new_features.append(feature_new[feature])     
                         except:
                             continue
+                    else:
+                        new_features.append(feature)
+                instance["features"] = new_features
 #                print instance["features"]
 
     train = sum([event_instances[x] for x in train_events],[])
