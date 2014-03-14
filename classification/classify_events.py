@@ -74,6 +74,7 @@ for ef in args.i:
                         date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                         features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
+                        print str(time_functions.timerel(refdate,windowdate,"day")) + "_days"
             features.extend(features_tweet)
         if args.c == "svr":
             try:
@@ -123,7 +124,7 @@ for i in range(0,len(events),testlen):
         print "converting features"
         for ev in train_events:
             for instance in event_instances[ev]:
-                print "before", instance["features"]
+                #print "before", instance["features"]
                 new_features = []
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
@@ -135,7 +136,7 @@ for i in range(0,len(events),testlen):
                     else:
                         new_features.append(feature)
                 instance["features"] = new_features
-                print "after", instance["features"]
+                #print "after", instance["features"]
         for ev in test_events:
             for instance in event_instances[ev]:
 #                print instance["features"]
