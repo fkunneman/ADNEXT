@@ -116,10 +116,14 @@ for i in range(0,len(events),testlen):
             for tweet in event_instances_loose[ev]:
                 for feature in tweet["features"]:
                     if re.search(r"timex_",feature):
+                        print "before",feature
                         try:
                             feature_tte["_".join(feature.split("_")[:-1])].append(int(tweet["label"]))
+                            print "after","_".join(feature.split("_")[:-1])
                         except:
+                            print "after_continue"
                             continue
+
         #calculate_median
         print "calculating median"
         feature_new = {}
