@@ -192,16 +192,25 @@ class Tweetsfeatures():
         # quit()
 
 
-    def match_rulelist(self,l):    
+    def match_rulelist(self,l,fe = "date"):    
     # 1: match ids
         relevant_ids = set([x.id for x in self.instances]) & set([x.split("\t")[0] for x in l])
         matched_rules = [x.strip().split("\t") for x in l if x.split("\t")[0] in relevant_ids]
         matched_tweets = [x for x in self.instances if x.id in relevant_ids]
         for t in matched_tweets:
             tweet_datetime = time_functions.return_datetime(t.date,time=t.time,setting="vs")
+            print [x for x in matched_rules if x[0] == t.id]
+            quit()
             dif = [x for x in matched_rules if x[0] == t.id][0][-1]
+
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
-            feature = "date_" + event_datetime.strftime("%d-%m-%Y")
+            if fe == "date" or fe == "both":
+                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
+            # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
+            #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
+                t.features.append(feature)
+            if fe == "timex" or fe == "both":
+                feature = "timex_" + x
             # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
             t.features.append(feature)
