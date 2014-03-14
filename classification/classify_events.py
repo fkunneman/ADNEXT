@@ -134,13 +134,12 @@ for i in range(0,len(events),testlen):
             for instance in event_instances[ev]:
                 #print "before", instance["features"]
                 new_features = []
+                print instance["features"]
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
                         #print feature
-                        print feature,feature.split("_")[:-1]
-                        continue
-                        if not re.search(r"timex_",feature_new[feature]):
-                            print feature
+                        featureo = "_".join(feature.split("_")[:-1])
+                        if not re.search(r"timex_",feature_new[featureo]):
                             extra_reg = int(feature.split("_")[-1])
                             new_feature = "timex_" + str(int(feature_new[feature].split("_")[1]) + extra) + "days"
                             new_features.append(new_feature)     
@@ -148,9 +147,10 @@ for i in range(0,len(events),testlen):
                         #print instance["features"][r]
                     else:
                         new_features.append(feature)
-                quit()
+                print new_features
                 instance["features"] = new_features
                 #print "after", instance["features"]
+            quit()
         for ev in test_events:
             for instance in event_instances[ev]:
 #                print instance["features"]
