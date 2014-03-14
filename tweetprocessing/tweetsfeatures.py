@@ -199,21 +199,24 @@ class Tweetsfeatures():
         matched_tweets = [x for x in self.instances if x.id in relevant_ids]
         for t in matched_tweets:
             tweet_datetime = time_functions.return_datetime(t.date,time=t.time,setting="vs")
-            print [x for x in matched_rules if x[0] == t.id]
-            quit()
-            dif = [x for x in matched_rules if x[0] == t.id][0][-1]
-
+            dif_feat = [x for x in matched_rules if x[0] == t.id][0]
+            dif = dif_feat[-1]
+            feat = dif_feat[2]
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
+            print "before",t.features
             if fe == "date" or fe == "both":
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
             # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
                 t.features.append(feature)
             if fe == "timex" or fe == "both":
-                feature = "timex_" + x
+                feature = "timex_" + feat
+                print feature
             # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
-            t.features.append(feature)
+                t.features.append(feature)
+            print "after",t.features
+        quit()
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
