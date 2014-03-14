@@ -127,6 +127,7 @@ for i in range(0,len(events),testlen):
                     if re.search(r"timex_",feature):
                         #print feature
                         instance["features"][r] = feature_new[feature]
+                        print feature, print feature_new[feature]
                         #print instance["features"][r]
         for ev in test_events:
             for instance in event_instances[ev]:
