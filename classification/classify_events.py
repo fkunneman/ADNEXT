@@ -172,6 +172,8 @@ for i in range(0,len(events),testlen):
         for td in test:
             outfile = open(td["out"],"w")
             instances = td["instances"]
+            print [instance["features"] for instance in instances]
+            quit()
             for instance in instances:
                 #extract day_estimations
                 ests = []
