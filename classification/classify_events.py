@@ -94,7 +94,7 @@ for ef in args.i:
         else:
             lab = window["label"]
         if len(features) > 0:
-            event_instances[event].append({"features":features,"label":lab,"meta":window["meta"]})
+            event_instances[event].append({"features":features[:],"label":lab,"meta":window["meta"]})
         j+=args.step
 
 print "Starting classification..."
@@ -122,7 +122,6 @@ for i in range(0,len(events),testlen):
                             # print "after","_".join(feature.split("_")[:-1])
                         except:
                             continue
-
         #calculate_median
         print "calculating median"
         feature_new = {}
@@ -135,42 +134,31 @@ for i in range(0,len(events),testlen):
         print "converting features"
         for ev in train_events:
             for instance in event_instances[ev]:
-                #print "before", instance["features"]
                 new_features = []
-                if re.search(r"-?\d+",instance["label"]):
-                    print "before",instance["features"]
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
-                        #print feature
                         featureo = "_".join(feature.split("_")[:-1])
                         if not re.search(r"timex_",feature_new[featureo]):
                             extra_reg = int(feature.split("_")[-1])
                             new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
                             new_features.append(new_feature)
-                        #instance["features"][r] = feature_new[feature]
-                        #print instance["features"][r]
                     else:
                         new_features.append(feature)
-                if re.search(r"-?\d+",instance["label"]):
-                    print "after",new_features
                 instance["features"] = new_features
-                #print "after", instance["features"]
-            quit()
         for ev in test_events:
             for instance in event_instances[ev]:
-#                print instance["features"]
                 new_features = []
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
-                        try:
-                            if not re.search(r"timex_",feature_new[feature]):
-                                new_features.append(feature_new[feature])     
-                        except:
-                            continue
+                        featureo = "_".join(feature.split("_")[:-1])
+                        if not re.search(r"timex_",feature_new[featureo]):
+                            extra_reg = int(feature.split("_")[-1])
+                            new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
+                            new_features.append(new_feature)
                     else:
                         new_features.append(feature)
+
                 instance["features"] = new_features
-#                print instance["features"]
 
     train = sum([event_instances[x] for x in train_events],[])
     test = []
@@ -178,8 +166,6 @@ for i in range(0,len(events),testlen):
         print event
         testdict = {}
         eventparts = event.split("/") + [args.scaling]
-#        print eventparts
-#        quit()
         eventdir = args.d 
         for part in eventparts:
             eventdir = eventdir + part + "/"
@@ -190,14 +176,6 @@ for i in range(0,len(events),testlen):
             eventout = eventdir + "tweet.txt"
         else:
             eventout = eventdir + str(args.window) + "_" + str(args.step) + ".txt"
-#         if not os.path.exists(eventdir):
-#             d = depth
-#             while d <= -1: 
-# #                print eventdir
-#                 if not os.path.exists("/".join(eventdir.split("/")[:d])):
-#                     print "mkdir " + "/".join(eventdir.split("/")[:d])
-#                     os.system("mkdir " + "/".join(eventdir.split("/")[:d]))
-#                     d+=1
         testdict["out"] = eventout
         testdict["instances"] = event_instances[event]
         test.append(testdict)
@@ -205,17 +183,15 @@ for i in range(0,len(events),testlen):
         for td in test:
             outfile = open(td["out"],"w")
             instances = td["instances"]
-            # print [instance["features"] for instance in instances]
-            # quit()
 
             for instance in instances:
                 #extract day_estimations
-#                ests = []
+                ests = []
                 labelcount = defaultdict(int)
                 for feature in instance["features"]:
-                    #if re.search(r"days",feature):
-                    #    ests.append(feature)
-                #if len(ests) > 0:
+                    if re.search(r"days",feature):
+                       ests.append(feature)
+                if len(ests) > 0:
                     num = re.search(r"(-?\d+)_days",topest).groups()[0]
                     for est in ests:
                         labelcount[est] += 1
