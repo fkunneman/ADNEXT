@@ -195,11 +195,10 @@ for i in range(0,len(events),testlen):
                     if re.search(r"days",feature):
                        ests.append(feature)
                 if len(ests) > 0:
-                    num = re.search(r"(-?\d+)_days",topest).groups()[0]
                     for est in ests:
                         labelcount[est] += 1
                     topest = [e for e in sorted(labelcount, key=labelcount.get, reverse=True)][0]
-                    
+                    num = re.search(r"(-?\d+)_days",topest).groups()[0]
                 else:
                     num = "during"
                 outfile.write(instance["label"] + " " + str(num) + "\n")
