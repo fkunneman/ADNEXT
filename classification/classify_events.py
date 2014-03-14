@@ -75,6 +75,14 @@ for ef in args.i:
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                         features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
                         #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
+            if args.median
+                for i,feature in enumerate(features_tweet):
+                    if re.search(r"timex_",feature):
+                        windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
+                        tweetdate = time_functions.return_datetime(tweet["meta"][args.date],setting="vs")
+                        extra = time_functions.timerel(windowdate,tweetdate,"day")
+                        features_tweet[i] = feature + "_" + str(extra)
+                        #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
             features.extend(features_tweet)
         if args.c == "svr":
             try:
@@ -129,12 +137,18 @@ for i in range(0,len(events),testlen):
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
                         #print feature
+                        print feature,feature.split("_")[:-1]
+                        continue
                         if not re.search(r"timex_",feature_new[feature]):
-                            new_features.append(feature_new[feature])     
+                            print feature
+                            extra_reg = int(feature.split("_")[-1])
+                            new_feature = "timex_" + str(int(feature_new[feature].split("_")[1]) + extra) + "days"
+                            new_features.append(new_feature)     
                         #instance["features"][r] = feature_new[feature]
                         #print instance["features"][r]
                     else:
                         new_features.append(feature)
+                quit()
                 instance["features"] = new_features
                 #print "after", instance["features"]
         for ev in test_events:
@@ -186,20 +200,22 @@ for i in range(0,len(events),testlen):
         for td in test:
             outfile = open(td["out"],"w")
             instances = td["instances"]
-            print [instance["features"] for instance in instances]
-            quit()
+            # print [instance["features"] for instance in instances]
+            # quit()
+
             for instance in instances:
                 #extract day_estimations
-                ests = []
+#                ests = []
+                labelcount = defaultdict(int)
                 for feature in instance["features"]:
-                    if re.search(r"days",feature):
-                        ests.append(feature)
-                if len(ests) > 0:
-                    labelcount = defaultdict(int)
+                    #if re.search(r"days",feature):
+                    #    ests.append(feature)
+                #if len(ests) > 0:
+                    num = re.search(r"(-?\d+)_days",topest).groups()[0]
                     for est in ests:
                         labelcount[est] += 1
                     topest = [e for e in sorted(labelcount, key=labelcount.get, reverse=True)][0]
-                    num = re.search(r"(-?\d+)_days",topest).groups()[0]
+                    
                 else:
                     num = "during"
                 outfile.write(instance["label"] + " " + str(num) + "\n")
