@@ -151,10 +151,13 @@ for i in range(0,len(events),testlen):
                 for r,feature in enumerate(instance["features"]):
                     if re.search(r"timex_",feature):
                         featureo = "_".join(feature.split("_")[:-1])
-                        if not re.search(r"timex_",feature_new[featureo]):
-                            extra_reg = int(feature.split("_")[-1])
-                            new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
-                            new_features.append(new_feature)
+                        try:
+                            if not re.search(r"timex_",feature_new[featureo]):
+                                extra_reg = int(feature.split("_")[-1])
+                                new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
+                                new_features.append(new_feature)
+                        except:
+                            continue
                     else:
                         new_features.append(feature)
 

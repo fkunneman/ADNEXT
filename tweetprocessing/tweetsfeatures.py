@@ -158,9 +158,6 @@ class Tweetsfeatures():
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
-                  
-#        quit()
-
 
     def extract_date(self):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
@@ -192,7 +189,7 @@ class Tweetsfeatures():
         # quit()
 
 
-    def match_rulelist(self,l,fe = "date"):    
+    def match_rulelist(self,l):    
     # 1: match ids
         relevant_ids = set([x.id for x in self.instances]) & set([x.split("\t")[0] for x in l])
         matched_rules = [x.strip().split("\t") for x in l if x.split("\t")[0] in relevant_ids]
@@ -203,20 +200,16 @@ class Tweetsfeatures():
             dif = dif_feat[-1]
             feat = dif_feat[2]
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
-            print "before",t.features
-            if fe == "date" or fe == "both":
-                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
+            # if fe == "date" or fe == "both":
+            feature = "date_" + event_datetime.strftime("%d-%m-%Y")
             # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
-                t.features.append(feature)
-            if fe == "timex" or fe == "both":
-                feature = "timex_" + feat
-                print feature
+            # if fe == "timex" or fe == "both":
+            #     feature = "timex_" + feat
+            #     print feature
             # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
             #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
-                t.features.append(feature)
-            print "after",t.features
-        quit()
+            t.features.append(feature)
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n):
