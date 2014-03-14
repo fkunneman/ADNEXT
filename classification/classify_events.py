@@ -116,8 +116,8 @@ for i in range(0,len(events),testlen):
         feature_new = {}
         for feature in feature_tte.keys():
             if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 2:
-                feature_new[feature] = str(int(numpy.median(feature_tte[feature])))) + "_days"
-                print "yes",feature,feature_tte[feature],str(int(numpy.median(feature_tte[feature])))) + "_days"
+                feature_new[feature] = str(int(numpy.median(feature_tte[feature]))) + "_days"
+                print "yes",feature,feature_tte[feature],str(int(numpy.median(feature_tte[feature]))) + "_days"
             else:
                 feature_new[feature] = feature
                 print "no", feature, feature_tte[feature]
