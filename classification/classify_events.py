@@ -157,8 +157,8 @@ for i in range(0,len(events),testlen):
                                 extra_reg = int(feature.split("_")[-1])
                                 new_feature = str(int(feature_new[featureo].split("_")[0]) + extra_reg) + "_days"
                                 new_features.append(new_feature)
-                                if re.search("ajaaz",ev):
-                                    print feature,new_feature
+#                                if re.search("ajaaz",ev):
+#                                    print feature,new_feature
                         except:
                             continue
                     else:

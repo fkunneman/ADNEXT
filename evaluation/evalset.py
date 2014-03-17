@@ -60,7 +60,7 @@ class Evalset():
                     else:
                         responsiveness_vals.append(1)
                         dif = abs(int(target) - int(prediction))
-                        print target,prediction,dif
+#                        print target,prediction,dif
                         ae_vals.append(dif)
                         rmse_vals.append(dif*dif)
                         plot_vals[int(target)].append(dif)
@@ -71,9 +71,9 @@ class Evalset():
         try:
             rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
             mae = round(sum(ae_vals)/len(ae_vals),2)
-            print rmse_vals,rmse,mae
+#            print rmse_vals,rmse,mae
         except:
-            print [(x.label,x.classification) for x in self.instances]
+#            print [(x.label,x.classification) for x in self.instances]
             rmse = 0
             mae = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) \
