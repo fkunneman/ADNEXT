@@ -104,11 +104,11 @@ class Evalset():
         for i,instance in enumerate(self.instances):
             if instance.label == "during" or instance.label == "after":
                 try:
-                    return round((correct/(i)),2)
+                    return round((correct/i),2)
                 except:
                     return 0.0
                 break
-            if instance.label == instance.classification:
+            elif instance.label == instance.classification:
                 correct += 1
         
 
