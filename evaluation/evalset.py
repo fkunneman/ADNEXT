@@ -51,6 +51,7 @@ class Evalset():
                 before = i
                 d = True
             prediction = instance.classification
+            print target,prediction
             if not target == "during" and not target == "after":
                 if prediction == "during" or prediction == "after":
                     responsiveness_vals.append(0)
@@ -70,6 +71,7 @@ class Evalset():
         try:
             rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
             mae = round(sum(ae_vals)/len(ae_vals),2)
+            print rmse,mae
         except:
             print [(x.label,x.classification) for x in self.instances]
             rmse = 0
