@@ -201,7 +201,8 @@ for i in range(0,len(events),testlen):
                     num = re.search(r"(-?\d+)_days",topest).groups()[0]
                 else:
                     num = "during"
-                #print instance["features"],num
+                if re.search("ajaaz",td["out"]):
+                    print instance["features"],num
                 outfile.write(instance["label"] + " " + str(num) + "\n")
             outfile.close() 
     else:
