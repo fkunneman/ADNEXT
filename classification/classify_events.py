@@ -28,6 +28,7 @@ parser.add_argument('--cw', action='store_true', help = 'choose to set class wei
 parser.add_argument('--balance', action='store_true', help = 'choose to balance class frequency')
 parser.add_argument('--date', action='store', type = int, required=False,help='specify the date column to convert time features')
 parser.add_argument('--median', action='store_true',help='choose to calculate median time to event of time expressions')
+parser.add_argument('--tt', action='store_true',help='choose to only include tweets with time_expressions')
 
 args=parser.parse_args() 
 
@@ -67,9 +68,16 @@ for ef in args.i:
         features = []
         for tweet in tweets[j:j+args.window]:
             features_tweet = tweet["features"][:]
+            if args.tt:
+                timeinfo = False
+            for f in features:
+                if re.search("^(timex|date)",f):
+                    timeinfo = True
+                    break
             if args.date:
                 for i,feature in enumerate(features_tweet):
                     if re.match(r"date_\d{2}-\d{2}-\d{4}",feature):
+                        timeinfo = True
                         windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
                         date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
@@ -79,11 +87,16 @@ for ef in args.i:
             if args.median:
                 for i,feature in enumerate(features_tweet):
                     if re.search(r"timex_",feature):
+                        timeinfo=True
                         windowdate = time_functions.return_datetime(window["meta"][args.date],setting="vs")
                         tweetdate = time_functions.return_datetime(tweet["meta"][args.date],setting="vs")
                         extra = time_functions.timerel(windowdate,tweetdate,"day")
                         features_tweet[i] = feature + "_" + str(extra)
-            features.extend(features_tweet)
+            if args.tt:
+                if timeinfo:
+                    features.extend(features_tweet)
+            else:
+                features.extend(features_tweet)
 
         if args.c == "svr":
             try:
