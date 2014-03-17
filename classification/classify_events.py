@@ -155,6 +155,7 @@ for i in range(0,len(events),testlen):
                             if not re.search(r"timex_",feature_new[featureo]):
                                 extra_reg = int(feature.split("_")[-1])
                                 new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
+                                print feature,new_feature
                                 new_features.append(new_feature)
                         except:
                             continue
@@ -201,6 +202,7 @@ for i in range(0,len(events),testlen):
                     num = re.search(r"(-?\d+)_days",topest).groups()[0]
                 else:
                     num = "during"
+                print instance["features"],num
                 outfile.write(instance["label"] + " " + str(num) + "\n")
             outfile.close() 
     else:
