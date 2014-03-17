@@ -74,7 +74,6 @@ for ef in args.i:
                         date_extract = re.search(r"date_(\d{2}-\d{2}-\d{4})",feature)
                         refdate = time_functions.return_datetime(date_extract.groups()[0],setting="eu")
                         features_tweet[i] = str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
-                        print refdate,windowdate,features_tweet[i]
                         #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
                   #print refdate,windowdate,str(time_functions.timerel(refdate,windowdate,"day") * -1) + "_days"
             if args.median:
@@ -202,7 +201,8 @@ for i in range(0,len(events),testlen):
                 else:
                     num = "during"
                 if re.search("ajaaz",td["out"]):
-                    print instance["features"],num
+                    if re.search("fall_11",td["out"]):
+                        print instance["features"],num
                 outfile.write(instance["label"] + " " + str(num) + "\n")
             outfile.close() 
     else:
