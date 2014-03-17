@@ -153,6 +153,7 @@ for i in range(0,len(events),testlen):
                         featureo = "_".join(feature.split("_")[:-1])
                         try:
                             if not re.search(r"timex_",feature_new[featureo]):
+                                print "yes"
                                 extra_reg = int(feature.split("_")[-1])
                                 new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
                                 print feature,new_feature
