@@ -128,6 +128,7 @@ for i in range(0,len(events),testlen):
         for feature in feature_tte.keys():
             if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 2:
                 feature_new[feature] = str(int(numpy.median(feature_tte[feature]))) + "_days"
+ #               print feature,feature_tte[feature],feature_new[feature]
             else:
                 feature_new[feature] = feature
         #convert features
@@ -140,7 +141,7 @@ for i in range(0,len(events),testlen):
                         featureo = "_".join(feature.split("_")[:-1])
                         if not re.search(r"timex_",feature_new[featureo]):
                             extra_reg = int(feature.split("_")[-1])
-                            new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
+                            new_feature = str(int(feature_new[featureo].split("_")[0]) + extra_reg) + "_days"
                             new_features.append(new_feature)
                     else:
                         new_features.append(feature)
@@ -154,8 +155,10 @@ for i in range(0,len(events),testlen):
                         try:
                             if not re.search(r"timex_",feature_new[featureo]):
                                 extra_reg = int(feature.split("_")[-1])
-                                new_feature = str(int(feature_new[featureo].split("_")[0]) + extra) + "_days"
+                                new_feature = str(int(feature_new[featureo].split("_")[0]) + extra_reg) + "_days"
                                 new_features.append(new_feature)
+                                if re.search("ajaaz",ev):
+                                    print feature,new_feature
                         except:
                             continue
                     else:
@@ -200,9 +203,9 @@ for i in range(0,len(events),testlen):
                     num = re.search(r"(-?\d+)_days",topest).groups()[0]
                 else:
                     num = "during"
-                if re.search("ajaaz",td["out"]):
-                    if re.search("fall_11",td["out"]):
-                        print instance["features"],num
+#                if re.search("ajaaz",td["out"]):
+  #                  if re.search("fall_11",td["out"]):
+   #                     print instance["features"],num
                 outfile.write(instance["label"] + " " + str(num) + "\n")
             outfile.close() 
     else:

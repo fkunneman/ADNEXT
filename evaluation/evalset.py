@@ -63,7 +63,10 @@ class Evalset():
                         ae_vals.append(dif)
                         rmse_vals.append(dif*dif)
                         plot_vals[int(target)].append(dif)
-        responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
+        try: 
+            responsiveness = round(sum(responsiveness_vals)/len(responsiveness_vals),2)  
+        except:
+            responsiveness = 0
         try:
             rmse = round(math.sqrt(sum(rmse_vals)/len(rmse_vals)),2)
             mae = round(sum(ae_vals)/len(ae_vals),2)
@@ -73,7 +76,10 @@ class Evalset():
             mae = 0
         plot_vals_mean = [(v,(sum(plot_vals[v]) / len(plot_vals[v]))) \
             for v in sorted(plot_vals.keys())]
-        return [rmse,mae,int(self.instances[0].label),before,responsiveness,plot_vals_mean]
+        try:
+            return [rmse,mae,int(self.instances[0].label),before,responsiveness,plot_vals_mean]
+        except:
+            return [rmse,mae,'x',before,responsiveness,plot_vals_mean]
 
     def accuracy_at(self,value,condition):
         for instance in self.instances:

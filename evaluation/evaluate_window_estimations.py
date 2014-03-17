@@ -58,8 +58,12 @@ rmse_mean = str(round(sum(rmse_all) / len(rmse_all),2))
 rmse_stdef = str(gen_functions.return_standard_deviation(rmse_all))
 mae_mean = str(round((sum(mae_all) / len(mae_all)),2))
 mae_stdef = str(gen_functions.return_standard_deviation(mae_all))
-first_mean = str(round(sum(first_all) / len(first_all),2))
-first_stdef = str(gen_functions.return_standard_deviation(first_all))
+try:
+    first_mean = str(round(sum(first_all) / len(first_all),2))
+    first_stdef = str(gen_functions.return_standard_deviation(first_all))
+except:
+    first_mean = 'x'
+    first_stdef = 'x'
 before_mean = str(round(sum(before_all) / len(before_all),2))
 before_stdef = str(gen_functions.return_standard_deviation(before_all))
 responsiveness_mean = str(round(sum(responsiveness_all) / len(responsiveness_all),2))
