@@ -176,7 +176,6 @@ for i in range(0,len(events),testlen):
                             continue
                     else:
                         new_features.append(feature)
-
                 instance["features"] = new_features
 
     train = sum([event_instances[x] for x in train_events],[])
