@@ -376,26 +376,19 @@ class Tweetsfeatures():
         self.instances = templist
         print "freq tweets after", len(self.instances)
         
-    def filter_tweets_timepoint(self,timepoint,split):
+    def filter_tweets_timewindow(self,timepoint_1,timepoint_2):
         """Filter tweets that are posted before or after a chosen timepoint"""
-        print_string = "splitting tweets to " + split + " " + timepoint + \
-            ",tweets before:"
-        print print_string,len(self.instances)
         filtered_tweets = []
-        point_datetime = time_functions.return_datetime(timepoint)
-        for t in self.instances:
+        point_datetime_begin = time_functions.return_datetime(timepoint_1)
+        point_datetime_end = time_functions.return_datetime(timepoint_2)
+        for instance in self.instances:
             #Get the time of the event mentioned in the tweet 
-            tweet_datetime = time_functions.return_datetime(t.date,t.time,"vs")
+            tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
             #Extract the time difference between the tweet and the event 
-            if tweet_datetime < point_datetime:
-                if split == "before":
-                    filtered_tweets.append(t)
-            else:    
-                if split == "after":
-                    filtered_tweets.append(t)
+            if tweet_datetime > point_datetime_begin and tweet_datetime < point_datetime_end:
+                filtered_tweets.append(instance)
                         
         self.instances = filtered_tweets
-        print "tweets after",len(self.instances)
 
     def remove_blacklist(self,blacklist,eos):
         """Remove a feature if it contains a word in the blacklist."""
