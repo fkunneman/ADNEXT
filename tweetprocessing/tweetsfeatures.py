@@ -200,6 +200,7 @@ class Tweetsfeatures():
         for instance in self.instances:
             print instance.features
             ws = " ".join(instance.wordsequence)
+            days_ahead = False
             if today.search(ws):
                 days_ahead = 0
             elif tomorrow.search(ws):
@@ -220,9 +221,8 @@ class Tweetsfeatures():
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
             try:
-                da = int(days_ahead)
                 tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
-                event_datetime = tweet_datetime + datetime.timedelta(days = da)
+                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
