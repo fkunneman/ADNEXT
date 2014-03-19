@@ -197,7 +197,7 @@ class Tweetsfeatures():
         weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?")
         weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
 
-        for instance in self.instances:
+        for instance in self.instances[:100]:
             print instance.features
             ws = " ".join(instance.wordsequence)
             da = False
