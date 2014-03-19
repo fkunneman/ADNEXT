@@ -221,8 +221,10 @@ class Tweetsfeatures():
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
             try:
+                print days_ahead
                 tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
                 event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
+                print tweet_datetime,event_datetime
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
