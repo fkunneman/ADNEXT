@@ -212,7 +212,7 @@ class Tweetsfeatures():
                 if weekend.search(ws):
                     ref_weekday=weekdays.index("zaterdag")
                 else:
-                    ref_weekday=weekdays.index(weekday.search(text).groups()[0])
+                    ref_weekday=weekdays.index(weekday.search(ws).groups()[0])
                 if ref_weekday == tweet_weekday:
                     days_ahead = 0
                 elif tweet_weekday < ref_weekday:
@@ -225,7 +225,7 @@ class Tweetsfeatures():
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
-            print instance.features,ws
+            print instance.features,instance.date,ws
 
     def match_rulelist(self,l):    
     # 1: match ids
