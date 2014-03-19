@@ -198,6 +198,7 @@ class Tweetsfeatures():
         weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
 
         for instance in self.instances:
+            print instance.features
             days_ahead = False
             ws = " ".join(instance.wordsequence)
             if today.search(ws):
@@ -219,7 +220,9 @@ class Tweetsfeatures():
                     days_ahead = ref_weekday - tweet_weekday
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
+            print days_ahead
             if isinstance(days_ahead, int):
+                print "yes"
                 tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
                 event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
