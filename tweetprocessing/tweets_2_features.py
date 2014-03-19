@@ -33,9 +33,9 @@ parser.add_argument('-ri', action = 'store', required = False, nargs = '+',
 parser.add_argument('-re', action = 'store', required = False, nargs = '+', 
     help = "[OPTIONAL] remove instances if the do not end with a given hashtag (the given hashtag \
     may still be followed by a URL or other hashtags)")
-parser.add_argument('-rp', action = 'store', required = False, nargs = '+', 
-    help = "[OPTIONAL] to filter tweets before or after a point in time, specify the point in \
-    time and \'before\' or \'after\' respectively")
+parser.add_argument('-rw', nargs='+', action = 'store', required = False, nargs = '+', 
+    help = "[OPTIONAL] to filter tweets outside of a specified timewindow, specify the two points \
+    in time")
 parser.add_argument('-ur', action = 'store_true', default = False, 
     help = "[OPTIONAL] choose whether url's are normalized")
 parser.add_argument('-us', action = 'store_true', default = False, 
@@ -56,8 +56,8 @@ if args.ri:
     tf.filter_tweets(args.ri)
 if args.re:
     tf.filter_tweets_reflexive_hashtag(args.re)
-if args.rp:
-    tf.filter_tweets_timepoint(args.rp[0],args.rp[1])
+if args.rw:
+    tf.filter_tweets_timepoint(args.rw[0],args.rw[1])
 
 print "Generating features..." 
 if args.e:
