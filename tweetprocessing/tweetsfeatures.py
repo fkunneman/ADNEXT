@@ -199,7 +199,6 @@ class Tweetsfeatures():
 
         for instance in self.instances:
             print instance.features
-            days_ahead = False
             ws = " ".join(instance.wordsequence)
             if today.search(ws):
                 days_ahead = 0
