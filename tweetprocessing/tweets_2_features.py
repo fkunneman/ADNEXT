@@ -33,7 +33,7 @@ parser.add_argument('-ri', action = 'store', required = False, nargs = '+',
 parser.add_argument('-re', action = 'store', required = False, nargs = '+', 
     help = "[OPTIONAL] remove instances if the do not end with a given hashtag (the given hashtag \
     may still be followed by a URL or other hashtags)")
-parser.add_argument('-rw', nargs='+', action = 'store', required = False, nargs = '+', 
+parser.add_argument('-rw', nargs='+', action = 'store', required = False, 
     help = "[OPTIONAL] to filter tweets outside of a specified timewindow, specify the two points \
     in time")
 parser.add_argument('-ur', action = 'store_true', default = False, 
