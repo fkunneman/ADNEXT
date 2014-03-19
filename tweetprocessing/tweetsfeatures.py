@@ -201,11 +201,11 @@ class Tweetsfeatures():
             print instance.features
             ws = " ".join(instance.wordsequence)
             da = False
-            if weekend.search(ws) or weekday.search(ws):
+            if weekend.search(ws,re.IGNORECASE) or weekday.search(ws,re.IGNORECASE):
                 da = True
                 tweet_date=time_functions.return_datetime(instance.date,setting="vs")
                 tweet_weekday=tweet_date.weekday()
-                if weekend.search(ws):
+                if weekend.search(ws,re.IGNORECASE):
                     ref_weekday=weekdays.index("zaterdag")
                 else:
                     ref_weekday=weekdays.index(weekday.search(ws).groups()[0])
@@ -215,13 +215,13 @@ class Tweetsfeatures():
                     days_ahead = ref_weekday - tweet_weekday
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
-            elif today.search(ws):
+            elif today.search(ws,re.IGNORECASE):
                 da = True
                 days_ahead = 0
-            elif tomorrow.search(ws):
+            elif tomorrow.search(ws,re.IGNORECASE):
                 da = True
                 days_ahead = 1
-            elif day_after_t.search(ws):
+            elif day_after_t.search(ws,re.IGNORECASE):
                 da = True
                 days_ahead = 2
 
