@@ -191,7 +191,7 @@ class Tweetsfeatures():
     def extract_weekday(self):
         future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
         today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)")
-        tomorrow=re.compile(r"(morgen|morgenavond|morgenmiddag|morgenochtend)")
+        tomorrow=re.compile(r"^?(morgen|morgenavond|morgenmiddag|morgenochtend)")
         day_after_t=re.compile(r"overmorgen")
         weekend=re.compile(r"\b(weekend)\b")
         weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?")
