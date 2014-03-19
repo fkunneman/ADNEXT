@@ -188,6 +188,44 @@ class Tweetsfeatures():
                 instance.features.append(feature)  
         # quit()
 
+    def extract_weekday(self):
+        future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
+        today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)")
+        tomorrow=re.compile(r"morgen(avond|middag|ochtend)?")
+        day_after_t=re.compile(r"overmorgen")
+        weekend=re.compile(r"\b(weekend)\b")
+        weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?")
+        weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
+
+        for instance in self.instances:
+            days_ahead = False
+            ws = " ".join(instance.wordsequence)
+            if today.search(ws):
+                days_ahead = 0
+            elif tomorrow.search(ws):
+                days_ahead = 1
+            elif day_after_t.search(ws):
+                days_ahead = 2
+            elif weekend.search(ws) or weekday.search(ws):
+                tweet_date=time_functions.return_datetime(instance.date,setting="vs")
+                tweet_weekday=tweet_date.weekday()
+                if weekend.search(ws):
+                    ref_weekday=weekdays.index("zaterdag")
+                else:
+                    ref_weekday=weekdays.index(weekday.search(text).groups()[0])
+                if ref_weekday == tweet_weekday:
+                    days_ahead = 0
+                elif tweet_weekday < ref_weekday:
+                    days_ahead = ref_weekday - tweet_weekday
+                else:
+                    days_ahead = ref_weekday + (7-tweet_weekday)
+            if isinstance(days_ahead, int):
+                tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
+                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
+                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
+                #print ws,feature                
+                instance.features.append(feature)
+            print instance.features,ws
 
     def match_rulelist(self,l):    
     # 1: match ids
