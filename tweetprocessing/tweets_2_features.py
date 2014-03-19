@@ -57,7 +57,7 @@ if args.ri:
 if args.re:
     tf.filter_tweets_reflexive_hashtag(args.re)
 if args.rw:
-    tf.filter_tweets_timepoint(args.rw[0],args.rw[1])
+    tf.filter_tweets_timewindow(args.rw[0],args.rw[1])
 
 print "Generating features..." 
 if args.e:
