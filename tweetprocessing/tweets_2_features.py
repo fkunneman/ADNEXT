@@ -72,7 +72,6 @@ if args.d:
     tf.extract_date()
 if args.w:
     tf.extract_weekday()
-quit()
 if args.m:
     l = codecs.open(args.m,"r","utf-8")
     tf.match_rulelist(l.readlines())
