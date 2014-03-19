@@ -14,7 +14,7 @@ api = twython.Twython("UgWAr6AsfnpnkNz6Lsvgjg","jxEvISOAPlhlWmCWXDrF2jL3ZNo62IDu
 tweets = []
 
 # Collect tweets
-tweets = twitter_devs.extract_tweets(event,api,language)
+tweets = twitter_devs.collect_usertweets(api,user)
 
 quit()
 # Process tweets

@@ -103,16 +103,16 @@ class Evalset():
         correct = 0
         for i,instance in enumerate(self.instances):
             if instance.label == "during" or instance.label == "after":
-                print "yes"
+#                print "yes"
                 try:
                     print "calc",round((correct/i),2)
                     return round((correct/i),2)
                 except:
-                    print "exc"
+#                    print "exc"
                     return 0.0
                 break
             elif instance.label == instance.classification:
-                print "corr"
+#                print "corr"
                 correct += 1
         
 

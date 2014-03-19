@@ -28,6 +28,7 @@ accuracies = []
 plotvals = defaultdict(list)
 # for each file
 for ef in args.i:
+    print ef
     # extract event + windowname
     event_txt = "/".join(ef.split("/")[depth:])
     event = re.sub(".txt","",event_txt)
@@ -46,7 +47,7 @@ for ef in args.i:
     rmse = es.calculate_rmse()
     rmses.append(rmse[:-1])
     accuracy = es.calculate_accuracy()
-    print ef,accuracy
+#    print ef,accuracy
     accuracies.append(accuracy)
     outfile.write("\t".join([event] + [str(x) for x in rmse[:-1]] + [str(accuracy)]) + "\n")
     if args.p:
