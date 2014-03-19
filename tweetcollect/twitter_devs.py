@@ -30,8 +30,11 @@ def collect_usertweets(api,user):
                 return ["stop"]
             return outtweet
         for tweet in user_timeline:
+            print tweet
+            quit()
             try:
                 time = tweet["created_at"]
+                tweet_id = tweet["id"] 
                 text = tweet["text"]
                 tweetline = user + "||" + time + "||" + text
                 outtweet.append(tweetline)
