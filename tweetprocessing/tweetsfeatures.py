@@ -234,7 +234,7 @@ class Tweetsfeatures():
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
-            print instance.features,instance.date,ws
+            print [unicode(x) for x in instance.features],instance.date,ws
 
     def match_rulelist(self,l):    
     # 1: match ids
