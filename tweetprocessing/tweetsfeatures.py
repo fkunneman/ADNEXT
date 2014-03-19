@@ -200,9 +200,9 @@ class Tweetsfeatures():
         for instance in self.instances[:100]:
             print instance.features
             ws = " ".join(instance.wordsequence)
-            print ws,"new"
             da = False
             if weekend.search(ws,re.IGNORECASE) or weekday.search(ws,re.IGNORECASE):
+                print "wd"
                 da = True
                 tweet_date=time_functions.return_datetime(instance.date,setting="vs")
                 tweet_weekday=tweet_date.weekday()
@@ -217,12 +217,15 @@ class Tweetsfeatures():
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
             elif today.search(ws,re.IGNORECASE):
+                print "td"
                 da = True
                 days_ahead = 0
             elif tomorrow.search(ws,re.IGNORECASE):
+                print "tm"
                 da = True
                 days_ahead = 1
             elif day_after_t.search(ws,re.IGNORECASE):
+                print "dat"
                 da = True
                 days_ahead = 2
 
@@ -235,6 +238,8 @@ class Tweetsfeatures():
                 feature = "date_" + event_datetime.strftime("%d-%m-%Y")
                 #print ws,feature                
                 instance.features.append(feature)
+            else:
+                print "none"
             print [unicode(x) for x in instance.features],instance.date,ws
 
     def match_rulelist(self,l):    
