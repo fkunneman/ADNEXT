@@ -200,6 +200,7 @@ class Tweetsfeatures():
         for instance in self.instances[:100]:
             print instance.features
             ws = " ".join(instance.wordsequence)
+            print ws
             da = False
             if weekend.search(ws,re.IGNORECASE) or weekday.search(ws,re.IGNORECASE):
                 da = True
