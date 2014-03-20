@@ -13,7 +13,7 @@ import gen_functions
 
 parser=argparse.ArgumentParser(description="Program to perform a classification experiment with event tweets in a sliding window fashion")
 parser.add_argument('-i', action='store', nargs='+', required=True, help="the files with tweets per event (only events in -i gives 10-fold cross-validation)")
-parser.add_argument('-t', action='store', nargs='t', required=False, help="the test-events (for a train-test setting)")
+parser.add_argument('-t', action='store', nargs='+', required=False, help="the test-events (for a train-test setting)")
 parser.add_argument('-d', action='store', help="the directory in which to write classification files")
 parser.add_argument('-c', action='store', required=True, choices=["svm","svr","median_baseline"], help="the classifier")
 parser.add_argument('-f', action='store', required=False, type=int, help="[OPTIONAL] to select features based on frequency, specify the top n features in terms of frequency")
