@@ -17,12 +17,12 @@ parser.add_argument('-t', action = 'store', type=int, required = True, help = "f
 args = parser.parse_args()
 
 tweetdict = defaultdict(list)
-
-print args.i
+fileread = codecs.open(args.i,"r","utf-8")
 for line in fileread.readlines():
     tokens = line.strip().split("\t")
     tweet_datetime = time_functions.return_datetime(tokens[args.d],time=tokens[args.t],setting="vs")
     tweetdict[tweet_datetime].append(line)
+fileread.close()
 
 outfile = codecs.open(args.o,"w","utf-8")
 for dt in sorted(tweetdict):
