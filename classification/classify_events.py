@@ -22,6 +22,7 @@ parser.add_argument('--stdev', action='store', required = False, type=float, hel
 parser.add_argument('--step', action='store', default=1, type=int, help="specify the stepsize of instance windows; [DEFAULT] = 1")
 parser.add_argument('--window', action='store', default=100, type=int, help="specify the size of instance windows; [DEFAULT] = 100")
 parser.add_argument('--depth', action='store', default=1, type=int, help="specify the depth of file characterizations; [DEFAULT] = 1)")
+parser.add_argument('--deptht', action='store', default=1, type=int, help="specify the depth of test file characterizations; [DEFAULT = 1)")
 parser.add_argument('--scaling', action='store', default='binary', help='')
 parser.add_argument('--majority', action='store_true', help = 'specify if tweet windows are classified as sets of loose tweets')
 parser.add_argument('--jobs', action='store', type = int, required=False, help = 'specify the number of cores to use')
@@ -40,7 +41,7 @@ if len(args.i) <= 1:
     exit()
 depth = args.depth * -1
 
-def read_events(eventfiles):
+def read_events(eventfiles,depth):
     #read in instances
     print "Reading in events..."
     event_instances = defaultdict(list)
@@ -52,6 +53,7 @@ def read_events(eventfiles):
         instance_file.close()
         event_txt = "/".join(ef.split("/")[depth:])
         event = re.sub(".txt","",event_txt)
+        print event
         #make list of tweet dicts
         tweets = []
         for tweet in instances_raw:
@@ -116,9 +118,9 @@ def read_events(eventfiles):
     else:
         return event_instances
 
-train_instances = read_events(args.i)
+train_instances = read_events(args.i,args.depth)
 if args.t:
-    test_instances = read_events(args.t)
+    test_instances = read_events(args.t,args.tdepth)
 
 print "Starting classification..."
     
