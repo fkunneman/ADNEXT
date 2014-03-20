@@ -260,15 +260,15 @@ def classify(event_instances,train_events,test_events):
 
 if args.t:
 #divide train and test events
-    tr_events = train_instances.keys()
-    te_events = test_instances.keys()
+    tr_events = train_instances[0].keys()
+    te_events = test_instances[0].keys()
     if args.median:
         e_instances = [dict(train_instances[0].items() + test_instances[0].items()),dict(train_instances[1].items() + test_instances[0].items())]
     else:
         e_instances = dict(train_instances[0].items() + test_instances[0].items())
     classify(e_instances,tr_events,te_events)
 else:
-    events = train_instances.keys()
+    events = train_instances[0].keys()
     testlen = int(len(events)/10)
     #make folds
     for i in range(0,len(events),testlen):
