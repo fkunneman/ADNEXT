@@ -122,6 +122,7 @@ train_instances = read_events(args.i,args.depth)
 if args.t:
     test_instances = read_events(args.t,args.tdepth)
 
+quit()
 print "Starting classification..."
     
 def classify(event_instances,train_events,test_events):
