@@ -277,5 +277,5 @@ else:
         except IndexError:
             tr_events = events[:i]
             te_events = [events[j] for j in range(i,len(events))]
-    classify(train_instances,tr_events,te_events)
+        classify(train_instances,tr_events,te_events)
 
