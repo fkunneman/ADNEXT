@@ -261,7 +261,7 @@ if args.t:
     print train_instances[0]
     tr_events = train_instances[0].keys()
     te_events = test_instances[0].keys()
-    if args.c == "median_baseline":
+    if args.median:
         e_instances = [dict(train_instances[0].items() + test_instances[0].items()),dict(train_instances[1].items() + test_instances[1].items())]
     else:
         e_instances = dict(train_instances[0].items() + test_instances[0].items())
