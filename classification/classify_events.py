@@ -264,7 +264,7 @@ if args.t:
     if args.median:
         e_instances = [dict(train_instances[0].items() + test_instances[0].items()),dict(train_instances[1].items() + test_instances[1].items())]
     else:
-        e_instances = dict(train_instances[0].items() + test_instances[0].items())
+        e_instances = [dict(train_instances[0].items() + test_instances[0].items())]
     classify(e_instances,tr_events,te_events)
 else:
     events = train_instances[0].keys()
