@@ -54,7 +54,6 @@ def read_events(eventfiles,d):
         instance_file.close()
         event_txt = "/".join(ef.split("/")[d:])
         event = re.sub(".txt","",event_txt)
-        print event
         #make list of tweet dicts
         tweets = []
         for tweet in instances_raw:
@@ -123,7 +122,6 @@ train_instances = read_events(args.i,depth)
 if args.t:
     test_instances = read_events(args.t,deptht)
 
-quit()
 print "Starting classification..."
     
 def classify(event_instances,train_events,test_events):

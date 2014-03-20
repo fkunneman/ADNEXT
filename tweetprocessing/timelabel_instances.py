@@ -28,7 +28,7 @@ eventhash = time_functions.generate_event_time_hash(args.e)
 event_time = eventhash[args.n]
 for tweet in tweetfile.readlines():
     tokens = tweet.split("\t")
-    tweet_datetime = time_functions.return_datetime(tokens[args.d],tokens[args.t],"vs")
+    tweet_datetime = time_functions.return_datetime(tokens[args.d],tokens[args.t],setting="vs")
     #Extract the time difference between the tweet and the event 
     if tweet_datetime < event_time[0]:
         tweet_event_time=time_functions.timerel(event_time[0],tweet_datetime,args.u) * -1
