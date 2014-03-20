@@ -40,8 +40,9 @@ if len(args.i) <= 1:
     print "not enough event files, exiting program..."
     exit()
 depth = args.depth * -1
+deptht = args.deptht * -1
 
-def read_events(eventfiles,depth):
+def read_events(eventfiles,d):
     #read in instances
     print "Reading in events..."
     event_instances = defaultdict(list)
@@ -51,7 +52,7 @@ def read_events(eventfiles,depth):
         instance_file=codecs.open(ef,"r","utf-8")
         instances_raw=instance_file.readlines()
         instance_file.close()
-        event_txt = "/".join(ef.split("/")[depth:])
+        event_txt = "/".join(ef.split("/")[d:])
         event = re.sub(".txt","",event_txt)
         print event
         #make list of tweet dicts
@@ -118,9 +119,9 @@ def read_events(eventfiles,depth):
     else:
         return event_instances
 
-train_instances = read_events(args.i,args.depth)
+train_instances = read_events(args.i,depth)
 if args.t:
-    test_instances = read_events(args.t,args.tdepth)
+    test_instances = read_events(args.t,deptht)
 
 quit()
 print "Starting classification..."
