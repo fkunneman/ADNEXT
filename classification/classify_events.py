@@ -114,9 +114,9 @@ def read_events(eventfiles,d):
                 event_instances[event].append({"features":features[:],"label":lab,"meta":window["meta"]})
             j+=args.step
     if args.median:
-        return event_instances, event_instances_loose
+        return [event_instances, event_instances_loose]
     else:
-        return event_instances
+        return [event_instances]
 
 train_instances = read_events(args.i,depth)
 if args.t:
@@ -260,7 +260,7 @@ if args.t:
 #divide train and test events
     tr_events = train_instances[0].keys()
     te_events = test_instances[0].keys()
-    if args.median:
+    if args.c == "median_baseline":
         e_instances = [dict(train_instances[0].items() + test_instances[0].items()),dict(train_instances[1].items() + test_instances[1].items())]
     else:
         e_instances = dict(train_instances[0].items() + test_instances[0].items())
