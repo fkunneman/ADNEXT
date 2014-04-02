@@ -50,23 +50,24 @@ def collect_usertweets(api,user):
 def collect_user_topsy(username,kw):
     tweetlist = []
     for page in range(500):
-        try:
-            search = otter.Resource('search', **kw)
-            searchterm = "from:" + username 
-            try:
-                search(q=searchterm, type='tweet', perpage=100, page = page + 1)
-                for item in search.response.list:
-                    tweetuser = item.trackback_author_nick
-                    tweetdate = datetime.datetime.fromtimestamp(int(item.trackback_date))
-                    tweet = item.content
-                    tweettokens = [tweetuser,str(tweetdate),tweet]
-                    tweetlist.append(tweettokens)
-            except UnicodeEncodeError:
-                print "ascii..."
-                continue
-        except urllib2.HTTPError:
-            print "break..."
-            break
+#        try:
+        search = otter.Resource('search', **kw)
+        searchterm = "from:" + username 
+        #    try:
+        search(q=searchterm, type='tweet', perpage=100, page = page + 1)
+        for item in search.response.list:
+            print item
+            tweetuser = item.trackback_author_nick
+            tweetdate = datetime.datetime.fromtimestamp(int(item.trackback_date))
+            tweet = item.content
+            tweettokens = [tweetuser,str(tweetdate),tweet]
+            tweetlist.append(tweettokens)
+            #except UnicodeEncodeError:
+            #    print "ascii..."
+            #    continue
+        #except urllib2.HTTPError:
+         #   print "break..."
+         #   break
     return tweetlist
 
 def collect_tweets_topsy(term):

@@ -7,7 +7,7 @@ xlabel = sys.argv[2]
 ylabel = sys.argv[3]
 plotfiles = sys.argv[4:]
 
-linestyles = ['-.', '-', '--', ':']
+linestyles = ["-","--","-.",":"]
 half = len(plotfiles)/2
 for i,pf in enumerate(plotfiles[:half]):
     pf_open = open(pf)
@@ -26,10 +26,10 @@ for i,pf in enumerate(plotfiles[:half]):
     print y
     plt.plot(x,y,linestyle=linestyles[i],linewidth=4,)
 legend = plotfiles[half:]
-plt.legend(legend,loc = "upper right",ncol = 2)
+plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
 plt.ylabel(ylabel)
 plt.xlabel(xlabel)
 # plt.ylabel("Absolute estimation error (in days)")
 # plt.xlabel("Time-to-event in hours")
     #plt.title("\'Micro-f1 score at\' as event time nears")
-plt.savefig(outplot)
+plt.savefig(outplot,bbox_inches="tight")

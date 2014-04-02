@@ -258,7 +258,6 @@ def classify(event_instances,train_events,test_events):
 
 if args.t:
 #divide train and test events
-    print train_instances[0]
     tr_events = train_instances[0].keys()
     te_events = test_instances[0].keys()
     if args.median:
