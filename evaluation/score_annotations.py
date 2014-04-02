@@ -34,6 +34,7 @@ for i,sheet in enumerate(annotation_values):
         precision = annotation_calcs.calculate_precision(sheet)
     for entry in precision:
         print "Precision " + str(entry[0]) + ":",entry[1]
+    annotation_calcs.calculate_confusion_matrix(sheet)
     if args.ck:
         cohens_kappa = annotation_calcs.calculate_cohens_kappa(sheet)
         print "Cohen's Kappa:",cohens_kappa
