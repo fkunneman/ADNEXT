@@ -137,6 +137,15 @@ class Lineconverter():
 
         self.lines = newlines
 
+    def extract_lines(self,key,column):
+
+        newlines = []
+        for line in self.lines:
+            text = line.split(self.delimiter)[column]
+            if text.lower() == key:
+                newlines.append(line)
+        self.lines = newlines
+
     def sample(self,sample_size,sample_method = "random",sample_type="down",return_sample=False):
         num_lines = len(self.lines)
         sample = []

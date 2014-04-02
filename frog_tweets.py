@@ -31,6 +31,7 @@ parser.add_argument('--events', action = 'store', required = False, help = "if t
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")
 parser.add_argument('--ne', action = 'store_true', help = "choose to highlight named entities")
+parser.add_argument('--pos', action = 'store_true', help = "choose to append a word sequence in pos-tags")
 
 args = parser.parse_args() 
 print args.i
@@ -93,6 +94,7 @@ def frogger(t,o,i):
         words = []        
         
         for output in fc.process(text):
+            print output
             if output[0] == None or (args.punct and output[3] == "LET()"):
                 continue
             else:    

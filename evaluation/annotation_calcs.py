@@ -4,6 +4,7 @@ from __future__ import division
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from pynlpl import evaluation
+import itertools
 
 def calculate_precision(lines,plot = False):
     majority_judgements = defaultdict(list)
@@ -82,10 +83,45 @@ def calculate_cohens_kappa(lines):
                 percent_2 = annotator_scores[annotator_2][answer] / len(lines)
                 random += (percent_1 * percent_2)
             ck = (agreement - random) / (1 - random)
+            print "random",random,"ck",ck
             cohens_kappas.append(ck)    
 
     cohens_kappa = round(sum(cohens_kappas) / len(cohens_kappas),2)
     return cohens_kappa
+
+def calculate_confusion_matrix(lines):    
+    annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(int))))
+    annotator_scores = defaultdict(lambda : defaultdict(int))
+    for line in lines:
+        for i,annotation in enumerate(line):
+            annotator_scores[i][annotation] += 1
+            j = i
+            while j+1 < len(line):
+                if annotation != line[j+1]:
+                    annotator_couples[i][j+1]["odd"][annotation] += 1
+                else:
+                    annotator_couples[i][j+1]["match"][annotation] += 1
+                j += 1
+
+    cohens_kappas = []
+    percent = []
+    for annotator_1 in annotator_couples.keys():
+        for annotator_2 in annotator_couples[annotator_1].keys():
+            for combm in annotator_couples[annotator_1][annotator_2]["match"].keys():
+                print annotator_1,annotator_2,"match",combm,annotator_couples[annotator_1][annotator_2]["match"][combm]
+            for combo in annotator_couples[annotator_1][annotator_2]["odd"].keys():
+                print annotator_1,annotator_2,"odd",combo,annotator_couples[annotator_1][annotator_2]["odd"][combo]
+            agreement = sum([annotator_couples[annotator_1][annotator_2]["match"][x] for x in annotator_couples[annotator_1][annotator_2]["match"].keys()]) / len(lines)
+            random = 0
+            for answer in annotator_scores[annotator_1].keys():
+                percent_1 = 0.5
+                percent_2 = 0.5
+                random += (percent_1 * percent_2)
+            ck = (agreement - 0.5) / (1 - 0.5)
+            print "ck",ck
+            cohens_kappas.append(ck) 
+            percent.append(agreement)
+    print "ck",round(sum(cohens_kappas) / len(cohens_kappas),2),"percent",round(sum(percent) / len(percent),2)
 
 #function that returns krippendorff's alpha with a nominal distance metric
 #input is an array (items) of arrays (values)
@@ -133,9 +169,12 @@ def calculate_fscore(lines,index_1,index_2):
 def calculate_mutual_fscore(lines):
     num_coders = len(lines[0])
     fscores = []
-    for i in range(num_coders):
-        for j in range(i+1,num_coders):
-            fscores.append(calculate_fscore(lines,i,j))
+    perms = list(itertools.permutations(range(num_coders),2))
+    for p in perms:
+    #for i in range(num_coders):
+    #    for j in range(i+1,num_coders):
+        fscores.append(calculate_fscore(lines,p[0],p[1]))
+        print p,calculate_fscore(lines,p[0],p[1])
     mutual_fscore = round(sum(fscores)/len(fscores),2)
     return mutual_fscore
 

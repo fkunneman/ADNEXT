@@ -11,12 +11,14 @@ def extract_tweets(keyword,api,l):
     keyword = "\"" + keyword + "\""
     tweets = api.search(q = keyword, result_type = "mixed", lang = l)["statuses"]
     for tweet in tweets:
+        print tweet
         user = tweet["user"]["screen_name"]
         time = tweet["created_at"]
         text = re.sub("\n","",tweet["text"])
         tweet_id = tweet["id"]
         output = [tweet_id,"\t".join([keyword[1:-1],str(tweet_id),user,time,text]) + "\n"]
         tweets_output.append(output)
+    quit()
 
     return tweets_output
 
@@ -60,6 +62,7 @@ def collect_user_topsy(username,kw):
                     tweetdate = datetime.datetime.fromtimestamp(int(item.trackback_date))
                     tweet = item.content
                     tweettokens = [tweetuser,str(tweetdate),tweet]
+                    print tweettokens
                     tweetlist.append(tweettokens)
             except UnicodeEncodeError:
                 print "ascii..."
