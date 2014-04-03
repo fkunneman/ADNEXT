@@ -47,6 +47,7 @@ class Tweetsfeatures():
    
         for line in tweets:
             tokens = line.strip().split("\t")
+            print tokens
             tweet = Tweetsfeatures.Tweet(tokens)
             self.instances.append(tweet)
 
@@ -260,7 +261,7 @@ class Tweetsfeatures():
             t.features.append(feature)
 
     #Make N-grams of tweets that were set
-    def add_ngrams(self,t="word",n):
+    def add_ngrams(self,n,t="word"):
         """
         Extend features with N-grams.
         Can only be used after 'set_tweets' or 'set_tweets_oneline'
