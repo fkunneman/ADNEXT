@@ -55,7 +55,7 @@ if args.t:
 else:
     folds = []
     partsopen = open(args.p)
-    instances = partsopen.readlines():
+    instances = partsopen.readlines()
     partsopen.close()
     for i in [x+1 for x in range(10)]:
         ind = 1

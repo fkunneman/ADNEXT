@@ -32,12 +32,16 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
         filesdir = args.d + subdir
         os.system("mkdir " + filesdir)
         file_index,dirsize=0,25000
+        #print instances
         if i+dirsize < len(instances):
             subtweets=instances[i:i+d]
         else: 
             subtweets=instances[i:]
+#        print "subtweets", subtweets
+#        quit()
         for tweet in subtweets:
             #make filename and write contents to it
+            #print tweet
             zeros=5-len(str(file_index))
             j=0
             file_name=str(file_index) + ".txt"
@@ -46,15 +50,22 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
                 j += 1
             outfile=codecs.open(filesdir + file_name,"w","utf-8")
             tokens = tweet.strip().split("\t")
+            #print tokens
             features = tokens[-1].split(" ")
+            
             label = tokens[1]
+            
             outfile.write("\n".join(features))
             outfile.close()
             #queue file name and label to the partsfile
+#            print "instance"
             instanceline = subdir + file_name + " " + label + "\n"
+#            print features, instanceline
             partsqueue.put(instanceline)
             #queue file name and meta to metafile
+#            print "meta"
             metaline = subdir + file_name + "\t" + "\t".join(tokens) + "\n"
+#            print metaline
             metaqueue.put(metaline)
             file_index += 1
         i += dirsize
@@ -64,6 +75,8 @@ q = multiprocessing.Queue()
 r = multiprocessing.Queue()
 tweet_chunks = gen_functions.make_chunks(instances)
 for i,c in enumerate(tweet_chunks):
+#    print c
+#    quit()
     p=multiprocessing.Process(target=lcswriter,args=[c,i,q,r])
     p.start()
 
