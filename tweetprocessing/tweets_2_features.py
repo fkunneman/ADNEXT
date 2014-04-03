@@ -84,7 +84,7 @@ if args.n:
         tf.add_ngrams(n=int(n))
     if args.pos:
         for n in args.n:
-            tf.add_n_grams(n=int(n), t="pos")
+            tf.add_ngrams(n=int(n), t="pos")
     if args.rb:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:

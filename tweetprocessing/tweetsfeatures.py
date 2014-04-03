@@ -458,7 +458,10 @@ class Tweetsfeatures():
     def set_meta(self):
         """for each tweet, combine their metadata into one list"""
         for t in self.instances:
-            t.set_meta()
+            try:
+                t.set_meta()
+            except:
+                t.meta = ""
 
     def output_features(self, outfile):
         if not os.path.exists("/".join(outfile.split("/")[:-1])):
@@ -493,7 +496,7 @@ class Tweetsfeatures():
         """Class containing the features and characteristics of a tweet."""
         def __init__(self,tokens):
             if len(tokens) == 1:
-                self.text = str(tokens[0])
+                self.text = unicode(tokens[0])
             else:
                 self.label = tokens[0]
                 self.id = str(tokens[1])
