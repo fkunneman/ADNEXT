@@ -69,11 +69,11 @@ else:
         ind = 1
         fold = []
         while i * ind < len(instances):
-            fold.append(instances[i*ind].strip())
+            fold.append(re.sub("\n","",instances[i*ind]))
             ind += 1
         folds.append(fold)
     for j,fold in enumerate(folds):
-        print "".join(fold)
+        #print "".join(fold)
         try:
             tr_folds = folds[:j] + folds[j+1:]
         except IndexError:
