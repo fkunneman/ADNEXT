@@ -27,9 +27,7 @@ class Lineconverter():
                 tokens.append(string)
             else:
                 tokens.insert(int(place),string)
-            print tokens
             newline = self.delimiter.join(tokens)
-            print newline
             newlines.append(newline)
         
         self.lines = newlines
