@@ -69,6 +69,7 @@ class Tweetsfeatures():
                 segments = t.text.split("|")
                 words = segments[0].split(" ")
                 t.possequence = segments[1].split(" ")
+                print segments,words,t.possequence
             else:
                 words = t.text.split(" ") 
             for word in words:
@@ -297,12 +298,12 @@ class Tweetsfeatures():
 
             return ngram_features
 
-            if t == "word":
-                for t in self.instances:
-                    t.features.extend(make_ngrams(t.wordsequence,n))
-            elif t == "pos":
-                for t in self.instances:
-                    t.features.extend(make_ngrams(t.possequence,n))
+        if t == "word":
+            for t in self.instances:
+                t.features.extend(make_ngrams(t.wordsequence,n))
+        elif t == "pos":
+            for t in self.instances:
+                t.features.extend(make_ngrams(t.possequence,n))
   
     def add_char_ngrams(self,n,ignore = False):
         """
@@ -471,7 +472,6 @@ class Tweetsfeatures():
                 d += 1
         out = codecs.open(outfile,"w","utf-8")
         for i in self.instances:
-            print i.features
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
         out.close()
   
