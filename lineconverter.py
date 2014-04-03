@@ -23,10 +23,10 @@ class Lineconverter():
             tokens = line.split(self.delimiter)
             #tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
 
-            # if place == "back":
-            #     tokens.append(string)
-            # else:
-            #     tokens.insert(int(place),string)
+            if place == "back":
+                tokens.append(string)
+            else:
+                tokens.insert(int(place),string)
             print tokens
             newline = self.delimiter.join(tokens)
             print newline
