@@ -47,7 +47,6 @@ class Tweetsfeatures():
    
         for line in tweets:
             tokens = line.strip().split("\t")
-            print tokens
             tweet = Tweetsfeatures.Tweet(tokens)
             self.instances.append(tweet)
 

@@ -21,13 +21,15 @@ class Lineconverter():
         newlines = []
         for line in self.lines:
             tokens = line.split(self.delimiter)
-            tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
+            #tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
 
             # if place == "back":
             #     tokens.append(string)
             # else:
             #     tokens.insert(int(place),string)
+            print tokens
             newline = self.delimiter.join(tokens)
+            print newline
             newlines.append(newline)
         
         self.lines = newlines
