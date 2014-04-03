@@ -58,14 +58,19 @@ class Tweetsfeatures():
                 templist.append(t)           
         self.instances = templist
 
-    def set_wordsequences(self, ht = False, lower = False, us = False, ur = False):
+    def set_sequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
         url = re.compile(r"http://")
         user = re.compile(r"@")
         for t in self.instances:
             if lower: 
                 t.text = t.text.lower()
-            words = t.text.split(" ") 
+            if re.search("|",t.text):
+                segments = t.text.split("|")
+                words = segments[0].split(" ")
+                t.possequence = segments[1].split(" ")
+            else:
+                words = t.text.split(" ") 
             for word in words:
                 if (ht and hashtag.search(word)):
                     continue
@@ -255,7 +260,7 @@ class Tweetsfeatures():
             t.features.append(feature)
 
     #Make N-grams of tweets that were set
-    def add_ngrams(self,n):
+    def add_ngrams(self,t="word",n):
         """
         Extend features with N-grams.
         Can only be used after 'set_tweets' or 'set_tweets_oneline'
@@ -292,8 +297,12 @@ class Tweetsfeatures():
 
             return ngram_features
 
-        for t in self.instances:
-            t.features.extend(make_ngrams(t.wordsequence,n))
+            if t == "word":
+                for t in self.instances:
+                    t.features.extend(make_ngrams(t.wordsequence,n))
+            elif t == "pos":
+                for t in self.instances:
+                    t.features.extend(make_ngrams(t.possequence,n))
   
     def add_char_ngrams(self,n,ignore = False):
         """

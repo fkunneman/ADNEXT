@@ -47,10 +47,13 @@ parser.add_argument('-o', action = 'store', required = True,
 parser.add_argument('--eos', action = 'store_true', 
     help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed \
     (the marker will be added to previous word)")
+parser.add_argument('--pos', action = 'store_true',
+    help = "choose to include pos n-grams (input should contain pos tags as indicated by \
+    categories after \"|\")")
 args = parser.parse_args() 
 
 tf = Tweetsfeatures(args.i)
-tf.set_wordsequences(lower=args.lo,us=args.us,ur=args.ur)
+tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur)
 
 if args.ri:
     tf.filter_tweets(args.ri)
@@ -79,6 +82,9 @@ if args.m:
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
+    if args.pos:
+        for n in args.n:
+            tf.add_n_grams(t="pos",n=int(n))
     if args.rb:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
