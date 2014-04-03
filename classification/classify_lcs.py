@@ -52,6 +52,14 @@ for key in config_order:
 if args.t:
     os.system("cp " + args.p + " " + args.d + "/train")
     os.system("cp " + args.t + " " + args.d + "/test") 
+    config_out = codecs.open(args.d + "lcs3.conf","w","utf-8")
+    for key in config_order:
+        config_out.write(key + "=" + config[key] + "\n")
+    #classify
+    os.chdir(args.d)
+    os.system("lcs --verbose ")
+    os.system("mv * " + expdir)
+
 else:
     folds = []
     partsopen = open(args.p)
@@ -61,11 +69,28 @@ else:
         ind = 1
         fold = []
         while i * ind < len(instances):
-            fold.append(instances[i*ind])
+            fold.append(instances[i*ind].strip())
             ind += 1
         folds.append(fold)
-    for fold in folds:
+    for j,fold in enumerate(folds):
         print "".join(fold)
+        try:
+            tr_folds = folds[:j] + folds[j+1:]
+        except IndexError:
+            tr_folds = folds[:j]
+        trainout = open(args.d + "/train","w")
+        for tr_fold in tr_folds:
+            trainout.write("\n".join(tr_fold))
+        testout = open(args.d + "/test","w")
+        testout.write("\n".join(fold))
+        config_out = codecs.open(args.d + "lcs3.conf","w","utf-8")
+        for key in config_order:
+            config_out.write(key + "=" + config[key] + "\n")
+        expdir_fold = expdir + "fold_" + str(j)
+        os.system("mkdir " + expdir_fold)
+        os.chdir(args.d)
+        os.system("lcs --verbose ")
+        os.system("mv * " + expdir_fold)
 
     # size = len(sorted_instances)
     # for i in range(n):
@@ -85,9 +110,4 @@ else:
     #     train_test["meta"] = []
     #     classify(train_test,fold_dir)
 
-quit()
 
-#classify
-os.chdir(args.d)
-os.system("lcs --verbose ")
-os.system("mv * " + expdir)

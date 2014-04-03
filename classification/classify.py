@@ -43,9 +43,9 @@ arguments = args.a
 
 def classify(instance_dict,directory = False):
     traininglines = instance_dict["training"]
-    testlines = instance_dict["test"]
+    testlines = [instance_dict["test"]]
     metalines = instance_dict["meta"]
-    cl = Classifier(traininglines,testlines,directory)
+    cl = Classifier(traininglines,testlines)
     cl.classify(classifier,arguments,args.p,args.s,args.tl)
 
 if validation == "test":
@@ -75,7 +75,7 @@ if validation == "test":
     else:
         test_instances = codecs.open(args.t,"r","utf-8")
         directory = "/".join(args.t.split("/")[:-1]) + "/"
-        classify({"training":instances,"testtest_instances.readlines(),directory)
+        classify({"training":instances,testtest_instances.readlines(),directory)
         test_instances.close()
 
 elif validation == "n-fold":
