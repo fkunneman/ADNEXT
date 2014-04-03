@@ -471,6 +471,7 @@ class Tweetsfeatures():
                 d += 1
         out = codecs.open(outfile,"w","utf-8")
         for i in self.instances:
+            print i.features
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
         out.close()
   
