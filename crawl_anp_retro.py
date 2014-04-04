@@ -33,4 +33,4 @@ date_out.write(datewrites[0] + "-" + datewrites[1] + "-" + str(new_date.year))
 date_out.close()
 
 for date in dates:
-    os.system("wget -w 0.5 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
+    os.system("wget -w 0.5 -v --user=f.kunneman@let.ru.nl --password=crawl2014 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
