@@ -136,7 +136,7 @@ if args.excel:
         else:
             tab = book.add_sheet(outname[:23] + "_" + str(x))
         for i,line in enumerate(chunk):
-            columns = line.split(args.d)
+            columns = line.strip().split(args.d)
             for j,col in enumerate(columns):
                 if re.search("https://twitter.com",col):
                     ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
