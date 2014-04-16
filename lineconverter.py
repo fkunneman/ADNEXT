@@ -21,8 +21,6 @@ class Lineconverter():
         newlines = []
         for line in self.lines:
             tokens = line.split(self.delimiter)
-            #tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
-
             if place == "back":
                 tokens.append(string)
             else:
@@ -33,6 +31,17 @@ class Lineconverter():
         self.lines = newlines
 
     # Add an id to the start of lines by enumeration
+
+    def add_twitter_url(self):
+        newlines = []
+        for line in self.lines:
+            tokens = line.split(self.delimiter)
+            tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
+            newline = self.delimiter.join(tokens)
+            newlines.append(newline)
+        
+        self.lines = newlines
+
     def add_id(self):
         newlines = []
 
