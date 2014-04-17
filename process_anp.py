@@ -56,7 +56,7 @@ for x,date in enumerate(dates):
     for y,id_ in enumerate(ids):
 #        print id_,"no",y,"of",len(ids)
         try:
-            os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2013 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -O " + date_out + id_ + " -o " + logs + date)
+            os.system("wget -w 0.3 -v --user=f.kunneman@let.ru.nl --password=crawl2014 -i http://portal.anp.nl/rss/indexer.do?action=article\&id=" + id_ + "\&format=xml" + " -O " + date_out + id_ + " -o " + logs + date)
         except:
             print "no response for",date
             continue

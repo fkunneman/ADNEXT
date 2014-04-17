@@ -41,6 +41,7 @@ outcomes = evaluation.calculate_general()
 #write results
 outfile = open(args.w,"w")
 for label in outcomes:
-    columns = gen_functions.format_list(label)
-    outfile.write("".join(columns) + "\n")
+    #columns = gen_functions.format_list(label,'20')
+    #outfile.write("".join(columns) + "\n")
+    outfile.write("\t".join([str(x) for x in label]) + "\n")
 outfile.close()

@@ -3,6 +3,7 @@
 import argparse
 import os
 import codecs
+import re
 
 """
 Script to perform lcs classification with chosen parameters. 
@@ -73,16 +74,19 @@ else:
             ind += 1
         folds.append(fold)
     for j,fold in enumerate(folds):
-        #print "".join(fold)
+#        print "".join(fold)
         try:
             tr_folds = folds[:j] + folds[j+1:]
         except IndexError:
             tr_folds = folds[:j]
         trainout = open(args.d + "/train","w")
         for tr_fold in tr_folds:
-            trainout.write("\n".join(tr_fold))
+#            print "\n".join(tr_fold)
+            trainout.write("\n".join(tr_fold) + "\n")
+        trainout.close()
         testout = open(args.d + "/test","w")
         testout.write("\n".join(fold))
+        testout.close()
         config_out = codecs.open(args.d + "lcs3.conf","w","utf-8")
         for key in config_order:
             config_out.write(key + "=" + config[key] + "\n")
