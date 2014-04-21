@@ -3,7 +3,7 @@ import sys
 import gzip
 import codecs
 
-infile = gzip.open(sys.argv[1],"rb")
+infile = codecs.open(sys.argv[1],"r","utf-8")
 outfile = codecs.open(sys.argv[2],"w","utf-8")
 textcol = int(sys.argv[3])
 
