@@ -9,6 +9,7 @@ outdir = sys.argv[3]
 infiles = sys.argv[4:]
 
 for infile in infiles:
+    print infile
     parts = infile.split("/")
     ident = parts[recurse:]
     eventdir = outdir
@@ -16,7 +17,7 @@ for infile in infiles:
         eventdir = eventdir + part + "/"
         if not os.path.exists(eventdir):
             os.system("mkdir " + eventdir)
-    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_corpus.py " + infile + " " + eventdir + "tweets" + " " + textcol)
+    os.system("python ~/ADNEXT/tweetprocessing/tweets_2_corpus.py " + infile + " " + eventdir + "tweets" + " " + str(textcol))
     os.chdir(eventdir)
     os.system("colibri-classencode tweets")
     os.system("colibri-patternmodeller -f tweets.colibri.dat -t 1 -l 1 -o tweets.colibri.indexedpatternmodel")
