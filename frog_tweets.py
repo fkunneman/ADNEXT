@@ -77,7 +77,7 @@ def frogger(t,o,i):
         else:
             outfields = []
             for column in column_sequence:
-                if column:
+                if column or column == 0:
                     try:
                         outfields.append(tokens[column])
                     except IndexError:
@@ -94,7 +94,6 @@ def frogger(t,o,i):
         words = []        
         
         for output in fc.process(text):
-            print output
             if output[0] == None or (args.punct and output[3] == "LET()"):
                 continue
             else:    
