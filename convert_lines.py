@@ -111,7 +111,7 @@ if args.sample:
         size = int(args.extract[0])
     else:
         sample_m = "random"
-        size = len(lineconvert.lines) - int(args.extract[0]) 
+        size = len(lineconvert.lines) - int(args.sample[0]) 
     lineconvert.sample(size,sample_method = sample_m)
     # for line in extracted_lines:
     #     outfile.write(line + "\n")
