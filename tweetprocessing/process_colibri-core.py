@@ -7,6 +7,7 @@ textcol = int(sys.argv[1])
 recurse = int(sys.argv[2]) * -1
 outdir = sys.argv[3]
 dutchfilter = sys.argv[4]
+
 infiles = sys.argv[5:]
 
 for infile in infiles:

@@ -15,7 +15,7 @@ parser.add_argument('-d', action = 'store', default = "\t", help = "For columned
 parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","delete_filematch","extract","add_time","add_id","filter","twitter"], help = "Choose the action to perform.")
 parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete, filter or extract")
 parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace, delete or extract (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
-parser.add_argument('--sample', action = 'store', required = False, nargs='+', help = "[EXTRACT] specify the number of lines to extract")
+parser.add_argument('--sample', action = 'store', required = False, nargs='+', help = "sample lines, first specify the number of lines to sample, then specify the sample method (steps or random)")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
 parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
 parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
@@ -106,7 +106,7 @@ if action == "twitter":
     lineconvert.add_twitter_url()
 
 if args.sample:
-    if len(args.extract) > 1 and args.extract[1] == "steps":
+    if len(args.sample) > 1 and args.sample[1] == "steps":
         sample_m = "steps"
         size = int(args.extract[0])
     else:
