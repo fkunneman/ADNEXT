@@ -33,7 +33,7 @@ if args.i[-3:] == "xls":
 
 else:
     infile = codecs.open(args.i,"r","utf-8")
-    lines = infile.readlines()
+    lines = infile.read().split("\n")
     infile.close()
 
 delimiter = args.d
