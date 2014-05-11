@@ -31,6 +31,10 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
         subdir = str(chunkindex) + "_" + args.l + str(i) + "/"
         filesdir = args.d + subdir
         os.system("mkdir " + filesdir)
+        while not os.path.exists(filesdir):
+            print "directory not succesfully made"
+            os.system("mkdir " + filesdir)
+        print "directory succesfully made"
         file_index,dirsize=0,25000
         if i+dirsize < len(instances):
             subtweets=instances[i:i+dirsize]
