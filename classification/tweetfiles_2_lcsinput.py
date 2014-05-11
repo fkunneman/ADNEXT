@@ -15,6 +15,7 @@ parser.add_argument('-i', action = 'store', required = True, help = "the input f
 parser.add_argument('-d', action = 'store', required = True, help = "the files directory")
 parser.add_argument('-w', action = 'store', required = True, help = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
 parser.add_argument('-l', action = 'store', required = True, help = "the label of the tweet set")
+parser.add_argument('-m', action = 'store', type = int, default = 16, help = "the number of chores to be used")
 
 args = parser.parse_args() 
 
@@ -66,7 +67,7 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
 
 q = multiprocessing.Queue()
 r = multiprocessing.Queue()
-tweet_chunks = gen_functions.make_chunks(instances)
+tweet_chunks = gen_functions.make_chunks(instances, nc = args.m)
 for i,c in enumerate(tweet_chunks):
     p=multiprocessing.Process(target=lcswriter,args=[c,i,q,r])
     p.start()
