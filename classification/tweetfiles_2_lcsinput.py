@@ -33,7 +33,7 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
         os.system("mkdir " + filesdir)
         file_index,dirsize=0,25000
         if i+dirsize < len(instances):
-            subtweets=instances[i:i+d]
+            subtweets=instances[i:i+dirsize]
         else: 
             subtweets=instances[i:]
         for tweet in subtweets:
