@@ -46,7 +46,7 @@ class Lineconverter():
         newlines = []
 
         for i,line in enumerate(self.lines):
-            newline = str(i + start_id) + "\t" + line
+            newline = str(i + start_id) + self.delimeter + line
             newlines.append(newline)
 
         self.lines = newlines
