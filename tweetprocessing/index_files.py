@@ -10,20 +10,18 @@ infiles = sys.argv[3:]
 
 for f in infiles:
     print f
-    print outdir + f.split("/")[-2:]
-    quit()
+    print outdir + "/".join(f.split("/")[-2:])
     if f[-2:] == "gz":
-        infile = gzip.open(args.i,"rb")
-        outfile = gzip.open(outdir + f.split("/")[-2:], 'wb')
+        infile = gzip.open(f,"rb")
+        outfile = gzip.open(outdir + "/".join(f.split("/")[-2:]), 'wb')
     else:
         infile = codecs.open(f,"r","utf-8")
-        outfile = codecs.open(outdir + f.split("/")[-2:],"w","utf-8")
+        outfile = codecs.open(outdir + "/".join(f.split("/")[-2:]),"w","utf-8")
     lines = infile.readlines()
     infile.close()
-    lineconvert = lineconverter.Lineconverter(lines,"\t")
+    lineconvert = lineconverter.Lineconverter(lines," ")
     lineconvert.add_id(start_id = start_index)
     start_index += len(lines)
     for line in lineconvert.lines:
-        outfile.write(line + "\n")
+        outfile.write(line)
     outfile.close()
-

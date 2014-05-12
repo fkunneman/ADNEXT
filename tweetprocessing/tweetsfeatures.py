@@ -65,11 +65,12 @@ class Tweetsfeatures():
         for t in self.instances:
             if lower: 
                 t.text = t.text.lower()
-            if re.search("|",t.text):
-                segments = t.text.split("|")
-                words = segments[0].split(" ")
-                t.possequence = segments[1].split(" ")
-                print segments,words,t.possequence
+#            if re.search(r"\|",t.text):
+#                print t.text
+#                segments = t.text.split("|")
+#                words = segments[0].split(" ")
+#                t.possequence = segments[1].split(" ")
+#                print segments,words,t.possequence
             else:
                 words = t.text.split(" ") 
             for word in words:

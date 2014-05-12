@@ -38,13 +38,16 @@ print args.i
 outfile = codecs.open(args.w,"w","utf-8")
 if args.i[-2:] == "gz":
     infile = gzip.open(args.i,"rb")
+    reader = codecs.getreader("utf-8")
+    lines = reader( infile )
 else:
     infile = codecs.open(args.i,"r","utf-8")
 
 if args.i[-3:] == "xls": 
     pre_tweets = gen_functions.excel2lines(args.i,[0],args.header,date=datecolumn)[0]
 else:
-    lines = infile.readlines()
+    if not args.i[-2:] == "gz":
+        lines = infile.readlines()
     if args.header:
         lines.pop(0)
     pre_tweets = [line.strip().split(args.d) for line in lines]
@@ -70,6 +73,7 @@ def frogger(t,o,i):
     fc = pynlpl.clients.frogclient.FrogClient('localhost',args.p,returnall = True)
     for tokens in t:
         if args.txtdelim:
+            print tokens,tokens[column_sequence[-1]:]
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
             tokens = tokens[:column_sequence[-1]+1]
         if args.text == 0:
@@ -114,7 +118,10 @@ def frogger(t,o,i):
             if outstring == "":
                 outstring = field
             else:
-                outstring = outstring + "\t" + field
+                try:
+                    outstring = outstring + "\t" + field
+                except UnicodeDecodeError:
+                    outstring = outstring + "\t" + field.decode("utf-8")
 
         outstring = outstring + "\n"
         o.put(outstring)
