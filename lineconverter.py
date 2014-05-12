@@ -42,11 +42,11 @@ class Lineconverter():
         
         self.lines = newlines
 
-    def add_id(self):
+    def add_id(self,start_id = 0):
         newlines = []
 
         for i,line in enumerate(self.lines):
-            newline = str(i) + "\t" + line
+            newline = str(i + start_id) + "\t" + line
             newlines.append(newline)
 
         self.lines = newlines

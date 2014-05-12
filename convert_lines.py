@@ -69,7 +69,10 @@ if action == "add_time":
     lineconvert.add_time(hours,datecolumn,timecolumn,addition,datetype)
 
 if action == "add_id":
-    lineconvert.add_id()
+    if args.c:
+        lineconvert.add_id(start_id = args.c)
+    else:
+        lineconvert.add_id()
 
 if action == "delete":
     print "num lines before delete:",len(lineconvert.lines)
