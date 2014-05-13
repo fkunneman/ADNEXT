@@ -2,6 +2,7 @@
 
 import argparse
 import re
+import codecs
 
 from evalset import Evalset
 import gen_functions
@@ -12,6 +13,7 @@ parser = argparse.ArgumentParser(description = "Program to read lcs output and e
 parser.add_argument('-t', action = 'store', required = True, help = "the target file")
 parser.add_argument('-c', action='store', required=True, help = "the classification file")
 parser.add_argument('-w', action='store', required=True, help = "file to write results to")
+parser.add_argument('-s', action='store', required=False, help = "choose to rank classifications by score and write the tweets to a file")
 
 args = parser.parse_args()
 
@@ -45,3 +47,9 @@ for label in outcomes:
     #outfile.write("".join(columns) + "\n")
     outfile.write("\t".join([str(x) for x in label]) + "\n")
 outfile.close()
+
+if args.s:
+    #write tweets
+    outfile = codecs.open(args.s,"w","utf-8")
+    for tweet in sorted(instances,key=lambda x: x[2]):
+        print tweet[2]
