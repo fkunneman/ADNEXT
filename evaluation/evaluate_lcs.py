@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description = "Program to read lcs output and e
 parser.add_argument('-t', action = 'store', required = True, help = "the target file")
 parser.add_argument('-c', action='store', required=True, help = "the classification file")
 parser.add_argument('-w', action='store', required=True, help = "file to write results to")
-parser.add_argument('-s', action='store', required=False, help = "choose to rank classifications by score and write the tweets to a file")
+parser.add_argument('-f', action='store', required=False, help = "give the filedir choose to rank classifications by score and write the tweets to a file")
 
 args = parser.parse_args()
 
@@ -33,7 +33,7 @@ for line in observations.readlines():
     classification_score = tokens[1].split(" ")[0].split(":")
     classification = re.sub("\?","",classification_score[0])
     score = classification_score[1]  
-    instances.append((name_instance[filename],classification,score))
+    instances.append((name_instance[filename],classification,score,filename))
 
 #generate outcomes
 evaluation = Evalset()
@@ -48,8 +48,17 @@ for label in outcomes:
     outfile.write("\t".join([str(x) for x in label]) + "\n")
 outfile.close()
 
-if args.s:
+if args.f:
     #write tweets
-    outfile = codecs.open(args.s,"w","utf-8")
-    for tweet in sorted(instances,key=lambda x: x[2]):
-        print tweet[2]
+    rankfile = codecs.open("/".join(args.w.split("/")[:-1]) + "ranked_tweets.txt" ,"w","utf-8")
+    print "rankfile", "/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt"
+    for tweet in sorted(instances,key=lambda x: x[2],reverse = True)[:10000]:
+        fileopen = codecs.open(args.f + tweet[3],"r","utf-8")
+        feats = fileopen.read().split("\n")
+#        print feats
+        i = 0
+        while not re.search("_",feats[i]):
+            i += 1
+        rankfile.write(str(tweet[2]) + "\t" + " ".join(feats[:i]) + "\n")
+        fileopen.close()
+    rankfile.close()

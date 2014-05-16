@@ -13,10 +13,13 @@ def make_chunks(lines,nc=16,dist=False):
     if dist:
         chunkdict = defaultdict(list)
         while i<(len(lines)):
-            for j in range(nc):
-                chunkdict[j].append(lines[i+j])
+            if i + nc > len(lines):
+                chunkdict[nc-1].extend(lines[i:])
+            else:
+                for j in range(nc):
+                    chunkdict[j].append(lines[i+j])
             i += nc
-        chunkdict[nc-1].extend(lines[i:])
+        chunks = [chunkdict[x] for x in chunkdict.keys()]
     #remains = len(lines)
     else:
         chunks=[]

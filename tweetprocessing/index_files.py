@@ -23,5 +23,5 @@ for f in infiles:
     lineconvert.add_id(start_id = start_index)
     start_index += len(lines)
     for line in lineconvert.lines:
-        outfile.write(line)
+        outfile.write("\t".join(line.split(" ")[:5]) + "\t" + " ".join(line.split(" ")[5:]))
     outfile.close()

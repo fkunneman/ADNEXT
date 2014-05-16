@@ -73,7 +73,6 @@ def frogger(t,o,i):
     fc = pynlpl.clients.frogclient.FrogClient('localhost',args.p,returnall = True)
     for tokens in t:
         if args.txtdelim:
-            print tokens,tokens[column_sequence[-1]:]
             tokens[column_sequence[-1]] = " ".join(tokens[column_sequence[-1]:])
             tokens = tokens[:column_sequence[-1]+1]
         if args.text == 0:
