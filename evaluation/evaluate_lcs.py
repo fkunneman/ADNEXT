@@ -68,7 +68,7 @@ if args.f:
         feats = meta[-1].split(" ")
 #        print feats
         i = 0
-        while not re.search("<s>",feats[i]):
+        while not re.search(r"_",feats[i]):
             i += 1
         rankfile.write("\t".join([str(tweet[2]),meta[1],meta[3],meta[4],meta[5]," ".join(feats[:i])]) + "\n")
     rankfile.close()
