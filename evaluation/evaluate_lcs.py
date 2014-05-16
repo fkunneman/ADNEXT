@@ -54,9 +54,10 @@ if args.f:
     print "making meta-dict"
     metafile = codecs.open("/".join(args.c.split("/")[:-1]) + "/meta.txt","r","utf-8")
     file_meta = defaultdict(list)
-    for line in file_meta.readlines():
+    for line in metafile.readlines():
         tokens = line.strip().split("\t")
         file_meta[tokens[0]] = tokens[1:]
+    metafile.close()
     print "writing ranked file"
     #write tweets
     rankfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt" ,"w","utf-8")
