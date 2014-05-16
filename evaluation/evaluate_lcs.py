@@ -3,6 +3,7 @@
 import argparse
 import re
 import codecs
+from collections import defaultdict
 
 from evalset import Evalset
 import gen_functions
@@ -13,7 +14,7 @@ parser = argparse.ArgumentParser(description = "Program to read lcs output and e
 parser.add_argument('-t', action = 'store', required = True, help = "the target file")
 parser.add_argument('-c', action='store', required=True, help = "the classification file")
 parser.add_argument('-w', action='store', required=True, help = "file to write results to")
-parser.add_argument('-f', action='store', required=False, help = "give the filedir choose to rank classifications by score and write the tweets to a file")
+parser.add_argument('-f', action='store', type = int, required=False, help = "give the number of tweets to choose to rank classifications by score and write the top n tweets to a file")
 
 args = parser.parse_args()
 
@@ -49,16 +50,24 @@ for label in outcomes:
 outfile.close()
 
 if args.f:
+    #make filename - meta dict:
+    print "making meta-dict"
+    metafile = codecs.open("/".join(args.c.split("/")[:-1]) + "/meta.txt","r","utf-8")
+    file_meta = defaultdict(list)
+    for line in file_meta.readlines():
+        tokens = line.strip().split("\t")
+        file_meta[tokens[0]] = tokens[1:]
+    print "writing ranked file"
     #write tweets
-    rankfile = codecs.open("/".join(args.w.split("/")[:-1]) + "ranked_tweets.txt" ,"w","utf-8")
-    print "rankfile", "/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt"
-    for tweet in sorted(instances,key=lambda x: x[2],reverse = True)[:10000]:
-        fileopen = codecs.open(args.f + tweet[3],"r","utf-8")
-        feats = fileopen.read().split("\n")
+    rankfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt" ,"w","utf-8")
+    for tweet in sorted(instances,key=lambda x: x[2],reverse = True)[:args.f]:
+        # fileopen = codecs.open(args.f + tweet[3],"r","utf-8")
+        # feats =  fileopen.read().split("\n")
+        meta = file_meta[tweet[3]]
+        feats = meta[-1].split(" ")
 #        print feats
         i = 0
-        while not re.search("_",feats[i]):
+        while not re.search("<s>",feats[i]):
             i += 1
-        rankfile.write(str(tweet[2]) + "\t" + " ".join(feats[:i]) + "\n")
-        fileopen.close()
+        rankfile.write("\t".join([str(tweet[2]),meta[1],meta[3],meta[4],meta[5]," ".join(feats[:i])]) + "\n")
     rankfile.close()
