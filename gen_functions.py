@@ -8,15 +8,23 @@ import datetime
 import codecs
 from collections import defaultdict
 
-def make_chunks(lines,nc=16):
-    chunks=[]
-    size = int(len(lines)/nc)
+def make_chunks(lines,nc=16,dist=False):
     i=0
+    if dist:
+        chunkdict = defaultdict(list)
+        while i<(len(lines)):
+            for j in range(nc):
+                chunkdict[j].append(lines[i+j])
+            i += nc
+        chunkdict[nc-1].extend(lines[i:])
     #remains = len(lines)
-    for j in range(nc-1):
-        chunks.append(lines[i:(i+size)])
-        i += size
-    chunks.append(lines[i:])
+    else:
+        chunks=[]
+        size = int(len(lines)/nc)
+        for j in range(nc-1):
+            chunks.append(lines[i:(i+size)])
+            i += size
+        chunks.append(lines[i:])
     return chunks
 
 def format_list(columns,size):
