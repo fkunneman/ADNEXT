@@ -4,6 +4,7 @@ import os
 import datetime
 from datetime import date, timedelta, datetime
 import time_functions
+import re
 
 outdir_logs = sys.argv[1]
 outdir_files = sys.argv[2]
@@ -14,19 +15,20 @@ filenames = sys.argv[3:]
 # end_date = begin_date + timedelta(days=230)
 # datefile.close()
 
-datesearch = re.compile(r"(\d{4})-(\d{1,2})-\d{1,2}")
+datesearch = re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})")
 
 fnd = []
 for fn in filenames:
     if os.stat(fn)[6] < 10000:
+        print fn
         fnd.append(fn)
 
-dates
+dates = []
 for fn in fnd:
     d = fn.split("/")[-1]
-    print d
     s = datesearch.search(d).groups()
-    date = ([s[2] + "-" + s[1] + "-" + s[0]],[s[0] + "-" + s[1] + "-" + s[2]])
+    #print d,s
+    date = (s[2] + "-" + s[1] + "-" + s[0],s[0] + "-" + s[1] + "-" + s[2])
     dates.append(date)
 
 # current_date = begin_date

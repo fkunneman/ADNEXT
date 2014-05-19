@@ -35,10 +35,13 @@ class Lineconverter():
     def add_twitter_url(self):
         newlines = []
         for line in self.lines:
-            tokens = line.split(self.delimiter)
-            tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
-            newline = self.delimiter.join(tokens)
-            newlines.append(newline)
+            try:
+                tokens = line.split(self.delimiter)
+                tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
+                newline = self.delimiter.join(tokens)
+                newlines.append(newline)
+            except IndexError:
+                continue
         
         self.lines = newlines
 
@@ -172,12 +175,14 @@ class Lineconverter():
             sample.extend(sorted(random.sample(range(num_lines), sample_size)))
             if return_sample:
                 sample_out = [self.lines[i] for i in sample]
-            if sample_type=="down": 
-                for offset, index in enumerate(sample):
-                    index -= offset
-                    del self.lines[index]
-            elif sample_type=="up":
-                for i in sample:
-                    self.lines.append(self.lines[i]) 
-            if return_sample:
                 return sample_out
+            else:
+                if sample_type=="down": 
+                    for offset, index in enumerate(sample):
+                       index -= offset
+                       del self.lines[index]
+                elif sample_type=="up":
+                    for i in sample:
+                        self.lines.append(self.lines[i]) 
+                if return_sample:
+                    return sample_out
