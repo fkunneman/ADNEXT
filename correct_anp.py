@@ -20,7 +20,7 @@ datesearch = re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})")
 fnd = []
 for fn in filenames:
     if os.stat(fn)[6] < 10000:
-        print fn
+#        print fn
         fnd.append(fn)
 
 dates = []
@@ -49,4 +49,7 @@ for fn in fnd:
 # date_out.close()
 
 for date in dates:
-    os.system("wget -w 0.9 -v --user=f.kunneman@let.ru.nl --password=crawl2014 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
+    print date
+#    print "wget -w 0.5 -v --user=f.kunneman@let.ru.nl --password=crawl2014 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1]
+    os.system("wget -w 0.5 -v --user=f.kunneman@let.ru.nl --password=crawl2014 -i http://portal.anp.nl/rss/indexer.do?action=importview\&sourceId=1\&day=" + date[0] + " -o " + outdir_logs + date[1] + " -O " + outdir_files + date[1])
+
