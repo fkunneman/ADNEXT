@@ -19,10 +19,11 @@ datesearch = re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})")
 
 fnd = []
 for fn in filenames:
-    if os.stat(fn)[6] < 10000:
+    if os.stat(fn)[6] < 80000:
 #        print fn
         fnd.append(fn)
 
+print fnd
 dates = []
 for fn in fnd:
     d = fn.split("/")[-1]

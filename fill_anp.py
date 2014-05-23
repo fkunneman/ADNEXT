@@ -9,8 +9,8 @@ outdir_logs = sys.argv[1]
 outdir_files = sys.argv[2]
 
 dates = []
-current_date = datetime.date(2000,11,7)
-end_date = datetime.date(2004,8,20)
+current_date = date(2000,11,7)
+end_date = date(2004,8,20)
 while current_date <= end_date:
     crawl_date = str(current_date.day) + "-" + str(current_date.month) + "-" + str(current_date.year)
     write_date = str(current_date.year) + "-" + str(current_date.month) + "-" + str(current_date.day)
