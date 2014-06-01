@@ -31,6 +31,10 @@ parser.add_argument('--balance', action='store_true', help = 'choose to balance 
 parser.add_argument('--date', action='store', type = int, required=False,help='specify the date column to convert time features')
 parser.add_argument('--median', action='store_true',help='choose to calculate median time to event of time expressions')
 parser.add_argument('--tt', action='store_true',help='choose to only include tweets with time_expressions')
+parser.add_argument('--median_out', action='store', help = 'choose to write median values to a file')
+
+if args.median_out:
+    median_out = codecs.open(args.median_out,"w","utf-8")
 
 args=parser.parse_args() 
 
@@ -144,7 +148,9 @@ def classify(event_instances,train_events,test_events):
         for feature in feature_tte.keys():
             if gen_functions.return_standard_deviation(feature_tte[feature]) < 2 and len(feature_tte[feature]) >= 2:
                 feature_new[feature] = str(int(numpy.median(feature_tte[feature]))) + "_days"
- #               print feature,feature_tte[feature],feature_new[feature]
+                if args.median_out:
+                    median_out.write(feature + "\t" + feature_new[feature] + "\n")
+#               print feature,feature_tte[feature],feature_new[feature]
             else:
                 feature_new[feature] = feature
         #convert features
