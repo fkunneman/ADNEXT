@@ -135,9 +135,9 @@ if args.excel:
         chunks = [lineconvert.lines]
     outname = args.o.split("/")[-1].split(".")[0]
     book = Workbook()
-    algn1 = xlwt.Alignment()
+    algn1 = Alignment()
     algn1.wrap = 1
-    style1 = xlwt.XFStyle()
+    style1 = XFStyle()
     style1.alignment = algn1
     for x,chunk in enumerate(chunks):
         tabname = outname + "_" + str(x)
