@@ -108,9 +108,6 @@ if action == "extract":
 if action == "twitter":
     lineconvert.add_twitter_url()
 
-if action == "break":
-
-
 if args.sample:
     if len(args.sample) > 1 and args.sample[1] == "steps":
         sample_m = "steps"
