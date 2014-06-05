@@ -108,6 +108,9 @@ if action == "extract":
 if action == "twitter":
     lineconvert.add_twitter_url()
 
+if action == "break":
+
+
 if args.sample:
     if len(args.sample) > 1 and args.sample[1] == "steps":
         sample_m = "steps"
@@ -135,20 +138,29 @@ if args.excel:
         chunks = [lineconvert.lines]
     outname = args.o.split("/")[-1].split(".")[0]
     book = Workbook()
+    algn1 = xlwt.Alignment()
+    algn1.wrap = 1
+    style1 = xlwt.XFStyle()
+    style1.alignment = algn1
     for x,chunk in enumerate(chunks):
         tabname = outname + "_" + str(x)
         if len(tabname) <= 25:
             tab = book.add_sheet(tabname)
         else:
             tab = book.add_sheet(outname[:23] + "_" + str(x))
+
         for i,line in enumerate(chunk):
             columns = line.strip().split(args.d)
             for j,col in enumerate(columns):
-                if re.search("https://twitter.com",col):
+                if re.search(r"\|",col):
+                    col = re.sub("\|","\n",col)
+                    tab.write(i,j,col,style1)
+                elif re.search("https://twitter.com",col):
                     ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
                     tab.write(i,j, Formula(ucol))
                 else:
                     tab.write(i,j,col)
+
     book.save(args.o)
         
 else:
