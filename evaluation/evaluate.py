@@ -3,6 +3,8 @@
 import argparse
 from evalset import Evalset
 from collections import defaultdict
+import codecs
+import re
 
 parser = argparse.ArgumentParser(description = "Program to process a file containing tweets with Frog en write output")
 
