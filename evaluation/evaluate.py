@@ -46,7 +46,7 @@ if args.plot:
 #plotfile = open(sys.argv[1],"w")
     x = []
     y = []
-    plotfile = open(args.plot,"w")
+    plotfile = open(re.sub(".png",".txt",args.plot),"w")
     for i,instance in enumerate(evaluation.instances):
         # if i > 0:
         tp = len([p for p in classifications_score[:i] if p.classification == '1'])
