@@ -13,7 +13,7 @@ parser.add_argument('-o', action='store', required=True, help = "file to write t
 parser.add_argument('-i', action = 'store', choices = ["lcs","meta","knn","simple"], help="specify the input type of label (and classification) files")
 parser.add_argument('-fp', action='store', required = False, nargs = '+', help = "to extract a ranked list of the most confident false positive instances, specify a file name, the class to which the false positives apply, the number of instances and the directory with tweet files")
 parser.add_argument('-v', action='store', required = False, help = "[KNN] give a vocabulary file to link indexes to features")
-parser.add_argument('--plot', action='store_true', help = "choose to plot data")
+parser.add_argument('--plot', action='store', required=False, help = "choose to plot data")
 
 args = parser.parse_args()
 evaluation = Evalset()
