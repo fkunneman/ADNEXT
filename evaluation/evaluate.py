@@ -51,7 +51,7 @@ if args.plot:
     plotfile = open(re.sub(".png",".txt",args.plot),"w")
     for i,instance in enumerate(evaluation.instances):
         # if i > 0:
-        tp = len([p for p in evaluation_instances[:i] if p.classification == '1'])
+        tp = len([p for p in evaluation.instances[:i] if p.classification == '1'])
         precision = tp / i
         #plotfile.write(str(i) + " " + str(precision) + "\n")
         x.append(i)
