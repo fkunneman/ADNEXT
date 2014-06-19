@@ -29,7 +29,9 @@ if args.i == "lcs":
 
 elif args.i == "simple":
     for lf in args.l:
-        evaluation.set_instances_simple(lf)
+    #     evaluation.set_instances_simple(lf)
+        lines = codecs.open(lf,"r","utf-8").readlines()
+        evaluation.add_instances(score=True)
 
 elif args.i == "meta":
     metafiles = args.l
