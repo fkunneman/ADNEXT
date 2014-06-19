@@ -39,6 +39,28 @@ elif args.i == "meta":
 elif args.i == "knn":
     exit()
 
+if args.plot:
+    #precision_at = [1,5,10,25,50,100,250,500,1000]
+#plotfile = open(sys.argv[1],"w")
+    x = []
+    y = []
+    plotfile = open(args.plot,"w")
+    for i,instance in enumerate(evaluation.instances):
+        # if i > 0:
+        tp = len([p for p in classifications_score[:i] if p.classification == '1'])
+        precision = tp / i
+        #plotfile.write(str(i) + " " + str(precision) + "\n")
+        x.append(i)
+        y.append(precision)
+        plotfile.write(str(i) + " " + str(precision) + "\n")
+    plotfile.close()
+
+    plt.plot(x,y,linewidth=3)
+    plt.ylabel('Precision')
+    plt.xlabel('Rang op basis van de classifier confidence')
+    plt.savefig(args.plot,bbox_inches="tight")
+    #plotfile.close()
+
 results = evaluation.return_results()
 outfile = open(args.o,"w")
 for row in results:
