@@ -71,20 +71,20 @@ background_meta.close()
 tweetfile = open(args.f)
 for line in tweetfile.readlines():
     tokens = line.strip().split("\t")
-    print tokens
-    if ts.search(tokens[5]):
-        time = tokens[5]
-    else:
-        time = tokens[4]
-    try:
-        if not backgroundfile_uid_time[tokens[6]][time] == "double":
-            filename = backgroundfile_uid_time[tokens[6]][time]
+    if len(tokens) > 5:
+        if ts.search(tokens[5]):
+            time = tokens[5]
         else:
-            filename = user_time_text_tid[tokens[6]][time][tokens[7]]
-            #print filename
-        backgroundfile_tid[filename] = tokens[0]
-    except:
-        continue
+            time = tokens[4]
+        try:
+            if not backgroundfile_uid_time[tokens[6]][time] == "double":
+                filename = backgroundfile_uid_time[tokens[6]][time]
+            else:
+                filename = user_time_text_tid[tokens[6]][time][tokens[7]]
+                #print filename
+            backgroundfile_tid[filename] = tokens[0]
+        except:
+            continue
 tweetfile.close()
 
 
