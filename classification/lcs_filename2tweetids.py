@@ -38,8 +38,8 @@ for line in background_meta.readlines():
     else:
         time = tokens[4]
     #print tokens[1],",",time,",",tokens[-1]
-    user_time_text_tid[tokens[6]][time][tokens[-1]] = tokens[0]
-    if not time in backgroundfile_uid_time[tokens[1]].keys():
+    user_time_text_tid[tokens[6]][time][tokens[7]] = tokens[0]
+    if not time in backgroundfile_uid_time[tokens[6]].keys():
         backgroundfile_uid_time[tokens[6]][time] = tokens[0]
     else:
         backgroundfile_uid_time[tokens[6]][time] = "double"
@@ -53,8 +53,8 @@ for f in args.f:
         tokens = line.strip().split("\t")
         time = tokens[2] + " " + tokens[3]
         try:
-            if not backgroundfile_uid_time[tokens[1]][time] == "double":
-                filename = backgroundfile_uid_time[tokens[1]][time]
+            if not backgroundfile_uid_time[tokens[6]][time] == "double":
+                filename = backgroundfile_uid_time[tokens[6]][time]
             else:
                 words = []
                 for output in fc.process(tokens[-1]):
@@ -63,7 +63,7 @@ for f in args.f:
                     else:
                         word = output[0]
                     words.append(word)  
-                filename = user_time_text_tid[tokens[1]][time][" ".join(words)]
+                filename = user_time_text_tid[tokens[6]][time][" ".join(words)]
                 #print filename
             backgroundfile_tid[filename] = tokens[0]
         except:
