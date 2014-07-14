@@ -60,9 +60,12 @@ for f in args.f:
                 for output in fc.process(tokens[-1]):
                     if re.search("http",output[0]):
                         word = "URL"
+                    elif re.search(r"^@",output[0]):
+                        word = "USER"
                     else:
                         word = output[0]
                     words.append(word)  
+                print " ".join(words)
                 filename = user_time_text_tid[tokens[6]][time][" ".join(words)]
                 #print filename
             backgroundfile_tid[filename] = tokens[0]
