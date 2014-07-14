@@ -43,14 +43,14 @@ for i in range(num_labels):
     #get trainids label from metafile
     for line in meta_file.readlines():
         trainout.write(line.split("\t")[1] + " " + label + "\n")
-    metafile.close()
+    meta_file.close()
     #obtain background train tweet ids
     print "obtaining background train tweet ids"
     for line in train_file.readlines():
         tokens = line.strip().split()
         if tokens[1] == "background":
             trainout.write(backgroundfile_tid[tokens[0]] + " background\n")
-    trainfile.close()
+    train_file.close()
     trainout.close()
     #obtain background train tweet ids
     print "obtaining test tweet ids"
