@@ -3,12 +3,13 @@
 import argparse
 from collections import defaultdict
 import re
+import pynlpl.clients.frogclient
 
 parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
     performance")
 
 parser.add_argument('-t', action = 'store', nargs = '+', required = True, help = "the label dirs") #train tweets
-parser.add_argument('-f', action='store', required=True, help = "good id file") #test tweets
+parser.add_argument('-f', action='store', nargs='+',required=True, help = "good id file") #test tweets
 # parser.add_argument('-c', action='store', nargs = '+', required=True, help = "the classification files") #test tweets
 # parser.add_argument('-m', action='store', nargs = '+', required=True, help = "the meta files") #for emotiona category tweet ids
 # parser.add_argument('-l', action='store', nargs = '+', required=True, help = "the list of emotion labels")
@@ -44,48 +45,48 @@ for line in background_meta.readlines():
         backgroundfile_uid_time[tokens[6]][time] = "double"
 background_meta.close()
 
-# print "skimming through tweet files"
-# for f in args.f:
-#     tweetfile = open(f)
-#     for line in tweetfile.readlines():
-#         tokens = line.strip().split("\t")
-#         time = tokens[2] + " " + tokens[3]
-#         try:
-#             if not backgroundfile_uid_time[tokens[1]][time] == "double":
-#                 filename = backgroundfile_uid_time[tokens[1]][time]
-#             else:
-#                 words = tokens[-1].split(" ")
-#                 new_words = []
-#                 for w in words:
-#                     if re.search("http",w):
-#                         new_words.append("URL")
-#                     else:
-#                         new_words.append(w)
-#                 #print tokens[1],time," ".join(new_words)
-#                 filename = user_time_text_tid[tokens[1]][time][" ".join(new_words)]
-#                 #print filename
-#             backgroundfile_tid[filename] = tokens[0]
-#         except:
-#             continue
-
-tweetfile = open(args.f)
-for line in tweetfile.readlines():
-    tokens = line.strip().split("\t")
-    if len(tokens) > 5:
-        if ts.search(tokens[5]):
-            time = tokens[5]
-        else:
-            time = tokens[4]
+print "skimming through tweet files"
+fc = pynlpl.clients.frogclient.FrogClient('localhost',54321,returnall = True)
+for f in args.f:
+    tweetfile = open(f)
+    for line in tweetfile.readlines():
+        tokens = line.strip().split("\t")
+        time = tokens[2] + " " + tokens[3]
         try:
-            if not backgroundfile_uid_time[tokens[6]][time] == "double":
-                filename = backgroundfile_uid_time[tokens[6]][time]
+            if not backgroundfile_uid_time[tokens[1]][time] == "double":
+                filename = backgroundfile_uid_time[tokens[1]][time]
             else:
-                filename = user_time_text_tid[tokens[6]][time][tokens[7]]
+                words = []
+                for output in fc.process(tokens[-1]):
+                    if re.search("http",output[0]):
+                        word = "URL"
+                    else:
+                        word = output[0]
+                    words.append(word)  
+                filename = user_time_text_tid[tokens[1]][time][" ".join(words)]
                 #print filename
             backgroundfile_tid[filename] = tokens[0]
         except:
             continue
-tweetfile.close()
+
+# tweetfile = open(args.f)
+# for line in tweetfile.readlines():
+#     tokens = line.strip().split("\t")
+#     if len(tokens) > 5:
+#         if ts.search(tokens[5]):
+#             time = tokens[5]
+#         else:
+#             time = tokens[4]
+#         try:
+#             if not backgroundfile_uid_time[tokens[6]][time] == "double":
+#                 filename = backgroundfile_uid_time[tokens[6]][time]
+#             else:
+#                 filename = user_time_text_tid[tokens[6]][time][tokens[7]]
+#                 #print filename
+#             backgroundfile_tid[filename] = tokens[0]
+#         except:
+#             continue
+# tweetfile.close()
 
 
 #for every label
