@@ -31,12 +31,12 @@ user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
 background_meta = open(args.b)
 ts = re.compile(r"\d{2}:\d{2}:\d{2}")
 for line in background_meta.readlines():
-    tokens = line.strip().split()
+    tokens = line.strip().split("\t")
     if ts.search(tokens[5]):
         time = tokens[4] + " " + tokens[5]
     else:
         time = tokens[5] + " " + tokens[4]
-    print tokens[1],",",time,",",tokens[-1]
+    #print tokens[1],",",time,",",tokens[-1]
     user_time_text_tid[tokens[1]][time][tokens[-1]] = tokens[0]
     if not time in backgroundfile_uid_time[tokens[1]].keys():
         backgroundfile_uid_time[tokens[1]][time] = tokens[0]
@@ -61,9 +61,9 @@ for f in args.f:
                         new_words.append("URL")
                     else:
                         new_words.append(w)
-                print tokens[1],time," ".join(new_words)
+                #print tokens[1],time," ".join(new_words)
                 filename = user_time_text_tid[tokens[1]][time][" ".join(new_words)]
-                print filename
+                #print filename
             backgroundfile_tid[filename] = tokens[0]
         except:
             continue
