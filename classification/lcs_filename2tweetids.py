@@ -51,7 +51,7 @@ for f in args.f:
     tweetfile = open(f)
     for line in tweetfile.readlines():
         tokens = line.strip().split("\t")
-        time = tokens[2] + " " + tokens[3]
+        time = tokens[3]
         try:
             if not backgroundfile_uid_time[tokens[6]][time] == "double":
                 filename = backgroundfile_uid_time[tokens[6]][time]
