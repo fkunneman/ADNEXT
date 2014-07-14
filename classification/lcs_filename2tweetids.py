@@ -42,6 +42,7 @@ for f in args.f:
     tweetfile = open(f)
     for line in tweetfile.readlines():
         tokens = line.split("\t")
+        print tokens
         try:
             filename = backgroundfile_uid_time[tokens[1]][tokens[3]]
             backgroundfile_tid[filename] = tokens[0]
