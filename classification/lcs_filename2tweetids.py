@@ -41,7 +41,7 @@ for i in range(num_labels):
     trainout = open(args.w + label + "_train.txt","w")
     testout = open(args.w + label + "_test.txt","w")
     #get trainids label from metafile
-    for line in metafile.readlines():
+    for line in meta_file.readlines():
         trainout.write(line.split("\t")[1] + " " + label + "\n")
     metafile.close()
     #obtain background train tweet ids
