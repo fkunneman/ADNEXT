@@ -60,7 +60,9 @@ for f in args.f:
                         new_words.append("URL")
                     else:
                         new_words.append(w)
+                print tokens[1],time," ".join(new_words)
                 filename = user_time_text_tid[tokens[1]][time][" ".join(new_words)]
+                print filename
             backgroundfile_tid[filename] = tokens[0]
         except:
             continue
