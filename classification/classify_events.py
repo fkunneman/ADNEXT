@@ -33,10 +33,11 @@ parser.add_argument('--median', action='store_true',help='choose to calculate me
 parser.add_argument('--tt', action='store_true',help='choose to only include tweets with time_expressions')
 parser.add_argument('--median_out', action='store', help = 'choose to write median values to a file')
 
+args=parser.parse_args() 
+
 if args.median_out:
     median_out = codecs.open(args.median_out,"w","utf-8")
 
-args=parser.parse_args() 
 
 print "Window",args.window,"step",args.step
 

@@ -28,7 +28,7 @@ if args.i[-3:] == "xls":
     for line in lines:
         for i in range(len(line)):
             line[i] = re.sub("\n","",line[i])
-        newlines.append(args.d.join(line) + "\n")
+        newlines.append(args.d.join(line))
     lines = newlines
 
 else:
@@ -149,10 +149,12 @@ if args.excel:
         for i,line in enumerate(chunk):
             columns = line.strip().split(args.d)
             for j,col in enumerate(columns):
-                if re.search(r"\|",col):
-                    col = re.sub("\|","\n",col)
-                    tab.write(i,j,col,style1)
-                elif re.search("https://twitter.com",col):
+#                if re.search(r"\|",col):
+#                    print "before",col
+#                    col = re.sub("\|","\r\n",col)
+#                    print "after",col
+#                    tab.write(i,j,col,style1)
+                if re.search("https://twitter.com",col):
                     ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
                     tab.write(i,j, Formula(ucol))
                 else:

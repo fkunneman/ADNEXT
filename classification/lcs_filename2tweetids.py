@@ -39,9 +39,11 @@ for f in args.f:
     for line in tweetfile.readlines():
         tokens = line.split("\t")
         try:
+            print tokens,backgroundfile_uid_time[tokens[1]].keys(),tokens[3]
             filename = backgroundfile_uid_time[tokens[1]][tokens[3]]
             backgroundfile_tid[filename] = tokens[0]
         except:
+            print "except"
             continue
 
 #for every label

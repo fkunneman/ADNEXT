@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
+from __future__ import division
 import argparse
 from evalset import Evalset
 from collections import defaultdict
 import codecs
 import re
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description = "Program to process a file containing tweets with Frog en write output")
 
@@ -33,7 +35,7 @@ elif args.i == "simple":
     for lf in args.l:
     #     evaluation.set_instances_simple(lf)
         lines = codecs.open(lf,"r","utf-8").readlines()
-        evaluation.add_instances(lines,score=True)
+        evaluation.add_instances([l.split("\t") for l in lines],score=True)
 
 elif args.i == "meta":
     metafiles = args.l
@@ -50,13 +52,15 @@ if args.plot:
     y = []
     plotfile = open(re.sub(".png",".txt",args.plot),"w")
     for i,instance in enumerate(evaluation.instances):
-        # if i > 0:
-        tp = len([p for p in evaluation.instances[:i] if p.classification == '1'])
-        precision = tp / i
-        #plotfile.write(str(i) + " " + str(precision) + "\n")
-        x.append(i)
-        y.append(precision)
-        plotfile.write(str(i) + " " + str(precision) + "\n")
+        if i > 0:
+            tp = len([p for p in evaluation.instances[:i] if p.classification == '1.0'])
+            #print [p.classification for p in evaluation.instances[:i]]
+            print tp
+            precision = tp / i
+            #plotfile.write(str(i) + " " + str(precision) + "\n")
+            x.append(i)
+            y.append(precision)
+            plotfile.write(str(i) + " " + str(precision) + "\n")
     plotfile.close()
 
     plt.plot(x,y,linewidth=3)
@@ -65,11 +69,11 @@ if args.plot:
     plt.savefig(args.plot,bbox_inches="tight")
     #plotfile.close()
 
-results = evaluation.return_results()
-outfile = open(args.o,"w")
-for row in results:
-    line = "\t".join([str(e) for e in row]) + "\n"
-    outfile.write(line)
-outfile.close()
-if args.fp:
-    evaluation.extract_top(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])
+#results = evaluation.return_results()
+#outfile = open(args.o,"w")
+#for row in results:
+#    line = "\t".join([str(e) for e in row]) + "\n"
+#    outfile.write(line)
+#outfile.close()
+#if args.fp:
+#    evaluation.extract_top(args.fp[0],args.fp[1],int(args.fp[2]),args.fp[3])

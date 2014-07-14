@@ -11,7 +11,7 @@ import numpy
 from scipy.sparse import *
 from scipy import *
 from sklearn import svm
-from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
+#from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 
@@ -247,42 +247,43 @@ class Classifier():
         #    model = svm.SVR()
         #else:
         model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
-        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)
+#        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)
+        
         print "Grid search..."
-        paramsearch.fit(training_csr,numpy.asarray(trainlabels))
+        #paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         #print the best parameters to the file
         print "Prediction..."
         #train an svm outputcode classifier using the best parameters
-        parameters = paramsearch.best_params_
-        outstring = "best parameter settings:\n"
-        for parameter in parameters.keys():
-           outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
-        outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
+        #parameters = paramsearch.best_params_
+        #outstring = "best parameter settings:\n"
+        #for parameter in parameters.keys():
+        #   outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
+        #outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         # if t == "continuous":
         #     clf = svm.SVR(C=1.0,kernel='poly',degree=4,gamma=1.024)
             #clf = svm.SVR(probability=True, C=parameters['estimator__C'],
             #kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
             #degree=parametors['estimator__degree'],class_weight=classweight)
         # else:
-        clf = svm.SVC(probability=True, C=parameters['estimator__C'],
-        kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-        degree=parameters['estimator__degree'],class_weight=classweight)
-        multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
-        multiclf.fit(training_csr,trainlabels)
+        #clf = svm.SVC(probability=True, C=parameters['estimator__C'],
+        #kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
+        #degree=parameters['estimator__degree'],class_weight=classweight)
+        #multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
+        #multiclf.fit(training_csr,trainlabels)
         # clf.fit(training_csr,trainlabels)
 
-        for tset in self.test:
+        #for tset in self.test:
         # def predict(ts,mc):
-            testvectors = self.vectorize(tset["instances"])
-            outfile = codecs.open(tset["out"],"w","utf-8")
-            outfile.write(outstring)
-            for i,t in enumerate(testvectors):
-                classification = multiclf.predict(t)
-                # classification = clf.predict(t)
-                classification_label = labeldict_back[classification[0]]
-                # print tset["instances"][i]["label"], classification
-                outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
-            outfile.close()
+        #    testvectors = self.vectorize(tset["instances"])
+        #    outfile = codecs.open(tset["out"],"w","utf-8")
+        #    outfile.write(outstring)
+        #    for i,t in enumerate(testvectors):
+        #        classification = multiclf.predict(t)
+        #        # classification = clf.predict(t)
+        #        classification_label = labeldict_back[classification[0]]
+        #        # print tset["instances"][i]["label"], classification
+        #        outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
+        #    outfile.close()
 
         # for tset in self.test:
         #     p = multiprocessing.Process(target=predict,args=[tset,multiclf])
