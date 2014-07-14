@@ -71,6 +71,7 @@ background_meta.close()
 tweetfile = open(args.f)
 for line in tweetfile.readlines():
     tokens = line.strip().split("\t")
+    print tokens
     if ts.search(tokens[5]):
         time = tokens[5]
     else:
