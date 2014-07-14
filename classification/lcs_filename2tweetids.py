@@ -27,24 +27,40 @@ num_labels = len(args.t)
 backgroundfile_tid = {}
 print "loading in background dict"
 backgroundfile_uid_time = defaultdict(lambda : {})
+user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
 background_meta = open(args.b)
 time = re.compile(r"\d{2}:\d{2}:\d{2}")
 for line in background_meta.readlines():
-    tokens = line.split()
+    tokens = line.strip().split()
     if time.search(tokens[5]):
-        backgroundfile_uid_time[tokens[1]][tokens[5]] = tokens[0]
+        time = tokens[4] + " " + tokens[5]
     else:
-        backgroundfile_uid_time[tokens[1]][tokens[4]] = tokens[0]
+        time = tokens[5] + " " + tokens[4]
+    user_time_text_tid[tokens[1]][time]tokens[-1] = tokens[0]
+    if not time in backgroundfile_uid_time[tokens[1]].keys()
+        backgroundfile_uid_time[tokens[1]][time] = tokens[0]
+    else:
+        backgroundfile_uid_time[tokens[1]][time] = "double"
 background_meta.close()
 
 print "skimming through tweet files"
 for f in args.f:
     tweetfile = open(f)
     for line in tweetfile.readlines():
-        tokens = line.split("\t")
-        print tokens
+        tokens = line.strip().split("\t")
+        time = tokens[2] + " " + tokens[3]
         try:
-            filename = backgroundfile_uid_time[tokens[1]][tokens[3]]
+            if not backgroundfile_uid_time[tokens[1]][time] == "double":
+                filename = backgroundfile_uid_time[tokens[1]][time]
+            else:
+                words = tokens[-1].split(" ")
+                new_words = []
+                for w in words:
+                    if re.search("http",w):
+                        new_words.append("URL")
+                    else:
+                        new_words.append(w)
+                filename = user_time_text_tid[tokens[1]][time][" ".join(new_words)]
             backgroundfile_tid[filename] = tokens[0]
         except:
             continue
