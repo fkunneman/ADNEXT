@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+
+import argparse
+
+parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
+    performance")
+
+parser.add_argument('-t', action = 'store', nargs = '+', required = True, help = "the train files") #train tweets
+parser.add_argument('-c', action='store', nargs = '+', required=True, help = "the classification files") #test tweets
+parser.add_argument('-m', action='store', nargs = '+', required=True, help = "the meta files") #for emotiona category tweet ids
+parser.add_argument('-l', action='store', nargs = '+', required=True, help = "the list of emotion labels")
+parser.add_argument('-b', action='store', required=True, help = "the file with background meta") #for background tweet ids
+parser.add_argument('-w', action='store', required=True, help = "dir to write results to")
+args = parser.parse_args()
+
+if not (len(args.t) == len(args.c) and len(args.c) == len(args.m)):
+    print "no equal sizes of label lists, exiting program"
+    quit()
+else:
+    print "label dicts of equal size, proceeding with program"
+num_labels = len(args.t)
+
+#load background dict
+print "loading in background dict"
+backgroundfile_tid = {}
+background_meta = open(args.b)
+for line in background_meta.readlines():
+    tokens = line.split()
+    backgroundfile_tid[tokens[0]] = tokens[1]
+background_meta.close()
+
+#for every label
+print "running through labels"
+for i in range(num_labels):
+    label = args.m[i]
+    train_file = open(args.t[i])
+    test_file = open(args.c[i])
+    meta_file = open(args.m[i])
+    print i,"of",num_labels,",",label
+
+    trainout = open(args.w + label + "_train.txt","w")
+    testout = open(args.w + label + "_test.txt","w")
+    #get trainids label from metafile
+    for line in metafile.readlines():
+        trainout.write(line.split("\t")[1] + " " + label + "\n")
+    metafile.close()
+
+    #obtain background train tweet ids
+    print "obtaining background train tweet ids"
+    for line in train_file.readlines():
+        tokens = line.strip().split()
+        if tokens[1] == "background":
+            trainout.write(backgroundfile_tid[tokens[0]] + " background\n")
+    trainfile.close()
+    trainout.close()
+    #obtain background train tweet ids
+    print "obtaining test tweet ids"
+    for line in test_file.readlines():
+        tokens = line.strip().split()
+        testout.write(backgroundfile_tid[tokens[0]] + " " + tokens[1] + "\n")
+    test_file.close()
+    testout.close()
+
+
+
+

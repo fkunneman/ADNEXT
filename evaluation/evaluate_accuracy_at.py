@@ -6,7 +6,7 @@ import evalset
 import re
 from collections import defaultdict
 
-parser = argparse.ArgumentParser(description = "Program to score window estimations")
+parser = argparse.ArgumentParser(description = "")
 
 parser.add_argument('-i', action = 'store', required = True, nargs='+', help = "the files with estimations")
 parser.add_argument('-r', action='store', required=True, help = "the file to write results to")

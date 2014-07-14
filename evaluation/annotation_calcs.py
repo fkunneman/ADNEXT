@@ -6,7 +6,7 @@ from collections import defaultdict
 from pynlpl import evaluation
 import itertools
 
-def calculate_precision(lines,plot = False):
+def calculate_precision(lines,majority_threshold = 0.5,plot = False):
     majority_judgements = defaultdict(list)
     precisions = []
     precision_strengths = defaultdict(int)
@@ -19,7 +19,7 @@ def calculate_precision(lines,plot = False):
 
         percentage = num_positive / len(line)
         majority = int(len(line) / 2) + 1 
-        if percentage >= 0.5:
+        if percentage >= majority_threshold:
             for i in range(majority,len(line)+1):
                 if i <= num_positive:
                     precision_strengths[i] += 1
