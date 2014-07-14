@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
+from collections import defaultdict
 
 parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
     performance")
 
 parser.add_argument('-t', action = 'store', nargs = '+', required = True, help = "the label dirs") #train tweets
+parser.add_argument('-f', action='store', nargs = '+', required=True, help = "the test tweet files") #test tweets
 # parser.add_argument('-c', action='store', nargs = '+', required=True, help = "the classification files") #test tweets
 # parser.add_argument('-m', action='store', nargs = '+', required=True, help = "the meta files") #for emotiona category tweet ids
 # parser.add_argument('-l', action='store', nargs = '+', required=True, help = "the list of emotion labels")
@@ -21,13 +23,26 @@ args = parser.parse_args()
 num_labels = len(args.t)
 
 #load background dict
-print "loading in background dict"
 backgroundfile_tid = {}
+print "loading in background dict"
+backgroundfile_uid_time = defaultdict(lambda : {})
 background_meta = open(args.b)
 for line in background_meta.readlines():
     tokens = line.split()
-    backgroundfile_tid[tokens[0]] = tokens[1]
+    backgroundfile_uid_time[tokens[1]][tokens[5]] = tokens[0]
 background_meta.close()
+
+print "skimming through tweet files"
+for f in args.f:
+    print f
+    tweetfile = open(f)
+    for line in tweetfile.readlines():
+        tokens = line.split("\t")
+        try:
+            filename = backgroundfile_uid_time[tokens[1]][tokens[3]]
+            backgroundfile_tid[filename] = tokens[0]
+        except:
+            continue
 
 #for every label
 print "running through labels"
