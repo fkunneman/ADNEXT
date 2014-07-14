@@ -2,6 +2,7 @@
 
 import argparse
 from collections import defaultdict
+import re
 
 parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
     performance")
@@ -27,23 +28,24 @@ backgroundfile_tid = {}
 print "loading in background dict"
 backgroundfile_uid_time = defaultdict(lambda : {})
 background_meta = open(args.b)
+time = re.compile(r"\d{2}:\d{2}:\d{2}")
 for line in background_meta.readlines():
     tokens = line.split()
-    backgroundfile_uid_time[tokens[1]][tokens[5]] = tokens[0]
+    if time.search(tokens[5]):
+        backgroundfile_uid_time[tokens[1]][tokens[5]] = tokens[0]
+    else:
+        backgroundfile_uid_time[tokens[1]][tokens[4]] = tokens[0]
 background_meta.close()
 
 print "skimming through tweet files"
 for f in args.f:
-    print f
     tweetfile = open(f)
     for line in tweetfile.readlines():
         tokens = line.split("\t")
         try:
-            print tokens,backgroundfile_uid_time[tokens[1]].keys(),tokens[3]
             filename = backgroundfile_uid_time[tokens[1]][tokens[3]]
             backgroundfile_tid[filename] = tokens[0]
         except:
-            print "except"
             continue
 
 #for every label
