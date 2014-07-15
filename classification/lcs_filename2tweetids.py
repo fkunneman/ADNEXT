@@ -40,7 +40,7 @@ for line in background_meta.readlines():
     if len(time) > 8:    
         print time
     #print tokens[1],",",time,",",tokens[-1]
-    print tokens[6]
+    #print tokens[6]
     user_time_text_tid[tokens[6]][time][tokens[7]] = tokens[0]
     if not time in backgroundfile_uid_time[tokens[6]].keys():
         backgroundfile_uid_time[tokens[6]][time] = tokens[0]
@@ -56,25 +56,26 @@ for f in args.f:
         tokens = line.strip().split("\t")
         time = tokens[3]
         # try:
-        print tokens[5],time
-        if not backgroundfile_uid_time[tokens[5]][time] == "double":
-            filename = backgroundfile_uid_time[tokens[5]][time]
-        else:
-            words = []
-            for output in fc.process(tokens[-1]):
-                if re.search("http",output[0]):
-                    word = "URL"
-                elif re.search(r"^@",output[0]):
-                    word = "USER"
-                else:
-                    word = output[0]
-                words.append(word)  
-            print " ".join(words)
-            filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
-            #print filename
-        backgroundfile_tid[filename] = tokens[0]
-        # except:
-        #     continue
+        #print tokens[5],time
+        try:
+            if not backgroundfile_uid_time[tokens[5]][time] == "double":
+                filename = backgroundfile_uid_time[tokens[5]][time]
+            else:
+                words = []
+                for output in fc.process(tokens[-1]):
+                    if re.search("http",output[0]):
+                        word = "URL"
+                    elif re.search(r"^@",output[0]):
+                        word = "USER"
+                    else:
+                        word = output[0]
+                    words.append(word)  
+                print " ".join(words)
+                filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
+                #print filename
+            backgroundfile_tid[filename] = tokens[0]
+        except KeyError:
+            continue
 
 # tweetfile = open(args.f)
 # for line in tweetfile.readlines():
