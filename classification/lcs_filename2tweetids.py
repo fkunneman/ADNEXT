@@ -58,7 +58,11 @@ for f in args.f:
     tweetfile = codecs.open(f,"r","utf-8")
     for line in tweetfile.readlines():
         tokens = line.strip().split("\t")
-        time = tokens[3]
+        try:
+            time = tokens[3]
+        except IndexError:
+            print "indexerror"
+            continue
         # try:
 #        print tokens[5],time
         try:
@@ -88,9 +92,7 @@ for f in args.f:
             backgroundfile_tid[filename] = tokens[0]
         except KeyError:
             continue
-        except IndexError:
-            print "indexerror"
-            continue
+
 
 # tweetfile = open(args.f)
 # for line in tweetfile.readlines():
