@@ -69,7 +69,7 @@ for f in args.f:
                 tokenizer = ucto.Tokenizer(ucto_settingsfile)
                 tokenizer.process(tokens[6])
                 for token in tokenizer:
-                    token = str(token)
+                    token = str(token).encode('utf-8')
                     if re.search("http",token):
                         word = "URL"
                     elif re.search(r"^@",token):
@@ -78,11 +78,18 @@ for f in args.f:
                         word = token
                     words.append(word)  
                 print " ".join(words)
-                filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
+                try:
+                    filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
+                except KeyError:
+                    print "keyerror tokens"
+                    continue
                 #print filename
             print filename
             backgroundfile_tid[filename] = tokens[0]
         except KeyError:
+            continue
+        except IndexError:
+            print "indexerror"
             continue
 
 # tweetfile = open(args.f)
