@@ -69,6 +69,7 @@ for f in args.f:
                 tokenizer = ucto.Tokenizer(ucto_settingsfile)
                 tokenizer.process(tokens[6])
                 for token in tokenizer:
+                    token = str(token)
                     if re.search("http",token):
                         word = "URL"
                     elif re.search(r"^@",token):
