@@ -42,6 +42,7 @@ for line in background_meta.readlines():
     #print tokens[1],",",time,",",tokens[-1]
     #print tokens[6]
     user_time_text_tid[tokens[6]][time][tokens[7]] = tokens[0]
+#    print tokens[6],time
     if not time in backgroundfile_uid_time[tokens[6]].keys():
         backgroundfile_uid_time[tokens[6]][time] = tokens[0]
     else:
@@ -51,12 +52,13 @@ background_meta.close()
 print "skimming through tweet files"
 fc = pynlpl.clients.frogclient.FrogClient('localhost',54321,returnall = True)
 for f in args.f:
+    print f
     tweetfile = open(f)
     for line in tweetfile.readlines():
         tokens = line.strip().split("\t")
         time = tokens[3]
         # try:
-        #print tokens[5],time
+#        print tokens[5],time
         try:
             if not backgroundfile_uid_time[tokens[5]][time] == "double":
                 filename = backgroundfile_uid_time[tokens[5]][time]
@@ -73,6 +75,7 @@ for f in args.f:
                 print " ".join(words)
                 filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
                 #print filename
+            print filename
             backgroundfile_tid[filename] = tokens[0]
         except KeyError:
             continue
