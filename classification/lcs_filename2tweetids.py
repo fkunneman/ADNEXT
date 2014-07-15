@@ -3,7 +3,7 @@
 import argparse
 from collections import defaultdict
 import re
-import pynlpl.clients.frogclient
+import ucto
 
 parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
     performance")
@@ -50,7 +50,7 @@ for line in background_meta.readlines():
 background_meta.close()
 
 print "skimming through tweet files"
-fc = pynlpl.clients.frogclient.FrogClient('localhost',54321,returnall = True)
+ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 for f in args.f:
     print f
     tweetfile = open(f)
@@ -64,13 +64,15 @@ for f in args.f:
                 filename = backgroundfile_uid_time[tokens[5]][time]
             else:
                 words = []
-                for output in fc.process(tokens[-1]):
-                    if re.search("http",output[0]):
+                tokenizer = ucto.Tokenizer(ucto_settingsfile)
+                tokenizer.process(tokens[6])
+                for token in tokenizer:
+                    if re.search("http",token):
                         word = "URL"
-                    elif re.search(r"^@",output[0]):
+                    elif re.search(r"^@",token):
                         word = "USER"
                     else:
-                        word = output[0]
+                        word = token
                     words.append(word)  
                 print " ".join(words)
                 filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
