@@ -3,6 +3,8 @@
 import argparse
 from collections import defaultdict
 import re
+import codecs
+
 import ucto
 
 parser = argparse.ArgumentParser(description = "Program to read lcs output and evaluate the \
@@ -29,7 +31,7 @@ backgroundfile_tid = {}
 print "loading in background dict"
 backgroundfile_uid_time = defaultdict(lambda : {})
 user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
-background_meta = open(args.b)
+background_meta = codecs.open(args.b,"r","utf-8")
 ts = re.compile(r"\d{2}:\d{2}:\d{2}")
 for line in background_meta.readlines():
     tokens = line.strip().split("\t")
@@ -53,7 +55,7 @@ print "skimming through tweet files"
 ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 for f in args.f:
     print f
-    tweetfile = open(f)
+    tweetfile = codecs.open(f,"r","utf-8")
     for line in tweetfile.readlines():
         tokens = line.strip().split("\t")
         time = tokens[3]
