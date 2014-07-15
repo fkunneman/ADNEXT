@@ -37,6 +37,8 @@ for line in background_meta.readlines():
         time = tokens[5]
     else:
         time = tokens[4]
+    if len(time) > 8:    
+        print time
     #print tokens[1],",",time,",",tokens[-1]
     user_time_text_tid[tokens[6]][time][tokens[7]] = tokens[0]
     if not time in backgroundfile_uid_time[tokens[6]].keys():
