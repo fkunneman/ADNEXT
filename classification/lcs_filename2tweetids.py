@@ -112,7 +112,7 @@ else:
                 #print filename
                 backgroundfile_tid[filename] = tokens[0]
             except KeyError:
-                #print "keyerror"," ".join(words)
+                print "keyerror"," ".join(words)
                 #quit()
                 continue
                     #print filename
