@@ -17,6 +17,7 @@ parser.add_argument('-f', action='store', nargs='+',required=False, help = "good
 parser.add_argument('--id', action='store_true', help = "indicate if the id in background meta-files is correct")
 parser.add_argument('-b', action='store', required=True, help = "the file with background meta") #for background tweet ids
 parser.add_argument('-w', action='store', required=True, help = "dir to write results to")
+parser.add_argument('--ld', action='store',required=False, help = "general expdir")
 args = parser.parse_args()
 
 # if not (len(args.t) == len(args.c) and len(args.c) == len(args.m)):
@@ -33,6 +34,14 @@ if args.id:
         tokens = line.strip().split("\t")
         backgroundfile_tid[tokens[0]] = tokens[1]
     background_meta.close()
+    for i in range(num_labels):
+        labeldir = args.t[i]
+        label = labeldir.split("/")[-2]
+        meta_file = open(labeldir + "meta.txt")
+        for line in meta_file.readlines():
+            tokens = line.strip().split("\t")
+            backgroundfile_tid[tokens[0]] = tokens[1]
+        meta_file.close()
 
 else:
     #load background dict
@@ -84,7 +93,8 @@ else:
                 #    filename = backgroundfile_uid_time[tokens[5]][time]
                 # else:
             words = []
-            tokenizer.process(tokens[6])
+            text = unicode(tokens[6],'utf-8')
+            tokenizer.process(text)
             for token in tokenizer:
                     #token = str(token).encode('utf-8')
                 token = token.text
@@ -132,35 +142,34 @@ else:
 
 #for every label
 print "running through labels"
-for i in range(num_labels):
-    labeldir = args.t[i]
-    label = labeldir.split("/")[-2]
-    train_file = open(labeldir + "train")
-    test_file = open(labeldir + "test")
-    meta_file = open(labeldir + "meta.txt")
-    print i,"of",num_labels,",",label
-    trainout = open(args.w + label + "_train.txt","w")
-    testout = open(args.w + label + "_test.txt","w")
-    #get trainids label from metafile
-    for line in meta_file.readlines():
-        trainout.write(line.split("\t")[1] + " " + label + "\n")
-    meta_file.close()
-    #obtain background train tweet ids
-    print "obtaining background train tweet ids"
-    for line in train_file.readlines():
-        tokens = line.strip().split()
-        if tokens[1] == "background":
-            trainout.write(backgroundfile_tid[tokens[0]] + " background\n")
-    train_file.close()
-    trainout.close()
-    #obtain background train tweet ids
-    print "obtaining test tweet ids"
-    for line in test_file.readlines():
-        tokens = line.strip().split()
-        testout.write(backgroundfile_tid[tokens[0]] + " " + tokens[1] + "\n")
-    test_file.close()
-    testout.close()
-
-
-
-
+if args.id:
+    print "id"
+else:
+    for i in range(num_labels):
+        labeldir = args.t[i]
+        label = labeldir.split("/")[-2]
+        train_file = open(labeldir + "train")
+        test_file = open(labeldir + "test")
+        meta_file = open(labeldir + "meta.txt")
+        print i,"of",num_labels,",",label
+        trainout = open(args.w + label + "_train.txt","w")
+        testout = open(args.w + label + "_test.txt","w")
+        #get trainids label from metafile
+        for line in meta_file.readlines():
+            trainout.write(line.split("\t")[1] + " " + label + "\n")
+        meta_file.close()
+        #obtain background train tweet ids
+        print "obtaining background train tweet ids"
+        for line in train_file.readlines():
+            tokens = line.strip().split()
+            if tokens[1] == "background":
+                trainout.write(backgroundfile_tid[tokens[0]] + " background\n")
+        train_file.close()
+        trainout.close()
+        #obtain background train tweet ids
+        print "obtaining test tweet ids"
+        for line in test_file.readlines():
+            tokens = line.strip().split()
+            testout.write(backgroundfile_tid[tokens[0]] + " " + tokens[1] + "\n")
+        test_file.close()
+        testout.close()
