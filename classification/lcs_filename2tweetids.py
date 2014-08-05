@@ -69,34 +69,36 @@ for f in args.f:
             #continue
         # try:
 #        print tokens[5],time
-        try:
+        #try:
             #if not backgroundfile_uid_time[tokens[5]][time] == "double":
             #    filename = backgroundfile_uid_time[tokens[5]][time]
             # else:
 
 
-            words = []
-            tokenizer = ucto.Tokenizer(ucto_settingsfile)
-            tokenizer.process(tokens[6])
-            for token in tokenizer:
-                token = str(token).encode('utf-8')
-                if re.search("http",token):
-                    word = "URL"
-                elif re.search(r"^@",token):
-                    word = "USER"
-                else:
-                    word = token
-                words.append(word)  
+        words = []
+        tokenizer = ucto.Tokenizer(ucto_settingsfile)
+        tokenizer.process(tokens[6])
+        for token in tokenizer:
+                #token = str(token).encode('utf-8')
+            token = token.text
+            if re.search("http",token):
+                word = "URL"
+            elif re.search(r"^@",token):
+                word = "USER"
+            else:
+                word = token
+            words.append(word)  
             #print " ".join(words)
             #     try:
+        try:        
             filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
+            print filename
+            backgroundfile_tid[filename] = tokens[0]
         except KeyError:
-            print "keyerror tokens",tokens," ".join(words)
-            quit()
-                    #continue
+            print "keyerror"," ".join(words)
+            #quit()
+            continue
                 #print filename
-        print filename
-        backgroundfile_tid[filename] = tokens[0]
         #except KeyError:
         #    continue
 
