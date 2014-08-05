@@ -27,7 +27,7 @@ num_labels = len(args.t)
 
 #load background dict
 backgroundfile_tid = {}
-print "loading in background dict"
+print "loading background dict"
 #backgroundfile_uid_time = defaultdict(lambda : {})
 user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
 #user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
@@ -93,7 +93,7 @@ for f in args.f:
             #print filename
             backgroundfile_tid[filename] = tokens[0]
         except KeyError:
-            print "keyerror"," ".join(words)
+            #print "keyerror"," ".join(words)
             #quit()
             continue
                 #print filename
