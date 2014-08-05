@@ -33,6 +33,9 @@ if args.id:
     background_meta = codecs.open(args.b,"r","utf-8")
     for line in background_meta.readlines():
         tokens = line.strip().split("\t")
+        if tokens[0] in backgroundfile_tid:
+            print tokens[0],backgroundfile_tid[tokens[0]],tokens[1]
+            quit()
         backgroundfile_tid[tokens[0]] = tokens[1]
     background_meta.close()
     background_meta2 = codecs.open(args.b2,"r","utf-8")
