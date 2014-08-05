@@ -15,6 +15,7 @@ parser.add_argument('-f', action='store', nargs='+',required=False, help = "good
 # parser.add_argument('-m', action='store', nargs = '+', required=True, help = "the meta files") #for emotiona category tweet ids
 # parser.add_argument('-l', action='store', nargs = '+', required=True, help = "the list of emotion labels")
 parser.add_argument('--id', action='store_true', help = "indicate if the id in background meta-files is correct")
+parser.add_argument('--b2', action='store', required=False, help = "the second file with background meta") #for background tweet ids
 parser.add_argument('-b', action='store', required=True, help = "the file with background meta") #for background tweet ids
 parser.add_argument('-w', action='store', required=True, help = "dir to write results to")
 parser.add_argument('--ld', action='store',required=False, help = "general expdir")
@@ -34,6 +35,11 @@ if args.id:
         tokens = line.strip().split("\t")
         backgroundfile_tid[tokens[0]] = tokens[1]
     background_meta.close()
+    background_meta2 = codecs.open(args.b2,"r","utf-8")
+    for line in background_meta2.readlines():
+        tokens = line.strip().split("\t")
+        backgroundfile_tid[tokens[0]] = tokens[1]
+    background_meta2.close()
     for i in range(num_labels):
         labeldir = args.t[i]
         label = labeldir.split("/")[-2]
@@ -148,6 +154,7 @@ if args.id:
     test_file = open(args.ld + "test")
     trainout = open(args.w + "train.txt","w")
     testout = open(args.w + "test.txt","w")
+    print "obtaining background train tweet ids"
     for line in train_file.readlines():
         tokens = line.strip().split()
         label = tokens[1]
