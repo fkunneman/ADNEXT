@@ -56,6 +56,7 @@ background_meta.close()
 
 print "skimming through tweet files"
 ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
+tokenizer = ucto.Tokenizer(ucto_settingsfile)
 for f in args.f:
     print f
     tweetfile = codecs.open(f,"r","utf-8")
@@ -64,19 +65,16 @@ for f in args.f:
         try:
             time = tokens[3]
         except IndexError:
-            print "indexerror",tokens
-            quit()
-            #continue
+            print "indexerror time 3",tokens
+            #quit()
+            continue
         # try:
 #        print tokens[5],time
         #try:
             #if not backgroundfile_uid_time[tokens[5]][time] == "double":
             #    filename = backgroundfile_uid_time[tokens[5]][time]
             # else:
-
-
         words = []
-        tokenizer = ucto.Tokenizer(ucto_settingsfile)
         tokenizer.process(tokens[6])
         for token in tokenizer:
                 #token = str(token).encode('utf-8')
@@ -92,7 +90,7 @@ for f in args.f:
             #     try:
         try:        
             filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
-            print filename
+            #print filename
             backgroundfile_tid[filename] = tokens[0]
         except KeyError:
             print "keyerror"," ".join(words)
