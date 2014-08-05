@@ -144,6 +144,24 @@ else:
 print "running through labels"
 if args.id:
     print "id"
+    train_file = open(args.ld + "train")
+    test_file = open(args.ld + "test")
+    trainout = open(args.w + "train.txt","w")
+    testout = open(args.w + "test.txt","w")
+    for line in train_file.readlines():
+        tokens = line.strip().split()
+        label = tokens[1]
+        trainout.write(backgroundfile_tid[tokens[0]] + " " + label + "\n")
+    train_file.close()
+    trainout.close()
+    print "obtaining test tweet ids"
+    for line in test_file.readlines():
+        tokens = line.strip().split()
+        label = tokens[1]
+        testout.write(backgroundfile_tid[tokens[0]] + " " + label + "\n")
+    test_file.close()
+    testout.close()
+
 else:
     for i in range(num_labels):
         labeldir = args.t[i]
