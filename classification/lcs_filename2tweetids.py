@@ -93,12 +93,12 @@ else:
                 #    filename = backgroundfile_uid_time[tokens[5]][time]
                 # else:
             words = []
-            text = unicode(tokens[6],'utf-8')
+            text = unicode(tokens[6])
             tokenizer.process(text)
             for token in tokenizer:
                     #token = str(token).encode('utf-8')
                 token = token.text
-                if re.search("http",token):
+                if re.search("http://",token):
                     word = "URL"
                 elif re.search(r"^@",token):
                     word = "USER"
