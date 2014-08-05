@@ -73,13 +73,11 @@ for f in args.f:
                 tokenizer = ucto.Tokenizer(ucto_settingsfile)
                 tokenizer.process(tokens[6])
                 for token in tokenizer:
-                    token = str(token).encode('utf-8')
-                    if re.search("http",token):
+                    word = token.text
+                    if re.search("http",word):
                         word = "URL"
-                    elif re.search(r"^@",token):
+                    elif re.search(r"^@",word):
                         word = "USER"
-                    else:
-                        word = token
                     words.append(word)  
                 print " ".join(words)
                 try:
