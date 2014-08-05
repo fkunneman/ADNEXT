@@ -10,10 +10,11 @@ import ucto
 parser = argparse.ArgumentParser(description = "")
 
 parser.add_argument('-t', action = 'store', nargs = '+', required = True, help = "the label dirs") #train tweets
-parser.add_argument('-f', action='store', nargs='+',required=True, help = "good id file") #test tweets
+parser.add_argument('-f', action='store', nargs='+',required=False, help = "good id file") #test tweets
 # parser.add_argument('-c', action='store', nargs = '+', required=True, help = "the classification files") #test tweets
 # parser.add_argument('-m', action='store', nargs = '+', required=True, help = "the meta files") #for emotiona category tweet ids
 # parser.add_argument('-l', action='store', nargs = '+', required=True, help = "the list of emotion labels")
+parser.add_argument('--id', action='store_true', help = "indicate if the id in background meta-files is correct")
 parser.add_argument('-b', action='store', required=True, help = "the file with background meta") #for background tweet ids
 parser.add_argument('-w', action='store', required=True, help = "dir to write results to")
 args = parser.parse_args()
@@ -24,81 +25,89 @@ args = parser.parse_args()
 # else:
 #     print "label dicts of equal size, proceeding with program"
 num_labels = len(args.t)
-
-#load background dict
 backgroundfile_tid = {}
-print "loading background dict"
-#backgroundfile_uid_time = defaultdict(lambda : {})
-user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
-#user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
-background_meta = codecs.open(args.b,"r","utf-8")
-ts = re.compile(r"\d{2}:\d{2}:\d{2}")
-for line in background_meta.readlines():
-    tokens = line.strip().split("\t")
-    if ts.search(tokens[5]):
-        time = tokens[5]
-    elif ts.search(tokens[4]):
-        time = tokens[4]
-    else:
-        print "no time",tokens
-        quit()
-    if len(time) > 8:    
-        print time
-    #print tokens[1],",",time,",",tokens[-1]
-    #print tokens[6]
-    user_time_text_tid[tokens[6]][time][tokens[7]] = tokens[0]
-#    print tokens[6],time
-    # if not time in backgroundfile_uid_time[tokens[6]].keys():
-    #     backgroundfile_uid_time[tokens[6]][time] = tokens[0]
-    # else:
-    #     backgroundfile_uid_time[tokens[6]][time] = "double"
-background_meta.close()
 
-print "skimming through tweet files"
-ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
-tokenizer = ucto.Tokenizer(ucto_settingsfile)
-for f in args.f:
-    print f
-    tweetfile = codecs.open(f,"r","utf-8")
-    for line in tweetfile.readlines():
+if args.id:
+    background_meta = codecs.open(args.b,"r","utf-8")
+    for line in background_meta.readlines():
         tokens = line.strip().split("\t")
-        try:
-            time = tokens[3]
-        except IndexError:
-            print "indexerror time 3",tokens
-            #quit()
-            continue
-        # try:
-#        print tokens[5],time
-        #try:
-            #if not backgroundfile_uid_time[tokens[5]][time] == "double":
-            #    filename = backgroundfile_uid_time[tokens[5]][time]
-            # else:
-        words = []
-        tokenizer.process(tokens[6])
-        for token in tokenizer:
-                #token = str(token).encode('utf-8')
-            token = token.text
-            if re.search("http",token):
-                word = "URL"
-            elif re.search(r"^@",token):
-                word = "USER"
-            else:
-                word = token
-            words.append(word)  
-            #print " ".join(words)
-            #     try:
-        try:        
-            filename = user_time_text_tid[tokens[5]][time][" ".join(words)]
-            #print filename
-            backgroundfile_tid[filename] = tokens[0]
-        except KeyError:
-            #print "keyerror"," ".join(words)
-            #quit()
-            continue
+        backgroundfile_tid[tokens[0]] = tokens[1]
+    background_meta.close()
+
+else:
+    #load background dict
+    print "loading background dict"
+    #backgroundfile_uid_time = defaultdict(lambda : {})
+    user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
+    #user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
+    background_meta = codecs.open(args.b,"r","utf-8")
+    ts = re.compile(r"\d{2}:\d{2}:\d{2}")
+    for line in background_meta.readlines():
+        tokens = line.strip().split("\t")
+        if ts.search(tokens[5]):
+            time = tokens[5]
+        elif ts.search(tokens[4]):
+            time = tokens[4]
+        else:
+            print "no time",tokens
+            quit()
+        if len(time) > 8:    
+            print time
+        #print tokens[1],",",time,",",tokens[-1]
+        #print tokens[6]
+        user_time_text_tid[tokens[1]][time][tokens[7]] = tokens[0]
+    #    print tokens[6],time
+        # if not time in backgroundfile_uid_time[tokens[6]].keys():
+        #     backgroundfile_uid_time[tokens[6]][time] = tokens[0]
+        # else:
+        #     backgroundfile_uid_time[tokens[6]][time] = "double"
+    background_meta.close()
+
+    print "skimming through tweet files"
+    ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
+    tokenizer = ucto.Tokenizer(ucto_settingsfile)
+    for f in args.f:
+        print f
+        tweetfile = codecs.open(f,"r","utf-8")
+        for line in tweetfile.readlines():
+            tokens = line.strip().split("\t")
+            try:
+                time = tokens[3]
+            except IndexError:
+                print "indexerror time 3",tokens
+                #quit()
+                continue
+            # try:
+    #        print tokens[5],time
+            #try:
+                #if not backgroundfile_uid_time[tokens[5]][time] == "double":
+                #    filename = backgroundfile_uid_time[tokens[5]][time]
+                # else:
+            words = []
+            tokenizer.process(tokens[6])
+            for token in tokenizer:
+                    #token = str(token).encode('utf-8')
+                token = token.text
+                if re.search("http",token):
+                    word = "URL"
+                elif re.search(r"^@",token):
+                    word = "USER"
+                else:
+                    word = token
+                words.append(word)  
+                #print " ".join(words)
+                #     try:
+            try:        
+                filename = user_time_text_tid[tokens[1]][time][" ".join(words)]
                 #print filename
-        #except KeyError:
-        #    continue
+                backgroundfile_tid[filename] = tokens[0]
+            except KeyError:
+                #print "keyerror"," ".join(words)
+                #quit()
+                continue
+                    #print filename
+            #except KeyError:
+            #    continue
 
 
 # tweetfile = open(args.f)
