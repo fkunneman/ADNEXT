@@ -55,11 +55,12 @@ if args.id:
 else:
     #load background dict
     print "loading background dict"
-    #backgroundfile_uid_time = defaultdict(lambda : {})
-    user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
+    backgroundfile_uid_time = defaultdict(lambda : {})
+    user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
     #user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
     background_meta = codecs.open(args.b,"r","utf-8")
     ts = re.compile(r"\d{2}:\d{2}:\d{2}")
+    filenames = []
     for line in background_meta.readlines():
         tokens = line.strip().split("\t")
         if ts.search(tokens[5]):
@@ -75,7 +76,8 @@ else:
         #print tokens[6]
         user_time_text_tid[tokens[1]][time][tokens[7]] = tokens[0]
     #    print tokens[6],time
-        # if not time in backgroundfile_uid_time[tokens[6]].keys():
+        backgroundfile_uid_time[tokens[1]][time].append(tokens[0])
+        filenames.append(tokens[0])
         #     backgroundfile_uid_time[tokens[6]][time] = tokens[0]
         # else:
         #     backgroundfile_uid_time[tokens[6]][time] = "double"
@@ -84,6 +86,9 @@ else:
     print "skimming through tweet files"
     ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
     tokenizer = ucto.Tokenizer(ucto_settingsfile)
+    filename_match = {}
+    for filename in filenames:
+        filename_match[filename] = False
     for f in args.f:
         print f
         tweetfile = codecs.open(f,"r","utf-8")
@@ -101,32 +106,42 @@ else:
                 #if not backgroundfile_uid_time[tokens[5]][time] == "double":
                 #    filename = backgroundfile_uid_time[tokens[5]][time]
                 # else:
-            words = []
-            text = unicode(tokens[6])
-            tokenizer.process(text)
-            for token in tokenizer:
-                    #token = str(token).encode('utf-8')
-                token = token.text
-                if re.search("http://",token):
-                    word = "URL"
-                elif re.search(r"^@",token):
-                    word = "USER"
-                else:
-                    word = token
-                words.append(word)  
-                #print " ".join(words)
-                #     try:
-            try:        
-                filename = user_time_text_tid[tokens[1]][time][" ".join(words)]
+            if len(backgroundfile_uid_time[tokens[1]][time]) == 1:
+                filename = backgroundfile_uid_time[tokens[1]][time][0]
                 #print filename
                 backgroundfile_tid[filename] = tokens[0]
-            except KeyError:
-                print "keyerror"," ".join(words)
-                #quit()
-                continue
+            else:
+                words = []
+                text = unicode(tokens[6])
+                tokenizer.process(text)
+                for token in tokenizer:
+                        #token = str(token).encode('utf-8')
+                    token = token.text
+                    if re.search("http://",token):
+                        word = "URL"
+                    elif re.search(r"^@",token):
+                        word = "USER"
+                    else:
+                        word = token
+                    words.append(word)  
+                    #print " ".join(words)
+                    #     try:
+                try:        
+                    filename = user_time_text_tid[tokens[1]][time][" ".join(words)]
                     #print filename
-            #except KeyError:
-            #    continue
+                    backgroundfile_tid[filename] = tokens[0]
+                except KeyError:
+                    #print "keyerror"," ".join(words)
+                    if tokens[1] in backgroundfile_uid_time and time in backgroundfile_uid_time[tokens[1]]:
+                        for fn in backgroundfile_uid_time[tokens[1]][time]:
+                            if not filename_match[fn]:
+                                backgroundfile_tid[fn] = tokens[0]
+                                break
+                    #quit()
+                    
+                        #print filename
+                #except KeyError:
+                #    continue
 
 
 # tweetfile = open(args.f)
@@ -191,7 +206,11 @@ else:
         for line in train_file.readlines():
             tokens = line.strip().split()
             if tokens[1] == "background":
-                trainout.write(backgroundfile_tid[tokens[0]] + " background\n")
+                try:
+                    trainout.write(backgroundfile_tid[tokens[0]] + " background\n")
+                except KeyError:
+                    print "KeyError",tokens[0]
+                    continue
         train_file.close()
         trainout.close()
         #obtain background train tweet ids
