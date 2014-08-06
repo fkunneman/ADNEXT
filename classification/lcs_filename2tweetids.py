@@ -217,6 +217,9 @@ else:
         print "obtaining test tweet ids"
         for line in test_file.readlines():
             tokens = line.strip().split()
-            testout.write(backgroundfile_tid[tokens[0]] + " " + tokens[1] + "\n")
+            try:
+                testout.write(backgroundfile_tid[tokens[0]] + " " + tokens[1] + "\n")
+            except KeyError:
+                print "KeyError",tokens[0]
         test_file.close()
         testout.close()
