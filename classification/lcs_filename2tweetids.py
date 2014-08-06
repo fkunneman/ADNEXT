@@ -55,8 +55,8 @@ if args.id:
 else:
     #load background dict
     print "loading background dict"
-    backgroundfile_uid_time = defaultdict(lambda : {})
-    user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
+    backgroundfile_uid_time = defaultdict(lambda : defaultdict(list))
+    user_time_text_tid = defaultdict(lambda : defaultdict(lambda : {}))
     #user_time_text_tid = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
     background_meta = codecs.open(args.b,"r","utf-8")
     ts = re.compile(r"\d{2}:\d{2}:\d{2}")
