@@ -26,7 +26,8 @@ args = parser.parse_args()
 #     quit()
 # else:
 #     print "label dicts of equal size, proceeding with program"
-num_labels = len(args.t)
+if args.t:
+    num_labels = len(args.t)
 backgroundfile_tid = {}
 
 if args.id:
