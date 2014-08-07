@@ -9,7 +9,7 @@ import ucto
 
 parser = argparse.ArgumentParser(description = "")
 
-parser.add_argument('-t', action = 'store', nargs = '+', required = True, help = "the label dirs") #train tweets
+parser.add_argument('-t', action = 'store', nargs = '+', required = False, help = "the label dirs") #train tweets
 parser.add_argument('-f', action='store', nargs='+',required=False, help = "good id file") #test tweets
 # parser.add_argument('-c', action='store', nargs = '+', required=True, help = "the classification files") #test tweets
 # parser.add_argument('-m', action='store', nargs = '+', required=True, help = "the meta files") #for emotiona category tweet ids
