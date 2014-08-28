@@ -20,8 +20,8 @@ parser.add_argument('-o', action = 'store', required = True, help = "the directo
 args = parser.parse_args()
 
 if args.k == "echtalles":
-    current = datetime.datetime(int(args.s[:4]),int(args.s[5:7]),int(args.s[7:9]),int(args.s[9:]),0,0)
-    end = datetime.datetime(int(args.f[:4]),int(args.f[5:7]),int(args.f[7:9]),int(args.f[9:]),0,0)
+    current = datetime.datetime(int(args.s[:4]),int(args.s[4:6]),int(args.s[6:8]),int(args.s[8:]),0,0)
+    end = datetime.datetime(int(args.f[:4]),int(args.f[4:6]),int(args.f[6:8]),int(args.f[8:]),0,0)
     while current <= end:
         print current
         year = str(current.year)
