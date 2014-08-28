@@ -36,16 +36,14 @@ if args.k == "echtalles":
             hour = "0" + hour
         timeobj = year+month+day+hour
         outfile = args.o + timeobj + ".txt"
-        print "curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'"
-        os.system("curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
+        print "curl -o " + outfile + " \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\' --cookie \'bZWB9XcuZYWTQ8pG\'"
+        os.system("curl -o " + outfile + " \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\' --cookie \'bZWB9XcuZYWTQ8pG\'")
         outlines = []
         while len(outlines) <= 2:
             print "waiting for",outfile
             time.sleep(300)
-            os.system("curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
+            os.system("curl -o " + outfile + " \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\' --cookie \'bZWB9XcuZYWTQ8pG\'")
             outopen = open(outfile)
             outlines = outopen.readlines()
             outopen.close()
         current = current + datetime.timedelta(hours = 1)
-
-
