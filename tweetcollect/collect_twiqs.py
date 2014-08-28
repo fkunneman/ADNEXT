@@ -19,7 +19,7 @@ parser.add_argument('-o', action = 'store', required = True, help = "the directo
 
 args = parser.parse_args()
 
-if keyword == "echtalles":
+if args.k == "echtalles":
     current = datetime.datetime(int(args.s[:4]),int(args.s[5:7]),int(args.s[7:9]),int(args.s[9:]),0,0)
     end = datetime.datetime(int(args.f[:4]),int(args.f[5:7]),int(args.f[7:9]),int(args.f[9:]),0,0)
     while current <= end:
@@ -36,11 +36,11 @@ if keyword == "echtalles":
             hour = "0" + hour
         timeobj = year+month+day+hour
         outfile = args.o + timeobj + ".txt"
-        os.system("curl -o " + outfile + " \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
+        os.system("curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
         outlines = []
         while len(outlines) <= 2:
             time.sleep(300)
-            os.system("curl -o " + outfile + " \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
+            os.system("curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
             outopen = open(outfile)
             outlines = outopen.readlines()
             outopen.close()
