@@ -36,9 +36,11 @@ if args.k == "echtalles":
             hour = "0" + hour
         timeobj = year+month+day+hour
         outfile = args.o + timeobj + ".txt"
+        print "curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'"
         os.system("curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
         outlines = []
         while len(outlines) <= 2:
+            print "waiting for",outfile
             time.sleep(300)
             os.system("curl -o " + outfile + " \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "&DOWNLOAD\'")
             outopen = open(outfile)
