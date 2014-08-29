@@ -108,6 +108,8 @@ def frogger(t,o,i):
                 if args.ne and output[4] != "O":
                     cat = re.search(r"B-([^_]+)",output[4])
                     word = "[" + cat.groups()[0] + " " + output[0] + "]"
+                elif args.pos:
+                    word = output[0] + "__" + output[3] 
                 else:
                     word = output[0]
                 words.append(word)    
