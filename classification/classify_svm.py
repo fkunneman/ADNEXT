@@ -69,8 +69,8 @@ else:
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
         testinstances = [{"out" : args.o + "fold_" + str(j) + ".txt", "instances" : fold}]
-        print sum(len(x) for x in folds)
-        print len(testinstances[0])
+        print sum(len(x) for x in tr_folds),len(traininstances)
+        print len(testinstances[0]["instances"])
         quit()
         classify(traininstances,testinstances)
 
