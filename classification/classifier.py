@@ -248,7 +248,7 @@ class Classifier():
             model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
         else:
             print "svc model"
-            model = svm.SVC()
+            model = svm.SVC(probability=True,class_weight=classweight))
         paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
