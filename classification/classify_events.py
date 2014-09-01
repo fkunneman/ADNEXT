@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-from classifier import Classifier
 from collections import defaultdict
 import codecs
 import os
 import re
 import numpy
 
+from classifier import Classifier
 import time_functions
 import gen_functions
 
@@ -37,7 +37,6 @@ args=parser.parse_args()
 
 if args.median_out:
     median_out = codecs.open(args.median_out,"w","utf-8")
-
 
 print "Window",args.window,"step",args.step
 

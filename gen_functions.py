@@ -8,6 +8,17 @@ import datetime
 import codecs
 from collections import defaultdict
 
+def make_folds(instances,n=10):
+    folds = []
+    for i in range(n):
+        j = i
+        fold = []
+        while j < len(instances):
+            fold.append(instances[j])
+            j += n
+        folds.append(fold)
+    return folds
+
 def make_chunks(lines,nc=16,dist=False):
     i=0
     if dist:

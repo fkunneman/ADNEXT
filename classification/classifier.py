@@ -225,7 +225,7 @@ class Classifier():
             matrix.append(featurev)
         return matrix
 
-    def classify_svm(self,t = "discrete",classweight = None):
+    def classify_svm(self,t = "discrete",classweight = None,params = 10):
         #generate scipy libsvm input
         print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
@@ -242,66 +242,41 @@ class Classifier():
             'estimator__kernel': ['linear','rbf','poly'], 
             'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
             'estimator__degree': [1,2,3,4]}
-        #if t == "continuous":
-            # model = OutputCodeClassifier(svm.SVR())
-        #    model = svm.SVR()
-        #else:
-        model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
-#        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_jobs=self.jobs)
-        
+        if len(trainlabels) > 2:
+            model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
+        else:
+            model = svm.SVC(probability=True,class_weight=classweight)
+        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs)
         print "Grid search..."
-        #paramsearch.fit(training_csr,numpy.asarray(trainlabels))
-        #print the best parameters to the file
+        paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         print "Prediction..."
+        #print the best parameters to the file
+        parameters = paramsearch.best_params_
+        outstring = "best parameter settings:\n"
+        for parameter in parameters.keys():
+          outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
+        outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         #train an svm outputcode classifier using the best parameters
-        #parameters = paramsearch.best_params_
-        #outstring = "best parameter settings:\n"
-        #for parameter in parameters.keys():
-        #   outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
-        #outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
-        # if t == "continuous":
-        #     clf = svm.SVR(C=1.0,kernel='poly',degree=4,gamma=1.024)
-            #clf = svm.SVR(probability=True, C=parameters['estimator__C'],
-            #kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-            #degree=parametors['estimator__degree'],class_weight=classweight)
-        # else:
-        #clf = svm.SVC(probability=True, C=parameters['estimator__C'],
-        #kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-        #degree=parameters['estimator__degree'],class_weight=classweight)
-        #multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
-        #multiclf.fit(training_csr,trainlabels)
-        # clf.fit(training_csr,trainlabels)
+        clf = svm.SVC(probability=True, C=parameters['estimator__C'],
+        kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
+        degree=parameters['estimator__degree'],class_weight=classweight)
 
-        #for tset in self.test:
-        # def predict(ts,mc):
-        #    testvectors = self.vectorize(tset["instances"])
-        #    outfile = codecs.open(tset["out"],"w","utf-8")
-        #    outfile.write(outstring)
-        #    for i,t in enumerate(testvectors):
-        #        classification = multiclf.predict(t)
-        #        # classification = clf.predict(t)
-        #        classification_label = labeldict_back[classification[0]]
-        #        # print tset["instances"][i]["label"], classification
-        #        outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
-        #    outfile.close()
+        def predict(ts,mc):
+            testvectors = self.vectorize(ts["instances"])
+            outfile = codecs.open(ts["out"],"w","utf-8")
+            outfile.write(outstring)
+            for i,t in enumerate(testvectors):
+                classification = mc.predict(t)
+                classification_label = labeldict_back[classification[0]]
+                outfile.write(ts["instances"][i]["label"] + " " + classification_label + "\n")
+            outfile.close()
 
-        # for tset in self.test:
-        #     p = multiprocessing.Process(target=predict,args=[tset,multiclf])
-        #     p.start()
-        # p.join()
-
-            # testvectors = self.vectorize(tset["instances"])
-            # outfile = codecs.open(tset["out"],"w","utf-8")
-            # outfile.write(outstring)
-            # #predict labels and print them to the outfile
-            # for i,t in enumerate(testvectors):
-            #     classification = multiclf.predict(t)
-            #     # classification = clf.predict(t)
-                
-            #     classification_label = labeldict_back[classification[0]]
-            #     # print tset["instances"][i]["label"], classification
-            #     outfile.write(tset["instances"][i]["label"] + " " + classification_label + "\n")
-            # outfile.close()
-        # quit()
-
-
+        if len(trainlabels) > 2:
+            multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
+            multiclf.fit(training_csr,trainlabels)
+            for tset in self.test:
+                p = multiprocessing.Process(target=predict,args=[tset,multiclf])
+                p.start()
+            p.join()
+        else:
+            clf.fit(training_csr,trainlabels)

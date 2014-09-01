@@ -5,6 +5,8 @@ import os
 import codecs
 import re
 
+import gen_functions
+
 """
 Script to perform lcs classification with chosen parameters. 
 The used data should be in the right format.
@@ -62,17 +64,10 @@ if args.t:
     os.system("mv * " + expdir)
 
 else:
-    folds = []
     partsopen = open(args.p)
     instances = [x.strip() for x in partsopen.readlines()]
     partsopen.close()
-    for i in range(10):
-        j = i
-        fold = []
-        while j < len(instances):
-            fold.append(instances[j])
-            j += 10
-        folds.append(fold)
+    folds = gen_functions.make_folds(instances)
     for j,fold in enumerate(folds):
         try:
             tr_folds = folds[:j] + folds[j+1:]
