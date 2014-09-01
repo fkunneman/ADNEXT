@@ -236,15 +236,14 @@ class Classifier():
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
-        print trainlabels
-        quit()
+        num_labels = len(list(set(trainlabels)))
         training_csr = csr_matrix(trainingvectors)
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
             'estimator__kernel': ['linear','rbf','poly'], 
             'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
             'estimator__degree': [1,2,3,4]}
-        if len(trainlabels) > 2:
+        if num_labels > 2:
             model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
         else:
             model = svm.SVC(probability=True,class_weight=classweight)
@@ -273,7 +272,7 @@ class Classifier():
                 outfile.write(ts["instances"][i]["label"] + " " + classification_label + "\n")
             outfile.close()
 
-        if len(trainlabels) > 2:
+        if num_labels > 2:
             multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
             multiclf.fit(training_csr,trainlabels)
             for tset in self.test:
