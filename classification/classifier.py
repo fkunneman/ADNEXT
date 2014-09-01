@@ -236,11 +236,10 @@ class Classifier():
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
-        print trainingvectors
+        #print trainingvectors
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
         print training_csr
-        quit()
         #obtain the best parameter settings for an svm outputcode classifier
         if len(labels) > 2:
             print "outputcodeclassifier"
@@ -269,7 +268,7 @@ class Classifier():
         #train an svm outputcode classifier using the best parameters
 
         def predict(ts,mc):
-            testvectors = self.vectorize(ts["instances"])
+            testvectors = self.vectorize(ts)
             outfile = codecs.open(ts["out"],"w","utf-8")
             outfile.write(outstring)
             for i,t in enumerate(testvectors):
