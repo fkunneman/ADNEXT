@@ -215,6 +215,7 @@ class Classifier():
         matrix = []
         for instance in instances:
             featurev = zerolist[:]
+            print "sparse",instance["sparse"]
             for feature in instance["sparse"].keys():
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
@@ -238,7 +239,7 @@ class Classifier():
         trainingvectors = self.vectorize(self.training)
         #print trainingvectors
         trainlabels = [labeldict[x["label"]] for x in self.training]
-        print trainingvectors
+        #print trainingvectors
         training_csr = csr_matrix(trainingvectors)
         print training_csr.todense()
         quit()
