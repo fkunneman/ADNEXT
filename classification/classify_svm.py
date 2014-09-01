@@ -50,6 +50,7 @@ def classify(tr,te):
 
 trainfile = codecs.open(args.i,"r","utf-8")
 train = make_instances(trainfile.readlines())
+print "train",len(train)
 trainfile.close()
 if args.t:
     testfile = codecs.open(args.t,"r","utf-8")
@@ -58,6 +59,8 @@ if args.t:
     classify(train,test)
 else:
     folds = gen_functions.make_folds(train)
+    print len(folds),sum(len(x) for x in folds)
+    quit()
     for j,fold in enumerate(folds):
         try:
             tr_folds = folds[:j] + folds[j+1:]
