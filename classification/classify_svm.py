@@ -47,8 +47,8 @@ def classify(tr,te):
     cl.classify_svm(params=args.p)
 
 trainfile = codecs.open(args.i,"r","utf-8")
-trainfile.close()
 train = make_instances(trainfile.readlines())
+trainfile.close()
 if args.t:
     testfile = codecs.open(args.t,"r","utf-8")
     test = [{"out" : args.o + "testout.txt", "instances" : make_instances(testfile.readlines())}]
