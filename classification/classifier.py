@@ -239,17 +239,21 @@ class Classifier():
         num_labels = len(list(set(trainlabels)))
         training_csr = csr_matrix(trainingvectors)
         #obtain the best parameter settings for an svm outputcode classifier
-        param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
-            'estimator__kernel': ['linear','rbf','poly'], 
-            'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
-            'estimator__degree': [1,2,3,4]}
         if num_labels > 2:
             print "outputcodeclassifier"
+            param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
+                'estimator__kernel': ['linear','rbf','poly'], 
+                'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
+                'estimator__degree': [1,2,3,4]}
             model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
-            paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs)
         else:
             print "svc model"
-            paramsearch = GridSearchCV(svm.SVC(probability=True,class_weight=classweight), param_grid,n_jobs=self.jobs,verbose=2,cv=5)
+            param_grid = {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
+                'kernel': ['linear','rbf','poly'], 
+                'gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
+                'degree': [1,2,3,4]}
+            model = svm.SVC(probability=True,class_weight=classweight)
+        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs) 
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         print "Prediction..."
@@ -260,9 +264,6 @@ class Classifier():
           outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
         outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         #train an svm outputcode classifier using the best parameters
-        clf = svm.SVC(probability=True, C=parameters['estimator__C'],
-        kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-        degree=parameters['estimator__degree'],class_weight=classweight)
 
         def predict(ts,mc):
             testvectors = self.vectorize(ts["instances"])
@@ -275,6 +276,9 @@ class Classifier():
             outfile.close()
 
         if num_labels > 2:
+            clf = svm.SVC(probability=True, C=parameters['estimator__C'],
+                kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
+                degree=parameters['estimator__degree'],class_weight=classweight)
             multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
             multiclf.fit(training_csr,trainlabels)
             for tset in self.test:
@@ -282,6 +286,9 @@ class Classifier():
                 p.start()
             p.join()
         else:
+            clf = svm.SVC(probability=True, C=parameters['C'],
+                kernel=parameters['kernel'],gamma=parameters['gamma'],
+                degree=parameters['degree'],class_weight=classweight)
             clf.fit(training_csr,trainlabels)
             for tset in self.test:
                 p = multiprocessing.Process(target=predict,args=[tset,clf])
