@@ -236,6 +236,8 @@ class Classifier():
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
         trainlabels = [labeldict[x["label"]] for x in self.training]
+        print trainlabels
+        quit()
         training_csr = csr_matrix(trainingvectors)
         #obtain the best parameter settings for an svm outputcode classifier
         param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
@@ -280,3 +282,7 @@ class Classifier():
             p.join()
         else:
             clf.fit(training_csr,trainlabels)
+            for tset in self.test:
+                p = multiprocessing.Process(target=predict,args=[tset,clf])
+                p.start()
+            p.join()
