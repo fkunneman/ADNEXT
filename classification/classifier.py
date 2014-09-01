@@ -11,7 +11,7 @@ import numpy
 from scipy.sparse import *
 from scipy import *
 from sklearn import svm
-#from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
+from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 
