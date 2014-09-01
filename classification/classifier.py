@@ -238,6 +238,7 @@ class Classifier():
         trainingvectors = self.vectorize(self.training)
         #print trainingvectors
         trainlabels = [labeldict[x["label"]] for x in self.training]
+        print trainingvectors
         training_csr = csr_matrix(trainingvectors)
         print training_csr.todense()
         quit()
