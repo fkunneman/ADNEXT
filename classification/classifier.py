@@ -238,6 +238,8 @@ class Classifier():
         trainlabels = [labeldict[x["label"]] for x in self.training]
         num_labels = len(list(set(trainlabels)))
         training_csr = csr_matrix(trainingvectors)
+        print training_csr
+        quit()
         #obtain the best parameter settings for an svm outputcode classifier
         if num_labels > 2:
             print "outputcodeclassifier"
