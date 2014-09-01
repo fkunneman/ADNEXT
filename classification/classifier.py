@@ -239,7 +239,8 @@ class Classifier():
         #print trainingvectors
         trainlabels = [labeldict[x["label"]] for x in self.training]
         training_csr = csr_matrix(trainingvectors)
-        print training_csr
+        print training_csr.todense()
+        quit()
         #obtain the best parameter settings for an svm outputcode classifier
         if len(labels) > 2:
             print "outputcodeclassifier"
