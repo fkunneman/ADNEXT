@@ -246,10 +246,10 @@ class Classifier():
         if num_labels > 2:
             print "outputcodeclassifier"
             model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
+            paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs)
         else:
             print "svc model"
-            model = svm.SVC(probability=True,class_weight=classweight))
-        paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs)
+            paramsearch = GridSearchCV(SVC(probability=True,class_weight=classweight)), param_grid)
         print "Grid search..."
         paramsearch.fit(training_csr,numpy.asarray(trainlabels))
         print "Prediction..."
