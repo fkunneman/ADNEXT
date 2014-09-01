@@ -64,24 +64,22 @@ if args.t:
 else:
     folds = []
     partsopen = open(args.p)
-    instances = partsopen.readlines()
+    instances = [x.strip() for x in partsopen.readlines()]
     partsopen.close()
-    for i in [x+1 for x in range(10)]:
-        ind = 1
+    for i in range(10):
+        j = i
         fold = []
-        while i * ind < len(instances):
-            fold.append(re.sub("\n","",instances[i*ind]))
-            ind += 1
+        while j < len(instances):
+            fold.append(instances[j])
+            j += 10
         folds.append(fold)
     for j,fold in enumerate(folds):
-#        print "".join(fold)
         try:
             tr_folds = folds[:j] + folds[j+1:]
         except IndexError:
             tr_folds = folds[:j]
         trainout = open(args.d + "/train","w")
         for tr_fold in tr_folds:
-#            print "\n".join(tr_fold)
             trainout.write("\n".join(tr_fold) + "\n")
         trainout.close()
         testout = open(args.d + "/test","w")
@@ -95,23 +93,3 @@ else:
         os.chdir(args.d)
         os.system("lcs --verbose ")
         os.system("mv * " + expdir_fold)
-
-    # size = len(sorted_instances)
-    # for i in range(n):
-    #     fold_dir = main_dir + "fold_" + str(i) + "/"
-    #     os.system("mkdir " + fold_dir)
-    #     print fold_dir
-    #     train_test = defaultdict(list)
-    #     train_test["training"] = list(sorted_instances)
-    #     j = i
-    #     offset = 0
-    #     while j < size:
-    #         train_test["test"].append(sorted_instances[j])
-    #         #print i,j-offset,len(train_test["train"]),j,size,len(sorted_instances)
-    #         del train_test["training"][j-offset]
-    #         j + =  n
-    #         offset + =  1
-    #     train_test["meta"] = []
-    #     classify(train_test,fold_dir)
-
-
