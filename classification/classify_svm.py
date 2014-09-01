@@ -21,7 +21,7 @@ parser.add_argument('-o', action = 'store', required=True,
 parser.add_argument('--jobs', action='store', type = int, default = 12, help = 'specify the number of cores to use')
 
 #parser.add_argument('--learning_curve', action = 'store_true', 
-    help = "choose to classify by learning curve")
+#    help = "choose to classify by learning curve")
 
 args = parser.parse_args() 
 
@@ -64,6 +64,6 @@ else:
         traininstances = []
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
-        testinstances = [{"out" : args.o, "instances" : fold]
+        testinstances = [{"out" : args.o, "instances" : fold}]
         classify(traininstances,testinstances)
 
