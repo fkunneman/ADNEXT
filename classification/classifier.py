@@ -21,7 +21,7 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,scaling = False,jobs=16,directory=False):
+    def __init__(self,trainlist,testlist,scaling = "binary",jobs=16,directory=False):
         self.training = trainlist
         self.test = testlist #self.test should be a list with multiple lists for each testset
         self.scaling = scaling
@@ -215,7 +215,6 @@ class Classifier():
         matrix = []
         for instance in instances:
             featurev = zerolist[:]
-            print "sparse",instance["sparse"]
             for feature in instance["sparse"].keys():
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
@@ -231,7 +230,6 @@ class Classifier():
         print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
         labels = set(trainlabels_raw)
-        print labels
         labeldict = dict(zip(labels,range(len(labels))))
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
@@ -241,8 +239,6 @@ class Classifier():
         trainlabels = [labeldict[x["label"]] for x in self.training]
         #print trainingvectors
         training_csr = csr_matrix(trainingvectors)
-        print training_csr.todense()
-        quit()
         #obtain the best parameter settings for an svm outputcode classifier
         if len(labels) > 2:
             print "outputcodeclassifier"
