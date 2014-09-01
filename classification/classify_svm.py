@@ -17,7 +17,7 @@ parser.add_argument('-t', action = 'store', required = False,
 parser.add_argument('-p', action = 'store', type=int,default=10, 
     help = "decide on the number of parameter settings to compare during training (default = 10)")
 parser.add_argument('-o', action = 'store', required=True, 
-    help = "The output file")
+    help = "The output directory")
 parser.add_argument('--jobs', action='store', type = int, default = 12, help = 'specify the number of cores to use')
 
 #parser.add_argument('--learning_curve', action = 'store_true', 
@@ -51,7 +51,7 @@ trainfile.close()
 train = make_instances(trainfile.readlines())
 if args.t:
     testfile = codecs.open(args.t,"r","utf-8")
-    test = [{"out" : args.o, "instances" : make_instances(testfile.readlines())}]
+    test = [{"out" : args.o + "testout.txt", "instances" : make_instances(testfile.readlines())}]
     testfile.close()
     classify(train,test)
 else:
@@ -64,6 +64,6 @@ else:
         traininstances = []
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
-        testinstances = [{"out" : args.o, "instances" : fold}]
+        testinstances = [{"out" : args.o + "fold_" + str(j) + ".txt", "instances" : fold}]
         classify(traininstances,testinstances)
 
