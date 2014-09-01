@@ -14,6 +14,8 @@ parser.add_argument('-i', action = 'store', required = True,
     help = "file with either all instances or testinstances")
 parser.add_argument('-t', action = 'store', required = False, 
     help = "file with test data (no testfile means ten-fold cross-validation is performed)")
+parser.add_argument('-f', action = 'store', type=int,default=10000, 
+    help = "Prune features by taking the top f frequent features from the training data")
 parser.add_argument('-p', action = 'store', type=int,default=10, 
     help = "decide on the number of parameter settings to compare during training (default = 10)")
 parser.add_argument('-o', action = 'store', required=True, 
