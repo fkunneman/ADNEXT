@@ -230,16 +230,19 @@ class Classifier():
         print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
         labels = set(trainlabels_raw)
+        print labels
         labeldict = dict(zip(labels,range(len(labels))))
         labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
+        print trainingvectors
         trainlabels = [labeldict[x["label"]] for x in self.training]
-        num_labels = len(list(set(trainlabels)))
         training_csr = csr_matrix(trainingvectors)
+        print training_csr
+        quit()
         #obtain the best parameter settings for an svm outputcode classifier
-        if num_labels > 2:
+        if len(labels) > 2:
             print "outputcodeclassifier"
             param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
                 'estimator__kernel': ['linear','rbf','poly'], 
@@ -275,7 +278,7 @@ class Classifier():
                 outfile.write(ts["instances"][i]["label"] + " " + classification_label + "\n")
             outfile.close()
 
-        if num_labels > 2:
+        if len(labels) > 2:
             clf = svm.SVC(probability=True, C=parameters['estimator__C'],
                 kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
                 degree=parameters['estimator__degree'],class_weight=classweight)
