@@ -60,7 +60,6 @@ if args.t:
 else:
     folds = gen_functions.make_folds(train)
     print len(folds),sum(len(x) for x in folds)
-    quit()
     for j,fold in enumerate(folds):
         try:
             tr_folds = folds[:j] + folds[j+1:]
@@ -70,5 +69,8 @@ else:
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
         testinstances = [{"out" : args.o + "fold_" + str(j) + ".txt", "instances" : fold}]
+        print sum(len(x) for x in folds)
+        print len(testinstances[0])
+        quit()
         classify(traininstances,testinstances)
 
