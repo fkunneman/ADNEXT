@@ -50,7 +50,7 @@ def classify(tr,te):
         cl.train_svm(params=args.p)
     elif args.c == "nb":
         cl.train_nb()
-    cl.test()
+    cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 train = make_instances(trainfile.readlines())

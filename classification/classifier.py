@@ -270,7 +270,7 @@ class Classifier():
         self.clf = naive_bayes.MultinomialNB()
         self.clf.fit(self.training_csr,self.trainlabels)
 
-    def test(self):
+    def test_model(self):
         for tset in self.test:
             p = multiprocessing.Process(target=self.predict,args=[tset])
             p.start()
