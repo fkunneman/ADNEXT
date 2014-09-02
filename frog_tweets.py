@@ -26,7 +26,7 @@ parser.add_argument('--time', action = 'store', type=int, required = False, help
 parser.add_argument('--id', action = 'store', type=int, required = False, help = "if one of the fields contain a tweetid, specify its column.")
 parser.add_argument('--label', action = 'store', type=int, required = False, help = "if one of the fields contain a label / score of the tweet, specify its column.")
 parser.add_argument('--punct', action = 'store_true', default = False, help = "choose if punctuation should be removed from the output")
-parser.add_argument('--parralel', action = 'store_true', default = False, help = "choose if the file should be processed in parralel (recommended for big files).")
+parser.add_argument('--parallel', action = 'store_true', default = False, help = "choose if the file should be processed in parallel (recommended for big files).")
 parser.add_argument('--events', action = 'store', required = False, help = "if the event of a tweet should be given as a label, give a file containing the events")
 parser.add_argument('--man', action = 'store', required = False, help = "specify a label that applies to all tweets")
 parser.add_argument('--txtdelim', action = 'store_true', help = "specify if the spaces between words in the tweet text are the same as the basic delimiter")

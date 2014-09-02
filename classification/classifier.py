@@ -106,7 +106,6 @@ class Classifier():
                     feature_convert[feature] = new_feature
                     new_features.append(new_feature)
                     self.feature_status[new_feature] = True
-                    #print feature, self.feature_labellist[feature], numpy.median(self.feature_labellist[feature])
             else:
                 self.feature_status[feature] = True
                 new_features.append(feature)
@@ -240,7 +239,9 @@ class Classifier():
                 classification = mc.predict(t)
                 proba = mc.predict_proba(t)
                 classification_label = labeldict_back[classification[0]]
-                outfile.write(ts["instances"][i]["label"] + " " + classification_label + " " + str(proba) + "\n")
+                outfile.write(" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]) + \
+                    "\t" + ts["instances"][i]["label"] + " " + classification_label + "\t" + \
+                    " ".join([str(round(x,2)) for x in proba]) + "\n")
             outfile.close()
 
         if len(labels) > 2:

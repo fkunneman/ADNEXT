@@ -12,9 +12,12 @@ parser = argparse.ArgumentParser(description = "Program to read lcs output and e
     performance")
 
 parser.add_argument('-t', action = 'store', nargs='+',required=True, help = "the target files")
-parser.add_argument('-c', action='store', nargs='+',required=True, help = "the classification files")
+parser.add_argument('-c', action='store', nargs='+',required=True, 
+    help = "the classification files")
 parser.add_argument('-w', action='store', required=True, help = "file to write results to")
-parser.add_argument('-f', action='store', type = int, required=False, help = "give the number of tweets to choose to rank classifications by score and write the top n tweets to a file")
+parser.add_argument('-f', action='store', type = int, required=False, 
+    help = "give the number of tweets to choose to rank classifications by score and write " + 
+    "the top n tweets to a file")
 
 args = parser.parse_args()
 
@@ -74,5 +77,6 @@ if args.f:
     #        print feats[i],i
             i += 1
         #print "len",i,len(feats),feats[:i]
-        rankfile.write("\t".join([str(tweet[2]),meta[0],meta[2],meta[3],meta[4]," ".join(feats[:i])]) + "\n")
+        rankfile.write("\t".join([str(tweet[2]),meta[0],meta[2],meta[3],meta[4],
+            " ".join(feats[:i])]) + "\n")
     rankfile.close()
