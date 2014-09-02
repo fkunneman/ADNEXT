@@ -25,7 +25,7 @@ args = parser.parse_args()
 #collect target-observation pairs
 instances = []
 for t in args.t:
-    targets = codecs.open(t,"r","utf-8")
+    targets = open(t)
     for line in targets.readlines()[7:]:
         tokens = line.strip().split("\t")
         if len(tokens) == 3:
@@ -67,13 +67,11 @@ if args.id:
 
 if args.f:
     #write tweets
-    rankfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt" ,"w","utf-8")
+    rankfile = open("/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt" ,"w")
     for instance in evaluation.return_ranked_score(args.f):
-        print instance
         rankfile.write("\t".join(instance) + "\n")
-    fpfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/ranked_fps.txt" ,"w","utf-8")
+    fpfile = open("/".join(args.w.split("/")[:-1]) + "/ranked_fps.txt" ,"w")
     for instance in evaluation.return_rankedfp(args.f,"1.0"):
-        print instance
         fpfile.write("\t".join(instance) + "\n")
-    rankfile()
-    fpfile()
+    rankfile.close()
+    fpfile.close()
