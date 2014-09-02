@@ -42,7 +42,7 @@ def make_instances(lines):
     return instances
 
 def classify(tr,te):
-    cl = Classifier(tr,te,jobs=args.jobs)
+    cl = Classifier(tr,te,scaling=args.scaling,jobs=args.jobs)
     cl.balance_data()
     cl.count_feature_frequency()
     cl.prune_features_topfrequency(args.f)
