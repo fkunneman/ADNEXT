@@ -23,6 +23,8 @@ parser.add_argument('-p', action = 'store', type=int,default=10,
 parser.add_argument('-o', action = 'store', required=True, 
     help = "The output directory")
 parser.add_argument('--jobs', action='store', type = int, default = 12, help = 'specify the number of cores to use')
+parser.add_argument('--scaling', action='store', default = "binary", choices = ["binary","log","tfidf"],
+    help = 'specify the type of feature scaling')
 
 args = parser.parse_args() 
 

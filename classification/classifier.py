@@ -200,9 +200,7 @@ class Classifier():
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
-        #print trainingvectors
         self.training_csr = csr_matrix(trainingvectors)
-        #print trainingvectors
         self.trainlabels = [labeldict[x["label"]] for x in self.training]
 
     def predict(self,ts):
