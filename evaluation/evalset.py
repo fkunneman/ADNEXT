@@ -148,5 +148,5 @@ class Evalset():
         def set_text(self,text):
             self.text = text
 
-        def set_id(self,tid):
+        def set_tid(self,tid):
             self.id = tid
