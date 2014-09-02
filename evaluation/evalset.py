@@ -14,27 +14,33 @@ class Evalset():
     def __init__(self):
         self.instances = []
 
-    def add_instances(self,instances,score=False):
+    def add_instances(self,instances,score=False,text=False,tid=False):
         for instance_tokens in instances:
             instance = Evalset.Instance(instance_tokens[0],instance_tokens[1])
             if score:
-                instance.set_score(instance_tokens[3])
+                instance.set_score(instance_tokens[2])
+            if text:
+                instance.set_text(instance_tokens[3])
+            if tid:
+                instance.set_tid(instance_tokens[4])
             self.instances.append(instance)
 
     def calculate_general(self):
-        ce = evaluation.ClassEvaluation()
+        self.ce = evaluation.ClassEvaluation()
         for instance in self.instances:
-            ce.append(instance.label,instance.classification) 
+            self.ce.append(instance.label,instance.classification) 
+
+    def calculate_outcome(self):
         results = [["Class","Precision","Recall","F1","TPR","FPR","AUC","Samples",
             "Classifications","Correct"]]
-        for label in sorted(list(set(ce.goals))):
-            label_results = [ce.precision(cls=label),ce.recall(cls=label),ce.fscore(cls=label),
-                ce.tp_rate(cls=label),ce.fp_rate(cls=label),
-                auc([0,ce.fp_rate(cls=label),1],[0,ce.tp_rate(cls=label),1]),
-                (ce.tp[label] + ce.fn[label]),(ce.tp[label] + ce.fp[label]),ce.tp[label]]
+        for label in sorted(list(set(self.ce.goals))):
+            label_results = [self.ce.precision(cls=label),self.ce.recall(cls=label),self.ce.fscore(cls=label),
+                self.ce.tp_rate(cls=label),self.ce.fp_rate(cls=label),
+                auc([0,self.ce.fp_rate(cls=label),1],[0,self.ce.tp_rate(cls=label),1]),
+                (self.ce.tp[label] + self.ce.fn[label]),(self.ce.tp[label] + self.ce.fp[label]),self.ce.tp[label]]
             results.append([label] + [round(x,2) for x in label_results])
-        micro_results = [ce.precision(),ce.recall(),ce.fscore(),ce.tp_rate(),ce.fp_rate(),
-            auc([0,ce.fp_rate(),1],[0,ce.tp_rate(),1]),len(ce.observations),len(ce.observations)]
+        micro_results = [self.ce.precision(),self.ce.recall(),self.ce.fscore(),self.ce.tp_rate(),self.ce.fp_rate(),
+            auc([0,self.ce.fp_rate(),1],[0,self.ce.tp_rate(),1]),len(self.ce.observations),len(self.ce.observations)]
         results.append(["micro"] + [str(round(x,2)) for x in micro_results] + [" "])
         return results
 
@@ -103,18 +109,22 @@ class Evalset():
         correct = 0
         for i,instance in enumerate(self.instances):
             if instance.label == "during" or instance.label == "after":
-#                print "yes"
                 try:
                     print "calc",round((correct/i),2)
                     return round((correct/i),2)
                 except:
-#                    print "exc"
                     return 0.0
                 break
             elif instance.label == instance.classification:
-#                print "corr"
                 correct += 1
         
+    def return_rankedfp(self,n,c):
+        return sorted([(x.id,x.text,x.label,x.classification,x.score) for x in self.instances \
+            if x.classification = c and x.label != c],key = lambda y : y[4],reverse=True)
+
+    def return_ranked_score(self,n):
+        return sorted([(x.id,x.text,x.label,x.classification,x.score) for x in self.instances], \
+            key = lambda y : y[4],reverse=True)
 
     class Instance():
         
@@ -130,3 +140,9 @@ class Evalset():
 
         def set_score(self,score):
             self.score = score
+
+        def set_text(self,text):
+            self.text = text
+
+        def set_id(self,tid):
+            self.id = tid
