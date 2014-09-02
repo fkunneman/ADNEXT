@@ -5,7 +5,8 @@ import sys
 import codecs
 
 outfile = sys.argv[1]
-infiles = sys.argv[2:]
+top_n = int(sys.argv[2])
+infiles = sys.argv[3:]
 
 feature_scores = defaultdict(list)
 
@@ -21,6 +22,6 @@ for infile in infiles:
 outfile_open = codecs.open(outfile,"w","utf-8")
 #rank
 feature_rank = sorted([(x,str(sum(feature_scores[x]))) for x in feature_scores.keys()],key=lambda x: x[1], reverse=True)
-for tokens in feature_rank[:100]:
+for tokens in feature_rank[:top_n]:
     outfile_open.write(" ".join(tokens) + "\n")
 outfile_open.close()
