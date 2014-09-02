@@ -44,10 +44,11 @@ for c in args.c:
 #generate outcomes
 evaluation = Evalset()
 evaluation.add_instances(instances)
-outcomes = evaluation.calculate_general()
+evaluation.calculate_general()
 
 #write results
 outfile = open(args.w,"w")
+outcomes = evaluation.calculate_general()
 for label in outcomes:
     #columns = gen_functions.format_list(label,'20')
     #outfile.write("".join(columns) + "\n")
