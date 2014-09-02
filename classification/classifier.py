@@ -267,7 +267,7 @@ class Classifier():
         #train an svm outputcode classifier using the best parameters
 
         def predict(ts,mc):
-            testvectors = self.vectorize(ts)
+            testvectors = self.vectorize(ts["instances"])
             outfile = codecs.open(ts["out"],"w","utf-8")
             outfile.write(outstring)
             for i,t in enumerate(testvectors):
