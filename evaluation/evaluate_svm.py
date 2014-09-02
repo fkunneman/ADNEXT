@@ -27,16 +27,24 @@ instances = []
 for t in args.t:
     targets = open(t)
     for line in targets.readlines()[7:]:
-        tokens1 = line.strip().split("\t")
-        tokens2 = tokens1[1].split()
+        tokens = line.strip().split("\t")
+        if len(tokens) == 3:
+            tokens2 = tokens[1].split()
+            tokens3 = tokens[2].split()
+        else:
+            tokens2 = tokens[0].split()
+            tokens3 = tokens[1].split()
         label = tokens2[0]
         classification = tokens2[1]
-        score = tokens2[3]
+        score = tokens3[1]
         instance = [label,classification,score]
         if args.text:
-            instance.append(tokens1[0])
+            if len(tokens) == 3:
+                instance.append(tokens[0])
+            else:
+                instance.append("-")
         if args.id:
-            instance.append(tokens1[0])
+            instance.append(tokens[0])
         instances.append(instance)
 
 #insert instances
@@ -46,7 +54,7 @@ evaluation.calculate_general()
 
 #write results
 results = open(args.w + "results.txt","w")
-outcomes = evaluation.calculate_general()
+outcomes = evaluation.calculate_outcome()
 for label in outcomes:
     results.write("\t".join([str(x) for x in label]) + "\n")
 results.close()
