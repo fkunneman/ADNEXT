@@ -132,7 +132,7 @@ def frogger(t,o,i):
 print "Processing tweets."
 q = multiprocessing.Queue()
 frogged_tweets = []
-if args.parralel:
+if args.parallel:
     tweets_chunks = gen_functions.make_chunks(tweets)
 else:
     tweets_chunks = tweets
