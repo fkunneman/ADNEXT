@@ -28,6 +28,7 @@ class Classifier():
         self.jobs = jobs
         self.directory = directory
         self.feature_status = {}
+        self.outstring = False
 
     def count_feature_frequency(self):
         
