@@ -21,8 +21,12 @@ class Evalset():
                 instance.set_score(instance_tokens[2])
             if text:
                 instance.set_text(instance_tokens[3])
+            else:
+                instance.set_text("-")
             if tid:
                 instance.set_tid(instance_tokens[4])
+            else:
+                instance.set_tid("-")
             self.instances.append(instance)
 
     def calculate_general(self):
