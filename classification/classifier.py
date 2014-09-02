@@ -116,32 +116,12 @@ class Classifier():
 
     def prune_features_topfrequency(self,n):
         #generate feature_frequency dict
-        print n,"len",len(self.features)
         for f in self.features[:n]:
             self.feature_status[f] = True 
         for f in self.features[n:]:
             self.feature_status[f] = False
         self.features = self.features[:n]
-        print "len2",len(self.features)
         self.prune_features()
-
-
-        # print "before",len(self.training)
-        # q = multiprocessing.Queue()
-        # chunks = gen_functions.make_chunks(self.training,self.jobs)
-        # for chunk in chunks:
-        #     p = multiprocessing.Process(target=prune_features,args=[chunk,q])
-        #     p.start()
-
-        # new_instances = []
-        # while True:
-        #     ins = q.get()
-        #     new_instances.append(ins)
-        #     if len(new_instances) == len(self.training):
-        #         break
-
-        # self.training = new_instances
-        # print "after",len(self.training)
 
     def balance_data(self):
         label_instances = defaultdict(list)
@@ -149,19 +129,20 @@ class Classifier():
         for instance in self.training:     
             label = instance["label"]
             label_instances[label].append(instance)
-        median = int(numpy.median(numpy.array([len(label_instances[x]) for \
-            x in label_instances.keys()])))
-        for label in label_instances.keys():
-            if len(label_instances[label]) == median:
-                new_training.extend(label_instances[label])
-            else:
-                instances = lineconverter.Lineconverter(label_instances[label])
-                if len(instances.lines) < median:
-                    instances.sample(median-len(instances.lines),sample_type="up")
+        if len(label_instances.keys()) > 2:
+            median = int(numpy.median(numpy.array([len(label_instances[x]) for \
+                x in label_instances.keys()])))
+            for label in label_instances.keys():
+                if len(label_instances[label]) == median:
+                    new_training.extend(label_instances[label])
                 else:
-                    instances.sample(len(instances.lines)-median)
-                new_training.extend(instances.lines)
-        self.training = new_training
+                    instances = lineconverter.Lineconverter(label_instances[label])
+                    if len(instances.lines) < median:
+                        instances.sample(median-len(instances.lines),sample_type="up")
+                    else:
+                        instances.sample(len(instances.lines)-median)
+                    new_training.extend(instances.lines)
+            self.training = new_training
 
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
@@ -181,24 +162,9 @@ class Classifier():
                         continue
                 instance["sparse"] = sparse_features
                 writelist.append(instance)         
-
-        print "before",len(self.training)
-        # q = multiprocessing.Queue()
-        # chunks_training = gen_functions.make_chunks(self.training)
-        # for chunk in chunks_training:
-        #     p = multiprocessing.Process(target=sparsify,args=[chunk,q])
-        #     p.start()
-
         new_instances = []
         sparsify(self.training,new_instances)
-        # while True:
-        #     ins = q.get()
-        #     new_instances.append(ins)
-        #     if len(new_instances) == len(self.training):
-        #         break
-
         self.training = new_instances
-        print "after",len(self.training)
 
         for tset in self.test:
             for instance in tset["instances"]:
@@ -272,8 +238,9 @@ class Classifier():
             outfile.write(outstring)
             for i,t in enumerate(testvectors):
                 classification = mc.predict(t)
+                proba = mc.predict_proba(t)
                 classification_label = labeldict_back[classification[0]]
-                outfile.write(ts["instances"][i]["label"] + " " + classification_label + "\n")
+                outfile.write(ts["instances"][i]["label"] + " " + classification_label + " " + proba + "\n")
             outfile.close()
 
         if len(labels) > 2:
