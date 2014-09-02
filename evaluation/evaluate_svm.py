@@ -32,7 +32,12 @@ for t in args.t:
         label = tokens2[0]
         classification = tokens2[1]
         score = tokens2[3]
-        instances.append((label,classification,score))
+        instance = [label,classification,score]
+        if args.text:
+            instance.append(tokens1[0])
+        if args.id:
+            instance.append(tokens1[0])
+        instances.append(instance)
 
 #insert instances
 evaluation = Evalset()
