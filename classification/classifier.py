@@ -190,12 +190,12 @@ class Classifier():
             matrix.append(featurev)
         return matrix
 
-    def model_necessities():
+    def model_necessities(self):
         #generate scipy libsvm input
         trainlabels_raw = [x["label"] for x in self.training]
         self.labels = set(trainlabels_raw)
-        labeldict = dict(zip(labels,range(len(labels))))
-        self.labeldict_back = dict(zip(range(len(labels)),labels))
+        labeldict = dict(zip(self.labels,range(len(self.labels))))
+        self.labeldict_back = dict(zip(range(len(self.labels)),self.labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
@@ -204,7 +204,7 @@ class Classifier():
         #print trainingvectors
         self.trainlabels = [labeldict[x["label"]] for x in self.training]
 
-    def predict(ts):
+    def predict(self,ts):
         testvectors = self.vectorize(ts["instances"])
         outfile = codecs.open(ts["out"],"w","utf-8")
         if self.outstring:
@@ -267,7 +267,7 @@ class Classifier():
             p.join()
 
     def train_nb(self):
-        self.clf = MultinomialNB()
+        self.clf = naive_bayes.MultinomialNB()
         self.clf.fit(self.training_csr,self.trainlabels)
 
     def test(self):
