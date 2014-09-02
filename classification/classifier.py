@@ -240,7 +240,7 @@ class Classifier():
                 classification = mc.predict(t)
                 proba = mc.predict_proba(t)
                 classification_label = labeldict_back[classification[0]]
-                outfile.write(ts["instances"][i]["label"] + " " + classification_label + " " + proba + "\n")
+                outfile.write(ts["instances"][i]["label"] + " " + classification_label + " " + str(proba) + "\n")
             outfile.close()
 
         if len(labels) > 2:
