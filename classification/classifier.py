@@ -241,7 +241,7 @@ class Classifier():
                 classification_label = labeldict_back[classification[0]]
                 outfile.write(" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]) + \
                     "\t" + ts["instances"][i]["label"] + " " + classification_label + "\t" + \
-                    " ".join([str(round(x,2)) for x in proba]) + "\n")
+                    " ".join([str(round(x,2)) for x in proba.tolist()[0]]) + "\n")
             outfile.close()
 
         if len(labels) > 2:
