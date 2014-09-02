@@ -25,7 +25,7 @@ args = parser.parse_args()
 #collect target-observation pairs
 instances = []
 for t in args.t:
-    targets = open(t)
+    targets = codecs.open(t,"r","utf-8")
     for line in targets.readlines()[7:]:
         tokens = line.strip().split("\t")
         if len(tokens) == 3:
