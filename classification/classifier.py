@@ -10,7 +10,7 @@ import math
 import numpy
 from scipy.sparse import *
 from scipy import *
-from sklearn import svm
+from sklearn import svm, naive_bayes
 from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
@@ -190,76 +190,88 @@ class Classifier():
             matrix.append(featurev)
         return matrix
 
-    def classify_svm(self,t = "discrete",classweight = None,params = 10):
+    def model_necessities():
         #generate scipy libsvm input
-        print "Dimensions:",len(self.feature_info.keys())
         trainlabels_raw = [x["label"] for x in self.training]
-        labels = set(trainlabels_raw)
+        self.labels = set(trainlabels_raw)
         labeldict = dict(zip(labels,range(len(labels))))
-        labeldict_back = dict(zip(range(len(labels)),labels))
+        self.labeldict_back = dict(zip(range(len(labels)),labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
         trainingvectors = self.vectorize(self.training)
         #print trainingvectors
-        trainlabels = [labeldict[x["label"]] for x in self.training]
+        self.training_csr = csr_matrix(trainingvectors)
         #print trainingvectors
-        training_csr = csr_matrix(trainingvectors)
+        self.trainlabels = [labeldict[x["label"]] for x in self.training]
+
+    def predict(ts):
+        testvectors = self.vectorize(ts["instances"])
+        outfile = codecs.open(ts["out"],"w","utf-8")
+        if self.outstring:
+            outfile.write(self.outstring)
+        for i,t in enumerate(testvectors):
+            classification = self.clf.predict(t)
+            proba = self.clf.predict_proba(t)
+            classification_label = self.labeldict_back[classification[0]]
+            outfile.write(" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]) + \
+                "\t" + ts["instances"][i]["label"] + " " + classification_label + "\t" + \
+                " ".join([str(round(x,2)) for x in proba.tolist()[0]]) + "\n")
+        outfile.close()
+
+    def train_svm(self,params = 10):
         #obtain the best parameter settings for an svm outputcode classifier
-        if len(labels) > 2:
+        if len(self.labels) > 2:
             print "outputcodeclassifier"
             param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
                 'estimator__kernel': ['linear','rbf','poly'], 
                 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
                 'estimator__degree': [1,2,3,4]}
-            model = OutputCodeClassifier(svm.SVC(probability=True,class_weight=classweight))
+            model = OutputCodeClassifier(svm.SVC(probability=True))
         else:
             print "svc model"
             param_grid = {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
                 'kernel': ['linear','rbf','poly'], 
                 'gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
                 'degree': [1,2,3,4]}
-            model = svm.SVC(probability=True,class_weight=classweight)
+            model = svm.SVC(probability=True)
         paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs) 
         print "Grid search..."
-        paramsearch.fit(training_csr,numpy.asarray(trainlabels))
+        paramsearch.fit(self.training_csr,numpy.asarray(self.trainlabels))
         print "Prediction..."
         #print the best parameters to the file
         parameters = paramsearch.best_params_
-        outstring = "best parameter settings:\n"
+        self.outstring = "best parameter settings:\n"
         for parameter in parameters.keys():
-          outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
-        outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
+            self.outstring += (parameter + ": " + str(parameters[parameter]) + "\n")
+        self.outstring += ("best score: " + str(paramsearch.best_score_) + "\n\n")
         #train an svm outputcode classifier using the best parameters
-
-        def predict(ts,mc):
-            testvectors = self.vectorize(ts["instances"])
-            outfile = codecs.open(ts["out"],"w","utf-8")
-            outfile.write(outstring)
-            for i,t in enumerate(testvectors):
-                classification = mc.predict(t)
-                proba = mc.predict_proba(t)
-                classification_label = labeldict_back[classification[0]]
-                outfile.write(" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]) + \
-                    "\t" + ts["instances"][i]["label"] + " " + classification_label + "\t" + \
-                    " ".join([str(round(x,2)) for x in proba.tolist()[0]]) + "\n")
-            outfile.close()
-
-        if len(labels) > 2:
+        if len(self.labels) > 2:
             clf = svm.SVC(probability=True, C=parameters['estimator__C'],
                 kernel=parameters['estimator__kernel'],gamma=parameters['estimator__gamma'],
-                degree=parameters['estimator__degree'],class_weight=classweight)
-            multiclf = OutputCodeClassifier(clf,n_jobs=self.jobs)
-            multiclf.fit(training_csr,trainlabels)
+                degree=parameters['estimator__degree'])
+            self.clf = OutputCodeClassifier(clf,n_jobs=self.jobs)
+            self.clf.fit(self.training_csr,self.trainlabels)
+        
             for tset in self.test:
-                p = multiprocessing.Process(target=predict,args=[tset,multiclf])
+                p = multiprocessing.Process(target=self.predict,args=[tset,multiclf,outstring])
                 p.start()
             p.join()
         else:
             clf = svm.SVC(probability=True, C=parameters['C'],
                 kernel=parameters['kernel'],gamma=parameters['gamma'],
-                degree=parameters['degree'],class_weight=classweight)
-            clf.fit(training_csr,trainlabels)
+                degree=parameters['degree'])
+            clf.fit(self.training_csr,self.trainlabels)
             for tset in self.test:
-                p = multiprocessing.Process(target=predict,args=[tset,clf])
+                p = multiprocessing.Process(target=self.predict,args=[tset,clf,outstring])
                 p.start()
             p.join()
+
+    def train_nb(self):
+        self.clf = MultinomialNB()
+        self.clf.fit(self.training_csr,self.trainlabels)
+
+    def test(self):
+        for tset in self.test:
+            p = multiprocessing.Process(target=self.predict,args=[tset])
+            p.start()
+        p.join()

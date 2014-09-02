@@ -14,6 +14,8 @@ parser.add_argument('-i', action = 'store', required = True,
     help = "file with either all instances or testinstances")
 parser.add_argument('-t', action = 'store', required = False, 
     help = "file with test data (no testfile means ten-fold cross-validation is performed)")
+parser.add_argument('-c', action = 'store', default = "svm", choices = ["svm","nb"],
+    help = "choose the classifier")
 parser.add_argument('-f', action = 'store', type=int,default=10000, 
     help = "Prune features by taking the top f frequent features from the training data")
 parser.add_argument('-p', action = 'store', type=int,default=10, 
@@ -21,9 +23,6 @@ parser.add_argument('-p', action = 'store', type=int,default=10,
 parser.add_argument('-o', action = 'store', required=True, 
     help = "The output directory")
 parser.add_argument('--jobs', action='store', type = int, default = 12, help = 'specify the number of cores to use')
-
-#parser.add_argument('--learning_curve', action = 'store_true', 
-#    help = "choose to classify by learning curve")
 
 args = parser.parse_args() 
 
@@ -46,7 +45,12 @@ def classify(tr,te):
     cl.count_feature_frequency()
     cl.prune_features_topfrequency(args.f)
     cl.index_features()
-    cl.classify_svm(params=args.p)
+    cl.model_necessities()
+    if args.c == "svm":
+        cl.train_svm(params=args.p)
+    elif args.c == "nb":
+        cl.train_nb()
+    cl.test()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 train = make_instances(trainfile.readlines())
@@ -68,4 +72,3 @@ else:
             traininstances.extend(tr_fold)
         testinstances = [{"out" : args.o + "fold_" + str(j) + ".txt", "instances" : fold}]
         classify(traininstances,testinstances)
-
