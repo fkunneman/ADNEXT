@@ -250,20 +250,11 @@ class Classifier():
                 degree=parameters['estimator__degree'])
             self.clf = OutputCodeClassifier(clf,n_jobs=self.jobs)
             self.clf.fit(self.training_csr,self.trainlabels)
-        
-            for tset in self.test:
-                p = multiprocessing.Process(target=self.predict,args=[tset,multiclf,outstring])
-                p.start()
-            p.join()
         else:
-            clf = svm.SVC(probability=True, C=parameters['C'],
+            self.clf = svm.SVC(probability=True, C=parameters['C'],
                 kernel=parameters['kernel'],gamma=parameters['gamma'],
                 degree=parameters['degree'])
-            clf.fit(self.training_csr,self.trainlabels)
-            for tset in self.test:
-                p = multiprocessing.Process(target=self.predict,args=[tset,clf,outstring])
-                p.start()
-            p.join()
+            self.clf.fit(self.training_csr,self.trainlabels)
 
     def train_nb(self):
         self.clf = naive_bayes.MultinomialNB()
