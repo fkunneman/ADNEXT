@@ -6,7 +6,7 @@ from collections import defaultdict
 import os
 
 parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
-parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
+parser.add_argument('-i', action = 'store', nargs = '+', required = True, help = "The input files.")  
 parser.add_argument('-o', action = 'store', required = True, help = "The output directory.")
 parser.add_argument('-w', action = 'store', required = True, help = "The heideltime directory.")
 parser.add_argument('-d', action = 'store', type = int, required = True, help = "Specify the column with a date.")
@@ -14,8 +14,6 @@ parser.add_argument('--depth', action = 'store', type = int, default = 2, help =
 
 args = parser.parse_args()
 
-print args.i
-infile = codecs.open(args.i,"r","utf-8")
 date_tweets = defaultdict(list)
 date_file = {}
 outdir_date = args.o + "dates/"
@@ -26,11 +24,13 @@ if not os.path.exists(outdir_date):
         if not os.path.exists("/".join(outdir_date.split("/")[:d])):
             os.system("mkdir " + "/".join(outdir_date.split("/")[:d]))
         d+=1
-os.system("mkdir " + outdir_meta)
-#make a date - tweet dictionary
-for line in infile.readlines():
-    tokens = line.strip().split("\t")
-    date_tweets[tokens[args.d]].append(line)
+    os.system("mkdir " + outdir_meta)
+for i in args.i:
+    infile = codecs.open(i,"r","utf-8")
+    #make a date - tweet dictionary
+    for line in infile.readlines():
+        tokens = line.strip().split("\t")
+        date_tweets[tokens[args.d]].append(line)
 
 for date in date_tweets.keys():
     dateout_string = outdir_date + date + ".txt"

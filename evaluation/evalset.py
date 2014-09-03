@@ -124,11 +124,11 @@ class Evalset():
         
     def return_rankedfp(self,n,c):
         return sorted([[str(y) for y in [x.id,x.text,x.label,x.classification,x.score]] for x in self.instances if \
-            x.classification == c and x.label != c],key = lambda y : y[4],reverse=True)
+            x.classification == c and x.label != c],key = lambda z : z[4],reverse=True)
 
     def return_ranked_score(self,n):
-        return sorted([[str(y) for y in [x.id,x.text,x.label,x.classification,x.score]] for x in self.instances], \
-            key = lambda y : y[4],reverse=True)
+        return sorted([[str(y) for y in [x.id,x.text,x.label,x.classification,x.score]] for x in self.instances], key = \
+            lambda y : y[4],reverse=True)
 
     class Instance():
         
