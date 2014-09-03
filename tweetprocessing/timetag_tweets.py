@@ -11,6 +11,7 @@ parser.add_argument('-o', action = 'store', required = True, help = "The output 
 parser.add_argument('-w', action = 'store', required = True, help = "The heideltime directory.")
 parser.add_argument('-d', action = 'store', type = int, required = True, help = "Specify the column with a date.")
 parser.add_argument('--depth', action = 'store', type = int, default = 2, help = "Specify the depth of file characterizations; [DEFAULT] = 2)")
+parser.add_argument('--header', action = 'store', default = 2, help = "Specify if the infiles contain a header")
 
 args = parser.parse_args()
 
@@ -28,7 +29,11 @@ if not os.path.exists(outdir_date):
 for i in args.i:
     infile = codecs.open(i,"r","utf-8")
     #make a date - tweet dictionary
-    for line in infile.readlines():
+    if args.header:
+        lines = infile.readlines()[1:]
+    else:
+        lines = infile.readlines()
+    for line in lines:
         tokens = line.strip().split("\t")
         date_tweets[tokens[args.d]].append(line)
 
