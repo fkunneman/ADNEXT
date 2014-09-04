@@ -14,7 +14,7 @@ parser.add_argument('-i', action = 'store', required = True,
     help = "file with either all instances or testinstances")
 parser.add_argument('-t', action = 'store', required = False, 
     help = "file with test data (no testfile means ten-fold cross-validation is performed)")
-parser.add_argument('-c', action = 'store', default = "svm", choices = ["svm","nb"],
+parser.add_argument('-c', action = 'store', default = "svm", choices = ["svm","nb","tree"],
     help = "choose the classifier")
 parser.add_argument('-f', action = 'store', type=int,default=10000, 
     help = "Prune features by taking the top f frequent features from the training data")
@@ -52,6 +52,8 @@ def classify(tr,te):
         cl.train_svm(params=args.p)
     elif args.c == "nb":
         cl.train_nb()
+    elif args.c == "tree":
+        cl.train_decisiontree()
     cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")

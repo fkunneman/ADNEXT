@@ -6,11 +6,12 @@ import multiprocessing
 from collections import defaultdict
 
 import re
+import os
 import math
 import numpy
 from scipy.sparse import *
 from scipy import *
-from sklearn import svm, naive_bayes
+from sklearn import svm, naive_bayes, tree
 from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
@@ -258,6 +259,10 @@ class Classifier():
 
     def train_nb(self):
         self.clf = naive_bayes.MultinomialNB()
+        self.clf.fit(self.training_csr,self.trainlabels)
+
+    def train_decisiontree(self):
+        self.clf = tree.DecisionTreeClassifier()
         self.clf.fit(self.training_csr,self.trainlabels)
 
     def test_model(self):
