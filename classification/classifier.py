@@ -262,10 +262,12 @@ class Classifier():
         self.clf.fit(self.training_csr,self.trainlabels)
 
     def train_decisiontree(self):
+        print "training decisiontree"
         self.clf = tree.DecisionTreeClassifier()
-        self.clf.fit(self.training_csr,self.trainlabels)
+        self.clf.fit(self.training_csr.toarray(),self.trainlabels)
 
     def test_model(self):
+        print "testing decisiontree"
         for tset in self.test:
             p = multiprocessing.Process(target=self.predict,args=[tset])
             p.start()
