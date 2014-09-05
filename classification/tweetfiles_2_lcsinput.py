@@ -15,7 +15,7 @@ parser.add_argument('-i', action = 'store', required = True, help = "the input f
 parser.add_argument('-d', action = 'store', required = True, help = "the files directory")
 parser.add_argument('-w', action = 'store', required = True, help = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
 parser.add_argument('-l', action = 'store', required = True, help = "the label of the tweet set")
-parser.add_argument('-m', action = 'store', type = int, default = 16, help = "the number of chores to be used")
+parser.add_argument('-p', action = 'store', required = False, help = "choose to apply parralel processing by giving the number of chores to be used")
 
 args = parser.parse_args() 
 
@@ -57,33 +57,41 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
             outfile.close()
             #queue file name and label to the partsfile
             instanceline = subdir + file_name + " " + label + "\n"
-            partsqueue.put(instanceline)
-            #queue file name and meta to metafile
             metaline = subdir + file_name + "\t" + "\t".join(tokens) + "\n"
-            metaqueue.put(metaline)
+            if partsqueue:
+                partsqueue.put(instanceline)
+                #queue file name and meta to metafile
+                metaqueue.put(metaline)
+            else:
+                outparts.write(instanceline)
+                outmeta.write(metaline)            
             file_index += 1
         i += dirsize
     print "chunk",chunkindex,"done"
 
-q = multiprocessing.Queue()
-r = multiprocessing.Queue()
-tweet_chunks = gen_functions.make_chunks(instances, nc = args.m)
-for i,c in enumerate(tweet_chunks):
-    p=multiprocessing.Process(target=lcswriter,args=[c,i,q,r])
-    p.start()
+if args.p:
+    q = multiprocessing.Queue()
+    r = multiprocessing.Queue()
+    tweet_chunks = gen_functions.make_chunks(instances, nc = args.p)
+    for i,c in enumerate(tweet_chunks):
+        p=multiprocessing.Process(target=lcswriter,args=[c,i,q,r])
+        p.start()
 
-qwrites=[]
-rwrites=[]
-num_instances=len(instances)
+    qwrites=[]
+    rwrites=[]
+    num_instances=len(instances)
 
-while len(qwrites) < num_instances:
-    l=q.get()
-    qwrites.append(l)
-    outparts.write(l)
-while len(rwrites) < num_instances:
-    l=r.get()
-    rwrites.append(l)
-    outmeta.write(l)
+    while len(qwrites) < num_instances:
+        l=q.get()
+        qwrites.append(l)
+        outparts.write(l)
+    while len(rwrites) < num_instances:
+        l=r.get()
+        rwrites.append(l)
+        outmeta.write(l)
+
+else:
+    lcswriter(instances,0)
 
 outparts.close()
 outmeta.close()

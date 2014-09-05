@@ -11,6 +11,7 @@ import math
 import numpy
 from scipy.sparse import *
 from scipy import *
+from sklearn import cross_validation
 from sklearn import svm, naive_bayes, tree
 from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
@@ -265,6 +266,12 @@ class Classifier():
         print "training decisiontree"
         self.clf = tree.DecisionTreeClassifier()
         self.clf.fit(self.training_csr.toarray(),self.trainlabels)
+
+    def append_classification_features(self,model,training,test):
+
+
+    def tenfold_train(self):
+        
 
     def test_model(self):
         print "testing decisiontree"
