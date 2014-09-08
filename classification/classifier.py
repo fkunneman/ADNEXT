@@ -267,8 +267,9 @@ class Classifier():
         self.clf = tree.DecisionTreeClassifier()
         self.clf.fit(self.training_csr.toarray(),self.trainlabels)
 
-    def tenfold_train(self,classifiers,voting,p = 10):
+    def tenfold_train(self,voting,classifiers = [],p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
+        training = list(self.training)
         if "svm" in classifiers:
             self.feature_info["svm"] = len(self.feature_info.keys()) + classifiers.index("svm") + 1
         if "nb" in classifiers:
@@ -278,25 +279,27 @@ class Classifier():
         if "ripper" in classifiers:
             self.feature_info["ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
-            train = list([self.training[x] for x in train_index])
-            test = list([self.training[y] for y in test_index])
+            train = list([training[x] for x in train_index])
+            test = list([training[y] for y in test_index])
             cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
                 for ti in test_index:
                     self.training[ti]["sparse"] = defaultdict(int)
             if "svm" in classifiers:
+                print "svm"
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    print "before",self.training[j]["sparse"]
                     self.training[j]["sparse"][self.feature_info["svm"]] = int(float(predictions[i][1].split()[1]))
-                    print "after",self.training[j]["sparse"]
             if "nb" in classifiers:
+                print "nb"
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
+                    print "before",self.training[j]["sparse"]
                     self.training[j]["sparse"][self.feature_info["nb"]] = int(float(predictions[i][1].split()[1]))
+                    print "after",self.training[j]["sparse"]
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
