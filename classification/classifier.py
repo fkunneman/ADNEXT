@@ -187,7 +187,6 @@ class Classifier():
         for instance in instances:
             featurev = zerolist[:]
             for feature in instance["sparse"].keys():
-                print feature
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
                 elif self.scaling == "log": 
@@ -279,8 +278,8 @@ class Classifier():
         if "ripper" in classifiers:
             self.feature_info["ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
-            train = [self.training[x] for x in train_index]
-            test = [self.training[y] for y in test_index]
+            train = list([self.training[x] for x in train_index])
+            test = list([self.training[y] for y in test_index])
             cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
