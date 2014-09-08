@@ -15,7 +15,10 @@ parser.add_argument('-t', action = 'store', nargs='+',required=True, help = "the
 parser.add_argument('-c', action='store', nargs='+',required=True, 
     help = "the classification files")
 parser.add_argument('-w', action='store', required=True, help = "file to write results to")
-parser.add_argument('-f', action='store', type = int, required=False, 
+parser.add_argument('-f', action='store', required=False, 
+    help = "give the filesdirectory to write an intermediate output with instance " +
+        "text and classification")
+parser.add_argument('-n', action='store', type = int, required=False, 
     help = "give the number of tweets to choose to rank classifications by score and write " + 
     "the top n tweets to a file")
 
@@ -24,6 +27,8 @@ args = parser.parse_args()
 #collect target-observation pairs
 instances = []
 name_instance = {}
+filename_instances = []
+filename_scores = defaultdict(lambda : {})
 for t in args.t:
     targets = open(t)
     for line in targets.readlines():
@@ -36,10 +41,16 @@ for c in args.c:
         tokens = line.strip().split("  ")
         filename = tokens[0].strip()
         scores = tokens[1]
-        classification_score = tokens[1].split(" ")[0].split(":")
+        classification_scores = tokens[1].split(" ")
+        classification_score = classification_scores[0].split(":")
+        non_classification_score = classification_scores[1].split(":")
+        filename_scores[filename][classification_score[0]] = classification_score[1]
+        filename_scores[filename][non_classification_score[0]] = non_classification_score[1]
         classification = re.sub("\?","",classification_score[0])
         score = classification_score[1]  
-        instances.append((name_instance[filename],classification,score,filename))
+        instance = (name_instance[filename],classification,score)
+        instances.append(instance)
+        filename_instances.append((filename,instance))
 
 #generate outcomes
 evaluation = Evalset()
@@ -50,12 +61,22 @@ evaluation.calculate_general()
 outfile = open(args.w,"w")
 outcomes = evaluation.calculate_general()
 for label in outcomes:
-    #columns = gen_functions.format_list(label,'20')
-    #outfile.write("".join(columns) + "\n")
     outfile.write("\t".join([str(x) for x in label]) + "\n")
 outfile.close()
 
 if args.f:
+    outfile = "/".join(args.w.split("/")[-1]) + "/stand_output.txt"
+    for fi in filename_instances:
+        fileopen = codecs.open(args.f+fi[0],"r","utf-8")
+        text = " ".join([x for x in fileopen.read().split("\n") if re.search("_",x)])
+        label = fi[1][0]
+        classification = fi[1][1]
+        score0 = filename_scores[fi[0]]['0.0']
+        score1 = filename_scores[fi[0]]['1.0']
+        outfile.write(text + "\t" + label + " " + classification + " " + score0 + " " + score1 + "\n")
+    outfile.close()
+
+if args.n:
     #make filename - meta dict:
     print "making meta-dict"
     metafile = codecs.open("/".join(args.c.split("/")[:-1]) + "/meta.txt","r","utf-8")
