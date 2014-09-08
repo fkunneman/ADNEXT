@@ -28,7 +28,7 @@ parser.add_argument('--jobs', action='store', type = int, default = 12,
 parser.add_argument('--scaling', action='store', default = "binary", 
     choices = ["binary","log","tfidf"], help = 'specify the type of feature scaling')
 parser.add_argument('--voting', action='store', required = False, nargs='+', 
-    choices = ['arbiter','majority','weighted'], help = 'choose to apply voting over classifiers:' + 
+    choices = [{'arbiter','majority','weighted'},{'svm','nb','tree'}+], help = 'choose to apply voting over classifiers:' + 
         ' give the type of voting as shown in the options, and next list the classifiers over ' +
         'which voting is performed (choose from the listed classifiers in the \'c\'-argument)')
 
