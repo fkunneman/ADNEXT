@@ -55,6 +55,7 @@ def classify(tr,te):
     cl.index_features()
     if args.voting:
         cl.tenfold_train(args.voting[:-1],args.voting[-1],args.p)
+    quit()
     cl.model_necessities()
     if args.c == "svm":
         cl.train_svm(params=args.p)
