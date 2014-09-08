@@ -187,7 +187,6 @@ class Classifier():
         matrix = []
         for instance in instances:
             featurev = zerolist[:]
-            print instance["sparse"].keys()
             for feature in instance["sparse"].keys():
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
@@ -274,11 +273,11 @@ class Classifier():
         training = deepcopy(self.training)
         len_features = len(self.feature_info.keys())
         if "svm" in classifiers:
-            self.feature_info["___svm"] = len_features + classifiers.index("svm") + 1
+            self.feature_info["___svm"] = len_features + classifiers.index("svm")
         if "nb" in classifiers:
-            self.feature_info["___nb"] = len_features + classifiers.index("nb") + 1
+            self.feature_info["___nb"] = len_features + classifiers.index("nb")
         if "dt" in classifiers:
-            self.feature_info["___dt"] = len_features + classifiers.index("dt") + 1
+            self.feature_info["___dt"] = len_features + classifiers.index("dt")
         if "ripper" in classifiers:
             self.feature_info["___ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
@@ -312,7 +311,7 @@ class Classifier():
 
     def append_classifier_labelings(self):
         len_features = len(self.feature_info.keys())
-        self.feature_info["___append"] = len_features + 1
+        self.feature_info["___append"] = len_features
         for instance in self.training:
             instance["sparse"][self.feature_info["___append"]] = instance["append"]
         for tset in self.test:
