@@ -207,17 +207,15 @@ class Classifier():
 
     def predict(self,ts):
         testvectors = self.vectorize(ts["instances"])
-        outfile = codecs.open(ts["out"],"w","utf-8")
-        if self.outstring:
-            outfile.write(self.outstring)
+        predictions = []
         for i,t in enumerate(testvectors):
             classification = self.clf.predict(t)
             proba = self.clf.predict_proba(t)
             classification_label = self.labeldict_back[classification[0]]
-            outfile.write(" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]) + \
-                "\t" + ts["instances"][i]["label"] + " " + classification_label + "\t" + \
-                " ".join([str(round(x,2)) for x in proba.tolist()[0]]) + "\n")
-        outfile.close()
+            predictions.append([" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]), \
+                ts["instances"][i]["label"] + " " + classification_label, \
+                " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
+        return predictions
 
     def train_svm(self,params = 10):
         #obtain the best parameter settings for an svm outputcode classifier
@@ -263,19 +261,41 @@ class Classifier():
         self.clf.fit(self.training_csr,self.trainlabels)
 
     def train_decisiontree(self):
-        print "training decisiontree"
         self.clf = tree.DecisionTreeClassifier()
         self.clf.fit(self.training_csr.toarray(),self.trainlabels)
 
-    def append_classification_features(self,model,training,test):
+    #def append_classification_features(self,model,training,test):
 
 
-    def tenfold_train(self):
-        
+    def tenfold_train(self,classifiers = ["svm","nb","dt"],p = 10):
+        kf = cross_validation.KFold(len(self.training), n_folds=10)
+        for train_index, test_index in kf:
+            train = [self.training[x] for x in train_index]
+            test = [self.training[y] for y in test_index]
+            cl = Classifier(train,test)
+            cl.model_necessities()
+            if "svm" in classifiers:
+                cl.train_svm(params = p)
+                predictions = cl.predict(test)
+                for i,j in enumerate(test_index):
+                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+            if "nb" in classifiers:
+                cl.train_nb()
+                predictions = cl.predict(test)
+                for i,j in enumerate(test_index):
+                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+            if "dt" in classifiers:
+                cl.train_decisiontree()
+                predictions = cl.predict(test)
+                for i,j in enumerate(test_index):
+                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
 
     def test_model(self):
-        print "testing decisiontree"
         for tset in self.test:
-            p = multiprocessing.Process(target=self.predict,args=[tset])
-            p.start()
-        p.join()
+            testresults = self.predict(tset)
+            outfile = codecs.open(tset["out"],"w","utf-8")
+            if self.outstring:
+                outfile.write(self.outstring)
+            for instance in testresults:
+                outfile.write("\t".join(str(x) for x in instance + "\n")) 
+            outfile.close()
