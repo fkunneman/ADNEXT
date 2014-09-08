@@ -48,10 +48,11 @@ for c in args.c:
         filename_scores[filename][non_classification_score[0]] = non_classification_score[1]
         classification = re.sub("\?","",classification_score[0])
         score = classification_score[1]  
-        instance = (name_instance[filename],classification,score)
+        instance = tuple(name_instance[filename],classification,score)
         instances.append(instance)
         filename_instances.append((filename,instance))
 
+print instances
 #generate outcomes
 evaluation = Evalset()
 evaluation.add_instances(instances)
