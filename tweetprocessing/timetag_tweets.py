@@ -34,8 +34,11 @@ for i in args.i:
     else:
         lines = infile.readlines()
     for line in lines:
-        tokens = line.strip().split("\t")
-        date_tweets[tokens[args.d]].append(line)
+        try:
+            tokens = line.strip().split("\t")
+            date_tweets[tokens[args.d]].append(line)
+        except IndexError:
+            continue
 
 for date in date_tweets.keys():
     dateout_string = outdir_date + date + ".txt"
