@@ -270,6 +270,7 @@ class Classifier():
             train = [self.training[x] for x in train_index]
             test = [self.training[y] for y in test_index]
             cl = Classifier(train,test)
+            cl.index_features()
             cl.model_necessities()
             if voting != "arbiter":
                 for ti in test_index:
