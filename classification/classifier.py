@@ -284,7 +284,7 @@ class Classifier():
             cl.model_necessities()
             if voting != "arbiter":
                 for ti in test_index:
-                    self.training[ti]["sparse"] = []
+                    self.training[ti]["sparse"] = defaultdict(int)
             if "svm" in classifiers:
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)

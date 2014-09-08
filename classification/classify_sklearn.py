@@ -54,7 +54,7 @@ def classify(tr,te):
     cl.prune_features_topfrequency(args.f)
     cl.index_features()
     if args.voting:
-        cl.tenfold_train(args.voting[:-1],args.voting[-1],args.p)
+        cl.tenfold_train(args.voting[1:],args.voting[0],args.p)
     quit()
     cl.model_necessities()
     if args.c == "svm":
