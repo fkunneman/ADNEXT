@@ -5,7 +5,7 @@ import codecs
 import multiprocessing
 from collections import defaultdict
 
-import copy
+from copy import deepcopy
 import re
 import os
 import math
@@ -271,7 +271,7 @@ class Classifier():
 
     def tenfold_train(self,voting,classifiers = [],p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
-        training = copy.deepcopy(self.training)
+        training = deepcopy(self.training)
         len_features = len(self.feature_info.keys())
         if "svm" in classifiers:
             self.feature_info["svm"] = len_features + classifiers.index("svm") + 1
@@ -282,8 +282,8 @@ class Classifier():
         if "ripper" in classifiers:
             self.feature_info["ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
-            train = copy.deepcopy([training[x] for x in train_index][:])
-            test = copy.deepcopy([training[y] for y in test_index][:])
+            train = deepcopy([training[x] for x in train_index])
+            test = deepcopy([training[y] for y in test_index])
             cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
