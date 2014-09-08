@@ -23,7 +23,8 @@ import weight_features
 
 class Classifier():
 
-    def __init__(self,trainlist,testlist,scaling = "binary",jobs=16,directory=False):
+    def __init__(self,trainlist,testlist,scaling = "binary",jobs=16,directory=False,
+            features = False, feature_info = False):
         self.training = trainlist
         self.test = testlist #self.test should be a list with multiple lists for each testset
         self.scaling = scaling
@@ -31,6 +32,8 @@ class Classifier():
         self.directory = directory
         self.feature_status = {}
         self.outstring = False
+        self.features = features
+        self.feature_info = feature_info
 
     def count_feature_frequency(self):
         
@@ -269,8 +272,7 @@ class Classifier():
         for train_index, test_index in kf:
             train = [self.training[x] for x in train_index]
             test = [self.training[y] for y in test_index]
-            cl = Classifier(train,test)
-            cl.index_features()
+            cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
                 for ti in test_index:
@@ -290,6 +292,19 @@ class Classifier():
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
                     self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+            if "ripper" in classifiers:
+                cl.train_ripper()
+                predictions = cl.predict(test)
+                for i,j in enumerate(test_index):
+                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+        if "svm" in classifiers:
+            self.feature_info["svm"] = len(feature_info.keys()) + classifiers.index("svm") + 1
+        if "nb" in classifiers:
+            self.feature_info["svm"] = len(feature_info.keys()) + classifiers.index("nb") + 1
+        if "dt" in classifiers:
+            self.feature_info["dt"] = len(feature_info.keys()) + classifiers.index("dt") + 1
+        if "ripper" in classifiers:
+            self.feature_info["ripper"] = len(feature_info.keys()) + classifiers.index("ripper") + 1
 
     #def append_classification_features(self,model,training,test):
 
