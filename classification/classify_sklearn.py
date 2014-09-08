@@ -68,9 +68,6 @@ def classify(tr,te):
         cl.tenfold_train(args.voting[0],classifiers = args.voting[1:],p = args.p)
     if args.append:
         cl.append_classifier_labelings()
-    print len(cl.feature_info.keys())
-    print cl.feature_info["___append"]
-    print cl.feature_info["___nb"]
     cl.model_necessities()
     if args.c == "svm":
         cl.train_svm(params=args.p)
@@ -104,6 +101,7 @@ if args.t:
 else:
     folds = gen_functions.make_folds(train)
     for j,fold in enumerate(folds):
+        print "fold",j
         try:
             tr_folds = folds[:j] + folds[j+1:]
         except IndexError:
