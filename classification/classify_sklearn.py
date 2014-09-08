@@ -31,12 +31,15 @@ parser.add_argument('--voting', action='store', required = False, nargs='+',
     help = 'choose to apply voting over classifiers: first give the type of voting ' +
         '(arbiter,majority or weighted) and next list the classifiers over which ' +
         'voting is performed (choose from the listed classifiers in the \'c\'-argument)')
+parser.add_argument('--append', action = 'store', required=False, 
+    help = "to append classifier output for voting, specify the filename of standard output of " +
+        "the classifier")
 
 args = parser.parse_args() 
 
 expdir = "/".join(args.i.split("/")[:-1]) + "/"
 
-def make_instances(lines):
+def make_instances(lines,appendlines=False):
     instances = []
     for line in lines:
         tokens = line.strip().split("\t")
@@ -68,8 +71,19 @@ def classify(tr,te):
     cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
-train = make_instances(trainfile.readlines())
+if args.append:
+    appendfile = codecs.open(args.append,"r","utf-8")
+    trainlines = trainfile.readlines()
+    appendlines = appendfile.readlines()
+    if not len(appendlines) == len(trainlines):
+        print "uneven lines appendfile and trainfile; exiting program." 
+        quit()
+    train = make_instances(trainlines,appendlines)
+    appendfile.close()
+else:
+    train = make_instances(trainfile.readlines())
 trainfile.close()
+
 if args.t:
     testfile = codecs.open(args.t,"r","utf-8")
     test = [{"out" : args.o + "testout.txt", "instances" : make_instances(testfile.readlines())}]
@@ -77,13 +91,34 @@ if args.t:
     classify(train,test)
 else:
     folds = gen_functions.make_folds(train)
+    if args.append:
+        appendfile = open(args.append)
+        appendlines = appendfile.readlines()
+        appendfile.close()
+        if not len(appendlines) == len(train):
+            print "uneven lines appendfile and trainfile; exiting program." 
+            quit()
+        appendfolds = []
+        ind = 0
+        for fold in folds:
+            lf = len(fold)
+            appendfolds.append([x.split("\t")[1].split()[:2] for x in appendlines[ind:ind+lf]])
+            ind += lf
     for j,fold in enumerate(folds):
         try:
             tr_folds = folds[:j] + folds[j+1:]
+            if args.append:
+                tr_folds_append = appendfolds[:j] + appendfolds[j+1:]
         except IndexError:
             tr_folds = folds[:j]
+            if args.append:
+                tr_folds_append = appendfolds[:j]
         traininstances = []
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
+        if args.append:
+            traininstances_append = []
+            for tr_fold_append in tr_folds_append:
+                traininstances.extend(tr_fold_append)    
         testinstances = [{"out" : args.o + "fold_" + str(j) + ".txt", "instances" : fold}]
         classify(traininstances,testinstances)

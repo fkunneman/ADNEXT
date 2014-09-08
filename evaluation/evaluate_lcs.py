@@ -71,8 +71,8 @@ outfile.close()
 
 if args.f:
     outfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/stand_output.txt","w","utf-8")
-    for i in range(len(index_filename.keys())):
-        filename = index_filename[i]
+    for filename in sorted(filename_instance.keys()):
+        print filename
         instance = filename_instance[filename]
         fileopen = codecs.open(args.f+filename,"r","utf-8")
         text = " ".join([x for x in fileopen.read().split("\n") if not re.search("_",x)])
