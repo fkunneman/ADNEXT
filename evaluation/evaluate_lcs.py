@@ -27,13 +27,17 @@ args = parser.parse_args()
 #collect target-observation pairs
 instances = []
 name_instance = {}
-filename_instances = []
+filename_instance = {}
+index_filename = {}
 filename_scores = defaultdict(lambda : {})
+ind = 0
 for t in args.t:
     targets = open(t)
     for line in targets.readlines():
         tokens = line.strip().split(" ")
         name_instance[tokens[0]] = tokens[1]
+        index_filename[ind] = tokens[0]
+        ind += 1
     targets.close()
 for c in args.c:
     observations = open(c)
@@ -51,7 +55,7 @@ for c in args.c:
         score = classification_score[1]  
         instance = (name_instance[filename],classification,score)
         instances.append(instance)
-        filename_instances.append((filename,instance))
+        filename_instance[filename] = instance
 
 #generate outcomes
 evaluation = Evalset()
@@ -67,13 +71,15 @@ outfile.close()
 
 if args.f:
     outfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/stand_output.txt","w","utf-8")
-    for fi in filename_instances:
-        fileopen = codecs.open(args.f+fi[0],"r","utf-8")
+    for i in range(len(index_filename.keys()))::
+        filename = index_filename[i]
+        instance = filename_instance[filename]
+        fileopen = codecs.open(args.f+filename,"r","utf-8")
         text = " ".join([x for x in fileopen.read().split("\n") if not re.search("_",x)])
-        label = fi[1][0]
-        classification = fi[1][1]
-        score0 = filename_scores[fi[0]]['0.0']
-        score1 = filename_scores[fi[0]]['1.0']
+        label = instance[0]
+        classification = instance[1]
+        score0 = filename_scores[filename]['0.0']
+        score1 = filename_scores[filename]['1.0']
         outfile.write(text + "\t" + label + " " + classification + " " + score0 + " " + score1 + "\n")
     outfile.close()
 
