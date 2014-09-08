@@ -209,14 +209,14 @@ class Classifier():
         self.trainlabels = [labeldict[x["label"]] for x in self.training]
 
     def predict(self,ts):
-        testvectors = self.vectorize(ts["instances"])
+        testvectors = self.vectorize(ts)
         predictions = []
         for i,t in enumerate(testvectors):
             classification = self.clf.predict(t)
             proba = self.clf.predict_proba(t)
             classification_label = self.labeldict_back[classification[0]]
-            predictions.append([" ".join([x for x in ts["instances"][i]["features"] if not re.search("_",x)]), \
-                ts["instances"][i]["label"] + " " + classification_label, \
+            predictions.append([" ".join([x for x in ts[i]["features"] if not re.search("_",x)]), \
+                ts[i]["label"] + " " + classification_label, \
                 " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
         return predictions
 
@@ -310,7 +310,7 @@ class Classifier():
 
     def test_model(self):
         for tset in self.test:
-            testresults = self.predict(tset)
+            testresults = self.predict(tset["instances"])
             outfile = codecs.open(tset["out"],"w","utf-8")
             if self.outstring:
                 outfile.write(self.outstring)
