@@ -289,22 +289,22 @@ class Classifier():
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"]["svm"] = int(predictions[i][1].split()[1])
+                    self.training[j]["sparse"]["svm"] = int(float(predictions[i][1].split()[1]))
             if "nb" in classifiers:
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"]["nb"] = int(predictions[i][1].split()[1])
+                    self.training[j]["sparse"]["nb"] = int(float(predictions[i][1].split()[1]))
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"]["dt"] = int(predictions[i][1].split()[1])
+                    self.training[j]["sparse"]["dt"] = int(float(predictions[i][1].split()[1]))
             if "ripper" in classifiers:
                 cl.train_ripper()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"]["ripper"] = int(predictions[i][1].split()[1])
+                    self.training[j]["sparse"]["ripper"] = int(float(predictions[i][1].split()[1]))
 
     #def append_classification_features(self,model,training,test):
 
