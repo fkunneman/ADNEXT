@@ -71,7 +71,7 @@ outfile.close()
 
 if args.f:
     outfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/stand_output.txt","w","utf-8")
-    for i in range(len(index_filename.keys()))::
+    for i in range(len(index_filename.keys())):
         filename = index_filename[i]
         instance = filename_instance[filename]
         fileopen = codecs.open(args.f+filename,"r","utf-8")
