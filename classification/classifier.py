@@ -269,6 +269,14 @@ class Classifier():
 
     def tenfold_train(self,classifiers,voting,p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
+        if "svm" in classifiers:
+            self.feature_info["svm"] = len(feature_info.keys()) + classifiers.index("svm") + 1
+        if "nb" in classifiers:
+            self.feature_info["nb"] = len(feature_info.keys()) + classifiers.index("nb") + 1
+        if "dt" in classifiers:
+            self.feature_info["dt"] = len(feature_info.keys()) + classifiers.index("dt") + 1
+        if "ripper" in classifiers:
+            self.feature_info["ripper"] = len(feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
             train = [self.training[x] for x in train_index]
             test = [self.training[y] for y in test_index]
@@ -281,30 +289,22 @@ class Classifier():
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"]["svm"] = int(predictions[i][1].split()[1])
             if "nb" in classifiers:
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"]["nb"] = int(predictions[i][1].split()[1])
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"]["dt"] = int(predictions[i][1].split()[1])
             if "ripper" in classifiers:
                 cl.train_ripper()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
-        if "svm" in classifiers:
-            self.feature_info["svm"] = len(feature_info.keys()) + classifiers.index("svm") + 1
-        if "nb" in classifiers:
-            self.feature_info["svm"] = len(feature_info.keys()) + classifiers.index("nb") + 1
-        if "dt" in classifiers:
-            self.feature_info["dt"] = len(feature_info.keys()) + classifiers.index("dt") + 1
-        if "ripper" in classifiers:
-            self.feature_info["ripper"] = len(feature_info.keys()) + classifiers.index("ripper") + 1
+                    self.training[j]["sparse"]["ripper"] = int(predictions[i][1].split()[1])
 
     #def append_classification_features(self,model,training,test):
 
