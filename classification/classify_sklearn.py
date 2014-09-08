@@ -52,7 +52,6 @@ def make_instances(lines,appendlines=False):
             info = appendlines[i].strip().split("\t")[1].split()
             label = info[0]
             classification = info[1]
-            print appendlines[i],info,label,classification
             if label != tokens[1]:
                 print "labels of appendfile do not align, exiting program"
             instance["append"] = int(float(classification))
