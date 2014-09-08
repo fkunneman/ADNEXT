@@ -325,5 +325,5 @@ class Classifier():
             if self.outstring:
                 outfile.write(self.outstring)
             for instance in testresults:
-                outfile.write("\t".join([str(x) for x in instance]) + "\n")) 
+                outfile.write("\t".join(instance) + "\n") 
             outfile.close()
