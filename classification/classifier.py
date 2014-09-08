@@ -264,16 +264,16 @@ class Classifier():
         self.clf = tree.DecisionTreeClassifier()
         self.clf.fit(self.training_csr.toarray(),self.trainlabels)
 
-    #def append_classification_features(self,model,training,test):
-
-
-    def tenfold_train(self,classifiers = ["svm","nb","dt"],p = 10):
+    def tenfold_train(self,classifiers,voting,p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
         for train_index, test_index in kf:
             train = [self.training[x] for x in train_index]
             test = [self.training[y] for y in test_index]
             cl = Classifier(train,test)
             cl.model_necessities()
+            if voting != "arbiter":
+                for ti in test_index:
+                    self.training[ti]["sparse"] = []
             if "svm" in classifiers:
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
@@ -289,6 +289,8 @@ class Classifier():
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
                     self.training[j]["sparse"].append(int(predictions[i][1].split()[1]))
+
+    #def append_classification_features(self,model,training,test):
 
     def test_model(self):
         for tset in self.test:

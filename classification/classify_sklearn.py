@@ -9,7 +9,8 @@ import gen_functions
 """
 Script to perform svm classification with scikit-learn. 
 """
-parser = argparse.ArgumentParser(description = "Script to perform svm classification with scikit-learn.")
+parser = argparse.ArgumentParser(
+    description = "Script to perform svm classification with scikit-learn.")
 parser.add_argument('-i', action = 'store', required = True, 
     help = "file with either all instances or testinstances")
 parser.add_argument('-t', action = 'store', required = False, 
@@ -22,9 +23,13 @@ parser.add_argument('-p', action = 'store', type=int,default=10,
     help = "decide on the number of parameter settings to compare during training (default = 10)")
 parser.add_argument('-o', action = 'store', required=True, 
     help = "The output directory")
-parser.add_argument('--jobs', action='store', type = int, default = 12, help = 'specify the number of cores to use')
-parser.add_argument('--scaling', action='store', default = "binary", choices = ["binary","log","tfidf"],
-    help = 'specify the type of feature scaling')
+parser.add_argument('--jobs', action='store', type = int, default = 12, 
+    help = 'specify the number of cores to use')
+parser.add_argument('--scaling', action='store', default = "binary", 
+    choices = ["binary","log","tfidf"], help = 'specify the type of feature scaling')
+parser.add_argument('--voting', action='store', required = False, nargs='+', 
+    choices = ['arbiter','majority','weighted'], help = 'choose to apply voting over classifiers:' + 
+        ' list all classifiers and give the type of voting at the end of the list')
 
 args = parser.parse_args() 
 
@@ -47,6 +52,8 @@ def classify(tr,te):
     cl.count_feature_frequency()
     cl.prune_features_topfrequency(args.f)
     cl.index_features()
+    if args.voting:
+        cl.tenfold_train(args.voting[:-1],args.voting[-1],args.p)
     cl.model_necessities()
     if args.c == "svm":
         cl.train_svm(params=args.p)
@@ -54,6 +61,8 @@ def classify(tr,te):
         cl.train_nb()
     elif args.c == "tree":
         cl.train_decisiontree()
+    elif args.c == "ripper":
+        cl.train_ripper()
     cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
