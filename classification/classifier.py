@@ -187,7 +187,6 @@ class Classifier():
         matrix = []
         for instance in instances:
             featurev = zerolist[:]
-            print instance["sparse"]
             for feature in instance["sparse"].keys():
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
