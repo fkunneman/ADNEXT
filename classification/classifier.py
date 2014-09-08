@@ -273,13 +273,13 @@ class Classifier():
         training = deepcopy(self.training)
         len_features = len(self.feature_info.keys())
         if "svm" in classifiers:
-            self.feature_info["svm"] = len_features + classifiers.index("svm") + 1
+            self.feature_info["___svm"] = len_features + classifiers.index("svm") + 1
         if "nb" in classifiers:
-            self.feature_info["nb"] = len_features + classifiers.index("nb") + 1
+            self.feature_info["___nb"] = len_features + classifiers.index("nb") + 1
         if "dt" in classifiers:
-            self.feature_info["dt"] = len_features + classifiers.index("dt") + 1
+            self.feature_info["___dt"] = len_features + classifiers.index("dt") + 1
         if "ripper" in classifiers:
-            self.feature_info["ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
+            self.feature_info["___ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
             train = deepcopy([training[x] for x in train_index])
             test = deepcopy([training[y] for y in test_index])
@@ -292,31 +292,31 @@ class Classifier():
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["svm"]] = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___svm"]] = int(float(predictions[i][1].split()[1]))
             if "nb" in classifiers:
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["nb"]] = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___nb"]] = int(float(predictions[i][1].split()[1]))
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["dt"]] = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___dt"]] = int(float(predictions[i][1].split()[1]))
             if "ripper" in classifiers:
                 cl.train_ripper()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["ripper"]] = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___ripper"]] = int(float(predictions[i][1].split()[1]))
 
     def append_classifier_labelings(self):
         len_features = len(self.feature_info.keys())
-        self.feature_info["append"] = len_features + 1
+        self.feature_info["___append"] = len_features + 1
         for instance in self.training:
-            instance["sparse"][self.feature_info["append"]] = instance["append"]
+            instance["sparse"][self.feature_info["___append"]] = instance["append"]
         for tset in self.test:
             for instance in tset["instances"]:
-                instance["sparse"][self.feature_info["append"]] = instance["append"]                
+                instance["sparse"][self.feature_info["___append"]] = instance["append"]                
             
     def test_model(self):
         for tset in self.test:
