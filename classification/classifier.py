@@ -186,6 +186,7 @@ class Classifier():
         matrix = []
         for instance in instances:
             featurev = zerolist[:]
+            print instance["sparse"]
             for feature in instance["sparse"].keys():
                 if self.scaling == "binary":
                     featurev[feature] = float(1)
@@ -296,9 +297,7 @@ class Classifier():
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    print "before",self.training[j]["sparse"]
                     self.training[j]["sparse"][self.feature_info["nb"]] = int(float(predictions[i][1].split()[1]))
-                    print "after",self.training[j]["sparse"]
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
