@@ -270,13 +270,13 @@ class Classifier():
     def tenfold_train(self,classifiers,voting,p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
         if "svm" in classifiers:
-            self.feature_info["svm"] = len(feature_info.keys()) + classifiers.index("svm") + 1
+            self.feature_info["svm"] = len(self.feature_info.keys()) + classifiers.index("svm") + 1
         if "nb" in classifiers:
-            self.feature_info["nb"] = len(feature_info.keys()) + classifiers.index("nb") + 1
+            self.feature_info["nb"] = len(self.feature_info.keys()) + classifiers.index("nb") + 1
         if "dt" in classifiers:
-            self.feature_info["dt"] = len(feature_info.keys()) + classifiers.index("dt") + 1
+            self.feature_info["dt"] = len(self.feature_info.keys()) + classifiers.index("dt") + 1
         if "ripper" in classifiers:
-            self.feature_info["ripper"] = len(feature_info.keys()) + classifiers.index("ripper") + 1
+            self.feature_info["ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
             train = [self.training[x] for x in train_index]
             test = [self.training[y] for y in test_index]
