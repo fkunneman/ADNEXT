@@ -44,15 +44,15 @@ for c in args.c:
         classification_scores = tokens[1].split(" ")
         classification_score = classification_scores[0].split(":")
         non_classification_score = classification_scores[1].split(":")
-        filename_scores[filename][classification_score[0]] = classification_score[1]
-        filename_scores[filename][non_classification_score[0]] = non_classification_score[1]
+        filename_scores[filename][re.sub(r"\?","",classification_score[0])] = classification_score[1]
+        filename_scores[filename][re.sub(r"\?","",non_classification_score[0])] = \
+            non_classification_score[1]
         classification = re.sub("\?","",classification_score[0])
         score = classification_score[1]  
-        instance = tuple(name_instance[filename],classification,score)
+        instance = (name_instance[filename],classification,score)
         instances.append(instance)
         filename_instances.append((filename,instance))
 
-print instances
 #generate outcomes
 evaluation = Evalset()
 evaluation.add_instances(instances)
@@ -60,16 +60,16 @@ evaluation.calculate_general()
 
 #write results
 outfile = open(args.w,"w")
-outcomes = evaluation.calculate_general()
-for label in outcomes:
+evaluation.calculate_general()
+for label in evaluation.calculate_outcome():
     outfile.write("\t".join([str(x) for x in label]) + "\n")
 outfile.close()
 
 if args.f:
-    outfile = "/".join(args.w.split("/")[-1]) + "/stand_output.txt"
+    outfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/stand_output.txt","w","utf-8")
     for fi in filename_instances:
         fileopen = codecs.open(args.f+fi[0],"r","utf-8")
-        text = " ".join([x for x in fileopen.read().split("\n") if re.search("_",x)])
+        text = " ".join([x for x in fileopen.read().split("\n") if not re.search("_",x)])
         label = fi[1][0]
         classification = fi[1][1]
         score0 = filename_scores[fi[0]]['0.0']
