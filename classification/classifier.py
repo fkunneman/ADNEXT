@@ -269,31 +269,30 @@ class Classifier():
 
     def tenfold_train(self,voting,classifiers = [],p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
-        training = list(self.training)
+        training = self.training[:]
+        len_features = len(self.feature_info.keys())
         if "svm" in classifiers:
-            self.feature_info["svm"] = len(self.feature_info.keys()) + classifiers.index("svm") + 1
+            self.feature_info["svm"] = len_features + classifiers.index("svm") + 1
         if "nb" in classifiers:
-            self.feature_info["nb"] = len(self.feature_info.keys()) + classifiers.index("nb") + 1
+            self.feature_info["nb"] = len_features + classifiers.index("nb") + 1
         if "dt" in classifiers:
-            self.feature_info["dt"] = len(self.feature_info.keys()) + classifiers.index("dt") + 1
+            self.feature_info["dt"] = len_features + classifiers.index("dt") + 1
         if "ripper" in classifiers:
             self.feature_info["ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
         for train_index, test_index in kf:
-            train = list([training[x] for x in train_index])
-            test = list([training[y] for y in test_index])
+            train = [training[x] for x in train_index][:]
+            test = [training[y] for y in test_index][:]
             cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
                 for ti in test_index:
                     self.training[ti]["sparse"] = defaultdict(int)
             if "svm" in classifiers:
-                print "svm"
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
                     self.training[j]["sparse"][self.feature_info["svm"]] = int(float(predictions[i][1].split()[1]))
             if "nb" in classifiers:
-                print "nb"
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
