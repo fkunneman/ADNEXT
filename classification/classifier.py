@@ -313,9 +313,7 @@ class Classifier():
         len_features = len(self.feature_info.keys())
         self.feature_info["append"] = len_features + 1
         for instance in self.training:
-            print "before",instance["sparse"]
             instance["sparse"][self.feature_info["append"]] = instance["append"]
-            print "after",instance["sparse"]
         for tset in self.test:
             for instance in tset["instances"]:
                 instance["sparse"][self.feature_info["append"]] = instance["append"]                

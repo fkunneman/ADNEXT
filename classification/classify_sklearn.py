@@ -68,7 +68,6 @@ def classify(tr,te):
         cl.tenfold_train(args.voting[0],classifiers = args.voting[1:],p = args.p)
     if args.append:
         cl.append_classifier_labelings()
-    quit()
     cl.model_necessities()
     if args.c == "svm":
         cl.train_svm(params=args.p)
