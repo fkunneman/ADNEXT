@@ -28,16 +28,12 @@ args = parser.parse_args()
 instances = []
 name_instance = {}
 filename_instance = {}
-index_filename = {}
 filename_scores = defaultdict(lambda : {})
-ind = 0
 for t in args.t:
     targets = open(t)
     for line in targets.readlines():
         tokens = line.strip().split(" ")
         name_instance[tokens[0]] = tokens[1]
-        index_filename[ind] = tokens[0]
-        ind += 1
     targets.close()
 for c in args.c:
     observations = open(c)
@@ -72,7 +68,6 @@ outfile.close()
 if args.f:
     outfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/stand_output.txt","w","utf-8")
     for filename in sorted(filename_instance.keys()):
-        print filename
         instance = filename_instance[filename]
         fileopen = codecs.open(args.f+filename,"r","utf-8")
         text = " ".join([x for x in fileopen.read().split("\n") if not re.search("_",x)])

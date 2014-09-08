@@ -41,12 +41,20 @@ expdir = "/".join(args.i.split("/")[:-1]) + "/"
 
 def make_instances(lines,appendlines=False):
     instances = []
-    for line in lines:
+    for i,line in enumerate(lines):
         tokens = line.strip().split("\t")
         instance = {}
         instance["label"] = tokens[1]
         instance["meta"] = tokens[:-1]
         instance["features"] = tokens[-1].split()
+        if appendlines:
+            #check if file is same
+            info = appendlines[i].strip().split("\t")[1]
+            label = info[0]
+            classification = info[1]
+            if label != tokens[1]:
+                print "labels of appendfile do not align, exiting program"
+            instance["append"] = int(float(classification))
         instances.append(instance)
     return instances
 
@@ -58,6 +66,8 @@ def classify(tr,te):
     cl.index_features()
     if args.voting:
         cl.tenfold_train(args.voting[0],classifiers = args.voting[1:],p = args.p)
+    if args.append:
+        cl.append_classifier_labelings()
     quit()
     cl.model_necessities()
     if args.c == "svm":
@@ -91,34 +101,13 @@ if args.t:
     classify(train,test)
 else:
     folds = gen_functions.make_folds(train)
-    if args.append:
-        appendfile = open(args.append)
-        appendlines = appendfile.readlines()
-        appendfile.close()
-        if not len(appendlines) == len(train):
-            print "uneven lines appendfile and trainfile; exiting program." 
-            quit()
-        appendfolds = []
-        ind = 0
-        for fold in folds:
-            lf = len(fold)
-            appendfolds.append([x.split("\t")[1].split()[:2] for x in appendlines[ind:ind+lf]])
-            ind += lf
     for j,fold in enumerate(folds):
         try:
             tr_folds = folds[:j] + folds[j+1:]
-            if args.append:
-                tr_folds_append = appendfolds[:j] + appendfolds[j+1:]
         except IndexError:
             tr_folds = folds[:j]
-            if args.append:
-                tr_folds_append = appendfolds[:j]
         traininstances = []
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
-        if args.append:
-            traininstances_append = []
-            for tr_fold_append in tr_folds_append:
-                traininstances.extend(tr_fold_append)    
         testinstances = [{"out" : args.o + "fold_" + str(j) + ".txt", "instances" : fold}]
         classify(traininstances,testinstances)

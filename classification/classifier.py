@@ -310,8 +310,15 @@ class Classifier():
                 for i,j in enumerate(test_index):
                     self.training[j]["sparse"][self.feature_info["ripper"]] = int(float(predictions[i][1].split()[1]))
 
-    #def append_classification_features(self,model,training,test):
-
+    def append_classifier_labelings(self):
+        len_features = len(self.feature_info.keys())
+        self.feature_info["append"] = len_features + 1
+        for instance in self.training:
+            instance["sparse"][self.feature_info["append"]] = instance["append"]
+        for tset in self.test:
+            for instance in tset["instances"]:
+                instance["sparse"][self.feature_info["append"]] = instance["append"]                
+            
     def test_model(self):
         for tset in self.test:
             testresults = self.predict(tset["instances"])
