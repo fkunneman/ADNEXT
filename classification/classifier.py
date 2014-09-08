@@ -216,7 +216,7 @@ class Classifier():
             classification = self.clf.predict(t)
             proba = self.clf.predict_proba(t)
             classification_label = self.labeldict_back[classification[0]]
-            predictions.append([" ".join([x for x in ts[i]["features"] if not re.search("_",x)]), \
+            predictions.append(" ".join([x for x in ts[i]["features"] if not re.search("_",x)]), \
                 ts[i]["label"] + " " + classification_label, \
                 " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
         return predictions
@@ -325,5 +325,5 @@ class Classifier():
             if self.outstring:
                 outfile.write(self.outstring)
             for instance in testresults:
-                outfile.write("\t".join(str(x) for x in instance + "\n")) 
+                outfile.write("\t".join([str(x) for x in instance]) + "\n")) 
             outfile.close()
