@@ -271,14 +271,20 @@ class Classifier():
     def tenfold_train(self,voting,classifiers = [],p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
         training = deepcopy(self.training)
+        feat = deepcopy(self.features)
+        fi = deepcopy(self.feature_info)
+        if voting != "arbiter":
+            self.feature_info = {}
+            for instance in self.training:
+                instance["sparse"] = defaultdict(int)
+        len_features = len(self.feature_info.keys())
+        for i,fn in enumerate(classifiers):
+            self.feature_info["___" + fn] = len_features + i
         for train_index, test_index in kf:
             train = deepcopy([training[x] for x in train_index])
             test = deepcopy([training[y] for y in test_index])
-            cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
+            cl = Classifier(train,test,features = feat,feature_info = self.fi)
             cl.model_necessities()
-            if voting != "arbiter":
-                for ti in test_index:
-                    self.training[ti]["sparse"] = defaultdict(int)
             if "svm" in classifiers:
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
@@ -320,11 +326,11 @@ class Classifier():
         return prediction_features_testset    
 
     def add_classification_features(self,featuredict,featurenames,voter):
-        if voter != "arbiter":
+        if voter == "majority":
             self.feature_info = {}
-        len_features = len(self.feature_info.keys())
-        for i,fn in enumerate(featurenames):
-            self.feature_info[fn] = len_features + i
+            len_features = len(self.feature_info.keys())
+            for i,fn in enumerate(featurenames):
+                self.feature_info[fn] = len_features + i
         for i,tset in enumerate(self.test):
             for j,instance in enumerate(tset["instances"]):
                 if voter != "arbiter":
