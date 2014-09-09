@@ -65,7 +65,20 @@ def classify(tr,te):
     cl.prune_features_topfrequency(args.f)
     cl.index_features()
     if args.voting:
-        cl.tenfold_train(args.voting[0],classifiers = args.voting[1:],p = args.p)
+        cl.model_necessities()
+        if args.voting[0] != "arbiter":
+            cl.feature_info = {}
+        c = args.voting[1:]
+        if "svm" in c:
+            cl.train_svm(params=args.p)
+            cl.append_classification("___svm")
+        if "nb" in c:
+            cl.train_nb()
+            cl.append_classification("___nb")
+        if "tree" in c:
+            cl.train_decisiontree()
+            cl.append_classification("___tree")
+        cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
     if args.append:
         cl.append_classifier_labelings()
     cl.model_necessities()

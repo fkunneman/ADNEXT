@@ -271,21 +271,15 @@ class Classifier():
     def tenfold_train(self,voting,classifiers = [],p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
         training = deepcopy(self.training)
-        len_features = len(self.feature_info.keys())
-        if "svm" in classifiers:
-            self.feature_info["___svm"] = len_features + classifiers.index("svm")
-        if "nb" in classifiers:
-            self.feature_info["___nb"] = len_features + classifiers.index("nb")
-        if "dt" in classifiers:
-            self.feature_info["___dt"] = len_features + classifiers.index("dt")
-        if "ripper" in classifiers:
-            self.feature_info["___ripper"] = len(self.feature_info.keys()) + classifiers.index("ripper") + 1
+        # if voting != arbiter:
+        #     self.feature_info = {}
         for train_index, test_index in kf:
             train = deepcopy([training[x] for x in train_index])
             test = deepcopy([training[y] for y in test_index])
             cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
+                self.feature_info = {}
                 for ti in test_index:
                     self.training[ti]["sparse"] = defaultdict(int)
             if "svm" in classifiers:
@@ -318,6 +312,14 @@ class Classifier():
             for instance in tset["instances"]:
                 instance["sparse"][self.feature_info["___append"]] = instance["append"]                
             
+    def append_classification(self,featurename):
+        len_features = len(self.feature_info.keys())
+        self.feature_info[featurename] = len_features
+        for tset in self.test:
+            predictions = self.predict(tset["instances"])
+            for i,prediction in predictions:
+                tset["instances"][i]["sparse"][self.feature_info[featurename]] = int(float(predictions[i][1].split()[1]))
+
     def test_model(self):
         for tset in self.test:
             testresults = self.predict(tset["instances"])
