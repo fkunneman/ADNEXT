@@ -2,6 +2,7 @@
 
 import argparse
 import codecs
+from collections import defaultdict
 
 from classifier import Classifier
 import gen_functions
