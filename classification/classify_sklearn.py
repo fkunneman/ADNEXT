@@ -108,9 +108,14 @@ def classify(tr,te):
         for tset in cl.test:
             outfile = codecs.open(tset["out"],"w","utf-8")
             for instance in tset["instances"]:
-                prediction = str(float(max(instance["sparse"].values())))
+                if instance["sparse"].values().count(1) >= 2:
+                    prediction = "1.0"
+                else:
+                    prediction = "0.0"
                 instanceout = [" ".join([x for x in instance["features"] if not re.search("_",x)]), \
-                instance["label"] + " " + prediction, str(instance["sparse"].values().count(1))]
+                    instance["label"] + " " + prediction, " ".join([str(instance["sparse"][x]) for \
+                    x in sorted(instance["sparse"].keys())]), \
+                    str(instance["sparse"].values().count(1))]
                 outfile.write("\t".join(instanceout) + "\n") 
             outfile.close()
     else:
