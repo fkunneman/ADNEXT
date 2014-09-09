@@ -314,7 +314,7 @@ class Classifier():
         for tset in self.test:
             prediction_features = []
             predictions = self.predict(tset["instances"])
-            for i,prediction in predictions:
+            for i,prediction in enumerate(predictions):
                 prediction_features.append(int(float(predictions[i][1].split()[1])))
             prediction_features_testset.append(prediction_features)
         return prediction_features_testset    
