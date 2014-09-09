@@ -3,6 +3,7 @@
 import argparse
 import codecs
 from collections import defaultdict
+import re
 
 from classifier import Classifier
 import gen_functions
@@ -69,43 +70,60 @@ def classify(tr,te):
         cl.model_necessities()
         c = args.voting[1:]
         index_predictions = defaultdict(lambda : defaultdict(lambda : {}))
+        featurenames = []
         if "svm" in c:
             cl.train_svm(params=args.p)
-            predictions = return_classification_features()
+            predictions = cl.return_classification_features()
             for i,ts in predictions:
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___svm"] = p
+            featurenames.append("___svm")
         if "nb" in c:
             cl.train_nb()
-            predictions = return_classification_features()
+            predictions = cl.return_classification_features()
             for i,ts in predictions:
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___nb"] = p
+            featurenames.append("___nb")
         if "tree" in c:
             cl.train_decisiontree()
-            predictions = return_classification_features()
+            predictions = cl.return_classification_features()
             for i,ts in predictions:
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___tree"] = p
+            featurenames.append("___tree")
         if "ripper" in c:
             cl.train_ripper()
-            predictions = return_classification_features()
+            predictions = cl.return_classification_features()
             for i,ts in predictions:
                 for j,p in enumerate(ts):
-                    index_predictions[i][j]["___ripper"] = p  
-        cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
+                    index_predictions[i][j]["___ripper"] = p
+            featurenames.append("___ripper")
+        cl.add_classification_features(index_predictions,featurenames,args.voting[0])
+        if args.v != "majority":
+            cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
     if args.append:
         cl.append_classifier_labelings()
-    cl.model_necessities()
-    if args.c == "svm":
-        cl.train_svm(params=args.p)
-    elif args.c == "nb":
-        cl.train_nb()
-    elif args.c == "tree":
-        cl.train_decisiontree()
-    elif args.c == "ripper":
-        cl.train_ripper()
-    cl.test_model()
+    if args.v == "majority":
+        for tset in cl.test:
+            outfile = codecs.open(tset["out"],"w","utf-8")
+            for instance in tset["instances"]:
+                prediction = str(float(max(instance["sparse"])))
+                instanceout = [" ".join([x for x in instance["features"] if not re.search("_",x)]), \
+                instance["label"] + " " + prediction, str(instance["sparse"].count(1))]
+                outfile.write("\t".join(instance) + "\n") 
+            outfile.close()
+    else:
+        cl.model_necessities()
+        if args.c == "svm":
+            cl.train_svm(params=args.p)
+        elif args.c == "nb":
+            cl.train_nb()
+        elif args.c == "tree":
+            cl.train_decisiontree()
+        elif args.c == "ripper":
+            cl.train_ripper()
+        cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:

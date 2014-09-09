@@ -319,16 +319,18 @@ class Classifier():
             prediction_features_testset.append(prediction_features)
         return prediction_features_testset    
 
-    def add_classification_features(self,featuredict,featurename,voter):
+    def add_classification_features(self,featuredict,featurenames,voter):
         if voter != "arbiter":
             self.feature_info = {}
         len_features = len(self.feature_info.keys())
-        self.feature_info[featurename] = len_features
+        for i,fn in enumerate(featurenames):
+            self.feature_info[fn] = len_features + i
         for i,tset in enumerate(self.test):
             for j,instance in enumerate(tset["instances"]):
                 if voter != "arbiter":
                     tset["instances"][j]["sparse"] = defaultdict(int)
-                tset["instances"][j]["sparse"][len_features] = featuredict[i][j][featurename]
+                for fn in featurenames:
+                    tset["instances"][j]["sparse"][self.feature_info[fn]] = featuredict[i][j][fn]
 
     def test_model(self):
         for tset in self.test:
