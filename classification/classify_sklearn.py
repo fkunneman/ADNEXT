@@ -66,18 +66,32 @@ def classify(tr,te):
     cl.index_features()
     if args.voting:
         cl.model_necessities()
-        if args.voting[0] != "arbiter":
-            cl.feature_info = {}
         c = args.voting[1:]
+        index_predictions = defaultdict(lambda : defaultdict(lambda : {}))
         if "svm" in c:
             cl.train_svm(params=args.p)
-            cl.append_classification("___svm")
+            predictions = return_classification_features()
+            for i,ts in predictions:
+                for j,p in enumerate(ts):
+                    index_predictions[i][j]["___svm"] = p
         if "nb" in c:
             cl.train_nb()
-            cl.append_classification("___nb")
+            predictions = return_classification_features()
+            for i,ts in predictions:
+                for j,p in enumerate(ts):
+                    index_predictions[i][j]["___nb"] = p
         if "tree" in c:
             cl.train_decisiontree()
-            cl.append_classification("___tree")
+            predictions = return_classification_features()
+            for i,ts in predictions:
+                for j,p in enumerate(ts):
+                    index_predictions[i][j]["___tree"] = p
+        if "ripper" in c:
+            cl.train_ripper()
+            predictions = return_classification_features()
+            for i,ts in predictions:
+                for j,p in enumerate(ts):
+                    index_predictions[i][j]["___ripper"] = p  
         cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
     if args.append:
         cl.append_classifier_labelings()

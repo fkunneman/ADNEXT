@@ -271,15 +271,12 @@ class Classifier():
     def tenfold_train(self,voting,classifiers = [],p = 10):
         kf = cross_validation.KFold(len(self.training), n_folds=10)
         training = deepcopy(self.training)
-        # if voting != arbiter:
-        #     self.feature_info = {}
         for train_index, test_index in kf:
             train = deepcopy([training[x] for x in train_index])
             test = deepcopy([training[y] for y in test_index])
             cl = Classifier(train,test,features = self.features,feature_info = self.feature_info)
             cl.model_necessities()
             if voting != "arbiter":
-                self.feature_info = {}
                 for ti in test_index:
                     self.training[ti]["sparse"] = defaultdict(int)
             if "svm" in classifiers:
@@ -312,13 +309,26 @@ class Classifier():
             for instance in tset["instances"]:
                 instance["sparse"][self.feature_info["___append"]] = instance["append"]                
             
-    def append_classification(self,featurename):
-        len_features = len(self.feature_info.keys())
-        self.feature_info[featurename] = len_features
+    def return_classification_features(self):
+        prediction_features_testset = []
         for tset in self.test:
+            prediction_features = []
             predictions = self.predict(tset["instances"])
             for i,prediction in predictions:
-                tset["instances"][i]["sparse"][self.feature_info[featurename]] = int(float(predictions[i][1].split()[1]))
+                prediction_features.append(int(float(predictions[i][1].split()[1])))
+            prediction_features_testset.append(prediction_features)
+        return prediction_features_testset    
+
+    def add_classification_features(self,featuredict,featurename,voter):
+        if voter != "arbiter":
+            self.feature_info = {}
+        len_features = len(self.feature_info.keys())
+        self.feature_info[featurename] = len_features
+        for i,tset in enumerate(self.test):
+            for j,instance in enumerate(tset["instances"]):
+                if voter != "arbiter":
+                    tset["instances"][j]["sparse"] = defaultdict(int)
+                tset["instances"][j]["sparse"][len_features] = featuredict[i][j][featurename]
 
     def test_model(self):
         for tset in self.test:
