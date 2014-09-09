@@ -74,28 +74,28 @@ def classify(tr,te):
         if "svm" in c:
             cl.train_svm(params=args.p)
             predictions = cl.return_classification_features()
-            for i,ts in predictions:
+            for i,ts in enumerate(predictions):
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___svm"] = p
             featurenames.append("___svm")
         if "nb" in c:
             cl.train_nb()
             predictions = cl.return_classification_features()
-            for i,ts in predictions:
+            for i,ts in enumerate(predictions):
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___nb"] = p
             featurenames.append("___nb")
         if "tree" in c:
             cl.train_decisiontree()
             predictions = cl.return_classification_features()
-            for i,ts in predictions:
+            for i,ts in enumerate(predictions):
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___tree"] = p
             featurenames.append("___tree")
         if "ripper" in c:
             cl.train_ripper()
             predictions = cl.return_classification_features()
-            for i,ts in predictions:
+            for i,ts in enumerate(predictions):
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___ripper"] = p
             featurenames.append("___ripper")
