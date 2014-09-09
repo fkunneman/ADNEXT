@@ -100,11 +100,11 @@ def classify(tr,te):
                     index_predictions[i][j]["___ripper"] = p
             featurenames.append("___ripper")
         cl.add_classification_features(index_predictions,featurenames,args.voting[0])
-        if args.v != "majority":
+        if args.voting != "majority":
             cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
     if args.append:
         cl.append_classifier_labelings()
-    if args.v == "majority":
+    if args.voting == "majority":
         for tset in cl.test:
             outfile = codecs.open(tset["out"],"w","utf-8")
             for instance in tset["instances"]:
