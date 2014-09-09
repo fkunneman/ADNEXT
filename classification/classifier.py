@@ -283,7 +283,7 @@ class Classifier():
         for train_index, test_index in kf:
             train = deepcopy([training[x] for x in train_index])
             test = deepcopy([training[y] for y in test_index])
-            cl = Classifier(train,test,features = feat,feature_info = self.fi)
+            cl = Classifier(train,test,features = feat,feature_info = fi)
             cl.model_necessities()
             if "svm" in classifiers:
                 cl.train_svm(params = p)
