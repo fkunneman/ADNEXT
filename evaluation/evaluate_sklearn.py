@@ -36,7 +36,10 @@ for t in args.t:
             tokens3 = tokens[1].split()
         label = tokens2[0]
         classification = tokens2[1]
-        score = tokens3[1]
+        if len(tokens3) == 2:
+            score = tokens3[1]
+        else:
+            score = tokens3[0]
         instance = [label,classification,score]
         if args.text:
             if len(tokens) == 3:
