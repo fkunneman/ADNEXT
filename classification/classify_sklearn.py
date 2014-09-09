@@ -110,7 +110,7 @@ def classify(tr,te):
             for instance in tset["instances"]:
                 prediction = str(float(max(instance["sparse"])))
                 instanceout = [" ".join([x for x in instance["features"] if not re.search("_",x)]), \
-                instance["label"] + " " + prediction, str(instance["sparse"].count(1))]
+                instance["label"] + " " + prediction, str(instance["sparse"].values().count(1))]
                 outfile.write("\t".join(instance) + "\n") 
             outfile.close()
     else:
