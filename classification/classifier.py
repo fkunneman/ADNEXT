@@ -199,14 +199,14 @@ class Classifier():
 
     def model_necessities(self):
         #generate scipy libsvm input
-        trainlabels_raw = [x["label"] for x in self.training]
-        self.labels = set(trainlabels_raw)
+        self.trainlabels_raw = [x["label"] for x in self.training]
+        self.labels = set(self.trainlabels_raw)
         labeldict = dict(zip(self.labels,range(len(self.labels))))
         self.labeldict_back = dict(zip(range(len(self.labels)),self.labels))
         if self.scaling == "tfidf":
             self.idf = weight_features.return_idf(self.training)
-        trainingvectors = self.vectorize(self.training)
-        self.training_csr = csr_matrix(trainingvectors)
+        self.trainingvectors = self.vectorize(self.training)
+        self.training_csr = csr_matrix(self.trainingvectors)
         self.trainlabels = [labeldict[x["label"]] for x in self.training]
 
     def predict(self,ts):

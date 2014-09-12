@@ -92,13 +92,6 @@ def classify(tr,te):
                 for j,p in enumerate(ts):
                     index_predictions[i][j]["___tree"] = p
             featurenames.append("___tree")
-        if "ripper" in c:
-            cl.train_ripper()
-            predictions = cl.return_classification_features()
-            for i,ts in enumerate(predictions):
-                for j,p in enumerate(ts):
-                    index_predictions[i][j]["___ripper"] = p
-            featurenames.append("___ripper")
         if args.voting[0] != "majority":
             cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
         cl.add_classification_features(index_predictions,featurenames,args.voting[0])
@@ -120,15 +113,32 @@ def classify(tr,te):
             outfile.close()
     else:
         cl.model_necessities()
-        if args.c == "svm":
-            cl.train_svm(params=args.p)
-        elif args.c == "nb":
-            cl.train_nb()
-        elif args.c == "tree":
-            cl.train_decisiontree()
-        elif args.c == "ripper":
-            cl.train_ripper()
-        cl.test_model()
+        if args.c == "ripper":
+            trainfile = open(args.tmp + "train.arrf","w")
+            for i,v in enumerate(cl.training):
+                trainfile.write("{")
+                for x in sorted(v["sparse"].keys()):
+                    trainfile.write(str(x) + " " + str(v["sparse"][x]) + ", ")
+                trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
+            trainfile.close()
+            testfile = open(args.tmp + "test.arrf","w")
+            for tset in cl.test:
+                testfile = open(args.tmp + "test.arrf","w")
+                for i,v in enumerate(tset["instances"]):
+                    testfile.write("{")
+                    for x in sorted(v["sparse"].keys()):
+                        testfile.write(str(x) + " " + str(v["sparse"][x]) + ", ")
+                    testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
+            quit()
+
+        else:
+            if args.c == "svm":
+                cl.train_svm(params=args.p)
+            elif args.c == "nb":
+                cl.train_nb()
+            elif args.c == "tree":
+                cl.train_decisiontree()
+            cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:
