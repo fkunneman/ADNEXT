@@ -309,6 +309,7 @@ class Classifier():
     def append_classifier_labelings(self):
         len_features = len(self.feature_info.keys())
         self.feature_info["___append"] = len_features
+        self.features.append("___append")
         for instance in self.training:
             instance["sparse"][self.feature_info["___append"]] = instance["append"]
         for tset in self.test:

@@ -5,6 +5,9 @@ import codecs
 from collections import defaultdict
 import re
 import os
+import weka.core.jvm as jvm
+from weka.core.converters import Loader
+from weka.classifiers import Classifier
 
 from classifier import Classifier
 import gen_functions
@@ -115,31 +118,45 @@ def classify(tr,te):
     else:
         cl.model_necessities()
         if args.c == "ripper":
-            os.system("mkdir tmp/")
-            trainfile = codecs.open("tmp/train.arrf","w","utf-8")
+            if not os.path.isdir(os.getcwd() + "tmp/")
+                os.system("mkdir tmp/")
+            #generate trainfile
+            tr = os.getcwc() + "tmp/train.arrf"
+            trainfile = codecs.open(tr,"w","utf-8")
             trainfile.write("@RELATION sparse.data\n\n")
             for f in cl.features:
-                trainfile.write("@ATTRIBUTE \"" + f + "\" numeric\n")
+                trainfile.write("@ATTRIBUTE \"" + 
+                    f.replace("\\","\\\\").replace('\"', '\\\"') + "\" numeric\n")
             trainfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
                 for x in sorted(v["sparse"].keys()):
-                    trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
+                    if not v["sparse"][x] == 0:
+                        trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                 trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             trainfile.close()
+            jvm.start(class_path=['/vol/customopt/machine-learning/src/weka/weka-3-6-8/weka.jar'])
+            loader = Loader(classname="weka.core.converters.ArffLoader")
+            cls = Classifier(classname="weka.classifiers.rules.JRip",options=["-P", "false","-E","false","O","5"])
+            data = loader.load_file(tr)
+            data.set_class_index(data.num_attributes() - 1)
+            cls.build_classifier(data)
+             
+            #generate testfile
             for tset in cl.test:
                 testfile = codecs.open("tmp/test.arrf","w","utf-8")
                 testfile.write("@RELATION sparse.data\n\n")
                 for f in cl.features:
-                    testfile.write("@ATTRIBUTE \"" + f + "\" numeric\n")
+                    testfile.write("@ATTRIBUTE \"" + \
+                        f.replace("\\","\\\\").replace('\"', '\\\"') + "\" numeric\n")
                 testfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
                 for i,v in enumerate(tset["instances"]):
                     testfile.write("{")
                     for x in sorted(v["sparse"].keys()):
-                        testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
+                        if not v["sparse"][x] == 0:
+                            testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                     testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
-            quit()
-
+                testdata = loader.load_file("/vol/tensusers/fkunneman/exp/aggressive_tweets/exp1_quest/tmp/test.arrf", incremental=True)
         else:
             if args.c == "svm":
                 cl.train_svm(params=args.p)
