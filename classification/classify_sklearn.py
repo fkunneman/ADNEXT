@@ -4,6 +4,7 @@ import argparse
 import codecs
 from collections import defaultdict
 import re
+import os
 
 from classifier import Classifier
 import gen_functions
@@ -114,16 +115,16 @@ def classify(tr,te):
     else:
         cl.model_necessities()
         if args.c == "ripper":
-            trainfile = open(args.tmp + "train.arrf","w")
+            os.system("mkdir tmp/")
+            trainfile = open("tmp/train.arrf","w")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
                 for x in sorted(v["sparse"].keys()):
                     trainfile.write(str(x) + " " + str(v["sparse"][x]) + ", ")
                 trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             trainfile.close()
-            testfile = open(args.tmp + "test.arrf","w")
             for tset in cl.test:
-                testfile = open(args.tmp + "test.arrf","w")
+                testfile = open("tmp/test.arrf","w")
                 for i,v in enumerate(tset["instances"]):
                     testfile.write("{")
                     for x in sorted(v["sparse"].keys()):

@@ -27,13 +27,16 @@ instances = []
 for t in args.t:
     targets = open(t)
     for line in targets.readlines()[7:]:
+        print line
         tokens = line.strip().split("\t")
-        if len(tokens) == 3:
+        print tokens
+        if len(tokens) >= 3:
             tokens2 = tokens[1].split()
             tokens3 = tokens[2].split()
         else:
             tokens2 = tokens[0].split()
             tokens3 = tokens[1].split()
+        print tokens,tokens2
         label = tokens2[0]
         classification = tokens2[1]
         if len(tokens3) == 2:
