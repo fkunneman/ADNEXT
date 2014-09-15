@@ -159,7 +159,7 @@ def classify(tr,te):
                     for i,pr in enumerate(predictions):
                         outfile.write("\t".join([" ".join([x for x in instances[i]["features"] if not re.search("_",x)]), 
                         instances[i]["label"] + " " + str(predictions[i][0]), 
-                        " ".join([str(round(x,2)) for x in list(predictions[i][1])])]) + "\n")
+                        predictions[i][1]]) + "\n")
                     outfile.close()
                 else:
                     print "number of ripper predictions and instances do not align, exiting program"
