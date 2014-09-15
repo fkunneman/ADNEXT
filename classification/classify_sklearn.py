@@ -118,9 +118,10 @@ def classify(tr,te):
             os.system("mkdir tmp/")
             trainfile = open("tmp/train.arrf","w")
             trainfile.write("@RELATION classifier\n\n")
-            for i in range(len(feature_info.keys())):
-                trainfile.write("$ATTRIBUTE " + str(i) + "\tBINARY\n")
-            trainfile.write("@ATTRIBUTE class\t{1.0,0.0}\n\n@DATA\n")
+#            for i in range(len(cl.feature_info.keys())):
+#                trainfile.write("$ATTRIBUTE " + str(i) + "\tBINARY\n")
+#            trainfile.write("@ATTRIBUTE class\t{1.0,0.0}\n\n@DATA\n")
+            trainfile.write("@DATA\n")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
                 for x in sorted(v["sparse"].keys()):
