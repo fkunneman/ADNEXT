@@ -115,10 +115,14 @@ def classify(tr,te):
         cl.model_necessities()
         if args.c == "ripper":
             trainfile = open(args.tmp + "train.arrf","w")
+            trainfile.write("@RELATION classifier\n\n")
+            for i in range(len(feature_info.keys())):
+                trainfile.write("$ATTRIBUTE " + str(i) + "\tBINARY\n")
+            trainfile.write("@ATTRIBUTE class\t{1.0,0.0}\n\n@DATA\n")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
                 for x in sorted(v["sparse"].keys()):
-                    trainfile.write(str(x) + " " + str(v["sparse"][x]) + ", ")
+                    trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                 trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             trainfile.close()
             testfile = open(args.tmp + "test.arrf","w")
