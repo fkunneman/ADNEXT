@@ -116,10 +116,10 @@ def classify(tr,te):
     else:
         cl.model_necessities()
         if args.c == "ripper":
-            if not os.path.isdir(os.getcwd() + "tmp/")
+            if not os.path.isdir(os.getcwd() + "/tmp/"):
                 os.system("mkdir tmp/")
             #generate trainfile
-            tr = os.getcwc() + "tmp/train.arrf"
+            tr = os.getcwd() + "/tmp/train.arrf"
             trainfile = codecs.open(tr,"w","utf-8")
             trainfile.write("@RELATION sparse.data\n\n")
             for f in cl.features:
@@ -133,13 +133,14 @@ def classify(tr,te):
                         trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                 trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             trainfile.close()
+            print "training ripper classifier"
             wcl = weka_classifier.Classifier()
             model = wcl.train("ripper",tr)            
             #generate testfile
             for tset in cl.test:
                 outfile = codecs.open(tset["out"],"w","utf-8")
                 outfile.write(model)
-                tr = os.getcwc() + "tmp/test.arrf"
+                te = os.getcwd() + "/tmp/test.arrf"
                 testfile = codecs.open(te,"w","utf-8")
                 testfile.write("@RELATION sparse.data\n\n")
                 for f in cl.features:
@@ -153,6 +154,7 @@ def classify(tr,te):
                             testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                     testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
                 testfile.close()
+                print "done. testing"
                 predictions = wcl.test(te)
                 instances = tset["instances"]
                 if len(predictions) == len(instances):
@@ -163,7 +165,6 @@ def classify(tr,te):
                     outfile.close()
                 else:
                     print "number of ripper predictions and instances do not align, exiting program"
-                    quit()
             wcl.stop() 
 
         else:
