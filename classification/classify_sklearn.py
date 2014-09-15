@@ -117,11 +117,10 @@ def classify(tr,te):
         if args.c == "ripper":
             os.system("mkdir tmp/")
             trainfile = open("tmp/train.arrf","w")
-            trainfile.write("@RELATION classifier\n\n")
-#            for i in range(len(cl.feature_info.keys())):
-#                trainfile.write("$ATTRIBUTE " + str(i) + "\tBINARY\n")
-#            trainfile.write("@ATTRIBUTE class\t{1.0,0.0}\n\n@DATA\n")
-            trainfile.write("@DATA\n")
+            trainfile.write("@RELATION sparse.data\n\n")
+            for f in cl.features:
+                trainfile.write("@ATTRIBUTE " + f + " numeric\n")
+            trainfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
                 for x in sorted(v["sparse"].keys()):
@@ -130,10 +129,14 @@ def classify(tr,te):
             trainfile.close()
             for tset in cl.test:
                 testfile = open("tmp/test.arrf","w")
+                testfile.write("@RELATION sparse.data\n\n")
+                for f in cl.features:
+                    testfile.write("@ATTRIBUTE " + f + " numeric\n")
+                testfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
                 for i,v in enumerate(tset["instances"]):
                     testfile.write("{")
                     for x in sorted(v["sparse"].keys()):
-                        testfile.write(str(x) + " " + str(v["sparse"][x]) + ", ")
+                        testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                     testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             quit()
 
