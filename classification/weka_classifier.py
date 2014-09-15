@@ -25,7 +25,7 @@ class Classifier():
             inst = self.loader.next_instance(testdata)
             if inst is None:
                 break
-            predictions.append([self.cls.predict_instance(inst)," ".join(list(self.cls.distribution_for_instance(inst)))])
+            predictions.append([self.cls.classify_instance(inst)," ".join(list(self.cls.distribution_for_instance(inst)))])
         return predictions
 
     def stop(self):
