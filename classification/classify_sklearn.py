@@ -5,11 +5,9 @@ import codecs
 from collections import defaultdict
 import re
 import os
-import weka.core.jvm as jvm
-from weka.core.converters import Loader
-from weka.classifiers import Classifier
 
 from classifier import Classifier
+import weka_classifier
 import gen_functions
 
 """
@@ -135,16 +133,14 @@ def classify(tr,te):
                         trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                 trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             trainfile.close()
-            jvm.start(class_path=['/vol/customopt/machine-learning/src/weka/weka-3-6-8/weka.jar'])
-            loader = Loader(classname="weka.core.converters.ArffLoader")
-            cls = Classifier(classname="weka.classifiers.rules.JRip",options=["-P", "false","-E","false","O","5"])
-            data = loader.load_file(tr)
-            data.set_class_index(data.num_attributes() - 1)
-            cls.build_classifier(data)
-             
+            wcl = weka_classifier.Classifier()
+            model = wcl.train("ripper",tr)            
             #generate testfile
             for tset in cl.test:
-                testfile = codecs.open("tmp/test.arrf","w","utf-8")
+                outfile = codecs.open(tset["out"],"w","utf-8")
+                outfile.write(model)
+                tr = os.getcwc() + "tmp/test.arrf"
+                testfile = codecs.open(te,"w","utf-8")
                 testfile.write("@RELATION sparse.data\n\n")
                 for f in cl.features:
                     testfile.write("@ATTRIBUTE \"" + \
@@ -156,7 +152,20 @@ def classify(tr,te):
                         if not v["sparse"][x] == 0:
                             testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
                     testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
-                testdata = loader.load_file("/vol/tensusers/fkunneman/exp/aggressive_tweets/exp1_quest/tmp/test.arrf", incremental=True)
+                testfile.close()
+                predictions = wcl.test(te)
+                instances = tset["instances"]
+                if len(predictions) == len(instances):
+                    for pr,i in enumerate(predictions):
+                        outfile.write("\t".join([" ".join([x for x in instances[i]["features"] if not re.search("_",x)]), 
+                        instances[i]["label"] + " " + str(predictions[i][0]), 
+                        " ".join([str(round(x,2)) for x in list(predictions[i][1])])]) + "\n")
+                    outfile.close()
+                else:
+                    print "number of ripper predictions and instances do not align, exiting program"
+                    quit()
+            wcl.stop() 
+
         else:
             if args.c == "svm":
                 cl.train_svm(params=args.p)
