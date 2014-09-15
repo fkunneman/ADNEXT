@@ -119,7 +119,7 @@ def classify(tr,te):
             trainfile = open("tmp/train.arrf","w")
             trainfile.write("@RELATION sparse.data\n\n")
             for f in cl.features:
-                trainfile.write("@ATTRIBUTE " + f + " numeric\n")
+                trainfile.write("@ATTRIBUTE " + f.replace("\"","\\\"") + " numeric\n")
             trainfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
