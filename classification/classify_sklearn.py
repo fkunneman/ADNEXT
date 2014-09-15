@@ -156,7 +156,7 @@ def classify(tr,te):
                 predictions = wcl.test(te)
                 instances = tset["instances"]
                 if len(predictions) == len(instances):
-                    for pr,i in enumerate(predictions):
+                    for i,pr in enumerate(predictions):
                         outfile.write("\t".join([" ".join([x for x in instances[i]["features"] if not re.search("_",x)]), 
                         instances[i]["label"] + " " + str(predictions[i][0]), 
                         " ".join([str(round(x,2)) for x in list(predictions[i][1])])]) + "\n")
