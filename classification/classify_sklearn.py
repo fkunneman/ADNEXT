@@ -41,8 +41,6 @@ parser.add_argument('--append', action = 'store', required=False,
 
 args = parser.parse_args() 
 
-expdir = "/".join(args.i.split("/")[:-1]) + "/"
-
 def make_instances(lines,appendlines=False):
     instances = []
     for i,line in enumerate(lines):
@@ -119,7 +117,7 @@ def classify(tr,te):
             if not os.path.isdir(os.getcwd() + "/tmp/"):
                 os.system("mkdir tmp/")
             #generate trainfile
-            tr = os.getcwd() + "/tmp/train.arrf"
+            tr = os.getcwd() + "/train.arrf"
             trainfile = codecs.open(tr,"w","utf-8")
             trainfile.write("@RELATION sparse.data\n\n")
             for f in cl.features:
@@ -140,7 +138,7 @@ def classify(tr,te):
             for tset in cl.test:
                 outfile = codecs.open(tset["out"],"w","utf-8")
                 outfile.write(model)
-                te = os.getcwd() + "/tmp/test.arrf"
+                te = os.getcwd() + "/test.arrf"
                 testfile = codecs.open(te,"w","utf-8")
                 testfile.write("@RELATION sparse.data\n\n")
                 for f in cl.features:
@@ -165,6 +163,8 @@ def classify(tr,te):
                     outfile.close()
                 else:
                     print "number of ripper predictions and instances do not align, exiting program"
+                os.system("mv " + te + " " + args.o)
+            os.system("mv " + tr + " " + args.o)
             wcl.stop() 
 
         else:

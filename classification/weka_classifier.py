@@ -20,12 +20,12 @@ class Classifier():
     def test(self,testfile):
         predictions = []
         testdata = self.loader.load_file(testfile, incremental=True)
-        testdata.set_class_index(data.num_attributes() - 1)
+        testdata.set_class_index(testdata.num_attributes() - 1)
         while True:
             inst = self.loader.next_instance(testdata)
             if inst is None:
                 break
-            predictions.append([self.cls.predict_instance(inst)," ".join(self.cls.distribution_for_instance(inst))])
+            predictions.append([self.cls.predict_instance(inst)," ".join(list(self.cls.distribution_for_instance(inst)))])
         return predictions
 
     def stop(self):
