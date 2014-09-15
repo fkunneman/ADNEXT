@@ -116,10 +116,10 @@ def classify(tr,te):
         cl.model_necessities()
         if args.c == "ripper":
             os.system("mkdir tmp/")
-            trainfile = open("tmp/train.arrf","w")
+            trainfile = codecs.open("tmp/train.arrf","w","utf-8")
             trainfile.write("@RELATION sparse.data\n\n")
             for f in cl.features:
-                trainfile.write("@ATTRIBUTE " + f + " numeric\n")
+                trainfile.write("@ATTRIBUTE \"" + f + "\" numeric\n")
             trainfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
             for i,v in enumerate(cl.training):
                 trainfile.write("{")
@@ -128,10 +128,10 @@ def classify(tr,te):
                 trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
             trainfile.close()
             for tset in cl.test:
-                testfile = open("tmp/test.arrf","w")
+                testfile = codecs.open("tmp/test.arrf","w","utf-8")
                 testfile.write("@RELATION sparse.data\n\n")
                 for f in cl.features:
-                    testfile.write("@ATTRIBUTE " + f + " numeric\n")
+                    testfile.write("@ATTRIBUTE \"" + f + "\" numeric\n")
                 testfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
                 for i,v in enumerate(tset["instances"]):
                     testfile.write("{")
