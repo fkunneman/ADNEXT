@@ -156,5 +156,7 @@ else:
         traininstances = []
         for tr_fold in tr_folds:
             traininstances.extend(tr_fold)
-        testinstances = [{"out" : args.o + "fold_" + str(j) + "/", "instances" : fold}]
+        outdir = args.o + "fold_" + str(j) + "/"
+        os.mkdir(outdir)
+        testinstances = [{"out" : outdir, "instances" : fold}]
         classify(traininstances,testinstances)
