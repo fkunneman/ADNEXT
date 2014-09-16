@@ -38,31 +38,34 @@ class Classifier():
 
     def count_feature_frequency(self):
         
-        def ff(instances,queue):
+        def ff(instances):
             feature_frequency = defaultdict(int)
             for i,instance in enumerate(instances):
                 for feature in instance["features"]:
                     feature_frequency[feature] += 1
-            queue.put(feature_frequency)
-        
-        print len(self.training)
-        q = multiprocessing.Queue()
-        chunks = gen_functions.make_chunks(self.training,self.jobs)
-        for chunk in chunks:
-            p = multiprocessing.Process(target=ff,args=[chunk,q])
-            p.start()
+            #queue.put(feature_frequency)
+            return feature_frequency
 
-        ds = []
-        while True:
-            l = q.get()
-            ds.append(l)
-            if len(ds) == len(chunks):
-                break
+        print len(self.training)
+        #q = multiprocessing.Queue()
+        #chunks = gen_functions.make_chunks(self.training,self.jobs)
+        #for chunk in chunks:
+        #    p = multiprocessing.Process(target=ff,args=[chunk,q])
+        #    p.start()
+
+        # ds = []
+        # while True:
+        #     l = q.get()
+        #     ds.append(l)
+        #     if len(ds) == len(chunks):
+        #         break
         
-        self.feature_frequency = defaultdict(int)
-        for d in ds:
-            for k in d:
-                self.feature_frequency[k] += d[k]
+        # self.feature_frequency = defaultdict(int)
+        # for d in ds:
+        #     for k in d:
+        #         self.feature_frequency[k] += d[k]
+
+        self.feature_frequency = ff(self.training)
         self.features = sorted(self.feature_frequency, key=self.feature_frequency.get, 
             reverse=True)
 
