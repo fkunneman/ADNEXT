@@ -38,34 +38,31 @@ class Classifier():
 
     def count_feature_frequency(self):
         
-        def ff(instances):
+        def ff(instances,queue):
             feature_frequency = defaultdict(int)
             for i,instance in enumerate(instances):
                 for feature in instance["features"]:
                     feature_frequency[feature] += 1
-            #queue.put(feature_frequency)
-            return feature_frequency
-
-        print len(self.training)
-        #q = multiprocessing.Queue()
-        #chunks = gen_functions.make_chunks(self.training,self.jobs)
-        #for chunk in chunks:
-        #    p = multiprocessing.Process(target=ff,args=[chunk,q])
-        #    p.start()
-
-        # ds = []
-        # while True:
-        #     l = q.get()
-        #     ds.append(l)
-        #     if len(ds) == len(chunks):
-        #         break
+            queue.put(feature_frequency)
         
-        # self.feature_frequency = defaultdict(int)
-        # for d in ds:
-        #     for k in d:
-        #         self.feature_frequency[k] += d[k]
+        print len(self.training)
+        q = multiprocessing.Queue()
+        chunks = gen_functions.make_chunks(self.training,self.jobs)
+        for chunk in chunks:
+            p = multiprocessing.Process(target=ff,args=[chunk,q])
+            p.start()
 
-        self.feature_frequency = ff(self.training)
+        ds = []
+        while True:
+            l = q.get()
+            ds.append(l)
+            if len(ds) == len(chunks):
+                break
+        
+        self.feature_frequency = defaultdict(int)
+        for d in ds:
+            for k in d:
+                self.feature_frequency[k] += d[k]
         self.features = sorted(self.feature_frequency, key=self.feature_frequency.get, 
             reverse=True)
 
@@ -197,8 +194,6 @@ class Classifier():
                     featurev[feature] = math.log(instance["sparse"][feature],10)
                 elif self.scaling == "tfidf":
                     featurev[feature] = instance["sparse"][feature] * self.idf[feature]
-            if self.scaling == "tfidf":
-                print featurev[:1000]
             matrix.append(featurev)
         return matrix
 
@@ -278,13 +273,17 @@ class Classifier():
         training = deepcopy(self.training)
         feat = deepcopy(self.features)
         fi = deepcopy(self.feature_info)
-        if voting != "arbiter":
+        if voting == "weighted":
             self.feature_info = {}
+            self.features = []
             for instance in self.training:
                 instance["sparse"] = defaultdict(int)
-        len_features = len(self.feature_info.keys())
+                instance["features"] = []
+        len_features = len(self.features)
         for i,fn in enumerate(classifiers):
-            self.feature_info["___" + fn] = len_features + i
+            featurename = "___" + fn
+            self.feature_info[featurename] = len_features + i
+            self.features.append(featurename)
         for train_index, test_index in kf:
             train = deepcopy([training[x] for x in train_index])
             test = deepcopy([training[y] for y in test_index])
@@ -294,32 +293,26 @@ class Classifier():
                 cl.train_svm(params = p)
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["___svm"]] = int(float(predictions[i][1].split()[1]))
+                    prediction = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___svm"]] = prediction
+                    if prediction == 1:
+                        self.training[j]["features"].append("___svm")
             if "nb" in classifiers:
                 cl.train_nb()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["___nb"]] = int(float(predictions[i][1].split()[1]))
+                    prediction = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___nb"]] = prediction
+                    if prediction == 1:
+                        self.training[j]["features"].append("___nb")
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
                 for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["___dt"]] = int(float(predictions[i][1].split()[1]))
-            if "ripper" in classifiers:
-                cl.train_ripper()
-                predictions = cl.predict(test)
-                for i,j in enumerate(test_index):
-                    self.training[j]["sparse"][self.feature_info["___ripper"]] = int(float(predictions[i][1].split()[1]))
-
-    def append_classifier_labelings(self):
-        len_features = len(self.feature_info.keys())
-        self.feature_info["___append"] = len_features
-        self.features.append("___append")
-        for instance in self.training:
-            instance["sparse"][self.feature_info["___append"]] = instance["append"]
-        for tset in self.test:
-            for instance in tset["instances"]:
-                instance["sparse"][self.feature_info["___append"]] = instance["append"]                
+                    prediction = int(float(predictions[i][1].split()[1]))
+                    self.training[j]["sparse"][self.feature_info["___dt"]] = prediction
+                    if prediction == 1:
+                        self.training[j]["features"].append("___dt")               
             
     def return_classification_features(self):
         prediction_features_testset = []
@@ -332,24 +325,60 @@ class Classifier():
         return prediction_features_testset    
 
     def add_classification_features(self,featuredict,featurenames,voter):
-        for feature in featurenames:
-            self.features.append(feature)
         if voter == "majority":
             self.feature_info = {}
             len_features = len(self.feature_info.keys())
             for i,fn in enumerate(featurenames):
                 self.feature_info[fn] = len_features + i
+                self.features.append(fn)
         for i,tset in enumerate(self.test):
             for j,instance in enumerate(tset["instances"]):
                 if voter != "arbiter":
                     tset["instances"][j]["sparse"] = defaultdict(int)
+                    tset["instances"][j]["features"] = []
                 for fn in featurenames:
                     tset["instances"][j]["sparse"][self.feature_info[fn]] = featuredict[i][j][fn]
+                    tset["instances"][j]["features"].append(fn)
+
+    def append_classifier_labelings(self):
+        len_features = len(self.feature_info.keys())
+        self.feature_info["___append"] = len_features
+        self.features.append("___append")
+        for instance in self.training:
+            instance["sparse"][self.feature_info["___append"]] = instance["append"]
+            if instance["append"] == 1:
+                instance["features"].append("___append")
+        for tset in self.test:
+            for instance in tset["instances"]:
+                instance["sparse"][self.feature_info["___append"]] = instance["append"]
+                if instance["append"] == 1:
+                    instance["features"].append("___append")
+
+    def output_data(self):
+        outdir = self.test[0]["out"]
+        #output features
+        featureout = codecs.open(outdir + "features.txt","w","utf-8")
+        for feature in sorted(feature_info, key=feature_info.get):
+            featureout.write(feature + "\t" + str(feature_info[feature]) + "\n")
+        featureout.close()
+        #output trainfile
+        trainout = codecs.open(outdir + "train.txt","w","utf-8")
+        for instance in self.training:
+            trainout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
+                ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
+        trainout.close()
+        #output testfile
+        testout = codecs.open(outdir + "test.txt","w","utf-8")
+        for i,tset in enumerate(self.test):
+            testout = codecs.open(outdir + "test" + str(i) + ".txt","w","utf-8")
+            for instance in tset["instances"]:
+                testout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
+                    ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
 
     def test_model(self):
         for tset in self.test:
             testresults = self.predict(tset["instances"])
-            outfile = codecs.open(tset["out"],"w","utf-8")
+            outfile = codecs.open(tset["out"] + "predictions.txt","w","utf-8")
             if self.outstring:
                 outfile.write(self.outstring)
             for instance in testresults:
