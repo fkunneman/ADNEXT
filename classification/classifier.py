@@ -197,6 +197,8 @@ class Classifier():
                     featurev[feature] = math.log(instance["sparse"][feature],10)
                 elif self.scaling == "tfidf":
                     featurev[feature] = instance["sparse"][feature] * self.idf[feature]
+            if self.scaling == "tfidf":
+                print featurev[:1000]
             matrix.append(featurev)
         return matrix
 
