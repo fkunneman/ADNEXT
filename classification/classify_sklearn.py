@@ -95,86 +95,84 @@ def classify(tr,te):
         if args.voting[0] != "majority":
             cl.tenfold_train(args.voting[0],classifiers = c,p = args.p)
         cl.add_classification_features(index_predictions,featurenames,args.voting[0])
-    if args.append:
-        cl.append_classifier_labelings()
-    if args.voting[0] == "majority":
-        for tset in cl.test:
-            outfile = codecs.open(tset["out"],"w","utf-8")
-            for instance in tset["instances"]:
-                if instance["sparse"].values().count(1) >= 2:
-                    prediction = "1.0"
-                else:
-                    prediction = "0.0"
-                instanceout = [" ".join([x for x in instance["features"] if not re.search("_",x)]), \
-                    instance["label"] + " " + prediction, " ".join([str(instance["sparse"][x]) for \
-                    x in sorted(instance["sparse"].keys())]), \
-                    str(instance["sparse"].values().count(1))]
-                outfile.write("\t".join(instanceout) + "\n") 
-            outfile.close()
-    else:
-        cl.model_necessities()
-        if args.c == "ripper":
-            if not os.path.isdir(os.getcwd() + "/tmp/"):
-                os.system("mkdir tmp/")
-            #generate trainfile
-            tr = os.getcwd() + "/train.arrf"
-            trainfile = codecs.open(tr,"w","utf-8")
-            trainfile.write("@RELATION sparse.data\n\n")
-            for f in cl.features:
-                trainfile.write("@ATTRIBUTE \"" + 
-                    f.replace("\\","\\\\").replace('\"', '\\\"') + "\" numeric\n")
-            trainfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
-            for i,v in enumerate(cl.training):
-                trainfile.write("{")
-                for x in sorted(v["sparse"].keys()):
-                    if not v["sparse"][x] == 0:
-                        trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
-                trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
-            trainfile.close()
-            print "training ripper classifier"
-            wcl = weka_classifier.Classifier()
-            model = wcl.train("ripper",tr)            
-            #generate testfile
+        if args.append:
+            cl.append_classifier_labelings()
+        if args.voting[0] == "majority":
             for tset in cl.test:
                 outfile = codecs.open(tset["out"],"w","utf-8")
-                outfile.write(model)
-                te = os.getcwd() + "/test.arrf"
-                testfile = codecs.open(te,"w","utf-8")
-                testfile.write("@RELATION sparse.data\n\n")
-                for f in cl.features:
-                    testfile.write("@ATTRIBUTE \"" + \
-                        f.replace("\\","\\\\").replace('\"', '\\\"') + "\" numeric\n")
-                testfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
-                for i,v in enumerate(tset["instances"]):
-                    testfile.write("{")
-                    for x in sorted(v["sparse"].keys()):
-                        if not v["sparse"][x] == 0:
-                            testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
-                    testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
-                testfile.close()
-                print "done. testing"
-                predictions = wcl.test(te)
-                instances = tset["instances"]
-                if len(predictions) == len(instances):
-                    for i,pr in enumerate(predictions):
-                        outfile.write("\t".join([" ".join([x for x in instances[i]["features"] if not re.search("_",x)]), 
-                        instances[i]["label"] + " " + str(predictions[i][0]), 
-                        predictions[i][1]]) + "\n")
-                    outfile.close()
-                else:
-                    print "number of ripper predictions and instances do not align, exiting program"
-                os.system("mv " + te + " " + args.o)
-            os.system("mv " + tr + " " + args.o)
-            wcl.stop() 
-
-        else:
-            if args.c == "svm":
-                cl.train_svm(params=args.p)
-            elif args.c == "nb":
-                cl.train_nb()
-            elif args.c == "tree":
-                cl.train_decisiontree()
-            cl.test_model()
+                for instance in tset["instances"]:
+                    if instance["sparse"].values().count(1) >= 2:
+                        prediction = "1.0"
+                    else:
+                        prediction = "0.0"
+                    instanceout = [" ".join([x for x in instance["features"] if not re.search("_",x)]), \
+                        instance["label"] + " " + prediction, " ".join([str(instance["sparse"][x]) for \
+                        x in sorted(instance["sparse"].keys())]), \
+                        str(instance["sparse"].values().count(1))]
+                    outfile.write("\t".join(instanceout) + "\n") 
+                outfile.close()
+    cl.model_necessities()
+    if args.c == "ripper":
+        if not os.path.isdir(os.getcwd() + "/tmp/"):
+            os.system("mkdir tmp/")
+        #generate trainfile
+        tr = os.getcwd() + "/train.arrf"
+        trainfile = codecs.open(tr,"w","utf-8")
+        trainfile.write("@RELATION sparse.data\n\n")
+        for f in cl.features:
+            trainfile.write("@ATTRIBUTE \"" + 
+                f.replace("\\","\\\\").replace('\"', '\\\"') + "\" numeric\n")
+        trainfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
+        for i,v in enumerate(cl.training):
+            trainfile.write("{")
+            for x in sorted(v["sparse"].keys()):
+                if not v["sparse"][x] == 0:
+                    trainfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
+            trainfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
+        trainfile.close()
+        print "training ripper classifier"
+        wcl = weka_classifier.Classifier()
+        model = wcl.train("ripper",tr)            
+        #generate testfile
+        for tset in cl.test:
+            outfile = codecs.open(tset["out"],"w","utf-8")
+            outfile.write(model)
+            te = os.getcwd() + "/test.arrf"
+            testfile = codecs.open(te,"w","utf-8")
+            testfile.write("@RELATION sparse.data\n\n")
+            for f in cl.features:
+                testfile.write("@ATTRIBUTE \"" + \
+                    f.replace("\\","\\\\").replace('\"', '\\\"') + "\" numeric\n")
+            testfile.write("\n@ATTRIBUTE class {1.0, 0.0}\n\n@DATA\n")
+            for i,v in enumerate(tset["instances"]):
+                testfile.write("{")
+                for x in sorted(v["sparse"].keys()):
+                    if not v["sparse"][x] == 0:
+                        testfile.write(str(x) + " " + str(v["sparse"][x]) + ",")
+                testfile.write(str(len(cl.feature_info.keys())) + " \"" + str(cl.trainlabels_raw[i]) + "\"}\n")
+            testfile.close()
+            print "done. testing"
+            predictions = wcl.test(te)
+            instances = tset["instances"]
+            if len(predictions) == len(instances):
+                for i,pr in enumerate(predictions):
+                    outfile.write("\t".join([" ".join([x for x in instances[i]["features"] if not re.search("_",x)]), 
+                    instances[i]["label"] + " " + str(predictions[i][0]), 
+                    predictions[i][1]]) + "\n")
+                outfile.close()
+            else:
+                print "number of ripper predictions and instances do not align, exiting program"
+            os.system("mv " + te + " " + args.o)
+        os.system("mv " + tr + " " + args.o)
+        wcl.stop() 
+    else:
+        if args.c == "svm":
+            cl.train_svm(params=args.p)
+        elif args.c == "nb":
+            cl.train_nb()
+        elif args.c == "tree":
+            cl.train_decisiontree()
+        cl.test_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:
