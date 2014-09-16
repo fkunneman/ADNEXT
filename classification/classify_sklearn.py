@@ -115,7 +115,7 @@ def classify(tr,te):
                     outfile.write("\t".join(instanceout) + "\n") 
                 outfile.close()
             return
-    cl.output_data(args.o)
+    cl.output_data()
     if args.c:
         cl.model_necessities()
         if args.c == "svm":
