@@ -7,7 +7,6 @@ import re
 import os
 
 from classifier import Classifier
-import weka_classifier
 import gen_functions
 
 """
@@ -19,7 +18,7 @@ parser.add_argument('-i', action = 'store', required = True,
     help = "file with either all instances or testinstances")
 parser.add_argument('-t', action = 'store', required = False, 
     help = "file with test data (no testfile means ten-fold cross-validation is performed)")
-parser.add_argument('-c', action = 'store', required = False, choices = ["svm","nb","tree","out"],
+parser.add_argument('-c', action = 'store', required = False, choices = ["svm","nb","tree"],
     help = "choose the classifier")
 parser.add_argument('-f', action = 'store', type=int,default=10000, 
     help = "prune features by taking the top f frequent features from the training data (default = 10000)")
