@@ -327,6 +327,8 @@ class Classifier():
         return prediction_features_testset    
 
     def add_classification_features(self,featuredict,featurenames,voter):
+        for feature in featurenames:
+            self.features.append(feature)
         if voter == "majority":
             self.feature_info = {}
             len_features = len(self.feature_info.keys())
