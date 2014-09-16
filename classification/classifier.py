@@ -358,8 +358,8 @@ class Classifier():
         outdir = self.test[0]["out"]
         #output features
         featureout = codecs.open(outdir + "features.txt","w","utf-8")
-        for feature in sorted(feature_info, key=feature_info.get):
-            featureout.write(feature + "\t" + str(feature_info[feature]) + "\n")
+        for feature in sorted(self.feature_info, key=self.feature_info.get):
+            featureout.write(feature + "\t" + str(self.feature_info[feature]) + "\n")
         featureout.close()
         #output trainfile
         trainout = codecs.open(outdir + "train.txt","w","utf-8")
