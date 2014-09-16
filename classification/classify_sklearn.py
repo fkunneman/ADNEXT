@@ -115,7 +115,7 @@ def classify(tr,te):
                         str(instance["sparse"].values().count(1))]
                     outfile.write("\t".join(instanceout) + "\n") 
                 outfile.close()
-            break
+            return
     cl.output_data(args.o)
     if args.c:
         cl.model_necessities()
