@@ -117,4 +117,5 @@ testfile.close()
 quit()
 
 #perform classification
-#os.system("ripper ")
+os.system("ripper -a +freq -v 3 -O 5 -! s -L 0.5 -F 1 rip")
+os.system("mv rip* " + args.o)
