@@ -21,7 +21,7 @@ parser.add_argument('-o', action = 'store', required=True,
 args = parser.parse_args() 
 
 #generate ripper-formatted train and testfiles, and a vocabulary
-convert = {".":"punctuation_dot",",":"punctuation_komma",":":"punctuation_colon",";":"punctuation_semicolon"}
+convert = {".":"punctuation_dot",":":"punctuation_colon",";":"punctuation_semicolon"}
 convertables = convert.keys()
 c = ["___svm","___nb","___append"]
 trainfile = codecs.open("rip.data","w","utf-8")
@@ -77,7 +77,7 @@ testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
     tokens = line.strip().split()
     label = tokens[0]
-    features = tokens[1].split(",")
+    features = tokens[1].replace(",,,",",punctuation_comma,").split(",")
     bow = [x for x in features if not x in c]
     cs = [x for x in features if x in c]
     if len(bow) > 0:
