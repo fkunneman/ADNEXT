@@ -59,7 +59,7 @@ else:
     classi = False
 for instance in instances:
     if instance["bow"]:
-        trainfile.write(" ".join(bow) + ",")
+        trainfile.write(" ".join(instance["bow"]) + ",")
     if classi:
         for x in classifiers:
             if x in instance["classifiers"]:
