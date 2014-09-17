@@ -35,7 +35,7 @@ for line in infile.readlines():
     instance = {}
     tokens = line.strip().split()
     if len(tokens) > 1:
-        label = tokens[0].replace("1\.0","pos").replace("0\.0","neg")
+        label = tokens[0].replace("1.0","pos").replace("0.0","neg")
         classes.append(label)
         instance["label"] = label
         features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
@@ -78,7 +78,7 @@ for instance in instances:
                 trainfile.write("1,")
             else:
                 trainfile.write("0,")
-    trainfile.write(label + ".\n")
+    trainfile.write(instance["label"] + ".\n")
 infile.close()
 trainfile.close()
 vocabulary.write(",".join(list(set(classes))) + ".\n" + "\n".join(["\t".join([x[0] + ":",",".join(x[1])]) + "." for x in attributes]))
@@ -86,7 +86,7 @@ vocabulary.close()
 testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
     tokens = line.strip().split()
-    label = tokens[0].replace("1\.0","pos").replace("0\.0","neg")
+    label = tokens[0].replace("1.0","pos").replace("0.0","neg")
     features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
     bow = [x for x in features if not x in c]
     cs = [x for x in features if x in c]
