@@ -70,7 +70,7 @@ if len(classifiers) > 0:
 else:
     classi = False
 for instance in instances:
-    if instance["bow"]:
+    if "bow" in instance:
         trainfile.write(" ".join(instance["bow"]) + ",")
     if classi:
         for x in classifiers:
