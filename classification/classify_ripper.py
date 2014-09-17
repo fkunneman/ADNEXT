@@ -21,7 +21,7 @@ parser.add_argument('-o', action = 'store', required=True,
 args = parser.parse_args() 
 
 #generate ripper-formatted train and testfiles, and a vocabulary
-convert = {".":"punctuation_dot",":":"punctuation_colon",";":"punctuation_semicolon"}
+convert = {".":"punctuation_dot",":":"punctuation_colon",";":"punctuation_semicolon","?":"punctuation_qm"}
 convertables = convert.keys()
 c = ["___svm","___nb","___append"]
 trainfile = codecs.open("rip.data","w","utf-8")
@@ -47,6 +47,14 @@ for line in infile.readlines():
             for i,word in enumerate(bow):
                 if word in convertables:
                     word = convert[word]
+                if re.search(r"\.",word):
+                    word = word.replace(".","punctuation_dot")
+                if re.search(r"\?",word):
+                    word = word.replace(",","punctuation_qm")
+                if re.search(r"\:",word):
+                    word = word.replace(",","punctuation_colon")
+                if re.search(r"\;",word):
+                    word = word.replace(",","punctuation_semicolon")
                 bow[i] = "\'" + word + "\'"
             instance["bow"] = bow
         for classifier in cs:
@@ -84,6 +92,14 @@ for line in testdata.readlines():
         for i,word in enumerate(bow):
             if word in convertables:
                 words = convert[word]
+            if re.search(r"\.",word):
+                word = word.replace(".","punctuation_dot")
+            if re.search(r"\?",word):
+                word = word.replace(",","punctuation_qm")
+            if re.search(r"\:",word):
+                word = word.replace(",","punctuation_colon")
+            if re.search(r"\;",word):
+                word = word.replace(",","punctuation_semicolon")
             bow[i] = "\'" + word + "\'"
         testfile.write(" ".join(bow) + ",")
     if classi:
