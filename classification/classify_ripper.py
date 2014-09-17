@@ -70,18 +70,17 @@ if len(classifiers) > 0:
 else:
     classi = False
 for instance in instances:
-    if "bow" in instance:
-        trainfile.write(" ".join(instance["bow"]) + ",")
+    if not "bow" instance and "WORDS" in attributes:
+        continue
     else:
-        if "WORDS" in attributes:
-            continue
-    if classi:
-        for x in classifiers:
-            if x in instance["classifiers"]:
-                trainfile.write("p,")
-            else:
-                trainfile.write("n,")
-    trainfile.write(instance["label"] + ".\n")
+        trainfile.write(" ".join(instance["bow"]) + ",")
+        if classi:
+            for x in classifiers:
+                if x in instance["classifiers"]:
+                    trainfile.write("p,")
+                else:
+                    trainfile.write("n,")
+        trainfile.write(instance["label"] + ".\n")
 infile.close()
 trainfile.close()
 vocabulary.write(",".join(list(set(classes))) + ".\n" + "\n".join(["\t".join([x[0] + ":",",".join(x[1])]) + "." for x in attributes]))
