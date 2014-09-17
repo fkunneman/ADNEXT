@@ -46,7 +46,7 @@ for line in infile.readlines():
         trainfile.write(",".join(classifiers) + "," + label + "\n")
 infile.close()
 trainfile.close()
-vocabulary.write(",".join(list(set(classes))) + "\.\n\n" + "\n".join(["\t".join(x[0],",".join(x[1])) for x in attributes]))
+vocabulary.write(",".join(list(set(classes))) + "\.\n\n" + "\n".join(["\t".join([x[0],",".join(x[1])]) for x in attributes]))
 vocabulary.close()
 testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
