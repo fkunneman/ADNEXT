@@ -21,6 +21,8 @@ parser.add_argument('-o', action = 'store', required=True,
 args = parser.parse_args() 
 
 #generate ripper-formatted train and testfiles, and a vocabulary
+convert = {".":"punctuation_dot",",":"punctuation_komma",":":"punctuation_colon",";":"punctuation_semicolon"}
+convertables = convert.keys()
 c = ["___svm","___nb","___append"]
 trainfile = codecs.open("rip.data","w","utf-8")
 testfile = codecs.open("rip.test","w","utf-8")
@@ -43,14 +45,14 @@ for line in infile.readlines():
             if "WORDS" not in [x[0] for x in attributes]:
                 attributes.append(("WORDS",["bag"]))
             for i,word in enumerate(bow):
+                if word in convertables:
+                    word = convert[word]
                 bow[i] = "\'" + word + "\'"
             instance["bow"] = bow
         for classifier in cs:
             if classifier not in [x[0] for x in features]:
                 attributes.append((classifier,["1","0"]))
         instance["classifiers"] = cs
-        # if len(classifiers) > 0: 
-        #     trainfile.write("," + ",".join(classifiers))
         instances.append(instance)
 classifiers = [x for x in attributes if x[0] != "WORDS"]
 if len(classifiers) > 0:
@@ -80,6 +82,8 @@ for line in testdata.readlines():
     cs = [x for x in features if x in c]
     if len(bow) > 0:
         for i,word in enumerate(bow):
+            if word in convertables:
+                words = convert[word]
             bow[i] = "\'" + word + "\'"
         testfile.write(" ".join(bow) + ",")
     if classi:
