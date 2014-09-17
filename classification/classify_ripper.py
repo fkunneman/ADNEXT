@@ -41,7 +41,7 @@ for line in infile.readlines():
                 bow[i] = "\'" + word + "\'"
             trainfile.write(" ".join(bow))
         for classifier in classifiers:
-            if classifier not in [x[0] for x in features]:
+            if classifier not in [x[0] for x in attributes]:
                 attributes.append((classifier,["1","0"]))
         if len(classifiers) > 0: 
             trainfile.write("," + ",".join(classifiers))
