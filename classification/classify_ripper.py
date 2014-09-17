@@ -22,9 +22,9 @@ args = parser.parse_args()
 
 #generate ripper-formatted train and testfiles, and a vocabulary
 c = ["___svm","___nb","___append"]
-trainfile = codecs.open("ripper.data","w","utf-8")
-testfile = codecs.open("ripper.test","w","utf-8")
-vocabulary = codecs.open("ripper.names","w","utf-8")
+trainfile = codecs.open("rip.data","w","utf-8")
+testfile = codecs.open("rip.test","w","utf-8")
+vocabulary = codecs.open("rip.names","w","utf-8")
 classes = []
 attributes = []
 infile = codecs.open(args.i,"r","utf-8")
@@ -33,7 +33,7 @@ for line in infile.readlines():
     instance = {}
     tokens = line.strip().split()
     if len(tokens) > 1:
-        label = tokens[0]
+        label ="\'" + tokens[0] + "\'"
         classes.append(label)
         instance["label"] = label
         features = tokens[1].split(",")
@@ -66,10 +66,10 @@ for instance in instances:
                 trainfile.write("1,")
             else:
                 trainfile.write("0,")
-    trainfile.write(label + "\n")
+    trainfile.write(label + ".\n")
 infile.close()
 trainfile.close()
-vocabulary.write(",".join(list(set(classes))) + "\.\n\n" + "\n".join(["\t".join([x[0],",".join(x[1])]) for x in attributes]))
+vocabulary.write(",".join(list(set(classes))) + ".\n" + "\n".join(["\t".join([x[0] + ":",",".join(x[1])]) + "." for x in attributes]))
 vocabulary.close()
 testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
