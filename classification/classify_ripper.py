@@ -60,7 +60,7 @@ for line in infile.readlines():
                 bow[i] = "\'" + word + "\'"
             instance["bow"] = bow
         for classifier in cs:
-            if classifier not in [x[0] for x in features]:
+            if classifier not in [x[0] for x in attributes]:
                 attributes.append((classifier,["1","0"]))
         instance["classifiers"] = cs
         instances.append(instance)
