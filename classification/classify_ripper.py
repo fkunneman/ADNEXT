@@ -28,21 +28,22 @@ attributes = []
 infile = codecs.open(args.i,"r","utf-8")
 for line in infile.readlines():
     tokens = line.strip().split()
-    label = tokens[0]
-    classes.append(label)
-    features = tokens[1]
-    bow = [x for x in features if not re.search("___",x)]
-    classifiers = [x for x in features if re.search("___",x)]
-    if len(bow) > 0:
-        if "WORDS" not in [x[0] for x in features]:
-            attributes.append(("WORDS",["bag"]))
-        for i,word in enumerate(bow):
-            bow[i] = "\'" + word + "\'"
-        trainfile.write(" ".join(bow) + ",")
-    for classifier in classifiers:
-        if classifier not in [x[0] for x in features]:
-            attributes.append((classifier,["1","0"])) 
-    trainfile.write(",".join(classifiers) + "," + label + "\n")
+    if len(tokens) > 1:
+        label = tokens[0]
+        classes.append(label)
+        features = tokens[1]
+        bow = [x for x in features if not re.search("___",x)]
+        classifiers = [x for x in features if re.search("___",x)]
+        if len(bow) > 0:
+            if "WORDS" not in [x[0] for x in features]:
+                attributes.append(("WORDS",["bag"]))
+            for i,word in enumerate(bow):
+                bow[i] = "\'" + word + "\'"
+            trainfile.write(" ".join(bow) + ",")
+        for classifier in classifiers:
+            if classifier not in [x[0] for x in features]:
+                attributes.append((classifier,["1","0"])) 
+        trainfile.write(",".join(classifiers) + "," + label + "\n")
 infile.close()
 trainfile.close()
 vocabulary.write(",".join(list(set(classes))) + "\.\n\n" + "\n".join(["\t".join(x[0],",".join(x[1])) for x in attributes]))
