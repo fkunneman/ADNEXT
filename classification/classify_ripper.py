@@ -70,13 +70,13 @@ if len(classifiers) > 0:
 else:
     classi = False
 for instance in instances:
-    if not "bow" instance and "WORDS" in attributes:
+    if not "bow" in instance and "WORDS" in [x[0] for x in attributes]:
         continue
     else:
         trainfile.write(" ".join(instance["bow"]) + ",")
         if classi:
             for x in classifiers:
-                if x in instance["classifiers"]:
+                if x[0] in instance["classifiers"]:
                     trainfile.write("p,")
                 else:
                     trainfile.write("n,")
@@ -110,13 +110,16 @@ for line in testdata.readlines():
         testfile.write(" ".join(bow) + ",")
     if classi:
         for x in classifiers:
-            if x in cs:
+            if x[0] in cs:
                 testfile.write("p,")
             else:
                 testfile.write("n,")
     testfile.write(label + ".\n")
-testfile.close()
 
 #perform classification
-os.system("ripper -a +freq -v 3 -O 5 -! s -L 0.5 -F 1 rip")
+os.system("ripper -a -freq -O 5 -S 0.5 -A -F 1 rip")
 os.system("mv rip* " + args.o)
+
+#predict instances
+
+testfile.close()
