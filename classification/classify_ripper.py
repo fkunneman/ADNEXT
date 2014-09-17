@@ -61,7 +61,7 @@ for line in infile.readlines():
             instance["bow"] = bow
         for classifier in cs:
             if classifier not in [x[0] for x in attributes]:
-                attributes.append((classifier,["1","0"]))
+                attributes.append((classifier,["p","n"]))
         instance["classifiers"] = cs
         instances.append(instance)
 classifiers = [x for x in attributes if x[0] != "WORDS"]
@@ -72,12 +72,15 @@ else:
 for instance in instances:
     if "bow" in instance:
         trainfile.write(" ".join(instance["bow"]) + ",")
+    else:
+        if "WORDS" in attributes:
+            continue
     if classi:
         for x in classifiers:
             if x in instance["classifiers"]:
-                trainfile.write("1,")
+                trainfile.write("p,")
             else:
-                trainfile.write("0,")
+                trainfile.write("n,")
     trainfile.write(instance["label"] + ".\n")
 infile.close()
 trainfile.close()
@@ -109,9 +112,9 @@ for line in testdata.readlines():
     if classi:
         for x in classifiers:
             if x in cs:
-                testfile.write("1,")
+                testfile.write("p,")
             else:
-                testfile.write("0,")
+                testfile.write("n,")
     testfile.write(label + ".\n")
 testfile.close()
 
