@@ -24,7 +24,7 @@ trainfile = codecs.open("ripper.data","w","utf-8")
 testfile = codecs.open("ripper.test","w","utf-8")
 vocabulary = codecs.open("ripper.names","w","utf-8")
 classes = []
-features = []
+attributes = []
 infile = codecs.open(args.i,"r","utf-8")
 for line in infile.readlines():
     tokens = line.strip().split()
@@ -35,17 +35,17 @@ for line in infile.readlines():
     classifiers = [x for x in features if re.search("___",x)]
     if len(bow) > 0:
         if "WORDS" not in [x[0] for x in features]:
-            features.append(("WORDS",["bag"]))
+            attributes.append(("WORDS",["bag"]))
         for i,word in enumerate(bow):
             bow[i] = "\'" + word + "\'"
         trainfile.write(" ".join(bow) + ",")
     for classifier in classifiers:
         if classifier not in [x[0] for x in features]:
-            features.append((classifier,["1","0"])) 
+            attributes.append((classifier,["1","0"])) 
     trainfile.write(",".join(classifiers) + "," + label + "\n")
 infile.close()
 trainfile.close()
-vocabulary.write(",".join(list(set(classes))) + "\.\n\n" + "\n".join(["\t".join(x[0],",".join(x[1])) for x in features]))
+vocabulary.write(",".join(list(set(classes))) + "\.\n\n" + "\n".join(["\t".join(x[0],",".join(x[1])) for x in attributes]))
 vocabulary.close()
 testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
