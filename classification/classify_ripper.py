@@ -114,7 +114,6 @@ for line in testdata.readlines():
                 testfile.write("0,")
     testfile.write(label + ".\n")
 testfile.close()
-quit()
 
 #perform classification
 os.system("ripper -a +freq -v 3 -O 5 -! s -L 0.5 -F 1 rip")
