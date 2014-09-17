@@ -35,7 +35,7 @@ for line in infile.readlines():
     instance = {}
     tokens = line.strip().split()
     if len(tokens) > 1:
-        label ="\'" + tokens[0].replace(".","") + "\'"
+        label = tokens[0].replace(".","")
         classes.append(label)
         instance["label"] = label
         features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
