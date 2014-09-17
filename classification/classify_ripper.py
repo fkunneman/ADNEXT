@@ -38,7 +38,7 @@ for line in infile.readlines():
         label ="\'" + tokens[0] + "\'"
         classes.append(label)
         instance["label"] = label
-        features = tokens[1].replace(",,,",",punctuation_comma,").split(",")
+        features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
         bow = [x for x in features if not x in c]
         cs = [x for x in features if x in c]
         if len(bow) > 0:
@@ -50,13 +50,13 @@ for line in infile.readlines():
                 if re.search(r"\.",word):
                     word = word.replace(".","punctuation_dot")
                 if re.search(r"\?",word):
-                    word = word.replace(",","punctuation_qm")
+                    word = word.replace("?","punctuation_qm")
                 if re.search(r"\:",word):
-                    word = word.replace(",","punctuation_colon")
+                    word = word.replace(":","punctuation_colon")
                 if re.search(r"\;",word):
-                    word = word.replace(",","punctuation_semicolon")
+                    word = word.replace(";","punctuation_semicolon")
                 if re.search(r"\'",word):
-                    word = word.replace(",","punctuation_apostrophe")
+                    word = word.replace("'","punctuation_apostrophe")
                 bow[i] = "\'" + word + "\'"
             instance["bow"] = bow
         for classifier in cs:
@@ -87,7 +87,7 @@ testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
     tokens = line.strip().split()
     label = tokens[0]
-    features = tokens[1].replace(",,,",",punctuation_comma,").split(",")
+    features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
     bow = [x for x in features if not x in c]
     cs = [x for x in features if x in c]
     if len(bow) > 0:
@@ -97,13 +97,13 @@ for line in testdata.readlines():
             if re.search(r"\.",word):
                 word = word.replace(".","punctuation_dot")
             if re.search(r"\?",word):
-                word = word.replace(",","punctuation_qm")
+                word = word.replace("?","punctuation_qm")
             if re.search(r"\:",word):
-                word = word.replace(",","punctuation_colon")
+                word = word.replace(":","punctuation_colon")
             if re.search(r"\;",word):
-                word = word.replace(",","punctuation_semicolon")
+                word = word.replace(";","punctuation_semicolon")
             if re.search(r"\'",word):
-                word = word.replace(",","punctuation_apostrophe")
+                word = word.replace("'","punctuation_apostrophe")
             bow[i] = "\'" + word + "\'"
         testfile.write(" ".join(bow) + ",")
     if classi:
