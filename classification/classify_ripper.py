@@ -38,7 +38,7 @@ for line in infile.readlines():
         label ="\'" + tokens[0] + "\'"
         classes.append(label)
         instance["label"] = label
-        features = tokens[1].split(",")
+        features = tokens[1].replace(",,,",",punctuation_comma,").split(",")
         bow = [x for x in features if not x in c]
         cs = [x for x in features if x in c]
         if len(bow) > 0:
