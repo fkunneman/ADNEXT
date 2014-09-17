@@ -35,7 +35,7 @@ for line in infile.readlines():
     instance = {}
     tokens = line.strip().split()
     if len(tokens) > 1:
-        label ="\'" + tokens[0] + "\'"
+        label ="\'" + tokens[0].replace(".","") + "\'"
         classes.append(label)
         instance["label"] = label
         features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
@@ -86,7 +86,7 @@ vocabulary.close()
 testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
     tokens = line.strip().split()
-    label = tokens[0]
+    label = tokens[0].replace(".","")
     features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
     bow = [x for x in features if not x in c]
     cs = [x for x in features if x in c]
