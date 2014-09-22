@@ -85,9 +85,11 @@ infile.close()
 trainfile.close()
 vocabulary.write(",".join(list(set(classes))) + ".\n" + "\n".join(["\t".join([x[0] + ":",",".join(x[1])]) + "." for x in attributes]))
 vocabulary.close()
+predictions = []
 testdata = codecs.open(args.t,"r","utf-8")
 for line in testdata.readlines():
     tokens = line.strip().split()
+    predictions.append(" ".join([x for x in features if not re.search("_",x)]) + "\t" + tokens[0])
     label = tokens[0].replace("1.0","pos").replace("0.0","neg")
     features = tokens[1].replace(",,,",",punctuation_comma,").replace("_,,","_punctuation_comma,").replace(",,_",",punctuation_comma_").split(",")
     bow = [x for x in features if not x in c]
@@ -117,9 +119,29 @@ for line in testdata.readlines():
     testfile.write(label + ".\n")
 
 #perform classification
-os.system("ripper -a -freq -O 5 -S 0.5 -A -F 1 rip")
-os.system("mv rip* " + args.o)
+os.system("paramsearch ripper rip.data")
+os.system("/vol/custom-opt/uvt-ru/src/paramsearch/runfull-ripper rip")
+#convert predictions
+testout = open("rip.out")
+predictions_out = codecs.open("predictions.txt","w","utf-8")
+convert = {"pos":"1.0","neg":"0.0"}
+for i,line in enumerate(testout.readlines()):
+    tokens = line.strip().split()
+    prediction = convert[tokens[0]]
+    label = tokens[3]
+    if label != predictions[i].split("\t")[1]:
+        print "labels predictions do not match, exiting program"
+        quit()
+    predictions_out.write(predictions[i] + " " + prediction + "\t" + tokens[1] + " " + tokens[0] + "\n")
+testout.close()
+predictions_out.close()
+#move to dir
+os.system("mv * " + args.o)
+
+
+# os.system("ripper -a -freq -O 5 -S 0.5 -A -F 1 rip")
+# os.system("mv rip* " + args.o)
 
 #predict instances
 
-testfile.close()
+# testfile.close()

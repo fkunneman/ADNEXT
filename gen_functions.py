@@ -82,7 +82,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
                         continue
                 if num_annotators:
                     if len(values) != num_annotators:
-                        print "number of annotation values on line is not consistent; check the inputfile. Exiting..."
+                        print "number of annotation values on line",rownum,"is not consistent; check the inputfile. Exiting..."
                         exit()
                 else:
                     num_annotators = len(values)
