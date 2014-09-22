@@ -120,7 +120,8 @@ for line in testdata.readlines():
 
 #perform classification
 os.system("paramsearch ripper rip.data")
-os.system("/vol/custom-opt/uvt-ru/src/paramsearch/runfull-ripper rip")
+quit()
+os.system("/vol/customopt/uvt-ru/src/paramsearch/runfull-ripper rip")
 #convert predictions
 testout = open("rip.out")
 predictions_out = codecs.open("predictions.txt","w","utf-8")
