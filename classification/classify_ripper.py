@@ -43,7 +43,7 @@ for line in infile.readlines():
         cs = [x for x in features if x in c]
         if len(bow) > 0:
             if "WORDS" not in [x[0] for x in attributes]:
-                attributes.append(("WORDS",["bag"]))
+                attributes.append(("WORDS",["set"]))
             for i,word in enumerate(bow):
                 if word in convertables:
                     word = convert[word]
