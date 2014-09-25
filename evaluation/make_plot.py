@@ -2,31 +2,45 @@ import sys
 import matplotlib.pyplot as plt
 from pylab import *
 
-outplot = sys.argv[1]
-xlabel = sys.argv[2]
-ylabel = sys.argv[3]
-plotfiles = sys.argv[4:]
+plottype = sys.argv[1]
+outplot = sys.argv[2]
+xlabel = sys.argv[3]
+ylabel = sys.argv[4]
+plotfiles = sys.argv[5:]
 
-linestyles = ["-","--","-.",":"]
-half = len(plotfiles)/2
-for i,pf in enumerate(plotfiles[:half]):
-    pf_open = open(pf)
-    x = []
+if plottype == "line":
+    linestyles = ["-","--","-.",":"]
+    half = len(plotfiles)/2
+    for i,pf in enumerate(plotfiles[:half]):
+        pf_open = open(pf)
+        x = []
+        y = []
+        for entry in pf_open.readlines():
+            # generate coordinates
+            tokens = entry.strip().split("\t")
+            x.append(float(tokens[0]))
+            if tokens[1] == "NaN":
+                ytoken = NaN
+            else:
+                ytoken = float(tokens[1])
+            y.append(ytoken)
+        print x
+        print y
+        plt.plot(x,y,linestyle=linestyles[i],linewidth=4,)
+    legend = plotfiles[half:]
+    plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
+
+elif plottype == "hist":
+    pf_open = open(plotfiles[0])
     y = []
     for entry in pf_open.readlines():
         # generate coordinates
         tokens = entry.strip().split("\t")
-        x.append(float(tokens[0]))
-        if tokens[1] == "NaN":
-            ytoken = NaN
-        else:
-            ytoken = float(tokens[1])
+        ytoken = float(tokens[1])
         y.append(ytoken)
-    print x
-    print y
-    plt.plot(x,y,linestyle=linestyles[i],linewidth=4,)
-legend = plotfiles[half:]
-plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
+    bins = range(min(y),max(y),5)
+    plt.hist(y,bins)
+
 plt.ylabel(ylabel)
 plt.xlabel(xlabel)
 # plt.ylabel("Absolute estimation error (in days)")
