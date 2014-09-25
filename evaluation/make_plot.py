@@ -1,6 +1,7 @@
 import sys
 import matplotlib.pyplot as plt
 from pylab import *
+from numpy import arange
 
 plottype = sys.argv[1]
 outplot = sys.argv[2]
@@ -38,7 +39,7 @@ elif plottype == "hist":
         tokens = entry.strip().split("\t")
         ytoken = float(tokens[1])
         y.append(ytoken)
-    bins = range(min(y),max(y),5)
+    bins = arange(min(y),max(y),5)
     plt.hist(y,bins)
 
 plt.ylabel(ylabel)
