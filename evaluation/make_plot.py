@@ -16,7 +16,7 @@ for i,pf in enumerate(plotfiles[:half]):
     for entry in pf_open.readlines():
         # generate coordinates
         tokens = entry.strip().split("\t")
-        x.append(int(tokens[0]))
+        x.append(float(tokens[0]))
         if tokens[1] == "NaN":
             ytoken = NaN
         else:
