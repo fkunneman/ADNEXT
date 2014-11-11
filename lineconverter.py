@@ -3,6 +3,7 @@ import codecs
 import re
 import datetime
 import random
+from pattern.nl import parse, pprint, sentiment
 
 """ 
 Class to convert the lines in a file in a number of ways and/or make a 
@@ -37,12 +38,45 @@ class Lineconverter():
         for line in self.lines:
             try:
                 tokens = line.split(self.delimiter)
-                tokens.append("https://twitter.com/" + tokens[2] + "/status/" + tokens[1])
+                tokens.append("https://twitter.com/" + tokens[5] + "/status/" + tokens[1])
                 newline = self.delimiter.join(tokens)
                 newlines.append(newline)
             except IndexError:
                 continue
         
+        self.lines = newlines
+
+    def add_sentiment(self,column):
+        newlines = []
+        newlines.append(self.lines[0] + "\t#polarity\t#subjectivity")
+        for line in self.lines[1:]:
+            try:
+                tokens = line.split(self.delimiter)
+                senti = sentiment(tokens[column])
+                newlines.append(line + "\t" + str(senti[0]) + "\t" + str(senti[1]))
+            except:
+                newlines.append(line)
+        self.lines = newlines
+
+    def count_punct(self,column):
+        newlines = []
+        newlines.append(self.lines[0] + "\t#excl_count\t#quest_count")
+        for line in self.lines[1:]:
+            try:
+                tokens = line.split(self.delimiter)
+                text = tokens[column]
+                newline = line
+                if re.search("!",text):
+                    newline = newline + "\t" + str(len(re.findall("!",text)))
+                else:
+                    newline = newline + "\t" + "0"
+                if re.search("\?",text):
+                    newline = newline + "\t" + str(len(re.findall("\?",text)))
+                else:
+                    newline = newline + "\t" + "0"
+                newlines.append(newline)
+            except:
+                newlines.append(line)
         self.lines = newlines
 
     def add_id(self,start_id = 0):

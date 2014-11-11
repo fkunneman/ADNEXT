@@ -25,6 +25,8 @@ args = parser.parse_args()
 
 # retrieve annotation sets
 annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
+print annotation_values
+quit()
 
 # calculate and output scores
 for i,sheet in enumerate(annotation_values):

@@ -12,7 +12,7 @@ import codecs
 time_file = open(sys.argv[1])
 tweet_file = codecs.open(sys.argv[2],"a","utf-8")
 key = sys.argv[3]
-#language = sys.argv[4]
+language = sys.argv[4]
 try: 
     languagestring="&allow_lang=" + sys.argv[4]
 except:

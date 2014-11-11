@@ -11,10 +11,9 @@ parser = argparse.ArgumentParser(description = "Program that can be used to chan
 parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
 parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
-# parser.add_argument('-e', action = 'store', required = False, help = "An extra file name (needed for time deletion and the keepfile for extraction).")
-parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","delete_filematch","extract","add_time","add_id","filter","twitter"], help = "Choose the action to perform.")
+parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","delete_filematch","extract","add_time","add_id","filter","twitter", "sentiment", "punct"], help = "Choose the action to perform.")
 parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete, filter or extract")
-parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace, delete or extract (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
+parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace, delete, sentiment, punct or extract (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
 parser.add_argument('--sample', action = 'store', required = False, nargs='+', help = "sample lines, first specify the number of lines to sample, then specify the sample method (steps or random)")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
 parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
@@ -107,6 +106,12 @@ if action == "extract":
 
 if action == "twitter":
     lineconvert.add_twitter_url()
+
+if action == "sentiment":
+    lineconvert.add_sentiment(args.c)
+
+if action == "punct":
+    lineconvert.count_punct(args.c)
 
 if args.sample:
     if len(args.sample) > 1 and args.sample[1] == "steps":
