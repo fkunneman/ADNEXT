@@ -16,7 +16,7 @@ parser.add_argument('--ka', action = 'store_true', help = "specify to calculate 
 parser.add_argument('--fs', action = 'store_true', help = "specify to calculate mutual F-score")
 #parser.add_argument('-c', action = 'store', nargs = '+', default = [0], help = "[OPTIONAL] if specific columns in a file need to be processed, specify them (one integer denotes every column from this point onwards)")
 #parser.add_argument('-d', action='store_true', help = "choose for a prudent scoring (annotations with doubt are not taken as positive)")
-parser.add_argument('-p', action='store', required = False, nargs = '+', help = "[OPTIONAL] for a precision-at-curve, specify the index in the given order of excel sheets (just 0 for txt) and the name of the output file")
+#parser.add_argument('-p', action='store', required = False, nargs = '+', help = "[OPTIONAL] for a precision-at-curve, specify the index in the given order of excel sheets (just 0 for txt) and the name of the output file")
 parser.add_argument('-s', action = 'store', nargs = '+', required = False, help = "[EXCEL] specify indexes of the excel sheets to be processed")
 
 args = parser.parse_args()
@@ -24,9 +24,14 @@ args = parser.parse_args()
 #precision_at = args.p
 
 # retrieve annotation sets
-annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
-print annotation_values
-quit()
+if args.f == "txt":
+    annotation_values = []
+    infile = open(args.i)
+    for line in infile.readlines():
+        annotation_values.append(line.strip().split("\t"))
+    infile.close()
+else:
+    annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
 
 # calculate and output scores
 for i,sheet in enumerate(annotation_values):
