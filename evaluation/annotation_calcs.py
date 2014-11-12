@@ -6,20 +6,24 @@ from collections import defaultdict
 from pynlpl import evaluation
 import itertools
 
-def calculate_precision(lines,majority_threshold = 0.5,plot = False):
+def calculate_precision(lines,lax = False,plot = False):
     majority_judgements = defaultdict(list)
     precisions = []
     precision_strengths = defaultdict(int)
-    annotators = len(lines[0])
+    #annotators = len(lines[0])
     for line in lines:
+        if len(line) == 1:
+            if line[0] == 1:
+                
         num_positive = 0
         for annotation in line:
             if annotation == 1:
                 num_positive += 1
 
+
         percentage = num_positive / len(line)
         majority = int(len(line) / 2) + 1 
-        if percentage >= majority_threshold:
+        if percentage >= 0.5:
             for i in range(majority,len(line)+1):
                 if i <= num_positive:
                     precision_strengths[i] += 1
