@@ -1,17 +1,19 @@
+from __future__ import division
 import sys
 import matplotlib.pyplot as plt
 from pylab import *
 from numpy import arange
 
 plottype = sys.argv[1]
-outplot = sys.argv[2]
-xlabel = sys.argv[3]
-ylabel = sys.argv[4]
-plotfiles = sys.argv[5:]
+lw = int(sys.argv[2])
+outplot = sys.argv[3]
+xlabel = sys.argv[4]
+ylabel = sys.argv[5]
+plotfiles = sys.argv[6:]
 
-if plottype == "line":
+if plottype[:4] == "line":
     linestyles = ["-","--","-.",":"]
-    half = len(plotfiles)/2
+    half = int(len(plotfiles)/2)
     for i,pf in enumerate(plotfiles[:half]):
         pf_open = open(pf)
         x = []
@@ -27,7 +29,9 @@ if plottype == "line":
             y.append(ytoken)
         print x
         print y
-        plt.plot(x,y,linestyle=linestyles[i],linewidth=4,)
+        if plottype[4:] == "range":
+            x = range(len(x))
+        plt.plot(x,y,linestyle=linestyles[i],linewidth=lw)
     legend = plotfiles[half:]
     plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
 
@@ -37,10 +41,13 @@ elif plottype == "hist":
     for entry in pf_open.readlines():
         # generate coordinates
         tokens = entry.strip().split("\t")
-        ytoken = float(tokens[1])
+        ytoken = float(tokens[0])
         y.append(ytoken)
-    bins = arange(min(y),max(y),5)
-    plt.hist(y,bins)
+    d = (max(y) - min(y)) / 6
+    b = arange(min(y),max(y) + d,d)
+    print b
+    plt.hist(y,bins=b)
+    plt.ylim(0,20)
 
 plt.ylabel(ylabel)
 plt.xlabel(xlabel)

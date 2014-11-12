@@ -33,6 +33,8 @@ if args.f == "txt":
 else:
     annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
 
+print annotation_values
+
 # calculate and output scores
 for i,sheet in enumerate(annotation_values):
     if args.p and int(args.p[0]) == i: 
