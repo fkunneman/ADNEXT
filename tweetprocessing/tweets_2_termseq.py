@@ -24,7 +24,7 @@ ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 time_tweet = defaultdict(list)
 words = defaultdict(int)
 for f in args.i:
-    tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
+    tokenizer = ucto.Tokenizer(ucto_settingsfile)
     tweetfile = codecs.open(f,"r","utf-8")
     for tweet in tweetfile.readlines():
         tokens = tweet.strip().split("\t")
