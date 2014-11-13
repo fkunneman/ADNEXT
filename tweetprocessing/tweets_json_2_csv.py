@@ -25,8 +25,11 @@ for line in infile.readlines():
         fields.append(decoded["in_reply_to_status_id"])
     else:
         fields.append("null")
-    if "retweet_status" in decoded:
-        fields.append(decoded["retweet_status"]["id"])
+    if "retweeted_status" in decoded:
+        #print decoded["retweeted_status"]
+        #print decoded["retweeted_status"]["id"]
+        fields.append(decoded["retweeted_status"]["id"])
+        #print fields
     else:
         fields.append("null")
     userfields = decoded["user"]

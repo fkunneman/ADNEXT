@@ -17,7 +17,6 @@ parser.add_argument('-t', action='store', default = 3, type = int, help = "the t
 args = parser.parse_args()
 
 outfile = codecs.open(args.o,"w","utf-8")
-word_timewindow = defaultdict(list)
 
 #make time-tweet dict and word vocabulary
 time_tweet = defaultdict(list)
@@ -29,7 +28,7 @@ for f in args.i:
         date = tokens[args.d]
         time = tokens[args.t]
         tweet_datetime = time_functions.return_datetime(date,time = time,setting="vs")
-        time_tweet[tweet_datetime].extend(tokens[-1].split(" "))
+        time_words[tweet_datetime].extend(tokens[-1].split(" "))
         for word in tokens[-1].split(" "):
             words[word.lower()] += 1
 vocabulary = [x for x in words.keys() if words[x] > 1 and not re.search("@",x) and not re.search("http",x)]
@@ -41,30 +40,41 @@ sorted_time = sorted(time_tweet.keys())
 starttime = sorted_time[0]
 endtime = sorted_time[-1]
 if args.u == "day":
-    heap = datetime.timedelta(days=1)
+    heap = timedelta(days=1)
 elif args.u == "hour":
-    heap = datetime.timedelta(hours=1)
+    heap = timedelta(hours=1)
 elif args.u == "minute":
-    heap = datetime.timedelta(minutes=1)
+    heap = timedelta(minutes=1)
 print "heap",heap
 #count word and add to sequence
-windowtime = starttime + heap
-time = starttime
-i = 0
-while i < len(sorted_time):
+#windowtime = starttime + heap
+endtime = starttime.date() + heap
+
+timewindows = []
+timewindow = []
+for t in sorted_time:
+    if t < endtime:
+        timewindow.append(t)
+    else:
+        timewindows.append(timewindow)
+        timewindow = [t]
+        endtime += heap
+
+word_timewindow = defaultdict(list)
+for tw in timewindows:
     wordcount = defaultdict(int)
-    time = sorted_time[i]
-    words = time_tweet[time]
-    for word in words:
-        wordcount[word] += 1
-    for word in vocabulary: 
-        try:
-            word_timewindow[word].append(wordcount[word])
-        except:
-            word_timewindow[word].append(0)
-    i += heap
+    for time in tw:
+        words = time_words[time]
+        for word in words:
+            wordcount[word] += 1
+        for word in vocabulary: 
+            try:
+                word_timewindow[word].append(wordcount[word])
+            except:
+                word_timewindow[word].append(0)
 
 #write to file
 for word in vocabulary:
     outfile.write(word + "\t" + "|".join([str(x) for x in word_timewindow[word]]) + "\n")
 outfile.close()
+

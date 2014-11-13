@@ -10,31 +10,33 @@ def calculate_precision(lines,lax = False,plot = False):
     majority_judgements = defaultdict(list)
     precisions = []
     precision_strengths = defaultdict(int)
-    #annotators = len(lines[0])
+    if not lax:
+        annotators = len(lines[0])
     for line in lines:
-        if len(line) == 1:
-            if line[0] == 1:
-                
+        #if len(line) == 1:
+        #    if line[0] == 1:
+        if not lax and len(line) != annotators:
+            print "num annotators not consistent, exiting program"
+            exit()
         num_positive = 0
         for annotation in line:
             if annotation == 1:
                 num_positive += 1
 
-
         percentage = num_positive / len(line)
-        majority = int(len(line) / 2) + 1 
-        if percentage >= 0.5:
-            for i in range(majority,len(line)+1):
+        majority = int(len(line) / 2) + 1 # 2-2 3-2 4-3 5-3
+        if percentage >= 0.5: #classification is true
+            for i in range(majority,len(line)+1): #for every degree of majority (1.0, .66, .5)
                 if i <= num_positive:
                     precision_strengths[i] += 1
-                    majority_judgements[i].append(1)
+                    majority_judgements[i].append(1) #if degree of majority applies, add 1
                 else:
-                    majority_judgements[i].append(0)
-        else:
+                    majority_judgements[i].append(0) #if degree of majority is not met, add 0
+        else: #classification is false
             for i in range(majority,len(line)+1):
-                majority_judgements[i].append(0) 
+                majority_judgements[i].append(0) #add 0 to any degree of majority 
 
-    for ps in sorted(precision_strengths.keys()):
+    for ps in sorted(precision_strengths.keys()): 
         precision_score = precision_strengths[ps] / len(lines)
         precisions.append((ps,precision_score))
 
@@ -67,15 +69,16 @@ def calculate_cohens_kappa(lines):
     annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(int)))
     annotator_scores = defaultdict(lambda : defaultdict(int))
     for line in lines:
-        for i,annotation in enumerate(line):
-            annotator_scores[i][annotation] += 1
-            j = i
-            while j+1 < len(line):
-                if annotation != line[j+1]:
-                    annotator_couples[i][j+1]["odd"] += 1
-                else:
-                    annotator_couples[i][j+1]["match"] += 1
-                j += 1
+        if len(lines) > 1:
+            for i,annotation in enumerate(line):
+                annotator_scores[i][annotation] += 1 #annotator - annotation
+                j = i
+                while j+1 < len(line):
+                    if annotation != line[j+1]:
+                        annotator_couples[i][j+1]["odd"] += 1
+                    else:
+                        annotator_couples[i][j+1]["match"] += 1
+                    j += 1
 
     cohens_kappas = []
     for annotator_1 in annotator_couples.keys():
@@ -97,15 +100,16 @@ def calculate_confusion_matrix(lines):
     annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(int))))
     annotator_scores = defaultdict(lambda : defaultdict(int))
     for line in lines:
-        for i,annotation in enumerate(line):
-            annotator_scores[i][annotation] += 1
-            j = i
-            while j+1 < len(line):
-                if annotation != line[j+1]:
-                    annotator_couples[i][j+1]["odd"][annotation] += 1
-                else:
-                    annotator_couples[i][j+1]["match"][annotation] += 1
-                j += 1
+        if len(line) > 1:
+            for i,annotation in enumerate(line):
+                annotator_scores[i][annotation] += 1
+                j = i
+                while j+1 < len(line):
+                    if annotation != line[j+1]:
+                        annotator_couples[i][j+1]["odd"][annotation] += 1
+                    else:
+                        annotator_couples[i][j+1]["match"][annotation] += 1
+                    j += 1
 
     cohens_kappas = []
     percent = []
