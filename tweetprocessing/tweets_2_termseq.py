@@ -47,6 +47,7 @@ elif args.u == "hour":
 elif args.u == "minute":
     heap = datetime.timedelta(minutes=1)
 print "heap",heap
+print sorted_time
 #count word and add to sequence
 windowtime = starttime + heap
 time = starttime
