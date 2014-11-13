@@ -19,7 +19,7 @@ args = parser.parse_args()
 outfile = codecs.open(args.o,"w","utf-8")
 
 #make time-tweet dict and word vocabulary
-time_tweet = defaultdict(list)
+time_words = defaultdict(list)
 words = defaultdict(int)
 for f in args.i:
     tweetfile = codecs.open(f,"r","utf-8")
@@ -34,19 +34,19 @@ for f in args.i:
 vocabulary = [x for x in words.keys() if words[x] > 1 and not re.search("@",x) and not re.search("http",x)]
 
 #sort tweets in time
-sorted_time = sorted(time_tweet.keys())
+sorted_time = sorted(time_words.keys())
 
 #for each timepoint
 starttime = sorted_time[0]
 endtime = sorted_time[-1]
 if args.u == "day":
-    heap = timedelta(days=1)
+    heap = datetime.timedelta(days=1)
 elif args.u == "hour":
-    heap = timedelta(hours=1)
+    heap = datetime.timedelta(hours=1)
 elif args.u == "minute":
-    heap = timedelta(minutes=1)
-print "heap",heap
-print sorted_time
+    heap = datetime.timedelta(minutes=1)
+#print "heap",heap
+#print sorted_time
 #count word and add to sequence
 #windowtime = starttime + heap
 endtime = starttime.date() + heap
@@ -54,7 +54,7 @@ endtime = starttime.date() + heap
 timewindows = []
 timewindow = []
 for t in sorted_time:
-    if t < endtime:
+    if t.date() < endtime:
         timewindow.append(t)
     else:
         timewindows.append(timewindow)
