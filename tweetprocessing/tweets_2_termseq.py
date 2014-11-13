@@ -6,6 +6,7 @@ from collections import defaultdict
 import codecs
 import time_functions
 import re
+import ucto
 
 parser = argparse.ArgumentParser(description = "Program to sort tweets in time and make sequences of words")
 
@@ -17,11 +18,13 @@ parser.add_argument('-t', action='store', default = 3, type = int, help = "the t
 args = parser.parse_args()
 
 outfile = codecs.open(args.o,"w","utf-8")
+ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
 #make time-tweet dict and word vocabulary
 time_tweet = defaultdict(list)
 words = defaultdict(int)
 for f in args.i:
+    tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
     tweetfile = codecs.open(f,"r","utf-8")
     for tweet in tweetfile.readlines():
         tokens = tweet.strip().split("\t")
@@ -29,8 +32,9 @@ for f in args.i:
         time = tokens[args.t]
         tweet_datetime = time_functions.return_datetime(date,time = time,setting="vs")
         time_words[tweet_datetime].extend(tokens[-1].split(" "))
-        for word in tokens[-1].split(" "):
-            words[word.lower()] += 1
+        tokenizer.process(tokens[-1])
+        for word in [x.text.lower() for x in tokenizer]:
+            words[word] += 1
 vocabulary = [x for x in words.keys() if words[x] > 1 and not re.search("@",x) and not re.search("http",x)]
 
 #sort tweets in time
