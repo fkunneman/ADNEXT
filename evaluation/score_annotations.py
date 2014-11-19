@@ -19,28 +19,36 @@ parser.add_argument('--fs', action = 'store_true', help = "specify to calculate 
 parser.add_argument('-p', action='store', required = False, nargs = '+', help = "[OPTIONAL] for a precision-at-curve, specify the index in the given order of excel sheets (just 0 for txt) and the name of the output file")
 parser.add_argument('-s', action = 'store', nargs = '+', required = False, help = "[EXCEL] specify indexes of the excel sheets to be processed")
 parser.add_argument('-l', action = 'store_true', help = "specify if the number of annotations is not fixed")
+parser.add_argument('-c', action = 'store_true', help = "specify if the value of annotations is not standard")
 args = parser.parse_args()
 # outfile = open(args.o,"w")
 #precision_at = args.p
+
+if args.c:
+    c_dict = {"2":0,"1":1}
 
 # retrieve annotation sets
 if args.f == "txt":
     annotation_values = []
     infile = open(args.i)
-    for line in infile.readlines():
-        annotation_values.append([int(x) for x in line.strip().split("\t")])
+    if args.c:
+        for line in infile.readlines():
+            annotation_values.append([c_dict[x] for x in line.strip().split("\t")])       
+    else:
+        for line in infile.readlines():
+            annotation_values.append([int(x) for x in line.strip().split("\t")])
     infile.close()
 else:
     annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
 
-print annotation_values
+annotation_values = [annotation_values]
 
 # calculate and output scores
 for i,sheet in enumerate(annotation_values):
     if args.p and int(args.p[0]) == i: 
-        precision = annotation_calcs.calculate_precision(sheet,args.l,args.p[1])
+        precision = annotation_calcs.calculate_precision(sheet,lax = args.l,plot = args.p[1])
     else:
-        precision = annotation_calcs.calculate_precision(sheet,args.l)
+        precision = annotation_calcs.calculate_precision(sheet,lax = args.l)
     for entry in precision:
         print "Precision " + str(entry[0]) + ":",entry[1]
     annotation_calcs.calculate_confusion_matrix(sheet)

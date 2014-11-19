@@ -7,6 +7,7 @@ import codecs
 import time_functions
 import re
 import ucto
+import multiprocessing
 
 parser = argparse.ArgumentParser(description = "Program to sort tweets in time and make sequences of words")
 
@@ -58,12 +59,21 @@ endtime = starttime.date() + heap
 timewindows = []
 timewindow = []
 for t in sorted_time:
+<<<<<<< HEAD
     if t.date() < endtime:
+=======
+    print t,endtime
+    if t < endtime:
+        print "append"
+>>>>>>> ea1ccce0e108d9bc5874bfc72f622ee64d9159a6
         timewindow.append(t)
     else:
         timewindows.append(timewindow)
         timewindow = [t]
         endtime += heap
+        print "append timewindow, new",endtime
+
+print "timewindow length",len(timewindows)
 
 word_timewindow = defaultdict(list)
 for tw in timewindows:

@@ -14,13 +14,27 @@ parser.add_argument('-o', action = 'store', required = True, help = "the output 
 args = parser.parse_args() 
 
 infile = codecs.open(args.i,"r","utf-8")
+try:
+    outfilein = codecs.open(args.o,"r","utf-8")
+    new = False
+    outfilein.close()
+except:
+    new = True
 outfile = codecs.open(args.o,"a","utf-8")
 
-outfile.write("#user_id\t#tweet_id\t#created\t#reply_to_tweet_id\t#retweet_to_tweet_id\t#user_name\t#user_follower_count\t#user_location\t#tweet_location\t#hashtags\t#tweet\n")
+if new:
+    outfile.write("#user_id\t#tweet_id\t#date\t#time\t#reply_to_tweet_id\t#retweet_to_tweet_id\t#user_name\t#user_follower_count\t#user_location\t#tweet_location\t#hashtags\t#tweet\n")
+
+month = {"Jan":"01", "Feb":"02", "Mar":"03", "Apr":"04", "May":"05", "Jun":"06", "Jul":"07", "Aug":"08", "Sep":"09", "Oct":"10", "Nov":"11", "Dec":"12"}
+date_time = re.compile(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+) (\d{2}:\d{2}:\d{2}) \+\d+ (\d{4})")
 
 for line in infile.readlines():
     decoded = json.loads(line)
-    fields = [decoded["user"]["id"],decoded["id"],decoded["created_at"]]
+    if "twinl_lang" in decoded and decoded["twinl_lang"] != "dutch":
+        continue
+    fields = [decoded["user"]["id"],decoded["id"]]
+    dtsearch = date_time.search(decoded["created_at"]).groups()
+    fields.extend([dtsearch[1] + "-" + month[dtsearch[0]] + "-" + dtsearch[3],dtsearch[2]])
     if decoded["in_reply_to_status_id"]:
         fields.append(decoded["in_reply_to_status_id"])
     else:
