@@ -59,13 +59,9 @@ endtime = starttime.date() + heap
 timewindows = []
 timewindow = []
 for t in sorted_time:
-<<<<<<< HEAD
+    print t.date(),endtime
     if t.date() < endtime:
-=======
-    print t,endtime
-    if t < endtime:
         print "append"
->>>>>>> ea1ccce0e108d9bc5874bfc72f622ee64d9159a6
         timewindow.append(t)
     else:
         timewindows.append(timewindow)
