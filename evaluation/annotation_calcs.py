@@ -10,7 +10,9 @@ def calculate_precision(lines,lax = False,plot = False):
     majority_judgements = defaultdict(list)
     precisions = []
     precision_strengths = defaultdict(int)
-    if not lax:
+    if lax:
+        annotators = max([len(x) for x in lines])
+    else:
         annotators = len(lines[0])
     for line in lines:
         #if len(line) == 1:
@@ -55,6 +57,7 @@ def calculate_precision(lines,lax = False,plot = False):
             plt.plot(rank,precision)
         
         legend_entries = sorted(majority_judgements.keys())
+        print legend_entries
         for i,entry in enumerate(legend_entries):
             percentage = str(int(entry/annotators * 100))
             legend_entries[i] = percentage + "% positive"
@@ -181,8 +184,11 @@ def calculate_mutual_fscore(lines):
     for p in perms:
     #for i in range(num_coders):
     #    for j in range(i+1,num_coders):
-        fscores.append(calculate_fscore(lines,p[0],p[1]))
-        print p,calculate_fscore(lines,p[0],p[1])
+        try:
+            fscores.append(calculate_fscore(lines,p[0],p[1]))
+            print p,calculate_fscore(lines,p[0],p[1])
+        except:
+            continue
     mutual_fscore = round(sum(fscores)/len(fscores),2)
     return mutual_fscore
 
