@@ -59,15 +59,12 @@ endtime = starttime.date() + heap
 timewindows = []
 timewindow = []
 for t in sorted_time:
-    print t.date(),endtime
     if t.date() < endtime:
-        print "append"
         timewindow.append(t)
     else:
         timewindows.append(timewindow)
         timewindow = [t]
         endtime += heap
-        print "append timewindow, new",endtime
 
 print "timewindow length",len(timewindows)
 
@@ -78,14 +75,15 @@ for tw in timewindows:
         words = time_words[time]
         for word in words:
             wordcount[word] += 1
-        for word in vocabulary: 
-            try:
-                word_timewindow[word].append(wordcount[word])
-            except:
-                word_timewindow[word].append(0)
+    for word in vocabulary: 
+        try:
+            word_timewindow[word].append(wordcount[word])
+        except:
+            word_timewindow[word].append(0)
+
+print "wordseq lengths",[len(word_timewindow[word]) for word in vocabulary[:100]]
 
 #write to file
 for word in vocabulary:
     outfile.write(word + "\t" + "|".join([str(x) for x in word_timewindow[word]]) + "\n")
 outfile.close()
-
