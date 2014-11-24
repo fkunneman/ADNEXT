@@ -17,6 +17,7 @@ from sklearn import svm, naive_bayes, tree
 from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
+from sklearn.externals import joblib
 
 import lineconverter
 import gen_functions
@@ -46,6 +47,7 @@ class Classifier():
             queue.put(feature_frequency)
         
         print len(self.training)
+
         q = multiprocessing.Queue()
         chunks = gen_functions.make_chunks(self.training,self.jobs)
         for chunk in chunks:
@@ -384,3 +386,8 @@ class Classifier():
             for instance in testresults:
                 outfile.write("\t".join(instance) + "\n") 
             outfile.close()
+
+    def save_model(self):
+        for tset in self.test:
+            outfile = tset["out"] + "model.joblib.pkl"
+            _ = joblib.dump(self.clf, outfile, compress=9)

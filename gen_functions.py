@@ -89,11 +89,18 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
                     print num_annotators, "annotators"
             else:
                 rowvals = sheet.row_values(rownum)
+                print rowvals
                 if date:
                     try:
                         rowvals[date] = datetime.date(*xlrd.xldate_as_tuple(sheet.cell_value(rownum,date), workbook.datemode)[:3])
                     except:
                         continue
+                # values = []
+                # for x in rowvals:
+                #     try:
+                #         values.append(unicode(str(int(x))))
+                #     except:
+                #         values.append('')
                 values = [unicode(x) for x in rowvals]
             sheetlines.append(values)
         #each sheet is a list of lists

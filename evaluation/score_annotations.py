@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description = "Program to read in annotations a
 
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")
 parser.add_argument('-f', action = 'store', default = "excel", help = "specify the format of the input file (default is excel)")
-#parser.add_argument('-o', action = 'store', required = False, help = "the output file (for the positive precision score and cohens kappa)")
+parser.add_argument('-o', action = 'store', help = "the output file")
 parser.add_argument('--header', action = 'store_true', help = "specify if the exceltab(s) contain a header")
 parser.add_argument('--ck', action = 'store_true', help = "specify to calculate cohen's kappa")
 parser.add_argument('--ka', action = 'store_true', help = "specify to calculate krippendorff's alpha")
@@ -21,8 +21,8 @@ parser.add_argument('-s', action = 'store', nargs = '+', required = False, help 
 parser.add_argument('-l', action = 'store_true', help = "specify if the number of annotations is not fixed")
 parser.add_argument('-c', action = 'store_true', help = "specify if the value of annotations is not standard")
 args = parser.parse_args()
-# outfile = open(args.o,"w")
-#precision_at = args.p
+
+outfile = open(args.o,"w")
 
 if args.c:
     c_dict = {"2":0,"1":1}
@@ -50,14 +50,19 @@ for i,sheet in enumerate(annotation_values):
     else:
         precision = annotation_calcs.calculate_precision(sheet,lax = args.l)
     for entry in precision:
+        outfile.write("Precision " + str(entry[0]) + ":" + str(entry[1]) + "\n")
         print "Precision " + str(entry[0]) + ":",entry[1]
+    outfile.write("\n")
     annotation_calcs.calculate_confusion_matrix(sheet)
     if args.ck:
         cohens_kappa = annotation_calcs.calculate_cohens_kappa(sheet)
+        outfile.write("Cohen's Kappa: " + str(cohens_kappa) + "\n\n")
         print "Cohen's Kappa:",cohens_kappa
     if args.ka:
         krippendorff = annotation_calcs.calculate_krippendorffs_alpha(sheet)
+        outfile.write("Krippendorff's Alpha: " + str(krippendorff) + "\n\n")
         print "Krippendorff's Alpha:",krippendorff
     if args.fs:
         mutual_fscore = annotation_calcs.calculate_mutual_fscore(sheet)
+        outfile.write("Mutual F-score: " + str(mutual_fscore) + "\n")
         print "Mutual F-score:",mutual_fscore

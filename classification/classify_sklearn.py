@@ -39,7 +39,8 @@ parser.add_argument('--voting', action='store', required = False, nargs='+',
 parser.add_argument('--append', action = 'store', required=False, 
     help = "to append classifier output for voting, specify the filename of standard output of " +
         "the classifier")
-
+parser.add_argument('--save', action = 'store_true', 
+    help = "choose to write the classifiermodel to a file")
 
 args = parser.parse_args() 
 
@@ -125,6 +126,8 @@ def classify(tr,te):
         elif args.c == "tree":
             cl.train_decisiontree()
         cl.test_model()
+    if args.save:
+        cl.save_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:

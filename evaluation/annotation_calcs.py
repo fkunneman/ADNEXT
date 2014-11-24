@@ -26,7 +26,7 @@ def calculate_precision(lines,lax = False,plot = False):
                 num_positive += 1
 
         percentage = num_positive / len(line)
-        majority = int(len(line) / 2) + 1 # 2-2 3-2 4-3 5-3
+        majority = int(round(len(line) / 2))
         if percentage >= 0.5: #classification is true
             for i in range(majority,len(line)+1): #for every degree of majority (1.0, .66, .5)
                 if i <= num_positive:
@@ -36,7 +36,7 @@ def calculate_precision(lines,lax = False,plot = False):
                     majority_judgements[i].append(0) #if degree of majority is not met, add 0
         else: #classification is false
             for i in range(majority,len(line)+1):
-                majority_judgements[i].append(0) #add 0 to any degree of majority 
+                majority_judgements[i].append(0) #add 0 to any degree of majority
 
     for ps in sorted(precision_strengths.keys()): 
         precision_score = precision_strengths[ps] / len(lines)
@@ -57,7 +57,6 @@ def calculate_precision(lines,lax = False,plot = False):
             plt.plot(rank,precision)
         
         legend_entries = sorted(majority_judgements.keys())
-        print legend_entries
         for i,entry in enumerate(legend_entries):
             percentage = str(int(entry/annotators * 100))
             legend_entries[i] = percentage + "% positive"
@@ -71,8 +70,10 @@ def calculate_precision(lines,lax = False,plot = False):
 def calculate_cohens_kappa(lines):    
     annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(int)))
     annotator_scores = defaultdict(lambda : defaultdict(int))
+    fields = 0
     for line in lines:
-        if len(lines) > 1:
+        if len(line) > 1:
+            fields += 1
             for i,annotation in enumerate(line):
                 annotator_scores[i][annotation] += 1 #annotator - annotation
                 j = i
@@ -82,6 +83,7 @@ def calculate_cohens_kappa(lines):
                     else:
                         annotator_couples[i][j+1]["match"] += 1
                     j += 1
+    print "lines-fields",len(lines),fields
 
     cohens_kappas = []
     for annotator_1 in annotator_couples.keys():
@@ -93,7 +95,6 @@ def calculate_cohens_kappa(lines):
                 percent_2 = annotator_scores[annotator_2][answer] / len(lines)
                 random += (percent_1 * percent_2)
             ck = (agreement - random) / (1 - random)
-            print "random",random,"ck",ck
             cohens_kappas.append(ck)    
 
     cohens_kappa = round(sum(cohens_kappas) / len(cohens_kappas),2)
@@ -129,10 +130,8 @@ def calculate_confusion_matrix(lines):
                 percent_2 = 0.5
                 random += (percent_1 * percent_2)
             ck = (agreement - 0.5) / (1 - 0.5)
-            print "ck",ck
             cohens_kappas.append(ck) 
             percent.append(agreement)
-    print "ck",round(sum(cohens_kappas) / len(cohens_kappas),2),"percent",round(sum(percent) / len(percent),2)
 
 #function that returns krippendorff's alpha with a nominal distance metric
 #input is an array (items) of arrays (values)
@@ -172,23 +171,22 @@ def calculate_krippendorffs_alpha(lines):
     return KA         
 
 def calculate_fscore(lines,index_1,index_2):
-    ce = evaluation.ClassEvaluation()    
+    ce = evaluation.ClassEvaluation()
     for item in lines:
-        ce.append(item[index_1],item[index_2])
+        try:
+            ce.append(item[index_1],item[index_2])
+        except:
+            continue
     return round(ce.fscore(cls=1),2)
 
-def calculate_mutual_fscore(lines):
-    num_coders = len(lines[0])
+def calculate_mutual_fscore(lines,lax=False):
+    if lax:
+        num_coders = max([len(x) for x in lines])
+    else:
+        num_coders = len(lines[0])
     fscores = []
     perms = list(itertools.permutations(range(num_coders),2))
     for p in perms:
-    #for i in range(num_coders):
-    #    for j in range(i+1,num_coders):
-        try:
-            fscores.append(calculate_fscore(lines,p[0],p[1]))
-            print p,calculate_fscore(lines,p[0],p[1])
-        except:
-            continue
+        fscores.append(calculate_fscore(lines,p[0],p[1]))
     mutual_fscore = round(sum(fscores)/len(fscores),2)
     return mutual_fscore
-
