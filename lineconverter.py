@@ -10,213 +10,186 @@ Class to convert the lines in a file in a number of ways and/or make a
 filtering of these.
 """
 class Lineconverter():
-    # Give the file with lines and the standard delimiter between fields 
-    #    on a line (also if there is only one field)
-    def __init__(self,lines,delimiter = "\t"):
-        self.lines = lines
-        self.delimiter = delimiter
+	# Give the file with lines and the standard delimiter between fields 
+	#    on a line (also if there is only one field)
+	def __init__(self,lines,header):
+		if header:
+			self.lines = lines[1:]
+			self.header = lines[0]
+		else:
+			self.lines = lines
 
-    # Add the same string to the back or front of each line 
-    #   (argument [place] can be 'front' or 'back')
-    def add_string(self,string,place):
-        newlines = []
-        for line in self.lines:
-            tokens = line.split(self.delimiter)
-            if place == "back":
-                tokens.append(string)
-            else:
-                tokens.insert(int(place),string)
-            newline = self.delimiter.join(tokens)
-            newlines.append(newline)
-        
-        self.lines = newlines
+	# Add the same string to the back or front of each line 
+	#   (argument [place] can be 'front' or 'back')
+	def add_string(self,string,place):
+		for line in self.lines:
+			if place == "back":
+				line.append(string)
+			else:
+				line.insert(place,string)
 
-    # Add an id to the start of lines by enumeration
+	def add_twitter_url(self,column_1,column_2):
+		self.header.append("#tweet_url")
+		for line in self.lines:
+			try:
+				line.append("https://twitter.com/" + line[column_1] + "/status/" + line[column_2])
+			except IndexError:
+				print "index for twitter url non existant"
+				continue
 
-    def add_twitter_url(self):
-        newlines = []
-        for line in self.lines:
-            try:
-                tokens = line.split(self.delimiter)
-                tokens.append("https://twitter.com/" + tokens[5] + "/status/" + tokens[1])
-                newline = self.delimiter.join(tokens)
-                newlines.append(newline)
-            except IndexError:
-                continue
-        
-        self.lines = newlines
+	def add_sentiment(self,column):
+		self.header.extend(["#polarity","#subjectivity"])
+		i = 0
+		while i < len(self.lines):
+			line = self.lines[i]
+			try:
+				senti = sentiment(line[column])
+				line.extend([senti[0],senti[1]])
+				i+=1
+			except:
+				if i == len(self.lines)-1 and len(line) == 1:
+					del self.lines[-1]
+				else:
+					print i,line,column,"sentiment text column not correct"
+					quit()
 
-    def add_sentiment(self,column):
-        newlines = []
-        newlines.append(self.lines[0] + "\t#polarity\t#subjectivity")
-        for line in self.lines[1:]:
-            try:
-                tokens = line.split(self.delimiter)
-                senti = sentiment(tokens[column])
-                newlines.append(line + "\t" + str(senti[0]) + "\t" + str(senti[1]))
-            except:
-                newlines.append(line)
-        self.lines = newlines
+	def count_punct(self,column):
+		self.header.extend(["#excl_count","#quest_count"])
+		for line in self.lines:
+			try:
+				text = line[column]
+				if re.search("!",text):
+					line.append(len(re.findall("!",text)))
+				else:
+					line.append(0)
+				if re.search("\?",text):
+					line.append(len(re.findall("\?",text)))
+				else:
+					line.append(0)
+			except:
+				print line,"textcolumn incorrect, quitting"
+				quit()
 
-    def count_punct(self,column):
-        newlines = []
-        newlines.append(self.lines[0] + "\t#excl_count\t#quest_count")
-        for line in self.lines[1:]:
-            try:
-                tokens = line.split(self.delimiter)
-                text = tokens[column]
-                newline = line
-                if re.search("!",text):
-                    newline = newline + "\t" + str(len(re.findall("!",text)))
-                else:
-                    newline = newline + "\t" + "0"
-                if re.search("\?",text):
-                    newline = newline + "\t" + str(len(re.findall("\?",text)))
-                else:
-                    newline = newline + "\t" + "0"
-                newlines.append(newline)
-            except:
-                newlines.append(line)
-        self.lines = newlines
+	def add_id(self,start_id = 0):
+		for i,line in enumerate(self.lines):
+			line.insert(0,str(i + start_id))
 
-    def add_id(self,start_id = 0):
-        newlines = []
+	# replace a specified field ([column]) in a line with a new string 
+	#   ([replace]) if it matches one of the strings in [match] 
+	#   (when [match] == [], any string is replaced)
+	def replace_string(self,replace,c,m = []):
+		for line in self.lines:
+			if len(m) == 0 or line[c] in m:
+				line[c] = replace
+			else:
+				for i,t in enumerate(line):
+					if t in m:
+						line[i] = replace
 
-        for i,line in enumerate(self.lines):
-            newline = str(i + start_id) + self.delimiter + line
-            newlines.append(newline)
+	def delete_string(self,blacklist,column):
+		i = 0
+		while i < len(self.lines):
+			line = self.lines[i]
+			black = False
+			sequence = line[column].strip().split(" ")
+			for w in sequence:
+				for string in blacklist:
+					if re.match(string,w,re.IGNORECASE):
+						black = True
+			if black:
+				del self.lines[i]
+			else:
+				i+=1
 
-        self.lines = newlines
+	# for lines with temporal characteristics (especially describing an 
+	#    event), add an amount of hours to the date and time, and either 
+	#   append the new date and time to the line, or replace the current ones
+	def add_time(self,value,datecolumn = 1,timecolumn = 2, add = "append", datetype = "eu"):
+		for line in self.lines:
+			date = line[datecolumn]
+			time = line[timecolumn]
+			dateparts = date.split("-")
+			timeparts = time.split(":")
+			if datetype == "eu":
+				date_time = datetime.datetime(int(dateparts[2]),int(dateparts[1]),
+					int(dateparts[0]),int(timeparts[0]),int(timeparts[1]),0)                
+				new_date_time = date_time + datetime.timedelta(hours=value)        
+			elif datetype == "vs":
+				date_time = datetime.datetime(int(dateparts[0]),int(dateparts[1]),
+					int(dateparts[2]),int(timeparts[0]),int(timeparts[1]),0)                
+				new_date_time = date_time + datetime.timedelta(hours=2)                            
+			if datetype == "eu":    
+				new_date = str(new_date_time.day) + "-" + str(new_date_time.month) + "-" + \
+					str(new_date_time.year)    
+			elif datetype == "vs":
+				new_date = str(new_date_time.year) + "-" + str(new_date_time.month) + "-" + \
+					str(new_date_time.day)    
+			new_time = str(new_date_time.hour) + ":" + str(new_date_time.minute)
 
-    # replace a specified field ([column]) in a line with a new string 
-    #   ([replace]) if it matches one of the strings in [match] 
-    #   (when [match] == [], any string is replaced)
-    def replace_string(self,replace,c,m = []):
-        newlines = []
-        for line in self.lines:
-            tokens = line.split(self.delimiter)
-            if type(c) == int:
-		if len(m) == 0 or tokens[c] in m:
-                    new_tokens = tokens
-                    new_tokens[c] = replace
-                    newline = self.delimiter.join(new_tokens)
-                    newlines.append(newline)
-                else:
-                    newlines.append(line)
-            else:
-                for i,t in enumerate(tokens):
-                    if t in m:
-                        tokens[i] = replace
-                newline = self.delimiter.join(tokens)
-                newlines.append(newline)    
-        self.lines = newlines
-    
-    def delete_string(self,blacklist,column):
-        newlines = []
-        for line in self.lines:
-            black = False
-            tokens = line.split(self.delimiter)
-            sequence = tokens[column].strip().split(" ")
-            for w in sequence:
-                for string in blacklist:
-                    if re.match(string,w,re.IGNORECASE):
-                        black=True
-            if not black:
-                newlines.append(line)
-        self.lines = newlines
+			if add == "append":
+				line.extend([new_date,new_time])
+			elif add == "replace":
+				line[datecolumn] = new_date
+				line[timecolumn] = new_time
+		
+	def filter_string_end(self,key,column):
 
-    # for lines with temporal characteristics (especially describing an 
-    #    event), add an amount of hours to the date and time, and either 
-    #   append the new date and time to the line, or replace the current ones
-    def add_time(self,value,datecolumn = 1,timecolumn = 2, add = "append", datetype = "eu"):
-        newlines = []
-        for line in self.lines:
-            tokens = line.split(self.delimiter)
-            date = tokens[datecolumn]
-            time = tokens[timecolumn]
-            dateparts = date.split("-")
-            timeparts = time.split(":")
-            if datetype == "eu":
-                date_time = datetime.datetime(int(dateparts[2]),int(dateparts[1]),
-                    int(dateparts[0]),int(timeparts[0]),int(timeparts[1]),0)                
-                new_date_time = date_time + datetime.timedelta(hours=value)        
-            elif datetype == "vs":
-                date_time = datetime.datetime(int(dateparts[0]),int(dateparts[1]),
-                    int(dateparts[2]),int(timeparts[0]),int(timeparts[1]),0)                
-                new_date_time = date_time + datetime.timedelta(hours=2)                            
-            if datetype == "eu":    
-                new_date = str(new_date_time.day) + "-" + str(new_date_time.month) + "-" + \
-                    str(new_date_time.year)    
-            elif datetype == "vs":
-                new_date = str(new_date_time.year) + "-" + str(new_date_time.month) + "-" + \
-                    str(new_date_time.day)    
-            new_time = str(new_date_time.hour) + ":" + str(new_date_time.minute)
-        
-            if add == "append":
-                tokens.extend([new_date,new_time])
-            elif add == "replace":
-                tokens[datecolumn] = new_date
-                tokens[timecolumn] = new_time
-            new_line = self.delimiter.join(tokens)
-            newlines.append(new_line)
-        self.lines = newlines
-        
-    def filter_string_end(self,key,column):
+		def has_end(sequence):
+			try: 
+				if re.match(sequence[-1],key,re.IGNORECASE):
+					return True          
+				elif re.search("http://",sequence[-1]) or re.search("#",sequence[-1]):
+					return has_end(sequence[:-1])
+				else:
+					return False
+			except:
+				return False 
 
-        def has_end(sequence):
-            try: 
-                if re.match(sequence[-1],key,re.IGNORECASE):
-                    return True          
-                elif re.search("http://",sequence[-1]) or re.search("#",sequence[-1]):
-                    return has_end(sequence[:-1])
-                else:
-                    return False
-            except:
-                return False 
-        newlines = []
+		i = 0
+		while i < len(self.lines):
+			line = self.lines[i]
+			text = line[column]
+			seq = text.strip().split(" ")
+			if has_end(seq):
+				i+=1
+			else:
+				del self.lines[i]
 
-        for line in self.lines:
-            text = line.split(self.delimiter)[column]
-            seq = text.strip().split(" ")
-            if has_end(seq):
-                newlines.append(line)
+	def extract_lines(self,key,column):
+		i = 0
+		while i < len(self.lines):
+			line = self.lines[i]
+			text = line[column]
+			if text.lower() == key:
+				i += 1
+			else:
+				del self.lines[i]
 
-        self.lines = newlines
-
-    def extract_lines(self,key,column):
-
-        newlines = []
-        for line in self.lines:
-            text = line.split(self.delimiter)[column]
-            if text.lower() == key:
-                newlines.append(line)
-        self.lines = newlines
-
-    def sample(self,sample_size,sample_method = "random",sample_type="down",return_sample=False):
-        num_lines = len(self.lines)
-        sample = []
-        if sample_method == "steps":
-            i = sample_size
-            while i < len(self.lines):
-                sample.append(self.lines[i])
-                i += sample_size
-            self.lines = sample
-        else:
-            if sample_type == "up":
-                while sample_size > num_lines:
-                    sample.extend(range(num_lines))
-                    sample_size -= num_lines
-            sample.extend(sorted(random.sample(range(num_lines), sample_size)))
-            if return_sample:
-                sample_out = [self.lines[i] for i in sample]
-                return sample_out
-            else:
-                if sample_type=="down": 
-                    for offset, index in enumerate(sample):
-                       index -= offset
-                       del self.lines[index]
-                elif sample_type=="up":
-                    for i in sample:
-                        self.lines.append(self.lines[i]) 
-                if return_sample:
-                    return sample_out
+	def sample(self,sample_size,sample_method = "random",sample_type="down",return_sample=False):
+		num_lines = len(self.lines)
+		sample = []
+		if sample_method == "steps":
+			i = sample_size
+			while i < len(self.lines):
+				sample.append(self.lines[i])
+				i += sample_size
+			self.lines = sample
+		else:
+			if sample_type == "up":
+				while sample_size > num_lines:
+					sample.extend(range(num_lines))
+					sample_size -= num_lines
+			sample.extend(sorted(random.sample(range(num_lines), sample_size)))
+			if return_sample:
+				sample_out = [self.lines[i] for i in sample]
+				return sample_out
+			else:
+				if sample_type=="down": 
+					for offset, index in enumerate(sample):
+					   index -= offset
+					   del self.lines[index]
+				elif sample_type=="up":
+					for i in sample:
+						self.lines.append(self.lines[i]) 
+				if return_sample:
+					return sample_out

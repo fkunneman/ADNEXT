@@ -48,13 +48,16 @@ for line in infile.readlines():
         fields.append("null")
     userfields = decoded["user"]
     fields.extend([userfields["screen_name"],userfields["followers_count"],userfields["location"]])
+    if fields[-1] != None:
+        fields[-1] = re.sub("\n","",fields[-1])
     if decoded["place"]:
         fields.append(decoded["place"]["name"])
     else:
         fields.append("null")
     fields.append(",".join(["#" + x["text"] for x in decoded["entities"]["hashtags"]]))
-    fields.append(decoded["text"])
-    outfile.write("\t".join([unicode(x) for x in fields]) + "\n")
+    fields.append(decoded["text"].replace("\n"," "))
+    fields_write = "\t".join([unicode(x).replace("\n"," ") for x in fields]) + "\n"
+    outfile.write(fields_write)
 
 infile.close()
 outfile.close() 

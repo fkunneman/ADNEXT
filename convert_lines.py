@@ -5,61 +5,63 @@ import codecs
 import argparse
 import gen_functions
 import re
+import time_functions
 from xlwt import *
 
 parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
 parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
 parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
-parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","delete","delete_filematch","extract","add_time","add_id","filter","twitter", "sentiment", "punct"], help = "Choose the action to perform.")
+parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","convert_float","delete","delete_filematch","extract","add_time","add_id","filter","twitter", "sentiment", "punct"], nargs = '+', help = "Choose the actions to perform.")
 parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete, filter or extract")
-parser.add_argument('-c', action = 'store', required = False, type=int, help = "give the column as argument for add, replace, delete, sentiment, punct or extract (add is done before the column, no column means behind the last one, no column for replace means every column will be matches).")
+parser.add_argument('-c', action = 'store', required = False, nargs='+', type=int, help = "give column numbers as argument for add, convert_float, replace, delete, sentiment, punct or extract (add is done before the column, no column means behind the last one, no column for replace means every column will be matches)." + \
+    "provide column numbers for each 'action' argument it applies to.")
 parser.add_argument('--sample', action = 'store', required = False, nargs='+', help = "sample lines, first specify the number of lines to sample, then specify the sample method (steps or random)")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
 parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
-parser.add_argument('--excel', action = 'store_true', help = "Output lines in excel format")
+parser.add_argument('--excel', action = 'store', type = int, nargs = '+', help = "Output lines in excel format")
+parser.add_argument('--sheets', action = 'store', nargs='+', type = int, default = [0], help = "for multiple excel input sheets, specify the indexes")
+parser.add_argument('--header', action='store_true', help = "specify if file has header")
 
 args = parser.parse_args() 
 
+delimiter = args.d
 if args.i[-3:] == "xls": 
-    lines = gen_functions.excel2lines(args.i,[0])[0]
-    newlines = []
-    for line in lines:
-        for i in range(len(line)):
-            line[i] = re.sub("\n","",line[i])
-        newlines.append(args.d.join(line))
-    lines = newlines
-
+    sheets = gen_functions.excel2lines(args.i,args.sheets)
+    print "num_sheets",len(sheets)
+    lines = []
+    for sheet in sheets:
+        for line in sheet:
+            for i in range(len(line)):
+                line[i] = re.sub("\n","",line[i])
+            lines.append(line)
+    print "num_lines",len(lines)
 else:
     infile = codecs.open(args.i,"r","utf-8")
-    lines = infile.read().split("\n")
+    lines_raw = infile.read().split("\n")
     infile.close()
+    lines = [x.strip().split(delimiter) for x in lines_raw]
 
-delimiter = args.d
-action = args.a
-# extra = args.e
-outfile = codecs.open(args.o,"w","utf-8")
+actions = args.a
+lineconvert = lineconverter.Lineconverter(lines,args.header)
 
-lineconvert = lineconverter.Lineconverter(lines,delimiter)
-if action == "add":
-
+if "add" in actions:
     if args.c:
-        place = int(args.c)
+        lineconvert.add_string(args.s,args.c.pop(0))
     else:
         place = "back"
-    lineconvert.add_string(args.s,place)
+    
 
-if action == "replace":
+if "replace" in actions:
     if args.c:
-        column = int(args.c)
         if args.replace:
-            lineconvert.replace_string(args.s,c = column,m = args.replace)
+            lineconvert.replace_string(args.s,c = args.c.pop(0),m = args.replace)
         else:
-            lineconvert.replace_string(args.s,c = column)
+            lineconvert.replace_string(args.s,c = args.c.pop(0))
     else:
         lineconvert.replace_string(args.s,args.replace)
 
-if action == "add_time":
+if "add_time" in actions:
     datecolumn = int(raw_input("Please specify the column in which  args.cthe date is given...\n"))
     timecolumn = int(raw_input("Please specify the column in which the time is given...\n"))
     hours = int(raw_input("Please specify the amount of hours added...\n"))
@@ -67,18 +69,18 @@ if action == "add_time":
     datetype = raw_input("Is the date given in EU-style or VS-style? (give either \'eu\' or \'vs\')...\n")
     lineconvert.add_time(hours,datecolumn,timecolumn,addition,datetype)
 
-if action == "add_id":
+if "add_id" in actions:
     if args.c:
-        lineconvert.add_id(start_id = args.c)
+        lineconvert.add_id(start_id = args.c.pop(0))
     else:
         lineconvert.add_id()
 
-if action == "delete":
+if "delete" in actions:
     print "num lines before delete:",len(lineconvert.lines)
-    lineconvert.delete_string([args.s], args.c)
+    lineconvert.delete_string([args.s], args.c.pop(0))
     print "num lines after delete",len(lineconvert.lines)
 
-if action == "delete_filematch":
+if "delete_filematch" in actions:
     f = args.filematch[0]
     matchlist = []
     if f[-3:] == "xls": 
@@ -98,20 +100,19 @@ if action == "delete_filematch":
     lineconvert.delete_string(matchlist, args.c)
     print "num lines after delete",len(lineconvert.lines)
 
-if action == "filter":
-    lineconvert.filter_string_end(args.s,args.c)
+if "filter" in actions:
+    lineconvert.filter_string_end(args.s,args.c.pop(0))
 
-if action == "extract":
-    lineconvert.extract_lines(args.s,args.c)
+if "extract" in actions:
+    lineconvert.extract_lines(args.s,args.c.pop(0))
+if "sentiment" in actions:
+    lineconvert.add_sentiment(args.c.pop(0))
 
-if action == "twitter":
-    lineconvert.add_twitter_url()
+if "punct" in actions:
+    lineconvert.count_punct(args.c.pop(0))
 
-if action == "sentiment":
-    lineconvert.add_sentiment(args.c)
-
-if action == "punct":
-    lineconvert.count_punct(args.c)
+if "twitter" in actions:
+    lineconvert.add_twitter_url(args.c[0],args.c[1])
 
 if args.sample:
     if len(args.sample) > 1 and args.sample[1] == "steps":
@@ -132,42 +133,67 @@ if args.sample:
     # exit()
     
 if args.excel:
-    outfile.close()
+    #print len(lineconvert.lines)
     if len(lineconvert.lines) > 65535:
         num_chunks = int(len(lineconvert.lines) / 65534) + 1
+    #    print "num_chunks",num_chunks
         chunks = gen_functions.make_chunks(lineconvert.lines,nc = num_chunks)
+    #    print "chunks",[len(chunk) for chunk in chunks]
     else:
         chunks = [lineconvert.lines]
     outname = args.o.split("/")[-1].split(".")[0]
     book = Workbook()
     algn1 = Alignment()
     algn1.wrap = 1
-    style1 = XFStyle()
-    style1.alignment = algn1
+    style = XFStyle()
+    style.alignment = algn1
     for x,chunk in enumerate(chunks):
         tabname = outname + "_" + str(x)
         if len(tabname) <= 25:
             tab = book.add_sheet(tabname)
         else:
             tab = book.add_sheet(outname[:23] + "_" + str(x))
-
+        if args.header and x == 0:
+            for j,col in enumerate(lineconvert.header):
+                tab.write(0,j,col,style)
         for i,line in enumerate(chunk):
-            columns = line.strip().split(args.d)
-            for j,col in enumerate(columns):
-#                if re.search(r"\|",col):
-#                    print "before",col
-#                    col = re.sub("\|","\r\n",col)
-#                    print "after",col
-#                    tab.write(i,j,col,style1)
-                if re.search("https://twitter.com",col):
-                    ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
-                    tab.write(i,j, Formula(ucol))
+            if args.header and x == 0:
+                i += 1
+            for j,col in enumerate(line):
+                if j in args.excel:
+                    style.num_format_str = "general"
+                    tab.write(i,j,col,style)
                 else:
-                    tab.write(i,j,col)
+                    try:
+                        col = round(float(col),2)
+                        style.num_format_str = "0.00"
+                        tab.write(i,j,col,style)
+                    except:
+                        try:
+                            col = int(col)
+                            style.num_format_str = "0"
+                            tab.write(i,j,col,style)
+                        except:
+                            try:
+                                col = time_functions.return_datetime(col)
+                                style.num_format_str = "dd-mm-yy"
+                                tab.write(i,j,col,style)
+                            except:
+                                if re.match(r"\d{2}:\d{2}:\d{2}",col):
+                                    style.num_format_str = 'hh:mm:ss'
+                                    tab.write(i,j,col,style)
+                                else:
+                                    if re.search("https://twitter.com",col):
+                                        ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
+                                        tab.write(i,j, Formula(ucol))
+                                    else:
+                                        style.num_format_str = "general"
+                                        tab.write(i,j,col,style)
 
     book.save(args.o)
         
 else:
+    outfile = codecs.open(args.o,"w","utf-8")
     for line in lineconvert.lines:
-        outfile.write(line + "\n")
+        outfile.write(delimiter.join(line) + "\n")
     outfile.close()

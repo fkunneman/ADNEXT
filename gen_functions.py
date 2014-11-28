@@ -53,10 +53,11 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
     num_annotators = False
     workbook = xlrd.open_workbook(file_name)
     #collect sheets
-    if sheet_indexes:
-        sheets = []
-        for index in sheet_indexes:
-            sheets.append(workbook.sheet_by_index(int(index)))
+    sheets = []
+    print sheet_indexes
+    for index in sheet_indexes:
+        print index
+        sheets.append(workbook.sheet_by_index(int(index)))
     else:
         sheets = workbook.sheets()
     #for each sheet
@@ -66,6 +67,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
             first_row = 1
         else:
             first_row = 0
+        print "gen_functions",sheet.nrows
         last_row = sheet.nrows
         #iterate the lines
         for rownum in range(first_row,last_row):
@@ -89,7 +91,6 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
                     print num_annotators, "annotators"
             else:
                 rowvals = sheet.row_values(rownum)
-                print rowvals
                 if date:
                     try:
                         rowvals[date] = datetime.date(*xlrd.xldate_as_tuple(sheet.cell_value(rownum,date), workbook.datemode)[:3])

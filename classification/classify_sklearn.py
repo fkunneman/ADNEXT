@@ -40,7 +40,7 @@ parser.add_argument('--append', action = 'store', required=False,
     help = "to append classifier output for voting, specify the filename of standard output of " +
         "the classifier")
 parser.add_argument('--save', action = 'store_true', 
-    help = "choose to write the classifiermodel to a file")
+    help = "choose to write the classifiermodel and vocabulary to a file")
 
 args = parser.parse_args() 
 
