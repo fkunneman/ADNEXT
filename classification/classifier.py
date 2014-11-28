@@ -391,7 +391,7 @@ class Classifier():
         for tset in self.test:
             outfile = tset["out"] + "model.joblib.pkl"
             _ = joblib.dump(self.clf, outfile, compress=9)
-            outvocabulary = tset["out"] + "vocabulary.txt"
+            outvocabulary = codecs.open(tset["out"] + "vocabulary.txt","w","utf-8")
             for feature in self.features:
                 outvocabulary.write(feature + "\n")
             outvocabulary.close() 
