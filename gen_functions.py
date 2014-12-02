@@ -2,7 +2,7 @@
 
 from __future__ import division
 import math
-import xlrd
+#import xlrd
 import re
 import datetime
 import codecs
@@ -56,7 +56,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
     sheets = []
     print(sheet_indexes)
     for index in sheet_indexes:
-        print index
+        print(index)
         sheets.append(workbook.sheet_by_index(int(index)))
     else:
         sheets = workbook.sheets()

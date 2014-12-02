@@ -3,7 +3,7 @@ import codecs
 import re
 import datetime
 import random
-from pattern.nl import parse, pprint, sentiment
+#from pattern.nl import parse, pprint, sentiment
 
 """ 
 Class to convert the lines in a file in a number of ways and/or make a 
