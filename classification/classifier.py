@@ -375,7 +375,8 @@ class Classifier():
         #testout = codecs.open(outdir + "test.txt","w","utf-8")
         testout = open(outdir + "test.txt",mode="w",encoding="utf-8")
         for i,tset in enumerate(self.test):
-            testout = codecs.open(outdir + "test" + str(i) + ".txt","w","utf-8")
+            #testout = codecs.open(outdir + "test" + str(i) + ".txt","w","utf-8")
+            testout = open(outdir + "test" + str(i) + ".txt",mode="w",encoding="utf-8")
             for instance in tset["instances"]:
                 testout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
                     ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
