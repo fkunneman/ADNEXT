@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
-from __future__ import division
-import codecs
+#from __future__ import division
+#import codecs
 import multiprocessing
 from collections import defaultdict
 
@@ -46,7 +46,7 @@ class Classifier():
                     feature_frequency[feature] += 1
             queue.put(feature_frequency)
         
-        print len(self.training)
+        print(len(self.training))
 
         q = multiprocessing.Queue()
         chunks = gen_functions.make_chunks(self.training,self.jobs)
@@ -226,23 +226,23 @@ class Classifier():
     def train_svm(self,params = 10):
         #obtain the best parameter settings for an svm outputcode classifier
         if len(self.labels) > 2:
-            print "outputcodeclassifier"
+            print("outputcodeclassifier")
             param_grid = {'estimator__C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
                 'estimator__kernel': ['linear','rbf','poly'], 
                 'estimator__gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
                 'estimator__degree': [1,2,3,4]}
             model = OutputCodeClassifier(svm.SVC(probability=True))
         else:
-            print "svc model"
+            print("svc model")
             param_grid = {'C': [0.001, 0.005, 0.01, 0.5, 1, 5, 10, 50, 100, 500, 1000],
                 'kernel': ['linear','rbf','poly'], 
                 'gamma': [0.0005, 0.002, 0.008, 0.032, 0.128, 0.512, 1.024, 2.048],
                 'degree': [1,2,3,4]}
             model = svm.SVC(probability=True)
         paramsearch = RandomizedSearchCV(model, param_grid, cv=5, verbose=2,n_iter = params,n_jobs=self.jobs) 
-        print "Grid search..."
+        print("Grid search...")
         paramsearch.fit(self.training_csr,numpy.asarray(self.trainlabels))
-        print "Prediction..."
+        print("Prediction...")
         #print the best parameters to the file
         parameters = paramsearch.best_params_
         self.outstring = "best parameter settings:\n"
@@ -359,18 +359,21 @@ class Classifier():
     def output_data(self):
         outdir = self.test[0]["out"]
         #output features
-        featureout = codecs.open(outdir + "features.txt","w","utf-8")
+        #featureout = codecs.open(outdir + "features.txt","w","utf-8")
+        featureout = open(outdir + "features.txt","w","utf-8")
         for feature in sorted(self.feature_info, key=self.feature_info.get):
             featureout.write(feature + "\t" + str(self.feature_info[feature]) + "\n")
         featureout.close()
         #output trainfile
-        trainout = codecs.open(outdir + "train.txt","w","utf-8")
+        #trainout = codecs.open(outdir + "train.txt","w","utf-8")
+        trainout = open(outdir + "train.txt","w","utf-8")
         for instance in self.training:
             trainout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
                 ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
         trainout.close()
         #output testfile
-        testout = codecs.open(outdir + "test.txt","w","utf-8")
+        #testout = codecs.open(outdir + "test.txt","w","utf-8")
+        testout = open(outdir + "test.txt","w","utf-8")
         for i,tset in enumerate(self.test):
             testout = codecs.open(outdir + "test" + str(i) + ".txt","w","utf-8")
             for instance in tset["instances"]:
@@ -380,7 +383,8 @@ class Classifier():
     def test_model(self):
         for tset in self.test:
             testresults = self.predict(tset["instances"])
-            outfile = codecs.open(tset["out"] + "predictions.txt","w","utf-8")
+            #outfile = codecs.open(tset["out"] + "predictions.txt","w","utf-8")
+            outfile = open(tset["out"] + "predictions.txt","w","utf-8")
             if self.outstring:
                 outfile.write(self.outstring)
             for instance in testresults:
@@ -391,7 +395,8 @@ class Classifier():
         for tset in self.test:
             outfile = tset["out"] + "model.joblib.pkl"
             _ = joblib.dump(self.clf, outfile, compress=9)
-            outvocabulary = codecs.open(tset["out"] + "vocabulary.txt","w","utf-8")
+            #outvocabulary = codecs.open(tset["out"] + "vocabulary.txt","w","utf-8")
+            outvocabulary = open(tset["out"] + "vocabulary.txt","w","utf-8")
             for feature in self.features:
                 outvocabulary.write(feature + "\n")
             outvocabulary.close() 
