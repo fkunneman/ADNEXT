@@ -19,7 +19,7 @@ from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 from sklearn.externals import joblib
 
-import lineconverter
+#import lineconverter
 import gen_functions
 import weight_features
 
@@ -131,26 +131,26 @@ class Classifier():
         self.features = self.features[:n]
         self.prune_features()
 
-    def balance_data(self):
-        label_instances = defaultdict(list)
-        new_training = []
-        for instance in self.training:     
-            label = instance["label"]
-            label_instances[label].append(instance)
-        if len(label_instances.keys()) > 2:
-            median = int(numpy.median(numpy.array([len(label_instances[x]) for \
-                x in label_instances.keys()])))
-            for label in label_instances.keys():
-                if len(label_instances[label]) == median:
-                    new_training.extend(label_instances[label])
-                else:
-                    instances = lineconverter.Lineconverter(label_instances[label])
-                    if len(instances.lines) < median:
-                        instances.sample(median-len(instances.lines),sample_type="up")
-                    else:
-                        instances.sample(len(instances.lines)-median)
-                    new_training.extend(instances.lines)
-            self.training = new_training
+    # def balance_data(self):
+    #     label_instances = defaultdict(list)
+    #     new_training = []
+    #     for instance in self.training:     
+    #         label = instance["label"]
+    #         label_instances[label].append(instance)
+    #     if len(label_instances.keys()) > 2:
+    #         median = int(numpy.median(numpy.array([len(label_instances[x]) for \
+    #             x in label_instances.keys()])))
+    #         for label in label_instances.keys():
+    #             if len(label_instances[label]) == median:
+    #                 new_training.extend(label_instances[label])
+    #             else:
+    #                 instances = lineconverter.Lineconverter(label_instances[label])
+    #                 if len(instances.lines) < median:
+    #                     instances.sample(median-len(instances.lines),sample_type="up")
+    #                 else:
+    #                     instances.sample(len(instances.lines)-median)
+    #                 new_training.extend(instances.lines)
+    #         self.training = new_training
 
     def index_features(self,ind = 0):
         feature_frequency=defaultdict(int)
