@@ -34,7 +34,7 @@ class Lineconverter():
 			try:
 				line.append("https://twitter.com/" + line[column_1] + "/status/" + line[column_2])
 			except IndexError:
-				print "index for twitter url non existant"
+				print("index for twitter url non existant")
 				continue
 
 	def add_sentiment(self,column):
@@ -50,7 +50,7 @@ class Lineconverter():
 				if i == len(self.lines)-1 and len(line) == 1:
 					del self.lines[-1]
 				else:
-					print i,line,column,"sentiment text column not correct"
+					print(i,line,column,"sentiment text column not correct")
 					quit()
 
 	def count_punct(self,column):
@@ -67,7 +67,7 @@ class Lineconverter():
 				else:
 					line.append(0)
 			except:
-				print line,"textcolumn incorrect, quitting"
+				print(line,"textcolumn incorrect, quitting")
 				quit()
 
 	def add_id(self,start_id = 0):

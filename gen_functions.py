@@ -54,7 +54,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
     workbook = xlrd.open_workbook(file_name)
     #collect sheets
     sheets = []
-    print sheet_indexes
+    print(sheet_indexes)
     for index in sheet_indexes:
         print index
         sheets.append(workbook.sheet_by_index(int(index)))
@@ -67,7 +67,7 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
             first_row = 1
         else:
             first_row = 0
-        print "gen_functions",sheet.nrows
+        print("gen_functions",sheet.nrows)
         last_row = sheet.nrows
         #iterate the lines
         for rownum in range(first_row,last_row):
@@ -84,11 +84,11 @@ def excel2lines(file_name,sheet_indexes,header = False,annotation=False,date=Fal
                         continue
                 if num_annotators:
                     if len(values) != num_annotators:
-                        print "number of annotation values on line",rownum,"is not consistent; check the inputfile. Exiting..."
+                        print("number of annotation values on line",rownum,"is not consistent; check the inputfile. Exiting...")
                         exit()
                 else:
                     num_annotators = len(values)
-                    print num_annotators, "annotators"
+                    print(num_annotators, "annotators")
             else:
                 rowvals = sheet.row_values(rownum)
                 if date:
@@ -125,8 +125,8 @@ def excel2columns(file_name):
 
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
-        print str(len(vector1)) + " " + str(len(vector2)) 
-        print "Cosine distance: no equal number of dimensions, terminating process."
+        print(str(len(vector1)) + " " + str(len(vector2)))
+        print("Cosine distance: no equal number of dimensions, terminating process.")
 
     mag1 = 0
     mag2 = 0
@@ -158,7 +158,7 @@ def calculate_cosine_similarity(vector1,vector2):
 
 def has_endhashtag(sequence,hashtags):
 #    print sequence
-    print hashtags
+    print(hashtags)
     if len(sequence) == 0:
        return False
     if sequence[-1] == ".":
