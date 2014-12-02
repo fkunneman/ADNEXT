@@ -360,20 +360,20 @@ class Classifier():
         outdir = self.test[0]["out"]
         #output features
         #featureout = codecs.open(outdir + "features.txt","w","utf-8")
-        featureout = open(outdir + "features.txt","w","utf-8")
+        featureout = open(outdir + "features.txt",mode="w",encoding="utf-8")
         for feature in sorted(self.feature_info, key=self.feature_info.get):
             featureout.write(feature + "\t" + str(self.feature_info[feature]) + "\n")
         featureout.close()
         #output trainfile
         #trainout = codecs.open(outdir + "train.txt","w","utf-8")
-        trainout = open(outdir + "train.txt","w","utf-8")
+        trainout = open(outdir + "train.txt",mode="w",encoding="utf-8")
         for instance in self.training:
             trainout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
                 ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
         trainout.close()
         #output testfile
         #testout = codecs.open(outdir + "test.txt","w","utf-8")
-        testout = open(outdir + "test.txt","w","utf-8")
+        testout = open(outdir + "test.txt",mode="w",encoding="utf-8")
         for i,tset in enumerate(self.test):
             testout = codecs.open(outdir + "test" + str(i) + ".txt","w","utf-8")
             for instance in tset["instances"]:
@@ -384,7 +384,7 @@ class Classifier():
         for tset in self.test:
             testresults = self.predict(tset["instances"])
             #outfile = codecs.open(tset["out"] + "predictions.txt","w","utf-8")
-            outfile = open(tset["out"] + "predictions.txt","w","utf-8")
+            outfile = open(tset["out"] + "predictions.txt",mode="w",encoding="utf-8")
             if self.outstring:
                 outfile.write(self.outstring)
             for instance in testresults:
@@ -396,7 +396,7 @@ class Classifier():
             outfile = tset["out"] + "model.joblib.pkl"
             _ = joblib.dump(self.clf, outfile, compress=9)
             #outvocabulary = codecs.open(tset["out"] + "vocabulary.txt","w","utf-8")
-            outvocabulary = open(tset["out"] + "vocabulary.txt","w","utf-8")
+            outvocabulary = open(tset["out"] + "vocabulary.txt",mode="w",encoding="utf-8")
             for feature in self.features:
                 outvocabulary.write(feature + "\n")
             outvocabulary.close() 
