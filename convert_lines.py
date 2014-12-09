@@ -38,7 +38,7 @@ if args.i[-3:] == "xls":
     print "num_lines",len(lines)
 else:
     infile = codecs.open(args.i,"r","utf-8")
-    lines_raw = infile.read().split("\n")
+    lines_raw = infile.readlines()
     infile.close()
     lines = [x.strip().split(delimiter) for x in lines_raw]
 

@@ -20,6 +20,7 @@ parser.add_argument('-p', action='store', required = False, nargs = '+', help = 
 parser.add_argument('-s', action = 'store', nargs = '+', required = False, help = "[EXCEL] specify indexes of the excel sheets to be processed")
 parser.add_argument('-l', action = 'store_true', help = "specify if the number of annotations is not fixed")
 parser.add_argument('-c', action = 'store_true', help = "specify if the value of annotations is not standard")
+parser.add_argument('-r', action = 'store_true', help = "specify if the annotations are in an ordinal range")
 args = parser.parse_args()
 
 outfile = open(args.o,"w")
@@ -36,7 +37,10 @@ if args.f == "txt":
             annotation_values.append([c_dict[x] for x in line.strip().split("\t")])       
     else:
         for line in infile.readlines():
-            annotation_values.append([int(x) for x in line.strip().split("\t")])
+            # try:
+            #     annotation_values.append([int(x) for x in line.strip().split("\t")])
+            # except ValueError:
+            annotation_values.append(line.strip().split("\t"))
     infile.close()
 else:
     annotation_values = gen_functions.excel2lines(args.i,args.s,args.header,annotation=True)
@@ -45,24 +49,28 @@ annotation_values = [annotation_values]
 
 # calculate and output scores
 for i,sheet in enumerate(annotation_values):
-    if args.p and int(args.p[0]) == i: 
-        precision = annotation_calcs.calculate_precision(sheet,lax = args.l,plot = args.p[1])
+    if args.r:
+        wk = annotation_calcs.calculate_weighted_kappa(sheet)
+        outfile.write("Weighted Kappa: " + str(wk[0]) + "\naverage: " + str(wk[1]) + "\nentries: " + str(wk[2]) + "\n\n")
     else:
-        precision = annotation_calcs.calculate_precision(sheet,lax = args.l)
-    for entry in precision:
-        outfile.write("Precision " + str(entry[0]) + ":" + str(entry[1]) + "\n")
-        print "Precision " + str(entry[0]) + ":",entry[1]
-    outfile.write("\n")
-    annotation_calcs.calculate_confusion_matrix(sheet)
-    if args.ck:
-        cohens_kappa = annotation_calcs.calculate_cohens_kappa(sheet)
-        outfile.write("Cohen's Kappa: " + str(cohens_kappa) + "\n\n")
-        print "Cohen's Kappa:",cohens_kappa
-    if args.ka:
-        krippendorff = annotation_calcs.calculate_krippendorffs_alpha(sheet)
-        outfile.write("Krippendorff's Alpha: " + str(krippendorff) + "\n\n")
-        print "Krippendorff's Alpha:",krippendorff
-    if args.fs:
-        mutual_fscore = annotation_calcs.calculate_mutual_fscore(sheet)
-        outfile.write("Mutual F-score: " + str(mutual_fscore) + "\n")
-        print "Mutual F-score:",mutual_fscore
+        if args.p and int(args.p[0]) == i: 
+            precision = annotation_calcs.calculate_precision(sheet,lax = args.l,plot = args.p[1])
+        else:
+            precision = annotation_calcs.calculate_precision(sheet,lax = args.l)
+        for entry in precision:
+            outfile.write("Precision " + str(entry[0]) + ":" + str(entry[1]) + "\n")
+            print "Precision " + str(entry[0]) + ":",entry[1]
+        outfile.write("\n")
+        annotation_calcs.calculate_confusion_matrix(sheet)
+        if args.ck:
+            cohens_kappa = annotation_calcs.calculate_cohens_kappa(sheet)
+            outfile.write("Cohen's Kappa: " + str(cohens_kappa) + "\n\n")
+            print "Cohen's Kappa:",cohens_kappa
+        if args.ka:
+            krippendorff = annotation_calcs.calculate_krippendorffs_alpha(sheet)
+            outfile.write("Krippendorff's Alpha: " + str(krippendorff) + "\n\n")
+            print "Krippendorff's Alpha:",krippendorff
+        if args.fs:
+            mutual_fscore = annotation_calcs.calculate_mutual_fscore(sheet)
+            outfile.write("Mutual F-score: " + str(mutual_fscore) + "\n")
+            print "Mutual F-score:",mutual_fscore

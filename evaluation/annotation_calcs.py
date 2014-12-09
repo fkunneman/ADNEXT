@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from pynlpl import evaluation
 import itertools
+import re
+import numpy
 
 def calculate_precision(lines,lax = False,plot = False):
     majority_judgements = defaultdict(list)
@@ -99,6 +101,83 @@ def calculate_cohens_kappa(lines):
 
     cohens_kappa = round(sum(cohens_kappas) / len(cohens_kappas),2)
     return cohens_kappa
+
+def calculate_weighted_kappa(lines):
+    mean_score = []
+    coder_annotations = defaultdict(lambda : defaultdict(int))
+    pairs_count = defaultdict(lambda : defaultdict(int))
+    weights = defaultdict(lambda : defaultdict(float))
+    coder_score_pkp = defaultdict(lambda : defaultdict(float))
+    missing = 0
+    missing_both = 0
+    all_annotations = []
+    for line in lines:
+        l = False
+        for x in line:
+            if re.search("\d",x):
+                l = True
+        if l:
+            if "miss" in line:
+                missing += 1
+                mean_score.append(int([x for x in line if x != "miss"][0]))
+            else:
+                pairs_count[int(line[0])][int(line[1])] += 1
+                mean_score.append(numpy.mean([int(x) for x in line]))
+            for i,annotation in enumerate(line):
+                all_annotations.append(annotation)
+                if annotation == "miss":
+                    coder_annotations[i]["missing"] += 1
+                else:
+                    coder_annotations[i][int(annotation)] += 1
+        else:
+            missing_both += 1
+
+    print mean_score
+    nlines = len(lines)-missing_both
+    #weights
+    scores = list(set(all_annotations))
+    scores.remove("miss")
+    scores = [int(x) for x in scores]
+    difmm = max(scores) - min(scores)
+    difmms = difmm * difmm 
+    for c in itertools.permutations(scores,2):
+        dif = c[0] - c[1]
+        difs = dif*dif
+        weights[c[0]][c[1]] = 1 - (difs/difmms)
+    for score in scores:
+        weights[score][score] = 1.0
+
+    #observed
+    px = 1 - (missing/nlines)
+    observed_total = 0
+    for an1 in pairs_count.keys():
+        for an2 in pairs_count[an1].keys():
+            pkl = pairs_count[an1][an2] / nlines
+            observed_total += (pkl/px) * weights[an1][an2]
+            print pairs_count[an1][an2],"table observed",an1,an2,(pkl/px),"weight",(pkl/px) * weights[an1][an2]
+            print "total",observed_total
+    print("observed",observed_total)
+
+    #expected
+    expected_total = 0
+    for coder in coder_annotations.keys():
+        pxp = 1 - (coder_annotations[coder]["missing"] / nlines)
+        for score in scores:
+            if score in coder_annotations[coder].keys():
+                coder_score_pkp[coder][score] = (coder_annotations[coder][score]/nlines) / pxp
+    for c in itertools.permutations(scores,2):
+        expected_total += (coder_score_pkp[0][c[0]] * coder_score_pkp[1][c[1]]) * weights[c[0]][c[1]]
+        print "table expected",c[0],c[1],(coder_score_pkp[0][c[0]] * coder_score_pkp[1][c[1]]),"weight",(coder_score_pkp[0][c[0]] * coder_score_pkp[1][c[1]]) * weights[c[0]][c[1]]
+    for score in scores:
+        expected_total += (coder_score_pkp[0][score] * coder_score_pkp[1][score]) * weights[score][score]
+        print "table expected",score,score,(coder_score_pkp[0][score] * coder_score_pkp[1][score]),"weight",(coder_score_pkp[0][score] * coder_score_pkp[1][score]) * weights[score][score]
+    print("expected",expected_total)
+    weighted_k = (observed_total - expected_total) / (1 - expected_total)
+    print pairs_count
+    print("weighted cohens k",weighted_k)
+    avg = numpy.mean(mean_score)
+    print("avg.",numpy.mean(mean_score))
+    return weighted_k,avg,nlines 
 
 def calculate_confusion_matrix(lines):    
     annotator_couples = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(int))))
