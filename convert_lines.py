@@ -46,74 +46,74 @@ actions = args.a
 lineconvert = lineconverter.Lineconverter(lines,args.header)
 
 if actions:
-if "add" in actions:
-    if args.c:
-        lineconvert.add_string(args.s,args.c.pop(0))
-    else:
-        place = "back"
-    
-
-if "replace" in actions:
-    if args.c:
-        if args.replace:
-            lineconvert.replace_string(args.s,c = args.c.pop(0),m = args.replace)
+    if "add" in actions:
+        if args.c:
+            lineconvert.add_string(args.s,args.c.pop(0))
         else:
-            lineconvert.replace_string(args.s,c = args.c.pop(0))
-    else:
-        lineconvert.replace_string(args.s,args.replace)
+            place = "back"
+        
 
-if "add_time" in actions:
-    datecolumn = int(raw_input("Please specify the column in which  args.cthe date is given...\n"))
-    timecolumn = int(raw_input("Please specify the column in which the time is given...\n"))
-    hours = int(raw_input("Please specify the amount of hours added...\n"))
-    addition = raw_input("Is the new time added or is it replacing the given date and time? (give either \'append\' or \'replace\')...\n")
-    datetype = raw_input("Is the date given in EU-style or VS-style? (give either \'eu\' or \'vs\')...\n")
-    lineconvert.add_time(hours,datecolumn,timecolumn,addition,datetype)
+    if "replace" in actions:
+        if args.c:
+            if args.replace:
+                lineconvert.replace_string(args.s,c = args.c.pop(0),m = args.replace)
+            else:
+                lineconvert.replace_string(args.s,c = args.c.pop(0))
+        else:
+            lineconvert.replace_string(args.s,args.replace)
 
-if "add_id" in actions:
-    if args.c:
-        lineconvert.add_id(start_id = args.c.pop(0))
-    else:
-        lineconvert.add_id()
+    if "add_time" in actions:
+        datecolumn = int(raw_input("Please specify the column in which  args.cthe date is given...\n"))
+        timecolumn = int(raw_input("Please specify the column in which the time is given...\n"))
+        hours = int(raw_input("Please specify the amount of hours added...\n"))
+        addition = raw_input("Is the new time added or is it replacing the given date and time? (give either \'append\' or \'replace\')...\n")
+        datetype = raw_input("Is the date given in EU-style or VS-style? (give either \'eu\' or \'vs\')...\n")
+        lineconvert.add_time(hours,datecolumn,timecolumn,addition,datetype)
 
-if "delete" in actions:
-    print "num lines before delete:",len(lineconvert.lines)
-    lineconvert.delete_string([args.s], args.c.pop(0))
-    print "num lines after delete",len(lineconvert.lines)
+    if "add_id" in actions:
+        if args.c:
+            lineconvert.add_id(start_id = args.c.pop(0))
+        else:
+            lineconvert.add_id()
 
-if "delete_filematch" in actions:
-    f = args.filematch[0]
-    matchlist = []
-    if f[-3:] == "xls": 
-        mlines = gen_functions.excel2lines(f,[0])[0]
-        for mline in mlines:
-            match = re.sub("\n","",mline[int(args.filematch[1])])
-            matchlist.append(match)
-    else:
-        matchfile = codecs.open(args.filematch[0],"r","utf-8")
-        matchlines = infile.readlines()
-        infile.close()
-        for matchline in matchlines:
-            tokens = matchline.strip().split(args.d)
-            match = re.sub("\n","",tokens[int(args.filematch[1])])
-            matchlist.append(match)
-    print "num lines before delete:",len(lineconvert.lines)
-    lineconvert.delete_string(matchlist, args.c)
-    print "num lines after delete",len(lineconvert.lines)
+    if "delete" in actions:
+        print "num lines before delete:",len(lineconvert.lines)
+        lineconvert.delete_string([args.s], args.c.pop(0))
+        print "num lines after delete",len(lineconvert.lines)
 
-if "filter" in actions:
-    lineconvert.filter_string_end(args.s,args.c.pop(0))
+    if "delete_filematch" in actions:
+        f = args.filematch[0]
+        matchlist = []
+        if f[-3:] == "xls": 
+            mlines = gen_functions.excel2lines(f,[0])[0]
+            for mline in mlines:
+                match = re.sub("\n","",mline[int(args.filematch[1])])
+                matchlist.append(match)
+        else:
+            matchfile = codecs.open(args.filematch[0],"r","utf-8")
+            matchlines = infile.readlines()
+            infile.close()
+            for matchline in matchlines:
+                tokens = matchline.strip().split(args.d)
+                match = re.sub("\n","",tokens[int(args.filematch[1])])
+                matchlist.append(match)
+        print "num lines before delete:",len(lineconvert.lines)
+        lineconvert.delete_string(matchlist, args.c)
+        print "num lines after delete",len(lineconvert.lines)
 
-if "extract" in actions:
-    lineconvert.extract_lines(args.s,args.c.pop(0))
-if "sentiment" in actions:
-    lineconvert.add_sentiment(args.c.pop(0))
+    if "filter" in actions:
+        lineconvert.filter_string_end(args.s,args.c.pop(0))
 
-if "punct" in actions:
-    lineconvert.count_punct(args.c.pop(0))
+    if "extract" in actions:
+        lineconvert.extract_lines(args.s,args.c.pop(0))
+    if "sentiment" in actions:
+        lineconvert.add_sentiment(args.c.pop(0))
 
-if "twitter" in actions:
-    lineconvert.add_twitter_url(args.c[0],args.c[1])
+    if "punct" in actions:
+        lineconvert.count_punct(args.c.pop(0))
+
+    if "twitter" in actions:
+        lineconvert.add_twitter_url(args.c[0],args.c[1])
 
 if args.sample:
     if len(args.sample) > 1 and args.sample[1] == "steps":
