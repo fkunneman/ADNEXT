@@ -8,6 +8,11 @@ class Frogger:
 
     def return_entities(self,sentences):
         for sentence in sentences:
-            tags = self.frogger.process(sentence)
-            print(tags)
+            ners = []
+            tokens = self.frogger.process(sentence)
+            for token in tokens:
+                if token['ner'] != 'O':
+                    ners.append(token['ner'])
+            print(sentence,ners)
+        
 
