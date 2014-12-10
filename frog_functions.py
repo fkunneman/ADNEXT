@@ -12,7 +12,7 @@ class Frogger:
             tokens = self.frogger.process(sentence)
             for token in tokens:
                 if token['ner'] != 'O':
-                    ners.append((token['text'],token['ner'])
+                    ners.append((token['text'],token['ner']))
             print(sentence,tokens,ners)
 
 
