@@ -9,6 +9,7 @@ import otter
 def extract_tweets(keyword,api,l):
     tweets_output = []
     keyword = "\"" + keyword + "\""
+    print keyword,l
     tweets = api.search(q = keyword, result_type = "mixed", lang = l)["statuses"]
     for tweet in tweets:
         user = tweet["user"]["screen_name"]
