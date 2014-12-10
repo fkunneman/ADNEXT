@@ -45,6 +45,7 @@ else:
 actions = args.a
 lineconvert = lineconverter.Lineconverter(lines,args.header)
 
+if actions:
 if "add" in actions:
     if args.c:
         lineconvert.add_string(args.s,args.c.pop(0))
