@@ -155,12 +155,12 @@ class Lineconverter():
 			else:
 				del self.lines[i]
 
-	def extract_lines(self,key,column):
+	def extract_lines(self,keys,column):
 		i = 0
 		while i < len(self.lines):
 			line = self.lines[i]
 			text = line[column]
-			if text.lower() == key:
+			if text in keys:
 				i += 1
 			else:
 				del self.lines[i]
