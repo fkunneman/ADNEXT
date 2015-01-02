@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import codecs
-import re
 import argparse
 import multiprocessing
 import frog_functions
@@ -20,9 +18,9 @@ parser.add_argument('--parralel', action = 'store_true', default = False, help =
 
 args = parser.parse_args()
 
-outfile = codecs.open(args.o,"w","utf-8")
+outfile = open(args.o,"w",encoding = "utf-8")
 
-infile = codecs.open(args.i,"r","utf-8")
+infile = open(args.i,encoding = "utf-8")
 lines = infile.readlines()
 if args.header:
     lines.pop(0)
@@ -39,9 +37,9 @@ def frogger(t,o,i):
     for tweet in t:
         new_string = args.d.join(tweet + Fr.return_entities(tweet[args.text])) + "\n"
         o.put(new_string)
-    print "Chunk " + str(i) + " done."
+    print("Chunk " + str(i) + " done.")
 
-print "Processing tweets."
+print("Processing tweets.")
 q = multiprocessing.Queue()
 frogged_tweets = []
 if args.parralel:
@@ -57,7 +55,7 @@ while True:
     l = q.get()
     frogged_tweets.append(l)
     outfile.write(l)
-    print len(frogged_tweets)
+    print(len(frogged_tweets))
     if len(frogged_tweets) == len(tweets):
         break
 
