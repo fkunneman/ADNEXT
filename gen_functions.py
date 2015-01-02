@@ -2,7 +2,7 @@
 
 from __future__ import division
 import math
-#import xlrd
+import xlrd
 import re
 import datetime
 import codecs

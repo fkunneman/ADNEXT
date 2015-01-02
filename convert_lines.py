@@ -165,31 +165,36 @@ if args.excel:
                     style.num_format_str = "general"
                     tab.write(i,j,col,style)
                 else:
-                    try:
-                        col = round(float(col),2)
-                        style.num_format_str = "0.00"
+                    if re.search("LINEBREAK",col):
+                        col = col.replace("LINEBREAK","\n")
+                        style.alignment.wrap = 1
                         tab.write(i,j,col,style)
-                    except:
+                    else:
                         try:
-                            col = int(col)
-                            style.num_format_str = "0"
+                            col = round(float(col),2)
+                            style.num_format_str = "0.00"
                             tab.write(i,j,col,style)
                         except:
                             try:
-                                col = time_functions.return_datetime(col)
-                                style.num_format_str = "dd-mm-yy"
+                                col = int(col)
+                                style.num_format_str = "0"
                                 tab.write(i,j,col,style)
                             except:
-                                if re.match(r"\d{2}:\d{2}:\d{2}",col):
-                                    style.num_format_str = 'hh:mm:ss'
+                                try:
+                                    col = time_functions.return_datetime(col)
+                                    style.num_format_str = "dd-mm-yy"
                                     tab.write(i,j,col,style)
-                                else:
-                                    if re.search("https://twitter.com",col):
-                                        ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
-                                        tab.write(i,j, Formula(ucol))
-                                    else:
-                                        style.num_format_str = "general"
+                                except:
+                                    if re.match(r"\d{2}:\d{2}:\d{2}",col):
+                                        style.num_format_str = 'hh:mm:ss'
                                         tab.write(i,j,col,style)
+                                    else:
+                                        if re.search("https://twitter.com",col):
+                                            ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
+                                            tab.write(i,j, Formula(ucol))
+                                        else:
+                                            style.num_format_str = "general"
+                                            tab.write(i,j,col,style)
 
     book.save(args.o)
         
