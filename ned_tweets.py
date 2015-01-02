@@ -33,7 +33,7 @@ for tweet in pre_tweets:
       
 #Function to tokenize the inputfile
 def frogger(t,o,i):
-    Fr = frog_functions.Frogger()
+    Fr = frog_functions.Frogger(8)
     for tweet in t:
         new_string = args.d.join(tweet + Fr.return_entities(tweet[args.text])) + "\n"
         o.put(new_string)
