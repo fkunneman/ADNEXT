@@ -22,6 +22,7 @@ parser.add_argument('--filematch', action = 'store', required = False, nargs='+'
 parser.add_argument('--excel', action = 'store', type = int, nargs = '+', help = "Output lines in excel format")
 parser.add_argument('--sheets', action = 'store', nargs='+', type = int, default = [0], help = "for multiple excel input sheets, specify the indexes")
 parser.add_argument('--header', action='store_true', help = "specify if file has header")
+parser.add_argument('--append', action='store_true', help = "choose to append output to an existing file (rather than a new file)")
 
 args = parser.parse_args() 
 
@@ -202,7 +203,10 @@ if args.excel:
     book.save(args.o)
         
 else:
-    outfile = codecs.open(args.o,"w","utf-8")
+    if args.append:
+        outfile = codecs.open(args.o,"a","utf-8")
+    else:
+        outfile = codecs.open(args.o,"w","utf-8")
     for line in lineconvert.lines:
         outfile.write(delimiter.join(line) + "\n")
     outfile.close()
