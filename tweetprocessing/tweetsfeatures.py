@@ -81,11 +81,13 @@ class Tweetsfeatures():
         """
         li = sorted(l, key=len, reverse=True)
         li = [tx.replace('.','\.') for tx in li] # not to match anything with . (dot)
+#        print(sorted(li),len(li))
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
+#        print(patterns)
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         for t in self.instances:
             features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            print(t.wordsequence,features)
+            print(t.text,features)
             #t.features.append(["list_" + x for x in features])
 
     def extract_timefeatures(self):
@@ -446,7 +448,7 @@ class Tweetsfeatures():
                 if not os.path.exists("/".join(outfile.split("/")[:d])):
                     os.system("mkdir " + "/".join(outfile.split("/")[:d]))
                 d += 1
-        out = open(outfile,"w",endoding = "utf-8")
+        out = open(outfile,"w",encoding = "utf-8")
         for i in self.instances:
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
         out.close()
