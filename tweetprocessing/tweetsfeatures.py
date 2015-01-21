@@ -96,7 +96,7 @@ class Tweetsfeatures():
         Extract features from a list and single them out
         """
         li = sorted(l, key=len, reverse=True)
-        li = [tx.replace('.','\.') for tx in li] # not to match anything with . (dot)
+        li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot)
 #        print(sorted(li),len(li))
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
 #        print(patterns)
@@ -106,7 +106,8 @@ class Tweetsfeatures():
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
             else:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            print(t.text,features)
+            if len([x for x in features if not x == '']) > 0:
+                print(t.text,t.posseq,t.stemseq,features)
             #t.features.append(["list_" + x for x in features])
 
     def extract_timefeatures(self):
