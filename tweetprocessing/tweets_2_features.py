@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-import codecs
+#import codecs
 from tweetsfeatures import Tweetsfeatures
 
 """
@@ -62,10 +62,10 @@ if args.re:
 if args.rw:
     tf.filter_tweets_timewindow(args.rw[0],args.rw[1])
 
-print "Generating features..." 
+print("Generating features...") 
 if args.e:
     #generate list
-    extractfile = codecs.open(args.e,"r","utf-8")
+    extractfile = open(args.e,"r",encoding = "utf-8")
     extracts = extractfile.read().split("\n")
     extractfile.close()
     tf.extract_listfeatures(extracts)
@@ -76,7 +76,7 @@ if args.d:
 if args.w:
     tf.extract_weekday()
 if args.m:
-    l = codecs.open(args.m,"r","utf-8")
+    l = open(args.m,"r",encoding = "utf-8")
     tf.match_rulelist(l.readlines())
     l.close()
 if args.n:
@@ -90,6 +90,6 @@ if args.n:
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
 
-print "Writing classifier input..."
+print("Writing classifier input...")
 tf.set_meta()
 tf.output_features(args.o)

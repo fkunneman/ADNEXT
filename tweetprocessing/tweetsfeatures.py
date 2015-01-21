@@ -1,15 +1,13 @@
 #! /usr/bin/env python
 
 import os
-import codecs
+#import codecs
 import re
 import datetime
-import timeit
 from collections import defaultdict
 import time_functions
 import gen_functions
 import multiprocessing
-import time_functions
 
 class Tweetsfeatures():
     """
@@ -41,7 +39,7 @@ class Tweetsfeatures():
         """
         self.instances = []
         
-        lines = codecs.open(infile,"r","utf-8")
+        lines = open(infile,encoding = "utf-8")
         tweets = lines.readlines()
         lines.close()
    
@@ -65,12 +63,6 @@ class Tweetsfeatures():
         for t in self.instances:
             if lower: 
                 t.text = t.text.lower()
-#            if re.search(r"\|",t.text):
-#                print t.text
-#                segments = t.text.split("|")
-#                words = segments[0].split(" ")
-#                t.possequence = segments[1].split(" ")
-#                print segments,words,t.possequence
             else:
                 words = t.text.split(" ") 
             for word in words:
@@ -93,7 +85,8 @@ class Tweetsfeatures():
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         for t in self.instances:
             features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            t.features.extend(["timex_" + x for x in features])
+            print(t.wordsequence,features)
+            #t.features.append(["list_" + x for x in features])
 
     def extract_timefeatures(self):
         convert_nums = {"enige":3,"enkele":3,"een paar":3, "een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
@@ -115,14 +108,9 @@ class Tweetsfeatures():
         for instance in self.instances:
             ws = " ".join(instance.wordsequence)
             m = False
-            # if check.search(ws):
-            #     sh = check.search(ws)
-            #     print "check",ws,sh.groups()
             if days.search(ws):
                 sh = days.search(ws)
                 m = True
-                # for unit in sh.groups():
-                # print sh.groups()[:2]
             elif days1.search(ws):
                 sh = days1.search(ws)
                 m = True
@@ -162,8 +150,7 @@ class Tweetsfeatures():
                 days_ahead = num*tu
                 tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
                 event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
-                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
-                #print ws,feature                
+                feature = "date_" + event_datetime.strftime("%d-%m-%Y")             
                 instance.features.append(feature)
 
     def extract_date(self):
@@ -180,20 +167,13 @@ class Tweetsfeatures():
                 else:
                     day = convert_nums[sh.groups()[0]]
                 month = convert_month[sh.groups()[1]]
-#                
-                #print month,ws,sh.groups()
+
                 try:
                     date = datetime.datetime(tweet_date.year,month,day,0,0,0)
                     feature = "date_" + date.strftime("%d-%m-%Y")
                 except:
                     continue
-                # dif = time_functions.timerel(date,tweet_date,"day")
-                # if dif < 0:
-                #     date += datetime.timedelta(days=365)
-                # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
-                #print sh.groups(),feature
                 instance.features.append(feature)  
-        # quit()
 
     def extract_weekday(self):
         future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
@@ -235,8 +215,7 @@ class Tweetsfeatures():
                 days_ahead = int(days_ahead)
                 tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
                 event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
-                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
-                #print ws,feature                
+                feature = "date_" + event_datetime.strftime("%d-%m-%Y")               
                 instance.features.append(feature)
 
     def match_rulelist(self,l):    
@@ -250,15 +229,7 @@ class Tweetsfeatures():
             dif = dif_feat[-1]
             feat = dif_feat[2]
             event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
-            # if fe == "date" or fe == "both":
             feature = "date_" + event_datetime.strftime("%d-%m-%Y")
-            # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
-            #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
-            # if fe == "timex" or fe == "both":
-            #     feature = "timex_" + feat
-            #     print feature
-            # feature = str(time_functions.timerel(event_datetime,tweet_datetime,"day")) + "_days"
-            #print t.wordsequence,tweet_datetime.weekday(),tweet_datetime,event_datetime,[x for x in matched_rules if x[0] == t.id][0][-1],feature
             t.features.append(feature)
 
     #Make N-grams of tweets that were set
@@ -340,12 +311,16 @@ class Tweetsfeatures():
                 text = rm_string([text],ignore)
             for n_val in n:
                 t.features.extend(make_char_ngrams(text,int(n_val)))
-  
+
+    def add_tweetlength(self):
+        for t in self.instances:
+            text = t.text
+
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
         event reference or RT"""
-        print "removing tweets containing",blacklist
-        print "freq tweets before", len(self.instances)
+        print("removing tweets containing",blacklist)
+        print("freq tweets before",len(self.instances))
         templist = []
         for t in self.instances:
             black = False
@@ -357,13 +332,13 @@ class Tweetsfeatures():
                 templist.append(t)
 
         self.instances = templist
-        print "freq tweets after", len(self.instances)
+        print("freq tweets after",len(self.instances))
 
     def filter_tweets_reflexive_hashtag(self,hashtag):
         """filter tweets from this container if they do not contain a given hashtag at the end 
         (may still proceed other hashtags or a url)"""
-        print "filtering to tweets with",hashtag,"at the end"
-        print "freq tweets before", len(self.instances)
+        print("filtering to tweets with",hashtag,"at the end")
+        print("freq tweets before", len(self.instances))
         templist = []
 
         def has_endhashtag(sequence):
@@ -385,7 +360,7 @@ class Tweetsfeatures():
                 templist.append(t)
 
         self.instances = templist
-        print "freq tweets after", len(self.instances)
+        print("freq tweets after",len(self.instances))
         
     def filter_tweets_timewindow(self,timepoint_1,timepoint_2):
         """Filter tweets that are posted before or after a chosen timepoint"""
@@ -471,27 +446,10 @@ class Tweetsfeatures():
                 if not os.path.exists("/".join(outfile.split("/")[:d])):
                     os.system("mkdir " + "/".join(outfile.split("/")[:d]))
                 d += 1
-        out = codecs.open(outfile,"w","utf-8")
+        out = open(outfile,"w",endoding = "utf-8")
         for i in self.instances:
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
         out.close()
-  
-    # #turn the tweets into one big document
-    # def features_2_bigdoc(self,outfile):
-    #     outwrite = codecs.open(outfile,"w","utf-8")
-    #     document = []
-    #     for tweet in self.instances:
-    #         document.extend(tweet.features)
-    #     outwrite.write(" ".join(document))
-    #     outwrite.close() 
-
-    # def features_2_lda(self,outfile):
-    #     out = codecs.open(outfile,"w","utf-8")
-    #     for tweet in self.instances:
-    #         line = tweet.id + "\tXXX\t" + tweet.date + "," + tweet.time + 
-    #   "\t" + " ".join(tweet.wordsequence) + "\n"
-    #         out.write(line)
-    #     out.close()
 
     class Tweet:
         """Class containing the features and characteristics of a tweet."""

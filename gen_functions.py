@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
-from __future__ import division
+#from __future__ import division
 import math
 import xlrd
 import re
 import datetime
-import codecs
+#import codecs
 from collections import defaultdict
 
 def make_folds(instances,n=10):
@@ -190,7 +190,7 @@ def read_lcs_files(partsfile,filesdir):
     #generate list of wordsequences from file content
     featuresets = []
     for filename in filenames:
-        txtfile = codecs.open(filename,"r","utf-8")
+        txtfile = open(filename,"r",encoding = "utf-8")
         features = []
         for line in txtfile.readlines():
             features.append(line.strip())
