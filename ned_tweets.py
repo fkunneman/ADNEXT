@@ -46,7 +46,7 @@ if args.parralel:
     tweets_chunks = gen_functions.make_chunks(tweets)
 else:
     tweets_chunks = [tweets]
-    
+
 for i in range(len(tweets_chunks)):
     p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
     p.start()
