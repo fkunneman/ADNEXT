@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description = "Program to read svm output and e
 
 parser.add_argument('-t', action = 'store', nargs='+',required=True, help = "the target files")
 parser.add_argument('-w', action='store', required=True, help = "dir to write results to")
+parser.add_argument('--header', action="store_true", help = "specify if the first 7 lines are not to be evaluated")
 parser.add_argument('--id', action='store_true', 
     help = "specify whether id's of the instances are included")
 parser.add_argument('--text', action='store_true', 
@@ -22,21 +23,22 @@ parser.add_argument('-f', action='store', type = int, required=False,
 
 args = parser.parse_args()
 
+start = 0
+if args.header:
+    start = 7
+
 #collect target-observation pairs
 instances = []
 for t in args.t:
     targets = open(t)
-    for line in targets.readlines()[7:]:
-        print line
+    for line in targets.readlines()[start:]:
         tokens = line.strip().split("\t")
-        print tokens
         if len(tokens) >= 3:
             tokens2 = tokens[1].split()
             tokens3 = tokens[2].split()
         else:
             tokens2 = tokens[0].split()
             tokens3 = tokens[1].split()
-        print tokens,tokens2
         label = tokens2[0]
         classification = tokens2[1]
         if len(tokens3) == 2:

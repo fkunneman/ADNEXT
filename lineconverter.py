@@ -157,10 +157,13 @@ class Lineconverter():
 
 	def extract_lines(self,keys,column):
 		i = 0
+                print(keys)
 		while i < len(self.lines):
 			line = self.lines[i]
+#                        print(line[column])
 			text = line[column]
 			if text in keys:
+				print("YES",line[column]) 
 				i += 1
 			else:
 				del self.lines[i]

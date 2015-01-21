@@ -109,6 +109,7 @@ if actions:
         extractfile = codecs.open(args.s,"r","utf-8")
         matchstrings = [l.strip() for l in extractfile.readlines()]
         extractfile.close()
+        #print(args.c)
         lineconvert.extract_lines(matchstrings,args.c.pop(0))
     if "sentiment" in actions:
         lineconvert.add_sentiment(args.c.pop(0))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-#import codecs
+import codecs
 from collections import defaultdict
 import re
 import os
@@ -104,7 +104,7 @@ def classify(tr,te):
         if args.voting[0] == "majority":
             for tset in cl.test:
                 #outfile = codecs.open(tset["out"],"w","utf-8")
-                outfile = open(tset["out"],mode="w",encoding="utf-8")
+                outfile = codecs.open(tset["out"],"w","utf-8")
                 for instance in tset["instances"]:
                     if instance["sparse"].values().count(1) >= 2:
                         prediction = "1.0"
@@ -131,10 +131,10 @@ def classify(tr,te):
         cl.save_model()
 
 #trainfile = codecs.open(args.i,"r","utf-8")
-trainfile = open(args.i,encoding = "utf-8")
+trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:
     #appendfile = codecs.open(args.append,"r","utf-8")
-    appendfile = open(args.append,encoding = "utf-8")
+    appendfile = codecs.open(args.append,"r","utf-8")
     trainlines = trainfile.readlines()
     appendlines = appendfile.readlines()
     if not len(appendlines) == len(trainlines):
@@ -148,7 +148,7 @@ trainfile.close()
 
 if args.t:
     #testfile = codecs.open(args.t,"r","utf-8")
-    testfile = open(args.t,encoding = "utf-8")
+    testfile = codecs.open(args.t,"r","utf-8")
     test = [{"out" : args.o + "testout.txt", "instances" : make_instances(testfile.readlines())}]
     testfile.close()
     classify(train,test)
