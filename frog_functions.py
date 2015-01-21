@@ -12,6 +12,7 @@ class Frogger:
         for token in tokens:
             if token['ner'] != 'O':
                 ners.append((token['text'],token['ner']))
-        return(" | ".join(ners))
+        print(ners)
+        return(ners)
 
 

@@ -5,7 +5,7 @@ import codecs
 import re
 
 infile = sys.argv[1]
-outdir = sys.argv[2]
+#outdir = sys.argv[2]
 
 filename = infile.split("/")[-1]
 dct = filename[:4] + "-" + filename[4:6] + "-" + filename[6:8]
@@ -22,9 +22,9 @@ for i,line in enumerate(infile_read.readlines()):
     outstr2 = str(i) + "cleaned_" + filename
     os.system("python /home/fkunneman/ADNEXT/convert_lines.py -i " + outstr + " -o " + outstr2 + " -a delete -c 1 -s RT")
     print(outstr2,"tagging tweets")
-    os.system("java -jar /home/fkunneman/local/bin/heideltime-standalone/de.unihd.dbs.heideltime.standalone.jar " + outstr2 + " -l DUTCH -t NEWS -pos treetagger -vv -dct " + dct + " > " + str(i) + "_tagged_" + filename)
+    os.system("java -jar /home/fkunneman/local/bin/heideltime-standalone/de.unihd.dbs.heideltime.standalone.jar " + outstr2 + " -l DUTCH -t NEWS -pos treetagger -dct " + dct + " > " + str(i) + "_tagged_" + filename)
     tagged_file = codecs.open(str(i) + "_tagged_" + filename)
-    if re.search(r"xml version=",tagged_file.readlines()[0]):
+    if re.search(r"xml version=",tagged_file.read()):
         os.system("rm " + str(i) + "*")
     else:
         print("bug found at line",str(i))

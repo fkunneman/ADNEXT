@@ -26,7 +26,7 @@ for tweetid in idfile:
     ids.append(int(tweetid.strip()))    
 
 # Collect tweets
-print "event",event,"api",api,"lang",language
+#print("event",event,"api",api,"lang",language)
 for event in events:
     tweets += twitter_devs.extract_tweets(event,api,language)
 

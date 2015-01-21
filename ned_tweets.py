@@ -35,7 +35,12 @@ for tweet in pre_tweets:
 def frogger(t,o,i):
     Fr = frog_functions.Frogger(8)
     for tweet in t:
-        new_string = args.d.join(tweet + Fr.return_entities(tweet[args.text])) + "\n"
+#        print(tweet)
+        entities = Fr.return_entities(tweet[args.text])
+        if len(entities) == 0:
+            entities = [("x","x")] 
+        new_string = args.d.join(tweet + [" | ".join([x[0] for x in entities])]) + "\n"
+        print(new_string)
         o.put(new_string)
     print("Chunk " + str(i) + " done.")
 
