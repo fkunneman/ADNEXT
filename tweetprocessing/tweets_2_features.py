@@ -47,13 +47,15 @@ parser.add_argument('-o', action = 'store', required = True,
 parser.add_argument('--eos', action = 'store_true', 
     help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed \
     (the marker will be added to previous word)")
-parser.add_argument('--pos', action = 'store_true',
-    help = "choose to include pos n-grams (input should contain pos tags as indicated by \
-    categories after \"|\")")
+parser.add_argument('--pos', action = 'store_true',help = "choose to include pos n-grams")
+parser.add_argument('--stem', action = 'store_true',help = "choose to include stems")
+
 args = parser.parse_args() 
 
 tf = Tweetsfeatures(args.i)
 tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur)
+if args.pos or args.stem:
+    tf.add_frog(args.stem,args.pos)
 
 if args.ri:
     tf.filter_tweets(args.ri)

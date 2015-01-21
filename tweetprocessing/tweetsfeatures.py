@@ -8,6 +8,7 @@ from collections import defaultdict
 import time_functions
 import gen_functions
 import multiprocessing
+import frog
 
 class Tweetsfeatures():
     """
@@ -55,6 +56,20 @@ class Tweetsfeatures():
             if t.label == label:
                 templist.append(t)           
         self.instances = templist
+
+    def add_frog(self,stem,pos):
+        fo = frog.FrogOptions(threads=16)
+        frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+        for t in self.instances:
+            stems = []
+            poss = []
+            data = frogger.process(t.text)
+            for token in data:
+                print(token)
+                poss.append(token["pos"])
+
+
+
 
     def set_sequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
@@ -468,8 +483,16 @@ class Tweetsfeatures():
             self.wordsequence = []
             self.features = []
 
+        def add_pos(self,seq):
+            self.posseq = seq
+
+        def add_stem(self,seq):
+            self.stemseq = seq
+
         def set_meta(self):
             self.meta = [self.id,self.label,self.user,self.date,self.time]
 
         def get_datetime(self):
             return time_functions.return_datetime(self.date,self.time,"vs")
+
+
