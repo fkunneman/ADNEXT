@@ -64,6 +64,8 @@ class Tweetsfeatures():
             stems = []
             poss = []
             data = frogger.process(t.text)
+            if len(data) < len(t.text.split(" ")):
+                print("oh oh",[u['text'] for u in data],t.text)
             for token in data:
                 poss.append(token["pos"])
                 stems.append(token["lemma"])
@@ -106,7 +108,7 @@ class Tweetsfeatures():
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
             else:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            print(t.text,features)
+            #print(t.text,features)
             #t.features.append(["list_" + x for x in features])
 
     def extract_timefeatures(self):
@@ -333,10 +335,19 @@ class Tweetsfeatures():
             for n_val in n:
                 t.features.extend(make_char_ngrams(text,int(n_val)))
 
-    # def add_tweetlength(self):
-    #     for t in self.instances:
-    #         tags = t.posseq
-    #         tweetlength = len([x for x in tags if not x == ])
+    def add_tweetlength(self):
+        for t in self.instances:
+            tags = t.posseq
+            tweetlength = len([x for x in tags if not x == 'LET()'])
+            t.tl_absolute = tweetlength
+        max_tl = max(t.tl_absolute for t in self.instances)
+        for t in self.instances:
+            tl_absolute = t.tl_absolute
+            tl_relative = tl_absolute / max_tl
+            t.features.append(tl_relative)
+
+    def add_stats(self,mention,hashtags,punct,upper):
+
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
