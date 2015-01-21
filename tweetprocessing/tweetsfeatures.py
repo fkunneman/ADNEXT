@@ -65,11 +65,12 @@ class Tweetsfeatures():
             poss = []
             data = frogger.process(t.text)
             for token in data:
-                print(token)
                 poss.append(token["pos"])
-
-
-
+                stems.append(token["lemma"])
+            if stem:
+                t.add_stem(stems)
+            if pos:
+                t.add_pos(poss)
 
     def set_sequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
@@ -101,7 +102,10 @@ class Tweetsfeatures():
 #        print(patterns)
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         for t in self.instances:
-            features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
+            if t.stemseq:
+                features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
+            else:
+                features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
             print(t.text,features)
             #t.features.append(["list_" + x for x in features])
 
