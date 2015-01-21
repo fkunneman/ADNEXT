@@ -16,6 +16,9 @@ parser.add_argument('-e', action = 'store', required = False,
     help = "choose to extract features based on the phrases in a file")
 parser.add_argument('-n', action = 'store', nargs = '+', required = False, 
     help = "to include word n-grams, specify the values of \'n\'")
+parser.add_argument('-p', action = 'store', nargs = '+', required = False, 
+    help = "to include pos n-grams, specify the values of \'n\', \'pos\' \
+    needs to be included as feature")
 parser.add_argument('-r', action = 'store_true',
     help = "extract time features based on rules")
 parser.add_argument('-d', action = 'store_true',
@@ -55,8 +58,8 @@ args = parser.parse_args()
 tf = Tweetsfeatures(args.i)
 tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur)
 if args.pos or args.stem:
+    print("extracting pos and/or stem information from tweets")
     tf.add_frog(args.stem,args.pos)
-
 if args.ri:
     tf.filter_tweets(args.ri)
 if args.re:
@@ -66,11 +69,14 @@ if args.rw:
 
 print("Generating features...") 
 if args.e:
-    #generate list
-    extractfile = open(args.e,"r",encoding = "utf-8")
-    extracts = extractfile.read().split("\n")
-    extractfile.close()
-    tf.extract_listfeatures(extracts)
+    if not args.stem:
+        print("no stemming information available, skipping list features")
+    else:
+        #generate list
+        extractfile = open(args.e,"r",encoding = "utf-8")
+        extracts = extractfile.read().split("\n")
+        extractfile.close()
+        tf.extract_listfeatures(extracts)
 if args.r:
     tf.extract_timefeatures()
 if args.d:
@@ -84,9 +90,12 @@ if args.m:
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
-    if args.pos:
-        for n in args.n:
-            tf.add_ngrams(n=int(n), t="pos")
+    if args.p:
+        if not args.pos:
+            print("no pos-tags available, skipping pos-tag features")
+        else:
+            for n in args.n:
+                tf.add_ngrams(n=int(n), t="pos")
     if args.rb:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:

@@ -296,7 +296,7 @@ class Tweetsfeatures():
                 t.features.extend(make_ngrams(t.wordsequence,n))
         elif t == "pos":
             for t in self.instances:
-                t.features.extend(make_ngrams(t.possequence,n))
+                t.features.extend(make_ngrams(t.posseq,n))
   
     def add_char_ngrams(self,n,ignore = False):
         """
@@ -333,9 +333,10 @@ class Tweetsfeatures():
             for n_val in n:
                 t.features.extend(make_char_ngrams(text,int(n_val)))
 
-    def add_tweetlength(self):
-        for t in self.instances:
-            text = t.text
+    # def add_tweetlength(self):
+    #     for t in self.instances:
+    #         tags = t.posseq
+    #         tweetlength = len([x for x in tags if not x == ])
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
