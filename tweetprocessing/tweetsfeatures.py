@@ -39,7 +39,9 @@ class Tweetsfeatures():
         By default nothing is removed, specify '1' for each category to choose for removal
         """
         self.instances = []
-        
+        self.specials = []
+        self.features = [[]]
+
         lines = open(infile,encoding = "utf-8")
         tweets = lines.readlines()
         lines.close()
@@ -91,24 +93,34 @@ class Tweetsfeatures():
                 else:
                     t.wordsequence.append(word)      
 
-    def extract_listfeatures(self,l):
+    def extract_listfeatures(self,l,n):
         """
         Extract features from a list and single them out
         """
+        self.specials.append(n)
         li = sorted(l, key=len, reverse=True)
         li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot)
 #        print(sorted(li),len(li))
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
 #        print(patterns)
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
+        #all features
+        feats = []
         for t in self.instances:
             if t.stemseq:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
             else:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
-            if len([x for x in features if not x == '']) > 0:
-                print(t.text,t.posseq,t.stemseq,features)
-            t.features.append(["list_" + x for x in features])
+            feats.append(len(features) / len(t.wordsequence))
+            # if len([x for x in features if not x == '']) > 0:
+            #     print(t.text,t.posseq,t.stemseq,features)
+        if not len(feats) == len(self.instances):
+            print("listfeatures and tweets not aligned, feats:",len(feats),", instances:",len(self.instances),"exiting program")
+        for i,rf in enumerate(feats):
+            self.instances[i].features.append(rf/max(feats))
+
+
+        #calculated features
 
     def extract_timefeatures(self):
         convert_nums = {"enige":3,"enkele":3,"een paar":3, "een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
@@ -294,10 +306,10 @@ class Tweetsfeatures():
 
         if t == "word":
             for t in self.instances:
-                t.features.extend(make_ngrams(t.wordsequence,n))
+                t.features[0].extend(make_ngrams(t.wordsequence,n))
         elif t == "pos":
             for t in self.instances:
-                t.features.extend(make_ngrams(t.posseq,n))
+                t.features[0].extend(make_ngrams(t.posseq,n))
   
     def add_char_ngrams(self,n,ignore = False):
         """
@@ -332,7 +344,7 @@ class Tweetsfeatures():
             if ignore:
                 text = rm_string([text],ignore)
             for n_val in n:
-                t.features.extend(make_char_ngrams(text,int(n_val)))
+                t.features[0].extend(make_char_ngrams(text,int(n_val)))
 
     def add_tweetlength(self):
         for t in self.instances:
@@ -472,16 +484,24 @@ class Tweetsfeatures():
                 t.meta = ""
 
     def output_features(self, outfile):
-        if not os.path.exists("/".join(outfile.split("/")[:-1])):
-            d = -4
-            while d <= -1: 
-                if not os.path.exists("/".join(outfile.split("/")[:d])):
-                    os.system("mkdir " + "/".join(outfile.split("/")[:d]))
-                d += 1
+        directory_index = -1
+        directory = "/".join(outfile.split("/")[directory_index])
+        while True:
+            if not os.path.exists("/".join(outfile.split("/")[directory_index])):
+                directory_index -= 1
+        while directory_index <= -1: 
+            if not os.path.exists("/".join(outfile.split("/")[directory_index])):
+                os.system("mkdir " + "/".join(outfile.split("/")[directory_index]))
+            d += 1
         out = open(outfile,"w",encoding = "utf-8")
         for i in self.instances:
-            out.write("\t".join(i.meta) + "\t" + " ".join(i.features) + "\n")
+            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + " | " + " ".join(i.features[1:]) + "\n")
         out.close()
+        if len(self.specials) > 0:
+            specials_out = open(directory + "special_features.txt","w",encoding = "utf-8")
+            for special in self.specials:
+                specials_out.write(special + "\n")
+
 
     class Tweet:
         """Class containing the features and characteristics of a tweet."""

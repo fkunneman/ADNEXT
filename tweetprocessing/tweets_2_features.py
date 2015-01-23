@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-#import codecs
 from tweetsfeatures import Tweetsfeatures
 
 """
@@ -76,7 +75,8 @@ if args.e:
         extractfile = open(args.e,"r",encoding = "utf-8")
         extracts = extractfile.read().split("\n")
         extractfile.close()
-        tf.extract_listfeatures(extracts)
+        listname = args.e.split("/")[-1].split(".txt")[0]
+        tf.extract_listfeatures(extracts,listname)
 if args.r:
     tf.extract_timefeatures()
 if args.d:
