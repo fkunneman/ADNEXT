@@ -116,7 +116,7 @@ class Tweetsfeatures():
         if not len(feats) == len(self.instances):
             print("listfeatures and tweets not aligned, feats:",len(feats),", instances:",len(self.instances),"exiting program")
         for i,rf in enumerate(feats):
-            self.instances[i].features.append(rf/max(feats))
+            self.instances[i].features.append(str(rf/max(feats))
 
 
         #calculated features
