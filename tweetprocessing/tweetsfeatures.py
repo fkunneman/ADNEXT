@@ -116,10 +116,7 @@ class Tweetsfeatures():
         if not len(feats) == len(self.instances):
             print("listfeatures and tweets not aligned, feats:",len(feats),", instances:",len(self.instances),"exiting program")
         for i,rf in enumerate(feats):
-            self.instances[i].features.append(str(rf/max(feats))
-
-
-        #calculated features
+            self.instances[i].features.append(str(rf/max(feats)))
 
     def extract_timefeatures(self):
         convert_nums = {"enige":3,"enkele":3,"een paar":3, "een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
