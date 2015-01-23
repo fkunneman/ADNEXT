@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser(description = "Script to generate instances wit
     features, based on a file with lines of tweets, and output these in a specified format.")
 parser.add_argument('-i', action = 'store', required = True, 
     help = "the input file")  
-parser.add_argument('-e', action = 'store', required = False, 
-    help = "choose to extract features based on the phrases in a file")
+parser.add_argument('-e', nargs='+', action = 'store', required = False, 
+    help = "choose to extract features based on the phrases in one or more files")
 parser.add_argument('-n', action = 'store', nargs = '+', required = False, 
     help = "to include word n-grams, specify the values of \'n\'")
 parser.add_argument('-p', action = 'store', nargs = '+', required = False, 
@@ -68,14 +68,12 @@ if args.rw:
 
 print("Generating features...") 
 if args.e:
-    if not args.stem:
-        print("no stemming information available, skipping list features")
-    else:
-        #generate list
-        extractfile = open(args.e,"r",encoding = "utf-8")
+    #generate list
+    for filename in args.e:
+        extractfile = open(filename,"r",encoding = "utf-8")
         extracts = extractfile.read().split("\n")
         extractfile.close()
-        listname = args.e.split("/")[-1].split(".txt")[0]
+        listname = filename.split("/")[-1].split(".txt")[0]
         tf.extract_listfeatures(extracts,listname)
 if args.r:
     tf.extract_timefeatures()
