@@ -40,7 +40,6 @@ class Tweetsfeatures():
         """
         self.instances = []
         self.specials = []
-        self.features = [[]]
 
         lines = open(infile,encoding = "utf-8")
         tweets = lines.readlines()
@@ -516,7 +515,7 @@ class Tweetsfeatures():
                 self.time = str(tokens[4])
                 self.text = tokens[5]
             self.wordsequence = []
-            self.features = []
+            self.features = [[]]
 
         def add_pos(self,seq):
             self.posseq = seq
