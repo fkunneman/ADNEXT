@@ -215,7 +215,7 @@ class Tweetsfeatures():
                     punct = len([x for x in tags if x == 'LET()']) / len(tags)
                     t.punct = punct
                 if pronouns:
-                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or 'VNW(pers,pron,nomin,vol,2v,ev)':
+                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or 'VNW(pers,pron,nomin,vol,2v,ev)' in tags:
                         t.pronouns = '1.0'
                     else:
                         t.pronouns = '0.0'
@@ -373,7 +373,7 @@ class Tweetsfeatures():
 
     def output_features(self, outfile):
         directory_index = -1
-        directory = "/".join(outfile.split("/")[:directory_index])
+        directory = "/".join(outfile.split("/")[:directory_index]) + "/"
         while True:
             print(directory_index,"/".join(outfile.split("/")[:directory_index]))
             if not os.path.exists("/".join(outfile.split("/")[:directory_index])):
