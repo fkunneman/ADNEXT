@@ -50,7 +50,7 @@ parser.add_argument('--punct', action = 'store_true',help = "choose to include p
 parser.add_argument('--length', action = 'store_true',help = "choose to include tweet length as feature")
 parser.add_argument('--cap', action = 'store_true',help = "choose to include capitalization as feature")
 parser.add_argument('--ht', action = 'store_true',help = "choose to include hashtag count as feature")
-
+parser.add_argument('--emo', action = 'store_true',help = "choose to include emoticons as feature")
 
 args = parser.parse_args() 
 
@@ -88,7 +88,7 @@ if args.n:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
-tf.add_stats(args.ht,args.cap,args.length,args.pronoun,args.punct)
+tf.add_stats(args.ht,args.cap,args.length,args.pronoun,args.punct,args.emo)
 
 print("Writing classifier input...")
 tf.set_meta()

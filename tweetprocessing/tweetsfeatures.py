@@ -192,7 +192,7 @@ class Tweetsfeatures():
             for n_val in n:
                 t.features[0].extend(make_char_ngrams(text,int(n_val)))
 
-    def add_stats(self,hashtags,capitalization,tweetlength,pronouns,punctuation):
+    def add_stats(self,hashtags,capitalization,tweetlength,pronouns,punctuation,emoticon):
         #add features to list
         if hashtags:
             self.specials.append("hashtags")
@@ -204,6 +204,13 @@ class Tweetsfeatures():
             self.specials.append("pronouns")
         if punctuation:
             self.specials.append("punctuation")
+        if emoticon:
+            self.specials.append("positive emoticons")
+            self.specials.append("neutral emoticons")
+            self.specials.append("negative emoticons")
+            posi = re.compile(r"[ ^](:(-|o|c|\^)?(\)|\]|>|}|D|p|d)\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)[ $]")
+            neutr = re.compile(r"[ ^]:(\$|\*|o|s|\|)[ $]")
+            nega = re.compile(r"[ ^](>?:-?\'?(\(|\[|c|<|{|\|\||@)|D(:|;)?(<|8|=|X)|;\(|v\.v)?[ $]")
         #retrieve info
         for t in self.instances:
             if tweetlength or pronouns or punctuation:
@@ -223,6 +230,19 @@ class Tweetsfeatures():
                 t.hashtags = len([x for x in t.wordsequence if x[0] == '#']) / len(t.wordsequence)
             if capitalization:
                 t.uppercase = len([x for x in t.text if x.isupper()]) / len(t.text)
+            if emoticon:
+                if posi.search(t.text):
+                    t.posi = '1.0'
+                else:
+                    t.posi = '0.0'
+                if neutr.search(t.text)
+                    t.neutr = '1.0'
+                else:
+                    t.neutr = '0.0'
+                if nega.search(t.text)
+                    t.nega = '1.0'
+                else:
+                    t.nega = '0.0'
         #add feature
         if hashtags:
             max_ht = max(t.hashtags for t in self.instances)
@@ -247,6 +267,8 @@ class Tweetsfeatures():
             if punctuation:
                 punct = t.punct
                 t.features.append(str(round(punct / max_punct,2)))
+            if emoticon:
+                t.features.extend([t.posi,t.neutr,t.nega])
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
