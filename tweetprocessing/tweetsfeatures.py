@@ -104,8 +104,6 @@ class Tweetsfeatures():
         for t in self.instances:
             if t.stemseq:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
-                if len(features) > 0:
-                    print(features," ".join(t.stemseq),t.text)
             else:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
             feats.append(len([x for x in features if not x == ""]) / len(t.wordsequence))
@@ -237,18 +235,18 @@ class Tweetsfeatures():
         for t in self.instances:
             if hashtags:            
                 ht = t.hashtags
-                t.features.append(round(ht / max_ht,2))            
+                t.features.append(str(round(ht / max_ht,2)))            
             if capitalization:
                 uc = t.uppercase
-                t.features.append(round(uc / max_uc,2))
+                t.features.append(str(round(uc / max_uc,2)))
             if tweetlength:
                 tl = t.tl_absolute
-                t.features.append(round(tl / max_tl,2))
+                t.features.append(str(round(tl / max_tl,2)))
             if pronouns:
                 t.features.append(t.pronouns)
             if punctuation:
                 punct = t.punct
-                t.features.append(punct / max_punct)
+                t.features.append(str(round(punct / max_punct,2)))
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
