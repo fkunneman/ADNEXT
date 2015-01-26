@@ -404,7 +404,6 @@ class Tweetsfeatures():
         directory_index = -1
         directory = "/".join(outfile.split("/")[:directory_index]) + "/"
         while True:
-            print(directory_index,"/".join(outfile.split("/")[:directory_index]))
             if not os.path.exists("/".join(outfile.split("/")[:directory_index])):
                 directory_index -= 1
             else:
@@ -417,9 +416,7 @@ class Tweetsfeatures():
         for i in self.instances:
             out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + " ||| " + " ".join(i.features[1:]) + "\n")
         out.close()
-        print(len(self.specials))
         if len(self.specials) > 0:
-            print("yes")
             specials_out = open(directory + "special_features.txt","w",encoding = "utf-8")
             for special in self.specials:
                 specials_out.write(special + "\n")
