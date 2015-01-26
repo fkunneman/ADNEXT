@@ -88,8 +88,7 @@ if args.n:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
-tf.
-
+tf.add_stats(args.ht,args.cap,args.length,args.pronoun,args.punct)
 
 print("Writing classifier input...")
 tf.set_meta()
