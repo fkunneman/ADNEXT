@@ -65,17 +65,12 @@ class Tweetsfeatures():
             poss = []
             data = frogger.process(t.text)
             for token in data:
-                if token["text"] == "jij":
-                    print(token["pos"],t.text)
                 poss.append(token["pos"])
-#                if token["pos"] == "VNW(pers,pron,nomin,red,2v,ev)":
-#                    print(token["text"],t.text)
                 stems.append(token["lemma"])
             if stem:
                 t.add_stem(stems)
             if pos:
                 t.add_pos(poss)
-#            print(t.text,t.posseq)
 
     def set_sequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
@@ -102,11 +97,8 @@ class Tweetsfeatures():
         """
         self.specials.append(n)
         li = sorted(l, key=len, reverse=True)
-        li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot)
-        #li = [tx.replace('.','\.').replace('*','\*').replace('(','\\(').replace(')','\\)') for tx in li] # not to match anything with . (dot)
-        print(li)
+        li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot) or *
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
-        print(patterns)
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         feats = []
         for t in self.instances:
@@ -121,150 +113,6 @@ class Tweetsfeatures():
             print("listfeatures and tweets not aligned, feats:",len(feats),", instances:",len(self.instances),"exiting program")
         for i,rf in enumerate(feats):
             self.instances[i].features.append(str(round(rf/max(feats),2)))
-
-    def extract_timefeatures(self):
-        convert_nums = {"enige":3,"enkele":3,"een paar":3, "een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
-        convert_tu = {"dagen":1, "daagjes":1, "nachten":1, "nachtjes":1, "week": 7, "weken":7, "weekjes":7, "maand": 30, "maanden":30, "maandjes":30}
-        # check = re.compile(r"\b(dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)\b",re.IGNORECASE)
-        days = re.compile(r"over iets (meer|minder) dan (\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days1 = re.compile(r"(over|nog) pakweg (\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days2 = re.compile(r"nog slechts (een kleine )?(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days3 = re.compile(r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand) tot",re.IGNORECASE)
-        days4 = re.compile(r"(met )?nog (een kleine |maar |slechts )?(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days5 = re.compile(r"nog (maar )?(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days6 = re.compile(r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)( slapen)? tot",re.IGNORECASE)
-        days7 = re.compile(r"(over|nog) (\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days8 = re.compile(r"(over|nog) (ruim|krap|een kleine|ongeveer|bijna) (\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes|week|maand)",re.IGNORECASE)
-        days9 = re.compile(r"(over|nog) (maar |slechts |minimaal |maximaal |tenminste )?(enige|enkele|een paar|\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)",re.IGNORECASE)
-        days10 = re.compile(r"met (nog)? (maar |slechts )?(1|een) (dag|week|maand|jaar) (of wat)?( nog)? te gaan",re.IGNORECASE)
-        days11 = re.compile(r"met (nog)? (maar|slechts)?( enige| enkele| een paar| een| 1) (dag|dagen|week|weken|maand|maanden) te gaan",re.IGNORECASE)
-
-        for instance in self.instances:
-            ws = " ".join(instance.wordsequence)
-            m = False
-            if days.search(ws):
-                sh = days.search(ws)
-                m = True
-            elif days1.search(ws):
-                sh = days1.search(ws)
-                m = True
-            elif days2.search(ws):
-                sh = days2.search(ws)
-                m = True
-            elif days3.search(ws):
-                sh = days3.search(ws)
-                m = True
-            elif days4.search(ws):
-                sh = days4.search(ws)
-                m = True
-            elif days5.search(ws):
-                sh = days5.search(ws)
-                m = True
-            elif days6.search(ws):
-                sh = days6.search(ws)
-                m = True
-            elif days7.search(ws):
-                sh = days7.search(ws)
-                m = True
-            elif days8.search(ws):
-                sh = days8.search(ws)
-                m = True
-            elif days9.search(ws):
-                sh = days9.search(ws)
-                m = True
-            if m:
-                for unit in sh.groups():
-                    if unit != None:
-                        if unit in convert_nums.keys():
-                            num = convert_nums[unit]
-                        elif re.match(r"\d+",unit):
-                            num = int(unit)
-                        elif unit in convert_tu.keys():
-                            tu = convert_tu[unit]
-                days_ahead = num*tu
-                tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
-                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
-                feature = "date_" + event_datetime.strftime("%d-%m-%Y")             
-                instance.features.append(feature)
-
-    def extract_date(self):
-        convert_nums = {"een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
-        convert_month = {"jan":1, "januari":1, "feb":2, "februari":2, "mrt":3, "maart":3, "apr":4, "april":4, "mei":5, "jun":6, "juni":6, "jul":7, "juli":7, "aug":8, "augustus":8, "sep":9, "september":9, "okt":10, "oktober":10, "nov":11, "november":11, "dec":12, "december":12}
-        dates = re.compile(r"([1,2,3]?\d|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|nov|november|dec|december)(\b|$)",re.IGNORECASE)
-        for instance in self.instances:
-            ws = " ".join(instance.wordsequence)
-            if dates.search(ws):
-                tweet_date = time_functions.return_datetime(instance.date,setting="vs")
-                sh = dates.search(ws)
-                if re.search(r"\d+",sh.groups()[0]):
-                    day = int(sh.groups()[0])
-                else:
-                    day = convert_nums[sh.groups()[0]]
-                month = convert_month[sh.groups()[1]]
-
-                try:
-                    date = datetime.datetime(tweet_date.year,month,day,0,0,0)
-                    feature = "date_" + date.strftime("%d-%m-%Y")
-                except:
-                    continue
-                instance.features.append(feature)  
-
-    def extract_weekday(self):
-        future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
-        today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)",re.IGNORECASE)
-        tomorrow=re.compile(r"(morgen|morgenavond|morgenmiddag|morgenochtend)",re.IGNORECASE)
-        day_after_t=re.compile(r"overmorgen",re.IGNORECASE)
-        weekend=re.compile(r"\b(weekend)\b",re.IGNORECASE)
-        weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?",re.IGNORECASE)
-        weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
-
-        for instance in self.instances:
-            ws = " ".join(instance.wordsequence)
-            da = False
-            if weekend.search(ws,re.IGNORECASE) or weekday.search(ws):
-                da = True
-                tweet_date=time_functions.return_datetime(instance.date,setting="vs")
-                tweet_weekday=tweet_date.weekday()
-                if weekend.search(ws):
-                    ref_weekday=weekdays.index("zaterdag")
-                else:
-                    ref_weekday=weekdays.index(weekday.search(ws).groups()[0])
-                if ref_weekday == tweet_weekday:
-                    days_ahead = 0
-                elif tweet_weekday < ref_weekday:
-                    days_ahead = ref_weekday - tweet_weekday
-                else:
-                    days_ahead = ref_weekday + (7-tweet_weekday)
-            elif today.search(ws):
-                da = True
-                days_ahead = 0
-            elif tomorrow.search(ws):
-                da = True
-                days_ahead = 1
-            elif day_after_t.search(ws):
-                da = True
-                days_ahead = 2
-
-            if da:
-                days_ahead = int(days_ahead)
-                tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
-                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
-                feature = "date_" + event_datetime.strftime("%d-%m-%Y")               
-                instance.features.append(feature)
-
-    def match_rulelist(self,l):    
-    # 1: match ids
-        relevant_ids = set([x.id for x in self.instances]) & set([x.split("\t")[0] for x in l])
-        matched_rules = [x.strip().split("\t") for x in l if x.split("\t")[0] in relevant_ids]
-        matched_tweets = [x for x in self.instances if x.id in relevant_ids]
-        for t in matched_tweets:
-            tweet_datetime = time_functions.return_datetime(t.date,time=t.time,setting="vs")
-            dif_feat = [x for x in matched_rules if x[0] == t.id][0]
-            dif = dif_feat[-1]
-            feat = dif_feat[2]
-            event_datetime = tweet_datetime + datetime.timedelta(hours = int(float(dif)) * -1)
-            feature = "date_" + event_datetime.strftime("%d-%m-%Y")
-            t.features.append(feature)
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n,t="word"):
@@ -346,19 +194,61 @@ class Tweetsfeatures():
             for n_val in n:
                 t.features[0].extend(make_char_ngrams(text,int(n_val)))
 
-    def add_tweetlength(self):
+    def add_stats(self,hashtags,capitalization,tweetlength,pronouns,punctuation):
+        #add features to list
+        if hashtags:
+            self.specials.append("hashtags")
+        if capitalization:
+            self.specials.append("capitalization")
+        if tweetlength:
+            self.specials.append("tweetlength")
+        if pronouns:
+            self.specials.append("pronouns")
+        if punctuation:
+            self.specials.append("punctuation")
+        #retrieve info
         for t in self.instances:
-            tags = t.posseq
-            tweetlength = len([x for x in tags if not x == 'LET()'])
-            t.tl_absolute = tweetlength
-        max_tl = max(t.tl_absolute for t in self.instances)
+            if tweetlength or pronouns or punctuation:
+                tags = t.posseq
+                if tweetlength:
+                    tl = len([x for x in tags if not x == 'LET()'])
+                    t.tl_absolute = tl
+                if punctuation:
+                    punct = len([x for x in tags if x == 'LET()']) / len(tags)
+                    t.punct = punct
+                if pronouns:
+                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or 'VNW(pers,pron,nomin,vol,2v,ev)':
+                        t.pronouns = '1.0'
+                    else:
+                        t.pronouns = '0.0'
+            if hashtags:
+                t.hashtags = len([x for x in t.wordsequence if x[0] == '#']) / len(t.wordsequence)
+            if capitalization:
+                t.uppercase = len([x for x in t.text if x.isupper()]) / len(t.text)
+        #add feature
+        if hashtags:
+            max_ht = max(t.hashtags for t in self.instances)
+        if capitalization:
+            max_uc = max(t.uppercase for t in self.instances)
+        if tweetlength:
+            max_tl = max(t.tl_absolute for t in self.instances)
+        if punctuation:
+            max_punct = max(t.punct for t in self.instances)
         for t in self.instances:
-            tl_absolute = t.tl_absolute
-            tl_relative = tl_absolute / max_tl
-            t.features.append(tl_relative)
-
-#    def add_stats(self,mention,hashtags,punct,upper):
-
+            if hashtags:            
+                ht = t.hashtags
+                t.features.append(round(ht / max_ht,2))            
+            if capitalization:
+                uc = t.uppercase
+                t.features.append(round(uc / max_uc,2))
+            if tweetlength:
+                tl = t.tl_absolute
+                t.features.append(round(tl / max_tl,2))
+            if pronouns:
+                t.features.append(t.pronouns)
+            if punctuation:
+                punct = t.punct
+                t.features.append(punct / max_punct)
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 

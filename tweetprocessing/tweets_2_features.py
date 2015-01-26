@@ -11,21 +11,15 @@ parser = argparse.ArgumentParser(description = "Script to generate instances wit
     features, based on a file with lines of tweets, and output these in a specified format.")
 parser.add_argument('-i', action = 'store', required = True, 
     help = "the input file")  
+parser.add_argument('-o', action = 'store', required = True, 
+    help = "specify the output file")
 parser.add_argument('-e', nargs='+', action = 'store', required = False, 
     help = "choose to extract features based on the phrases in one or more files")
 parser.add_argument('-n', action = 'store', nargs = '+', required = False, 
     help = "to include word n-grams, specify the values of \'n\'")
 parser.add_argument('-p', action = 'store', nargs = '+', required = False, 
-    help = "to include pos n-grams, specify the values of \'n\', \'pos\' \
-    needs to be included as feature")
-parser.add_argument('-r', action = 'store_true',
-    help = "extract time features based on rules")
-parser.add_argument('-d', action = 'store_true',
-    help = "extract dates as time features")
-parser.add_argument('-m', action = 'store', required = False,
-    help = "list with rules to match")
-parser.add_argument('-w', action = 'store_true',
-    help = "extract weekdays as time features")
+    help = "to include pos n-grams, specify the values of \'p\'" 
+        ", pos-argument should be included")
 parser.add_argument('-cn', action = 'store', nargs = '+', required = False, 
     help = "to include character n-grams, specify the values of \'n\'")
 parser.add_argument('-rb', action = 'store', nargs='+', required = False, 
@@ -33,7 +27,7 @@ parser.add_argument('-rb', action = 'store', nargs='+', required = False,
 parser.add_argument('-ri', action = 'store', required = False, nargs = '+', 
     help = "[OPTIONAL] remove instances if they contain one of the given words") 
 parser.add_argument('-re', action = 'store', required = False, nargs = '+', 
-    help = "[OPTIONAL] remove instances if the do not end with a given hashtag (the given hashtag \
+    help = "[OPTIONAL] remove instances if they do not end with a given hashtag (the given hashtag \
     may still be followed by a URL or other hashtags)")
 parser.add_argument('-rw', nargs='+', action = 'store', required = False, 
     help = "[OPTIONAL] to filter tweets outside of a specified timewindow, specify the two points \
@@ -44,8 +38,6 @@ parser.add_argument('-us', action = 'store_true', default = False,
     help = "[OPTIONAL] choose whether usernames are normalized")
 parser.add_argument('-lo', action = 'store_true', default = False, 
     help = "[OPTIONAL] choose whether words are standardized to lower case")
-parser.add_argument('-o', action = 'store', required = True, 
-    help = "specify the output file")
 parser.add_argument('--eos', action = 'store_true', 
     help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed \
     (the marker will be added to previous word)")
@@ -70,23 +62,11 @@ print("Generating features...")
 if args.e:
     #generate list
     for filename in args.e:
-        print(filename)
         extractfile = open(filename,"r",encoding = "utf-8")
         extracts = extractfile.read().split("\n")
         extractfile.close()
         listname = filename.split("/")[-1].split(".txt")[0]
-        print(listname)
         tf.extract_listfeatures(extracts,listname)
-if args.r:
-    tf.extract_timefeatures()
-if args.d:
-    tf.extract_date()
-if args.w:
-    tf.extract_weekday()
-if args.m:
-    l = open(args.m,"r",encoding = "utf-8")
-    tf.match_rulelist(l.readlines())
-    l.close()
 if args.n:
     for n in args.n:
         tf.add_ngrams(n=int(n))
