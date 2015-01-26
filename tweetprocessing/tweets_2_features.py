@@ -43,6 +43,14 @@ parser.add_argument('--eos', action = 'store_true',
     (the marker will be added to previous word)")
 parser.add_argument('--pos', action = 'store_true',help = "choose to include pos n-grams")
 parser.add_argument('--stem', action = 'store_true',help = "choose to include stems")
+parser.add_argument('--pronoun', action = 'store_true',help = "choose to include second pronoun as feature"
+    " (requires pos-tagging)")
+parser.add_argument('--punct', action = 'store_true',help = "choose to include punctuation as feature"
+    " (requires pos-tagging)")
+parser.add_argument('--length', action = 'store_true',help = "choose to include tweet length as feature")
+parser.add_argument('--cap', action = 'store_true',help = "choose to include capitalization as feature")
+parser.add_argument('--ht', action = 'store_true',help = "choose to include hashtag count as feature")
+
 
 args = parser.parse_args() 
 
@@ -80,6 +88,8 @@ if args.n:
         tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
+tf.
+
 
 print("Writing classifier input...")
 tf.set_meta()
