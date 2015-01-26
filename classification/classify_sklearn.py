@@ -52,8 +52,9 @@ def make_instances(lines,appendlines=False):
         instance["label"] = tokens[1]
         instance["meta"] = tokens[:-1]
         features = tokens[-1]
-        feattokens = features.split(" | ")
+        feattokens = features.split(" ||| ")
         instance["ngrams"] = feattokens[0].split()
+        print(tokens[5],"features",feattokens[1])
         instance["features"] = [float(x) for x in feattokens[1].split()]
         if appendlines:
             #check if file is same
@@ -64,6 +65,7 @@ def make_instances(lines,appendlines=False):
                 print("labels of appendfile do not align, exiting program")
             instance["append"] = int(float(classification))
         instances.append(instance)
+    quit()
     return instances
 
 def classify(tr,te):
