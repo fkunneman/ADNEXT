@@ -51,8 +51,8 @@ parser.add_argument('--length', action = 'store_true',help = "choose to include 
 parser.add_argument('--cap', action = 'store_true',help = "choose to include capitalization as feature")
 parser.add_argument('--ht', action = 'store_true',help = "choose to include hashtag count as feature")
 parser.add_argument('--emo', action = 'store_true',help = "choose to include emoticons as feature")
-parser.add_argument('--sentiment', action = 'store_true',help = "choose to include the pattern sentiment "
-    " and subjectivity scores as features")
+#parser.add_argument('--sentiment', action = 'store_true',help = "choose to include the pattern sentiment "
+#    " and subjectivity scores as features")
 
 args = parser.parse_args() 
 

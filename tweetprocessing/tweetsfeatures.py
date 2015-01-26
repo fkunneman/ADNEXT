@@ -5,7 +5,7 @@ import re
 import datetime
 from collections import defaultdict
 import multiprocessing
-from pattern.nl import parse, pprint, sentiment
+#from pattern.nl import parse, pprint, sentiment
 import frog
 import time_functions
 import gen_functions
@@ -271,11 +271,11 @@ class Tweetsfeatures():
             if emoticon:
                 t.features.extend([t.posi,t.neutr,t.nega])
 
-    def add_sentiment(self):
-        self.specials.extend(["polarity","subjectivity"])
-        for t in self.instances:
-            senti = sentiment(t.text)
-            t.features.extend([str(senti[0]),str(senti[1])])
+    # def add_sentiment(self):
+    #     self.specials.extend(["polarity","subjectivity"])
+    #     for t in self.instances:
+    #         senti = sentiment(t.text)
+    #         t.features.extend([str(senti[0]),str(senti[1])])
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
@@ -446,7 +446,7 @@ class Tweetsfeatures():
             self.stemseq = seq
 
         def set_meta(self):
-            self.meta = [self.id,self.label,self.user,self.date,self.time]
+            self.meta = [self.id,self.label,self.user,self.date,self.time,self.text]
 
         def get_datetime(self):
             return time_functions.return_datetime(self.date,self.time,"vs")
