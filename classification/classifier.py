@@ -42,7 +42,7 @@ class Classifier():
         def ff(instances,queue):
             feature_frequency = defaultdict(int)
             for i,instance in enumerate(instances):
-                for feature in instance["features"]:
+                for feature in instance["ngrams"]:
                     feature_frequency[feature] += 1
             queue.put(feature_frequency)
         
@@ -73,7 +73,7 @@ class Classifier():
         for instance in self.training:
             try:
                 label = int(instance["label"])       
-                for feature in instance["features"]:
+                for feature in instance["ngrams"]:
                     feature_labellist[feature].append(label)
             except:
                 continue
@@ -83,13 +83,13 @@ class Classifier():
         for instance in self.training:
             new_features = []
             #print feature_status
-            for f in instance["features"]:
+            for f in instance["ngrams"]:
                 try:
                     if self.feature_status[f]:
                         new_features.append(f)
                 except:
                     continue
-            instance["features"] = new_features
+            instance["ngrams"] = new_features
             # queue.put(instance)
 
     def convert_features(self,convert_list):
@@ -97,9 +97,9 @@ class Classifier():
             new_features = []
             #print feature_status
             #print instance["features"]
-            for i,f in enumerate(instance["features"]):
+            for i,f in enumerate(instance["ngrams"]):
                 if f in convert_list.keys():
-                     instance["features"][i] = convert_list[f]
+                     instance["ngrams"][i] = convert_list[f]
             #print instance["features"]
 
     def filter_stdev(self,threshold,prop):
@@ -163,7 +163,7 @@ class Classifier():
         def sparsify(instances,writelist):
             for instance in instances:
                 sparse_features = defaultdict(int)
-                for feature in instance["features"]:
+                for feature in instance["ngrams"]:
                     try:
                         sparse_features[self.feature_info[feature]] += 1
                     except:
@@ -177,7 +177,7 @@ class Classifier():
         for tset in self.test:
             for instance in tset["instances"]:
                 sparse_features = defaultdict(int)
-                for feature in instance["features"]:
+                for feature in instance["ngrams"]:
                     try:
                         sparse_features[self.feature_info[feature]] += 1
                     except:
@@ -196,6 +196,8 @@ class Classifier():
                     featurev[feature] = math.log(instance["sparse"][feature],10)
                 elif self.scaling == "tfidf":
                     featurev[feature] = instance["sparse"][feature] * self.idf[feature]
+            for feat in instance["features"]:
+                featurev.append(feat)
             matrix.append(featurev)
         return matrix
 
@@ -218,8 +220,7 @@ class Classifier():
             classification = self.clf.predict(t)
             proba = self.clf.predict_proba(t)
             classification_label = self.labeldict_back[classification[0]]
-            predictions.append([" ".join([x for x in ts[i]["features"] if not re.search("_",x)]), \
-                ts[i]["label"] + " " + classification_label, \
+            predictions.append([ts[i]["meta"][5], ts[i]["label"] + " " + classification_label, \
                 " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
         return predictions
 
@@ -280,7 +281,7 @@ class Classifier():
             self.features = []
             for instance in self.training:
                 instance["sparse"] = defaultdict(int)
-                instance["features"] = []
+                instance["ngrams"] = []
         len_features = len(self.features)
         for i,fn in enumerate(classifiers):
             featurename = "___" + fn
@@ -298,7 +299,7 @@ class Classifier():
                     prediction = int(float(predictions[i][1].split()[1]))
                     self.training[j]["sparse"][self.feature_info["___svm"]] = prediction
                     if prediction == 1:
-                        self.training[j]["features"].append("___svm")
+                        self.training[j]["ngrams"].append("___svm")
             if "nb" in classifiers:
                 cl.train_nb()
                 predictions = cl.predict(test)
@@ -306,7 +307,7 @@ class Classifier():
                     prediction = int(float(predictions[i][1].split()[1]))
                     self.training[j]["sparse"][self.feature_info["___nb"]] = prediction
                     if prediction == 1:
-                        self.training[j]["features"].append("___nb")
+                        self.training[j]["ngrams"].append("___nb")
             if "dt" in classifiers:
                 cl.train_decisiontree()
                 predictions = cl.predict(test)
@@ -314,7 +315,7 @@ class Classifier():
                     prediction = int(float(predictions[i][1].split()[1]))
                     self.training[j]["sparse"][self.feature_info["___dt"]] = prediction
                     if prediction == 1:
-                        self.training[j]["features"].append("___dt")               
+                        self.training[j]["ngrams"].append("___dt")               
             
     def return_classification_features(self):
         prediction_features_testset = []
@@ -337,10 +338,10 @@ class Classifier():
             for j,instance in enumerate(tset["instances"]):
                 if voter != "arbiter":
                     tset["instances"][j]["sparse"] = defaultdict(int)
-                    tset["instances"][j]["features"] = []
+                    tset["instances"][j]["ngrams"] = []
                 for fn in featurenames:
                     tset["instances"][j]["sparse"][self.feature_info[fn]] = featuredict[i][j][fn]
-                    tset["instances"][j]["features"].append(fn)
+                    tset["instances"][j]["ngrams"].append(fn)
 
     def append_classifier_labelings(self):
         len_features = len(self.feature_info.keys())
@@ -371,16 +372,15 @@ class Classifier():
         #trainout = codecs.open(outdir + "train.txt","w","utf-8")
         trainout = codecs.open(outdir + "train.txt","w","utf-8")
         for instance in self.training:
-            trainout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
+            trainout.write(instance["label"] + " " + ",".join(instance["ngrams"]) + " " + 
                 ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
         trainout.close()
         #output testfile
-        #testout = codecs.open(outdir + "test.txt","w","utf-8")
         testout = codecs.open(outdir + "test.txt","w","utf-8")
         for i,tset in enumerate(self.test):
             #testout = codecs.open(outdir + "test" + str(i) + ".txt","w","utf-8")
             for instance in tset["instances"]:
-                testout.write(instance["label"] + " " + ",".join(instance["features"]) + " " + 
+                testout.write(instance["label"] + " " + ",".join(instance["ngrams"]) + " " + 
                     ",".join([str(x) for x in instance["sparse"].keys()]) + "\n")
 
     def test_model(self):

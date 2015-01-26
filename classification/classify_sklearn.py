@@ -51,7 +51,10 @@ def make_instances(lines,appendlines=False):
         instance = {}
         instance["label"] = tokens[1]
         instance["meta"] = tokens[:-1]
-        instance["features"] = tokens[-1].split()
+        features = tokens[-1]
+        feattokens = features.split(" | ")
+        instance["ngrams"] = feattokens[0].split()
+        instance["features"] = [float(x) for x in feattokens[1].split()]
         if appendlines:
             #check if file is same
             info = appendlines[i].strip().split("\t")[1].split()
@@ -130,10 +133,8 @@ def classify(tr,te):
     if args.save:
         cl.save_model()
 
-#trainfile = codecs.open(args.i,"r","utf-8")
 trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:
-    #appendfile = codecs.open(args.append,"r","utf-8")
     appendfile = codecs.open(args.append,"r","utf-8")
     trainlines = trainfile.readlines()
     appendlines = appendfile.readlines()
@@ -147,7 +148,6 @@ else:
 trainfile.close()
 
 if args.t:
-    #testfile = codecs.open(args.t,"r","utf-8")
     testfile = codecs.open(args.t,"r","utf-8")
     test = [{"out" : args.o + "testout.txt", "instances" : make_instances(testfile.readlines())}]
     testfile.close()
