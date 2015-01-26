@@ -79,7 +79,7 @@ class Tweetsfeatures():
         user = re.compile(r"@")
         for t in self.instances:
             if lower: 
-                t.text = t.text.lower()
+                words = t.text.lower().split(" ")
             else:
                 words = t.text.split(" ") 
             for word in words:
@@ -209,7 +209,7 @@ class Tweetsfeatures():
             self.specials.append("positive emoticons")
             self.specials.append("neutral emoticons")
             self.specials.append("negative emoticons")
-            posi = re.compile(r"[ ^](:(-|o|c|\^)?(\)|\]|>|}|D|p|d)\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)[ $]")
+            posi = re.compile(r"[ ^](:(-|[oO]|[cC]|\^)?(\)|\]|>|}|D|[pP]|[dD])\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)[ $]")
             neutr = re.compile(r"[ ^]:(\$|\*|o|s|\|)[ $]")
             nega = re.compile(r"[ ^](>?:-?\'?(\(|\[|c|<|{|\|\||@)|D(:|;)?(<|8|=|X)|;\(|v\.v)?[ $]")
         #retrieve info
