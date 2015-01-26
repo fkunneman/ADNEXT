@@ -70,10 +70,12 @@ print("Generating features...")
 if args.e:
     #generate list
     for filename in args.e:
+        print(filename)
         extractfile = open(filename,"r",encoding = "utf-8")
         extracts = extractfile.read().split("\n")
         extractfile.close()
         listname = filename.split("/")[-1].split(".txt")[0]
+        print(listname)
         tf.extract_listfeatures(extracts,listname)
 if args.r:
     tf.extract_timefeatures()

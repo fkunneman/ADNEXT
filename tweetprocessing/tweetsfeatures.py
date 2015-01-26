@@ -65,12 +65,17 @@ class Tweetsfeatures():
             poss = []
             data = frogger.process(t.text)
             for token in data:
+                if token["text"] == "jij":
+                    print(token["pos"],t.text)
                 poss.append(token["pos"])
+#                if token["pos"] == "VNW(pers,pron,nomin,red,2v,ev)":
+#                    print(token["text"],t.text)
                 stems.append(token["lemma"])
             if stem:
                 t.add_stem(stems)
             if pos:
                 t.add_pos(poss)
+#            print(t.text,t.posseq)
 
     def set_sequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
@@ -98,12 +103,17 @@ class Tweetsfeatures():
         self.specials.append(n)
         li = sorted(l, key=len, reverse=True)
         li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot)
+        #li = [tx.replace('.','\.').replace('*','\*').replace('(','\\(').replace(')','\\)') for tx in li] # not to match anything with . (dot)
+        print(li)
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
+        print(patterns)
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         feats = []
         for t in self.instances:
             if t.stemseq:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
+                if len(features) > 0:
+                    print(features," ".join(t.stemseq),t.text)
             else:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
             feats.append(len([x for x in features if not x == ""]) / len(t.wordsequence))
