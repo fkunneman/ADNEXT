@@ -209,9 +209,9 @@ class Tweetsfeatures():
             self.specials.append("positive emoticons")
             self.specials.append("neutral emoticons")
             self.specials.append("negative emoticons")
-            posi = re.compile(r"[ ^](:(-|[oO]|[cC]|\^)?(\)|\]|>|}|D|[pP]|[dD])\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)[ $]")
-            neutr = re.compile(r"[ ^]:(\$|\*|o|s|\|)[ $]")
-            nega = re.compile(r"[ ^](>?:-?\'?(\(|\[|c|<|{|\|\||@)|D(:|;)?(<|8|=|X)|;\(|v\.v)?[ $]")
+            posi = re.compile(r"(:(-|[oO]|[cC]|\^)?(\)|\]|>|}|D|[pP]|[dD])\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)")
+            neutr = re.compile(r":(\$|\*|o|s|\|)")
+            nega = re.compile(r"(>?:-?\'?(\(|\[|c|<|{|\|\||@)|D(:|;)?(<|8|=|X)|;\(|v\.v)?")
         #retrieve info
         for t in self.instances:
             if tweetlength or pronouns or punctuation:
@@ -414,7 +414,7 @@ class Tweetsfeatures():
             directory_index += 1
         out = open(outfile,"w",encoding = "utf-8")
         for i in self.instances:
-            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + " ||| " + " ".join(i.features[1:]) + "\n")
+            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + "\t" + " ".join(i.features[1:]) + "\n")
         out.close()
         if len(self.specials) > 0:
             specials_out = open(directory + "special_features.txt","w",encoding = "utf-8")

@@ -50,12 +50,12 @@ def make_instances(lines,appendlines=False):
         tokens = line.strip().split("\t")
         instance = {}
         instance["label"] = tokens[1]
-        instance["meta"] = tokens[:-1]
+        instance["meta"] = tokens[:-2]
         features = tokens[-1]
-        feattokens = features.split(" ||| ")
-        instance["ngrams"] = feattokens[0].split()
-        print(tokens[5],"features",feattokens[1])
-        instance["features"] = [float(x) for x in feattokens[1].split()]
+
+        instance["ngrams"] = tokens[-2].split()
+        #print(tokens[5],"features",feattokens[1])
+        instance["features"] = [float(x) for x in tokens[-1].split()]
         if appendlines:
             #check if file is same
             info = appendlines[i].strip().split("\t")[1].split()
