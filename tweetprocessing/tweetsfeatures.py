@@ -235,11 +235,11 @@ class Tweetsfeatures():
                     t.posi = '1.0'
                 else:
                     t.posi = '0.0'
-                if neutr.search(t.text)
+                if neutr.search(t.text):
                     t.neutr = '1.0'
                 else:
                     t.neutr = '0.0'
-                if nega.search(t.text)
+                if nega.search(t.text):
                     t.nega = '1.0'
                 else:
                     t.nega = '0.0'
