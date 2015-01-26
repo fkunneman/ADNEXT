@@ -4,10 +4,11 @@ import os
 import re
 import datetime
 from collections import defaultdict
+import multiprocessing
+from pattern.nl import parse, pprint, sentiment
+import frog
 import time_functions
 import gen_functions
-import multiprocessing
-import frog
 
 class Tweetsfeatures():
     """
@@ -269,6 +270,12 @@ class Tweetsfeatures():
                 t.features.append(str(round(punct / max_punct,2)))
             if emoticon:
                 t.features.extend([t.posi,t.neutr,t.nega])
+
+    def add_sentiment(self):
+        self.specials.extend(["polarity","subjectivity"])
+        for t in self.instances:
+            senti = sentiment(t.text)
+            t.features.extend([str(senti[0]),str(senti[1])])
 
     def filter_tweets(self,blacklist):
         """Filter tweets from this container if they contain a marker in a given list, like an 
