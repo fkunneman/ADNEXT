@@ -415,7 +415,7 @@ class Tweetsfeatures():
             directory_index += 1
         out = open(outfile,"w",encoding = "utf-8")
         for i in self.instances:
-            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + " | " + " ".join(i.features[1:]) + "\n")
+            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + " ||| " + " ".join(i.features[1:]) + "\n")
         out.close()
         print(len(self.specials))
         if len(self.specials) > 0:
