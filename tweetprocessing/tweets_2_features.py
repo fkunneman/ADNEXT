@@ -91,8 +91,8 @@ if args.n:
 if args.cn:
     tf.add_char_ngrams(args.cn,args.rb)
 tf.add_stats(args.ht,args.cap,args.length,args.pronoun,args.punct,args.emo)
-if args.sentiment:
-    tf.add_sentiment()
+# if args.sentiment:
+#     tf.add_sentiment()
 
 print("Writing classifier input...")
 tf.set_meta()
