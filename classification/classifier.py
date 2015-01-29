@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 
 from __future__ import division
 import codecs
@@ -220,8 +219,12 @@ class Classifier():
             classification = self.clf.predict(t)
             proba = self.clf.predict_proba(t)
             classification_label = self.labeldict_back[classification[0]]
-            predictions.append([ts[i]["meta"][5], ts[i]["label"] + " " + classification_label, \
-                " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
+            if len(ts[0]["meta"]) == 6:
+                predictions.append([ts[i]["meta"][5], ts[i]["label"] + " " + classification_label, \
+                    " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
+            else:
+                predictions.append([" ".join([x for x in ts[i]["ngrams"] if not re.search("_",x)]), ts[i]["label"] + " " + classification_label, \
+                    " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
         return predictions
 
     def train_svm(self,params = 10):
