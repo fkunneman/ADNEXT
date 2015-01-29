@@ -17,6 +17,7 @@ from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 from sklearn.multiclass import OutputCodeClassifier
 from sklearn.metrics import f1_score
 from sklearn.externals import joblib
+import cPickle
 
 import lineconverter
 import gen_functions
@@ -404,7 +405,9 @@ class Classifier():
     def save_model(self):
         for tset in self.test:
             outfile = tset["out"][:-4] + "_model.joblib.pkl"
-            _ = joblib.dump(self.clf, outfile, compress=9)
+            with open(outfile, 'wb') as fid:
+                cPickle.dump(self.clf, fid)    
+            #_ = joblib.dump(, outfile, compress=9)
             #outvocabulary = codecs.open(tset["out"] + "vocabulary.txt","w","utf-8")
             outstring = tset["out"][:-4] + "_vocabulary.txt"
             outvocabulary = codecs.open(outstring,"w","utf-8")
