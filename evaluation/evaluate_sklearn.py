@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import division
 import argparse
 import re
 import codecs
@@ -92,7 +93,9 @@ if args.p:
     # plotfile = open(re.sub(".png",".txt",args.plot),"w")
     instances = evaluation.return_ranked_score(500)
     for i in range(1,500):
-        tp = len([p for p in instances[:1] if p[2] == p[3]])
+#        print instances[:i]
+        tp = len([p for p in instances[:i] if p[2] == p[3]])
+#        print tp,len(instances[:i])
         #print [p.classification for p in evaluation.instances[:i]]
         #print tp
         precision = tp / i
