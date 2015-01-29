@@ -90,17 +90,16 @@ if args.p:
     x = []
     y = []
     # plotfile = open(re.sub(".png",".txt",args.plot),"w")
-    for i,instance in enumerate(evaluation.instances):
-        if i > 0:
-            print [p.classification for p in evaluation.instances[:i]]
-            tp = len([p for p in evaluation.instances[:i] if p.classification == '1.0'])
-            #print [p.classification for p in evaluation.instances[:i]]
-            #print tp
-            precision = tp / i
-            #plotfile.write(str(i) + " " + str(precision) + "\n")
-            x.append(i)
-            y.append(precision)
-            #plotfile.write(str(i) + " " + str(precision) + "\n")
+    instances = evaluation.return_ranked_score(500)
+    for i in range(1,500):
+        tp = len([p for p in instances[:1] if p[2] == p[3]])
+        #print [p.classification for p in evaluation.instances[:i]]
+        #print tp
+        precision = tp / i
+        #plotfile.write(str(i) + " " + str(precision) + "\n")
+        x.append(i)
+        y.append(precision)
+        #plotfile.write(str(i) + " " + str(precision) + "\n")
     #plotfile.close()
 
     plt.plot(x,y,linewidth=3)
