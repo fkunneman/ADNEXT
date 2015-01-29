@@ -4,7 +4,7 @@ import argparse
 import re
 import codecs
 from collections import defaultdict
-
+from matplotlib import pyplot as plt
 from evalset import Evalset
 
 parser = argparse.ArgumentParser(description = "Program to read svm output and evaluate the \
@@ -20,6 +20,8 @@ parser.add_argument('--text', action='store_true',
 parser.add_argument('-f', action='store', type = int, required=False, 
     help = "[OPTIONAL] give the number of instances to choose to rank classifications by score and write " + 
     "the top n instances to a file (presumes a text or id to be included with instances)")
+parser.add_argument('-p', action='store_true', type = int, required=False, 
+    help = "[OPTIONAL] choose to plot a precision-at curve)")
 
 args = parser.parse_args()
 
@@ -83,3 +85,25 @@ if args.f:
         fpfile.write("\t".join(instance) + "\n")
     rankfile.close()
     fpfile.close()
+
+if args.p:
+    plotfile = "/".join(args.w.split("/")[:-1]) + "/prat_curve.png"
+    x = []
+    y = []
+    # plotfile = open(re.sub(".png",".txt",args.plot),"w")
+    for i,instance in enumerate(evaluation.instances):
+        if i > 0:
+            tp = len([p for p in evaluation.instances[:i] if p.classification == '1.0'])
+            #print [p.classification for p in evaluation.instances[:i]]
+            #print tp
+            precision = tp / i
+            #plotfile.write(str(i) + " " + str(precision) + "\n")
+            x.append(i)
+            y.append(precision)
+            #plotfile.write(str(i) + " " + str(precision) + "\n")
+    #plotfile.close()
+
+    plt.plot(x,y,linewidth=3)
+    plt.ylabel('Precision')
+    plt.xlabel('Rank by classifier confidence')
+    plt.savefig(plotfile,bbox_inches="tight")
