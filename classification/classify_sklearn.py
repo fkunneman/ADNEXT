@@ -50,13 +50,14 @@ def make_instances(lines,appendlines=False):
         tokens = line.strip().split("\t")
         instance = {}
         instance["label"] = tokens[1]
-        instance["meta"] = tokens[:-2]
         features = tokens[-1]
         if len(tokens) > 6:
+            instance["meta"] = tokens[:-2]
             instance["ngrams"] = tokens[-2].split()
         #print(tokens[5],"features",feattokens[1])
             instance["features"] = [float(x) for x in tokens[-1].split()]
         else:
+            instance["meta"] = tokens[:-1]
             instance["ngrams"] = tokens[-1].split()
             instance["features"] = []
         if appendlines:
