@@ -52,10 +52,13 @@ def make_instances(lines,appendlines=False):
         instance["label"] = tokens[1]
         instance["meta"] = tokens[:-2]
         features = tokens[-1]
-
-        instance["ngrams"] = tokens[-2].split()
+        if len(tokens) > 6:
+            instance["ngrams"] = tokens[-2].split()
         #print(tokens[5],"features",feattokens[1])
-        instance["features"] = [float(x) for x in tokens[-1].split()]
+            instance["features"] = [float(x) for x in tokens[-1].split()]
+        else:
+            instance["ngrams"] = tokens[-1].split()
+            instance["features"] = []
         if appendlines:
             #check if file is same
             info = appendlines[i].strip().split("\t")[1].split()
@@ -65,7 +68,6 @@ def make_instances(lines,appendlines=False):
                 print("labels of appendfile do not align, exiting program")
             instance["append"] = int(float(classification))
         instances.append(instance)
-    quit()
     return instances
 
 def classify(tr,te):

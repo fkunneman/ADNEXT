@@ -20,8 +20,7 @@ parser.add_argument('--text', action='store_true',
 parser.add_argument('-f', action='store', type = int, required=False, 
     help = "[OPTIONAL] give the number of instances to choose to rank classifications by score and write " + 
     "the top n instances to a file (presumes a text or id to be included with instances)")
-parser.add_argument('-p', action='store_true', type = int, required=False, 
-    help = "[OPTIONAL] choose to plot a precision-at curve)")
+parser.add_argument('-p', action='store_true', help = "[OPTIONAL] choose to plot a precision-at curve)")
 
 args = parser.parse_args()
 
@@ -93,6 +92,7 @@ if args.p:
     # plotfile = open(re.sub(".png",".txt",args.plot),"w")
     for i,instance in enumerate(evaluation.instances):
         if i > 0:
+            print [p.classification for p in evaluation.instances[:i]]
             tp = len([p for p in evaluation.instances[:i] if p.classification == '1.0'])
             #print [p.classification for p in evaluation.instances[:i]]
             #print tp
