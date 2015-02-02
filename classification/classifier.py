@@ -416,6 +416,7 @@ class Classifier():
             outvocabulary.close() 
             outidf = codecs.open(tset["out"][:-4] + "_idfs.txt","w","utf-8")
             for key in self.idf.keys():
+                print("key",key)
                 outidf.write(key + "\t" + str(self.idf[key]) + "\n")
             outidf.close()
 

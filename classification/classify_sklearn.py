@@ -134,9 +134,9 @@ def classify(tr,te):
             cl.train_nb()
         elif args.c == "tree":
             cl.train_decisiontree()
+        if args.save:
+            cl.save_model()
         cl.test_model()
-    if args.save:
-        cl.save_model()
 
 trainfile = codecs.open(args.i,"r","utf-8")
 if args.append:
