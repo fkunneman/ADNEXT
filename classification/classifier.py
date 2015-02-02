@@ -414,3 +414,8 @@ class Classifier():
             for feature in self.features:
                 outvocabulary.write(feature + "\n")
             outvocabulary.close() 
+            outidf = codecs.open(tset["out"][:-4] + "_idfs.txt","w","utf-8")
+            for key in self.idf.keys():
+                outidf.write(key + "\t" + str(self.idf[key]) + "\n")
+            outidf.close()
+
