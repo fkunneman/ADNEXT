@@ -6,6 +6,7 @@ import re
 import codecs
 from collections import defaultdict
 from matplotlib import pyplot as plt
+from scipy import stats
 from evalset import Evalset
 
 parser = argparse.ArgumentParser(description = "Program to read svm output and evaluate the \

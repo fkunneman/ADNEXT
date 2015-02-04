@@ -36,14 +36,27 @@ if args.k == "echtalles":
             hour = "0" + hour
         timeobj = year+month+day+hour
         outfile = args.o + timeobj + ".txt"
-        print "curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'"
-        os.system("curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
+        print "curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'"
+        os.system("curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
         outlines = []
         while len(outlines) <= 2:
             print "waiting for",outfile
             time.sleep(300)
-            os.system("curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://145.100.57.182//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
+            os.system("curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
             outopen = open(outfile)
             outlines = outopen.readlines()
             outopen.close()
         current = current + datetime.timedelta(hours = 1)
+
+else:
+    outfile = args.o + args.k + ".txt"
+    print "curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=" + args.k + "&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'"
+    os.system("curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=" + args.k + "&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
+    outlines = []
+    while len(outlines) <= 2:
+        print "waiting for",outfile
+        time.sleep(300)
+        os.system("curl -o " + outfile + " --cookie \'cookie=qg0TPoUmoLW3cYLk\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=" + args.k + "&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
+        outopen = open(outfile)
+        outlines = outopen.readlines()
+        outopen.close()
