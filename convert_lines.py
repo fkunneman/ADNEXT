@@ -19,7 +19,7 @@ parser.add_argument('-c', action = 'store', required = False, nargs='+', type=in
 parser.add_argument('--sample', action = 'store', required = False, nargs='+', help = "sample lines, first specify the number of lines to sample, then specify the sample method (steps or random)")
 parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
 parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
-parser.add_argument('--excel', action = 'store', type = int, nargs = '+', help = "Output lines in excel format")
+parser.add_argument('--excel', action = 'store', type = int, nargs = '*', help = "Output lines in excel format")
 parser.add_argument('--sheets', action = 'store', nargs='+', type = int, default = [0], help = "for multiple excel input sheets, specify the indexes")
 parser.add_argument('--header', action='store_true', help = "specify if file has header")
 parser.add_argument('--append', action='store_true', help = "choose to append output to an existing file (rather than a new file)")
