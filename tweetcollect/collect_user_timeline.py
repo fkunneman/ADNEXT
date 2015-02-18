@@ -6,26 +6,20 @@ import sys
 import re
 import codecs
 
-user = sys.argv[1]
-outfile = codecs.open(sys.argv[2],"a","utf-8")
+userfile = codecs.open(sys.argv[1],"r","utf-8")
+passwordfile = codecs.open(sys.argv[2],"r","utf-8")
+outdir = sys.argv[3]
 
-api = twython.Twython("UgWAr6AsfnpnkNz6Lsvgjg","jxEvISOAPlhlWmCWXDrF2jL3ZNo62IDu5FMyYrM","101817731-dF9m4wpJVUjh41nE85Qv7lWQcOBgqgw8lFB9ZK60","PR8dR3IXBDA7YagdTIudDuPXZvDBC1xC0tRNlbYTFfs")
+passwords = passwordfile.read().split("\t")
+passwordfile.close()
+api = twython.Twython(passwords[0],passwords[1],passwords[2],passwords[3])
 
-tweets = []
+users = [x.strip() for x in userfile.read().split("\n")]
+userfile.close()
 
-# Collect tweets
-tweets = twitter_devs.collect_usertweets(api,user)
-
-quit()
-# Process tweets
-# for tweetinfo in tweets:
-#     tweetid = tweetinfo[0]
-#     if not tweetid in ids:
-#         ids.append(tweetid)
-#         tweet = tweetinfo[1]
-#         outfile.write(tweet)
-
-# id_outfile = open(sys.argv[2],"w")
-# for tweetid in ids:
-#     id_outfile.write(str(tweetid) + "\n")
-    
+for user in users:
+    outfile = codecs.open(outdir + user + ".txt","w","utf-8")
+    # Collect tweets
+    tweets = twitter_devs.collect_usertweets(api,user)
+    outfile.write("\n".join(tweets))
+    outfile.close()

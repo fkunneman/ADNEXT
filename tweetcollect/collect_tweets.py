@@ -7,26 +7,30 @@ import re
 import codecs
 
 eventfile = codecs.open(sys.argv[1],"r","utf-8")
-idfile = open(sys.argv[2],"r")
-outfile = codecs.open(sys.argv[3],"a","utf-8")
-language = sys.argv[4]
+passwordfile = codecs.open(sys.argv[2],"r","utf-8")
+idfile = open(sys.argv[3],"r")
+outfile = codecs.open(sys.argv[4],"a","utf-8")
+language = sys.argv[5]
 
-api = twython.Twython("UgWAr6AsfnpnkNz6Lsvgjg","jxEvISOAPlhlWmCWXDrF2jL3ZNo62IDu5FMyYrM","101817731-dF9m4wpJVUjh41nE85Qv7lWQcOBgqgw8lFB9ZK60","PR8dR3IXBDA7YagdTIudDuPXZvDBC1xC0tRNlbYTFfs")
+passwords = passwordfile.read().split("\t")
+passwordfile.close()
+api = twython.Twython(passwords[0],passwords[1],passwords[2],passwords[3])
 
 events = []
 ids = []
 tweets = []
 
-for eventinfo in eventfile:
-    tokens = eventinfo.split("|")
+for eventinfo in eventfile.readlines():
+    tokens = eventinfo.strip().split("|")
     event = tokens[0].strip()
     events.append(event)    
+eventfile.close()
 
 for tweetid in idfile:
     ids.append(int(tweetid.strip()))    
+idfile.close()
 
 # Collect tweets
-#print("event",event,"api",api,"lang",language)
 for event in events:
     tweets += twitter_devs.extract_tweets(event,api,language)
 

@@ -22,31 +22,27 @@ def extract_tweets(keyword,api,l):
     return tweets_output
 
 def collect_usertweets(api,user):
-    outtweet = []
-    tweetnr = 0
-    for i in range(100):
-        user_timeline = api.getUserTimeline(screen_name=user,page=i)
-        if len(user_timeline) <= 0:
-            if len(outtweet) == 0:
-                return ["stop"]
-            return outtweet
-        for tweet in user_timeline:
-            print tweet
-            quit()
-            try:
-                time = tweet["created_at"]
-                tweet_id = tweet["id"] 
-                text = tweet["text"]
-                tweetline = user + "||" + time + "||" + text
-                outtweet.append(tweetline)
-                tweetnr += 1
-            except TypeError:
-                if tweetnr >= 1950:
-                    return outtweet
-                else:
-                    return ["stop"]
+    no_tweets = False;
+    tweets_total = [];
+    c = 1;
 
-    return outtweet
+    while not no_tweets:
+        tweets = api.get_user_timeline(screen_name=user,count=200,page=c);
+        try:
+            tweets = api.get_user_timeline(screen_name=user,count=200,page=c);
+        except t.TwythonError:
+            tweets = [];
+            print(user,'Twython is sad :(');
+            break;
+
+        if len(tweets) < 1:
+            no_tweets = True;
+        else:
+            for tweet in tweets:
+                    tweets_total.append("\t".join([tweet['id'],tweet['created_at'],tweet['text']]))
+        c+= 1;
+
+    return tweets_total;
 
 def collect_user_topsy(username,kw):
     tweetlist = []

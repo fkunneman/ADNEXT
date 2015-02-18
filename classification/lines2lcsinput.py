@@ -16,7 +16,7 @@ for i,line in enumerate(infile.readlines()):
             tokens[i] == "URL"
     tokens_n = ["<s>"] + tokens + ["<s>"]
     ngrams = tokens + ["_".join(x) for x in zip(tokens_n, tokens_n[1:])] + ["_".join(x) for x in zip(tokens_n, tokens_n[1:], tokens_n[2:])]
-    of = open(filesdir + str(i) + ".txt","w","utf-8)"
+    of = open(filesdir + str(i) + ".txt","w","utf-8")
     of.write("\n".join(ngrams))
     of.close()
     outfile.write(str(i) + ".txt sarcasme\n")
