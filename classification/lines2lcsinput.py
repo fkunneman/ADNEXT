@@ -9,14 +9,14 @@ filesdir = sys.argv[3]
 
 for i,line in enumerate(infile.readlines()):
     tokens = line.strip().split()
-    for i,token in enumerate(tokens):
+    for j,token in enumerate(tokens):
         if token[0] == "@":
-            tokens[i] = "USER"
+            tokens[j] = "USER"
         if re.search(r"^http",token):
-            tokens[i] == "URL"
+            tokens[j] == "URL"
     tokens_n = ["<s>"] + tokens + ["<s>"]
     ngrams = tokens + ["_".join(x) for x in zip(tokens_n, tokens_n[1:])] + ["_".join(x) for x in zip(tokens_n, tokens_n[1:], tokens_n[2:])]
-    of = open(filesdir + str(i) + ".txt","w","utf-8)"
+    of = codecs.open(filesdir + str(i) + ".txt","w","utf-8")
     of.write("\n".join(ngrams))
     of.close()
     outfile.write(str(i) + ".txt sarcasme\n")

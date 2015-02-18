@@ -157,7 +157,7 @@ class Classifier():
         self.feature_info={}
         #print self.features      
         for i,feature in enumerate(self.features):
-            #print i, feature
+            print i, feature
             self.feature_info[feature]=i+ind
         
         def sparsify(instances,writelist):
