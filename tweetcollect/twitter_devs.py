@@ -22,27 +22,27 @@ def extract_tweets(keyword,api,l):
     return tweets_output
 
 def collect_usertweets(api,user):
-    no_tweets = False;
-    tweets_total = [];
-    c = 1;
+    no_tweets = False
+    tweets_total = []
+    c = 1
 
     while not no_tweets:
-        tweets = api.get_user_timeline(screen_name=user,count=200,page=c);
+        tweets = api.get_user_timeline(screen_name=user,count=200,page=c)
         try:
-            tweets = api.get_user_timeline(screen_name=user,count=200,page=c);
+            tweets = api.get_user_timeline(screen_name=user,count=200,page=c)
         except t.TwythonError:
-            tweets = [];
-            print(user,'Twython is sad :(');
-            break;
+            tweets = []
+            print(user,'Twython is sad :(')
+            break
 
         if len(tweets) < 1:
-            no_tweets = True;
+            no_tweets = True
         else:
             for tweet in tweets:
-                    tweets_total.append("\t".join([tweet['id'],tweet['created_at'],tweet['text']]))
-        c+= 1;
+                    tweets_total.append("\t".join(str([tweet['id']),tweet['created_at'],tweet['text']]))
+        c+= 1
 
-    return tweets_total;
+    return tweets_total
 
 def collect_user_topsy(username,kw):
     tweetlist = []

@@ -23,6 +23,7 @@ parser.add_argument('--excel', action = 'store', type = int, nargs = '*', help =
 parser.add_argument('--sheets', action = 'store', nargs='+', type = int, default = [0], help = "for multiple excel input sheets, specify the indexes")
 parser.add_argument('--header', action='store_true', help = "specify if file has header")
 parser.add_argument('--append', action='store_true', help = "choose to append output to an existing file (rather than a new file)")
+parser.add_argument('--dt', action='store_true', help = "choose to convert twitter date-time column)")
 
 args = parser.parse_args() 
 
@@ -42,6 +43,14 @@ else:
     lines_raw = infile.readlines()
     infile.close()
     lines = [x.strip().split(delimiter) for x in lines_raw]
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if len(line) == 1:
+            lines[i-1][-1] = lines[i-1][-1] + " " + line[0]
+            del lines[i]
+        else:
+            i+=1
 
 actions = args.a
 lineconvert = lineconverter.Lineconverter(lines,args.header)
@@ -119,6 +128,9 @@ if actions:
 
     if "twitter" in actions:
         lineconvert.add_twitter_url(args.c[0],args.c[1])
+
+if args.dt:
+    lineconvert.convert_datetime()
 
 if args.sample:
     if len(args.sample) > 1 and args.sample[1] == "steps":

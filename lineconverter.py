@@ -17,6 +17,7 @@ class Lineconverter():
 			self.lines = lines[1:]
 			self.header = lines[0]
 		else:
+			self.header = False
 			self.lines = lines
 
 	# Add the same string to the back or front of each line 
@@ -29,7 +30,8 @@ class Lineconverter():
 				line.insert(place,string)
 
 	def add_twitter_url(self,column_1,column_2):
-		self.header.append("#tweet_url")
+		if self.header:
+			self.header.append("#tweet_url")
 		for line in self.lines:
 			try:
 				line.append("https://twitter.com/" + line[column_1] + "/status/" + line[column_2])
@@ -38,7 +40,8 @@ class Lineconverter():
 				continue
 
 	def add_sentiment(self,column):
-		self.header.extend(["#polarity","#subjectivity"])
+		if self.header:
+			self.header.extend(["#polarity","#subjectivity"])
 		i = 0
 		while i < len(self.lines):
 			line = self.lines[i]
@@ -54,7 +57,8 @@ class Lineconverter():
 					quit()
 
 	def count_punct(self,column):
-		self.header.extend(["#excl_count","#quest_count"])
+		if self.header:
+			self.header.extend(["#excl_count","#quest_count"])
 		for line in self.lines:
 			try:
 				text = line[column]
@@ -157,7 +161,6 @@ class Lineconverter():
 
 	def extract_lines(self,keys,column):
 		i = 0
-                print(keys)
 		while i < len(self.lines):
 			line = self.lines[i]
 #                        print(line[column])
@@ -167,6 +170,22 @@ class Lineconverter():
 				i += 1
 			else:
 				del self.lines[i]
+
+	def convert_datetime(self):
+		month = {"Jan":"01", "Feb":"02", "Mar":"03", "Apr":"04", "May":"05", "Jun":"06", "Jul":"07", "Aug":"08", "Sep":"09", "Oct":"10", "Nov":"11", "Dec":"12"}
+		date_time = re.compile(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+) (\d{2}:\d{2}:\d{2}) \+\d+ (\d{4})")
+		i = 0
+		while i < len(self.lines):
+			line = self.lines[i]
+			for j,column in enumerate(line):
+				if date_time.search(column):
+					dtsearch = date_time.search(column).groups()
+					date = dtsearch[1] + "-" + month[dtsearch[0]] + "-" + dtsearch[3]
+					time = dtsearch[2]
+					self.lines[i][j] = date
+					self.lines[i].insert(j+1,time)
+					continue
+			i += 1
 
 	def sample(self,sample_size,sample_method = "random",sample_type="down",return_sample=False):
 		num_lines = len(self.lines)

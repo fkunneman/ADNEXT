@@ -9,13 +9,14 @@ def return_datetime(date,time = False,minute = False,setting = "eu"):
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
         parse_date = re.compile(r"(\d{2})-(\d{2})-(\d{4})")
-        date = [parse_date.search(date).groups(1)[2],parse_date.search(date).groups(1)[1],parse_date.search(date).groups(1)[0]]
+        pds = parse_date.match(date).groups()
+        date = [pds[2],pds[1],pds[0]]
     elif setting == "vs":
         parse_date = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
-        date = parse_date.search(date).groups(1)
+        date = parse_date.match(date).groups(1)
     if time:
         parse_time = re.compile(r"(\d{2}):(\d{2})")
-        timeparse = parse_time.search(time).groups(1)
+        timeparse = parse_time.match(time).groups(1)
         if minute:
             datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),int(timeparse[0]),0,0)
         else:
@@ -28,6 +29,8 @@ def timerel(time1,time2,unit):
     """Return the difference in time in a given time unit between two datetime objects.""" 
     if unit == "day":
         day = (time1.date() - time2.date()).days
+        if day < 0:
+            day = day*-1
         return day
     else:
         dif = time1 - time2
