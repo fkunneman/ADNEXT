@@ -28,7 +28,9 @@ def return_datetime(date,time = False,minute = False,setting = "eu"):
 def timerel(time1,time2,unit):
     """Return the difference in time in a given time unit between two datetime objects.""" 
     if unit == "day":
+        print(time1,time1.date(),time2,time2.date())
         day = (time1.date() - time2.date()).days
+        print(day)
         if day < 0:
             day = day*-1
         return day
