@@ -9,6 +9,7 @@ import multiprocessing
 import frog
 import time_functions
 import gen_functions
+import ucto
 
 class Tweetsfeatures():
     """
@@ -17,7 +18,7 @@ class Tweetsfeatures():
     result of Frog processing. 
     The file should be in the right format: 
     - One tweet per line
-    - data seperated by tabs
+    - data separated by tabs
     - label\ttweetid\tuser\tdate\ttime\ttweettext\n
     Instances can be outputted in different formats, like sparse.
     
@@ -28,7 +29,7 @@ class Tweetsfeatures():
         collection.features2sparsebinary(out.txt)
     """
     
-    def __init__(self,infile):
+    def __init__(self,infile,columns):
         """
         Instantiate tweetobjects.
         Presumes a file in the right format.
@@ -47,8 +48,39 @@ class Tweetsfeatures():
    
         for line in tweets:
             tokens = line.strip().split("\t")
-            tweet = Tweetsfeatures.Tweet(tokens)
-            self.instances.append(tweet)
+            tweet_fields = []
+            for i,column in enumerate(columns):
+                if column or column == 0:
+                    tweet_fields.append(tokens[column])
+                else:
+                    tweet_fields.append("-")
+            self.instances.append(Tweetsfeatures.Tweet(tweet_fields))
+
+    def process_frog(self,punct):
+        fo = frog.FrogOptions(threads=16)
+        frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+        for t in self.instances:
+            tokens = []
+            stems = []
+            poss = []
+            data = frogger.process(t.text)
+            for token in data:
+                if (punct and not token["pos"] == "LET()") or \
+                    not punct:
+                    tokens.append(token["text"])
+                    poss.append(token["pos"])
+                    stems.append(token["lemma"])
+            t.add_stem(stems)
+            t.add_pos(poss)
+            t.text = " ".join(tokens)
+
+    def add_label(self,label):
+        """add static to tweets"""
+        templist = []
+        for t in self.instances:
+            t.label = label:
+            templist.append(t)           
+        self.instances = templist
 
     def filter_label(self,label):
         """Remove tweets with the given label."""
@@ -57,21 +89,6 @@ class Tweetsfeatures():
             if t.label == label:
                 templist.append(t)           
         self.instances = templist
-
-    def add_frog(self,stem,pos):
-        fo = frog.FrogOptions(threads=16)
-        frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
-        for t in self.instances:
-            stems = []
-            poss = []
-            data = frogger.process(t.text)
-            for token in data:
-                poss.append(token["pos"])
-                stems.append(token["lemma"])
-            if stem:
-                t.add_stem(stems)
-            if pos:
-                t.add_pos(poss)
 
     def set_sequences(self, ht = False, lower = False, us = False, ur = False):
         hashtag = re.compile(r"#")
@@ -98,7 +115,7 @@ class Tweetsfeatures():
         """
         self.specials.append(n)
         li = sorted(l, key=len, reverse=True)
-        li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot) or *
+        li = [tx.replace('.','\.').replace('*','\*') for tx in li]
         patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         neg_patterns = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         feats = []
@@ -106,15 +123,20 @@ class Tweetsfeatures():
             if t.stemseq:
                 features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.stemseq))]
             else:
-                features = [x.replace(" ","_") for x in re.findall(patterns," ".join(t.wordsequence))]
+                features = [x.replace(" ","_") for x in re.findall(patterns,
+                    " ".join(t.wordsequence))]
             feats.append(len([x for x in features if not x == ""]) / len(t.wordsequence))
         if not len(feats) == len(self.instances):
-            print("listfeatures and tweets not aligned, feats:",len(feats),", instances:",len(self.instances),"exiting program")
+            print("listfeatures and tweets not aligned, feats:",len(feats),", instances:",
+                len(self.instances),"exiting program")
         for i,rf in enumerate(feats):
             self.instances[i].features.append(str(round(rf/max(feats),2)))
 
+    def return_ngrams(l,n):
+        return ["-".join(l[i:i+n]) for i in range(len(l)-n+1)]
+
     #Make N-grams of tweets that were set
-    def add_ngrams(self,n,t="word"):
+    def add_ngrams(self,n,t):
         """
         Extend features with N-grams.
         Can only be used after 'set_tweets' or 'set_tweets_oneline'
@@ -128,52 +150,27 @@ class Tweetsfeatures():
             collection.set_tweet(p = 1)
             collection.add_ngrams(word = 2,lemma = 3)
         """
-        def make_ngrams(sequence,n):
-            """sub-function to generate N-grams based on a specific sequence (words,lemma's,pos's) 
-            and a given N."""
-            ngram_features = []
-            if n == 1:
-                for token in sequence:
-                    ngram_features.append(token)
-            else:
-                temp_lines = []
-                temp_lines.extend(sequence)
-                temp_lines.append("<s>")
-                temp_lines.insert(0,"<s>")
-                if n == 2:
-                    for i,token in enumerate(temp_lines[:len(temp_lines)-1]):
-                        bigram = "_".join([token,temp_lines[i+1]])
-                        ngram_features.append(bigram)
-                elif n == 3:
-                    for i,token in enumerate(temp_lines[:len(temp_lines)-2]):
-                        trigram = "_".join([token, temp_lines[i+1], temp_lines[i+2]])
-                        ngram_features.append(trigram)
-
-            return ngram_features
-
         if t == "word":
             for t in self.instances:
-                t.features[0].extend(make_ngrams(t.wordsequence,n))
+                if n >= 1:
+                    seq = "<s>" + t.wordsequence + "<s>"
+                else:
+                    seq = t.wordsequence
+                for n_val in n:
+                    t.features[0].extend(self.return_ngrams(seq,n_val))
         elif t == "pos":
             for t in self.instances:
-                t.features[0].extend(make_ngrams(t.posseq,n))
+                if n >= 1:
+                    seq = "<s>" + t.posseq + "<s>"
+                else:
+                    seq = t.posseq
+                for n_val in n:
+                    t.features[0].extend(self.return_ngrams(seq,n_val))
   
     def add_char_ngrams(self,n,ignore = False):
         """
         add character ngrams to the featurespace of each tweet 
         """        
-        def make_char_ngrams(text,n):
-            ngrams = []
-            for string in text:
-                index = n
-                while index < len(string):
-                    char_ngram = string[index-n:index]
-                    char_ngram = re.sub(" ","_",char_ngram)
-                    if len(char_ngram) == n: 
-                        ngrams.append(char_ngram)
-                    index +=  1
-            return ngrams
-
         def rm_string(inputstrings,rmstrings):
             for rmstring in rmstrings:
                 new_inputstrings = []
@@ -191,7 +188,7 @@ class Tweetsfeatures():
             if ignore:
                 text = rm_string([text],ignore)
             for n_val in n:
-                t.features[0].extend(make_char_ngrams(text,int(n_val)))
+                t.features[0].extend(self.return_ngrams(text,n_val))
 
     def add_stats(self,hashtags,capitalization,tweetlength,pronouns,punctuation,emoticon):
         #add features to list
@@ -209,7 +206,8 @@ class Tweetsfeatures():
             self.specials.append("positive emoticons")
             self.specials.append("neutral emoticons")
             self.specials.append("negative emoticons")
-            posi = re.compile(r"(:(-|[oO]|[cC]|\^)?(\)|\]|>|}|D|[pP]|[dD])\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)")
+            posi = re.compile(r"(:(-|[oO]|[cC]|\^)?(\)|\]|>|}|D"
+                "|[pP]|[dD])\)?|\(:|;-?\)|=-?(\]|\)|D|3)|8-?(\)|D)|B\^D|[Xx]-?D)")
             neutr = re.compile(r":(\$|\*|o|s|\|)")
             nega = re.compile(r"(>?:-?\'?(\(|\[|c|<|{|\|\||@)|D(:|;)?(<|8|=|X)|;\(|v\.v)?")
         #retrieve info
@@ -223,7 +221,8 @@ class Tweetsfeatures():
                     punct = len([x for x in tags if x == 'LET()']) / len(tags)
                     t.punct = punct
                 if pronouns:
-                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or 'VNW(pers,pron,nomin,vol,2v,ev)' in tags:
+                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or 
+                        'VNW(pers,pron,nomin,vol,2v,ev)' in tags:
                         t.pronouns = '1.0'
                     else:
                         t.pronouns = '0.0'
@@ -330,7 +329,8 @@ class Tweetsfeatures():
         point_datetime_end = time_functions.return_datetime(timepoint_2)
         for instance in self.instances:
             #Get the time of the event mentioned in the tweet 
-            tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
+            tweet_datetime = time_functions.return_datetime(instance.date,
+                time=instance.time,setting="vs")
             #Extract the time difference between the tweet and the event 
             if tweet_datetime > point_datetime_begin and tweet_datetime < point_datetime_end:
                 filtered_tweets.append(instance)
@@ -414,7 +414,8 @@ class Tweetsfeatures():
             directory_index += 1
         out = open(outfile,"w",encoding = "utf-8")
         for i in self.instances:
-            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + "\t" + " ".join(i.features[1:]) + "\n")
+            out.write("\t".join(i.meta) + "\t" + " ".join(i.features[0]) + "\t" + \
+                " ".join(i.features[1:]) + "\n")
         out.close()
         if len(self.specials) > 0:
             specials_out = open(directory + "special_features.txt","w",encoding = "utf-8")
@@ -447,5 +448,3 @@ class Tweetsfeatures():
 
         def get_datetime(self):
             return time_functions.return_datetime(self.date,self.time,"vs")
-
-
