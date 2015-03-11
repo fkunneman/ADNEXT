@@ -75,12 +75,9 @@ class Tweetsfeatures():
             t.text = " ".join(tokens)
 
     def add_label(self,label):
-        """add static to tweets"""
-        templist = []
+        """add static label to tweets"""
         for t in self.instances:
-            t.label = label
-            templist.append(t)           
-        self.instances = templist
+            t.set_label(label)
 
     def filter_label(self,label):
         """Remove tweets with the given label."""
@@ -436,6 +433,9 @@ class Tweetsfeatures():
                 self.text = tokens[5]
             self.wordsequence = []
             self.features = [[]]
+
+        def set_label(self,lab):
+            self.label = lab
 
         def add_pos(self,seq):
             self.posseq = seq
