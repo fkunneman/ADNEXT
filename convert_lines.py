@@ -62,11 +62,7 @@ else:
     infile.close()
     lines = [x.strip().split(delimiter) for x in lines_raw]
     linelen = len(lines[0])
-    uni = True
-    for line in lines[1:]:
-        if len(line) != linelen:
-            uni = False
-    if not uni and linelen >= 1:
+    if linelen > 1:
         i = 0
         while i < len(lines):
             line = lines[i]
