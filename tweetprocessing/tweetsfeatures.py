@@ -338,7 +338,7 @@ class Tweetsfeatures():
         """Remove a feature if it contains a word in the blacklist."""
         for t in self.instances:
             removed_features = []
-            for i,feature in enumerate(t.features):
+            for i,feature in enumerate(t.features[0]):
                 parts = feature.split("_")
                 for term in blacklist:
                     match = False
@@ -352,23 +352,22 @@ class Tweetsfeatures():
                 offset = 0
                 for index in removed_features:
                     index -=  offset
-                    if re.search("_<s>",t.features[index]):
-                        pre_last_feature = t.features[index-1]
+                    if re.search("_<s>",t.features[0][index]):
+                        pre_last_feature = t.features[0][index-1]
                         parts = pre_last_feature.split("_")
                         if len(parts) == 2:
                             new_feature = parts[-1]
                         else: 
                             new_feature = "_".join(parts[-2:])
                         new_feature = new_feature + "_<s>"
-                        t.features[index] = new_feature
+                        t.features[0][index] = new_feature
                     else:
-                        del(t.features[index])
+                        del(t.features[0][index])
                         offset +=  1
-
             else:
                 for offset,index in enumerate(removed_features):
                     index -=  offset
-                    del(t.features[index])
+                    del(t.features[0][index])
 
     def aggregate_instances(self,size):
         #sort instances in time
