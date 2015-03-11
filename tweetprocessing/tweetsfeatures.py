@@ -50,7 +50,6 @@ class Tweetsfeatures():
             tokens = line.strip().split("\t")
             tweet_fields = []
             for i,column in enumerate(columns):
-                print(tokens,column)
                 if column or column == 0:
                     tweet_fields.append(tokens[column])
                 else:
