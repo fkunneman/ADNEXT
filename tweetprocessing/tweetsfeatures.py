@@ -78,7 +78,7 @@ class Tweetsfeatures():
         """add static to tweets"""
         templist = []
         for t in self.instances:
-            t.label = label:
+            t.label = label
             templist.append(t)           
         self.instances = templist
 
@@ -221,7 +221,7 @@ class Tweetsfeatures():
                     punct = len([x for x in tags if x == 'LET()']) / len(tags)
                     t.punct = punct
                 if pronouns:
-                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or 
+                    if 'VNW(pers,pron,nomin,red,2v,ev)' in tags or \
                         'VNW(pers,pron,nomin,vol,2v,ev)' in tags:
                         t.pronouns = '1.0'
                     else:

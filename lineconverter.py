@@ -3,7 +3,7 @@ import codecs
 import re
 import datetime
 import random
-from pattern.nl import parse, pprint, sentiment
+#from pattern.nl import parse, pprint, sentiment
 
 """ 
 Class to convert the lines in a file in a number of ways and/or make a 
@@ -45,16 +45,16 @@ class Lineconverter():
 		i = 0
 		while i < len(self.lines):
 			line = self.lines[i]
-			try:
-				senti = sentiment(line[column])
-				line.extend([str(senti[0]),str(senti[1])])
-				i+=1
-			except:
-				if i == len(self.lines)-1 and len(line) == 1:
-					del self.lines[-1]
-				else:
-					print(i,line,column,"sentiment text column not correct")
-					quit()
+#			try:
+		#		senti = sentiment(line[column])
+		#		line.extend([str(senti[0]),str(senti[1])])
+		#		i+=1
+		#	except:
+		#		if i == len(self.lines)-1 and len(line) == 1:
+		#			del self.lines[-1]
+		#		else:
+		#			print(i,line,column,"sentiment text column not correct")
+		#			quit()
 
 	def count_punct(self,column):
 		if self.header:
