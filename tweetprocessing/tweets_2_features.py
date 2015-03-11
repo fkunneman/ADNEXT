@@ -30,7 +30,8 @@ parser.add_argument('--id', action = 'store', type=int, required = False,
 parser.add_argument('--label', action = 'store', type=int, required = False, 
     help = "if one of the fields contain a label / score of the tweet, specify its column.")
 
-parser.add_argument('--frog', action = 'store_true', help = 'choose to frog the tweet texts')
+parser.add_argument('--frog', action = 'store', help = "choose to frog the tweet texts, "
+    "give an outfile for frogged tweets")
 parser.add_argument('--man', action = 'store', required = False, 
     help = "specify a label that applies to all tweets")
 parser.add_argument('-ur', action = 'store_true', default = False, 
@@ -89,6 +90,9 @@ tf = Tweetsfeatures(args.i,column_sequence)
 if args.frog:
     print("frogging tweets")
     tf.process_frog(args.rp)
+    outfile = open(args.frog,"w",encoding="utf-8")
+    for tweet in tf.instances:
+        outfile.write("\t".join([tweet.label,tweet.id,tweet.user,tweet.date,tweet.time,tweet.text]) + "\n")
 tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur)
 if args.label:
     tf.add_label(args.label)

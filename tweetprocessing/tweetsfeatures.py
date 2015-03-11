@@ -154,7 +154,7 @@ class Tweetsfeatures():
         if t == "word":
             for t in self.instances:
                 if len(n) >= 1:
-                    seq = "<s>" + t.wordsequence + "<s>"
+                    seq = ["<s>"] + t.wordsequence + ["<s>"]
                 else:
                     seq = t.wordsequence
                 for n_val in n:
@@ -162,7 +162,7 @@ class Tweetsfeatures():
         elif t == "pos":
             for t in self.instances:
                 if len(n) >= 1:
-                    seq = "<s>" + t.posseq + "<s>"
+                    seq = ["<s>"] + t.posseq + ["<s>"]
                 else:
                     seq = t.posseq
                 for n_val in n:
