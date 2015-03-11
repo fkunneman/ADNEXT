@@ -61,14 +61,20 @@ else:
     lines_raw = infile.readlines()
     infile.close()
     lines = [x.strip().split(delimiter) for x in lines_raw]
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        if len(line) == 1:
-            lines[i-1][-1] = lines[i-1][-1] + " " + line[0]
-            del lines[i]
-        else:
-            i+=1
+    linelen = len(lines[0])
+    uni = True
+    for line in lines[1:]:
+        if len(line) != linelen:
+            uni = False
+    if not uni and linelen >= 1:
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if len(line) == 1:
+                lines[i-1][-1] = lines[i-1][-1] + " " + line[0]
+                del lines[i]
+            else:
+                i+=1
     print "num_lines",len(lines)
 
 actions = args.a
