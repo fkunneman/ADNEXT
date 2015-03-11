@@ -94,8 +94,8 @@ if args.frog:
     for tweet in tf.instances:
         outfile.write("\t".join([tweet.label,tweet.id,tweet.user,tweet.date,tweet.time,tweet.text]) + "\n")
 tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur)
-if args.label:
-    tf.add_label(args.label)
+if args.man:
+    tf.add_label(args.man)
 
 print("filtering tweets")
 if args.ri:
