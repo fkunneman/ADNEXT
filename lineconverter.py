@@ -187,7 +187,7 @@ class Lineconverter():
 					continue
 			i += 1
 
-	def sample(self,sample_size,sample_method = "random",sample_type="down",return_sample=False):
+	def sample(self,sample_size,sample_method,sample_type="down",return_sample=False):
 		num_lines = len(self.lines)
 		sample = []
 		if sample_method == "steps":
@@ -213,5 +213,3 @@ class Lineconverter():
 				elif sample_type=="up":
 					for i in sample:
 						self.lines.append(self.lines[i]) 
-				if return_sample:
-					return sample_out

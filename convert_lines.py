@@ -8,22 +8,40 @@ import re
 import time_functions
 from xlwt import *
 
-parser = argparse.ArgumentParser(description = "Program that can be used to change or make additions to any file with (possibly column-based) lines with a consistent format")
+parser = argparse.ArgumentParser(description = "Program that can be used to change or make "
+    "additions to any file with (possibly column-based) lines with a consistent format")
 parser.add_argument('-i', action = 'store', required = True, help = "The input file.")  
 parser.add_argument('-o', action = 'store', required = True, help = "The output file.")
-parser.add_argument('-d', action = 'store', default = "\t", help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
-parser.add_argument('-a', action = 'store', required = False, choices = ["add","replace","convert_float","delete","delete_filematch","extract","add_time","add_id","filter","twitter", "sentiment", "punct"], nargs = '+', help = "Choose the actions to perform.")
-parser.add_argument('-s', action = 'store', required = False, help = "give a string as argument for add, replace, delete, filter or extract")
-parser.add_argument('-c', action = 'store', required = False, nargs='+', type=int, help = "give column numbers as argument for add, convert_float, replace, delete, sentiment, punct or extract (add is done before the column, no column means behind the last one, no column for replace means every column will be matches)." + \
-    "provide column numbers for each 'action' argument it applies to.")
-parser.add_argument('--sample', action = 'store', required = False, nargs='+', help = "sample lines, first specify the number of lines to sample, then specify the sample method (steps or random)")
-parser.add_argument('--replace', action = 'store', required = False, nargs='+', help = "[REPLACE] specify the strings to match for replacement.")
-parser.add_argument('--filematch', action = 'store', required = False, nargs='+', help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
-parser.add_argument('--excel', action = 'store', type = int, nargs = '*', help = "Output lines in excel format")
-parser.add_argument('--sheets', action = 'store', nargs='+', type = int, default = [0], help = "for multiple excel input sheets, specify the indexes")
-parser.add_argument('--header', action='store_true', help = "specify if file has header")
-parser.add_argument('--append', action='store_true', help = "choose to append output to an existing file (rather than a new file)")
-parser.add_argument('--dt', action='store_true', help = "choose to convert twitter date-time column)")
+parser.add_argument('-d', action = 'store', default = "\t", 
+    help = "For columned lines, specify the delimiter between columns (default = \'\\t\').")
+parser.add_argument('-a', action = 'store', required = False, 
+    choices = ["add","replace","convert_float","delete","delete_filematch","extract","add_time",
+    "add_id","filter","twitter", "sentiment", "punct"], nargs = '+', 
+    help = "Choose the actions to perform.")
+parser.add_argument('-s', action = 'store', required = False, 
+    help = "give a string as argument for add, replace, delete, filter or extract")
+parser.add_argument('-c', action = 'store', required = False, nargs='+', type=int, 
+    help = "give column numbers as argument for add, convert_float, replace, delete, sentiment, "
+    "punct or extract (add is done before the column, no column means behind the last one, no "
+    "column for replace means every column will be matches). provide column numbers for each "
+    "\'action\' argument it applies to.")
+parser.add_argument('--sample', action = 'store', required = False, nargs='+', 
+    help = "sample lines, first specify the number of lines to sample, then specify the sample "
+    "method (steps or random)")
+parser.add_argument('--replace', action = 'store', required = False, nargs='+', 
+    help = "[REPLACE] specify the strings to match for replacement.")
+parser.add_argument('--filematch', action = 'store', required = False, nargs='+', 
+    help = "[DELETE_FILEMATCH] give respectively the file and the column within the file to match")
+parser.add_argument('--excel', action = 'store', type = int, nargs = '*', 
+    help = "Output lines in excel format")
+parser.add_argument('--sheets', action = 'store', nargs='+', type = int, default = [0], 
+    help = "for multiple excel input sheets, specify the indexes")
+parser.add_argument('--header', action='store_true', 
+    help = "specify if file has header")
+parser.add_argument('--append', action='store_true', 
+    help = "choose to append output to an existing file (rather than a new file)")
+parser.add_argument('--dt', action='store_true', 
+    help = "choose to convert twitter date-time column)")
 
 args = parser.parse_args() 
 
@@ -73,11 +91,13 @@ if actions:
             lineconvert.replace_string(args.s,args.replace)
 
     if "add_time" in actions:
-        datecolumn = int(raw_input("Please specify the column in which  args.cthe date is given...\n"))
+        datecolumn = int(raw_input("Please specify the column in which the date is given...\n"))
         timecolumn = int(raw_input("Please specify the column in which the time is given...\n"))
         hours = int(raw_input("Please specify the amount of hours added...\n"))
-        addition = raw_input("Is the new time added or is it replacing the given date and time? (give either \'append\' or \'replace\')...\n")
-        datetype = raw_input("Is the date given in EU-style or VS-style? (give either \'eu\' or \'vs\')...\n")
+        addition = raw_input("Is the new time added or is it replacing the given date and time? "
+            "(give either \'append\' or \'replace\')...\n")
+        datetype = raw_input("Is the date given in EU-style or VS-style? "
+            "(give either \'eu\' or \'vs\')...\n")
         lineconvert.add_time(hours,datecolumn,timecolumn,addition,datetype)
 
     if "add_id" in actions:
@@ -140,23 +160,11 @@ if args.sample:
         sample_m = "random"
         size = len(lineconvert.lines) - int(args.sample[0]) 
     lineconvert.sample(size,sample_method = sample_m)
-    # for line in extracted_lines:
-    #     outfile.write(line + "\n")
-    # outfile.close()
-    # if args.e:
-    #     keep_out = codecs.open(args.e,"w","utf-8")
-    #     for line in lineconvert.lines:
-    #         keep_out.write(line + "\n")
-    #     keep_out.close()
-    # exit()
     
 if args.excel:
-    #print len(lineconvert.lines)
     if len(lineconvert.lines) > 65535:
         num_chunks = int(len(lineconvert.lines) / 65534) + 1
-    #    print "num_chunks",num_chunks
         chunks = gen_functions.make_chunks(lineconvert.lines,nc = num_chunks)
-    #    print "chunks",[len(chunk) for chunk in chunks]
     else:
         chunks = [lineconvert.lines]
     outname = args.o.split("/")[-1].split(".")[0]
