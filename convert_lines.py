@@ -69,6 +69,7 @@ else:
             del lines[i]
         else:
             i+=1
+    print "num_lines",len(lines)
 
 actions = args.a
 lineconvert = lineconverter.Lineconverter(lines,args.header)
