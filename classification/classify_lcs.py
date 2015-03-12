@@ -2,7 +2,6 @@
 
 import argparse
 import os
-import codecs
 import re
 
 import gen_functions
@@ -31,7 +30,7 @@ args = parser.parse_args()
 expdir = "/".join(args.p.split("/")[:-1]) + "/"
 
 #set config
-config_file = codecs.open(args.c,"r","utf-8")
+config_file = open(args.c,"r",encoding = "utf-8")
 config = {}
 config_order = []
 for line in config_file.readlines():
@@ -47,7 +46,7 @@ config["general.index"] = args.d + "./data/index"
 #optional parametersettings
 
 #write configfile
-config_out = codecs.open(args.d + "lcs3.conf","w","utf-8")
+config_out = open(args.d + "lcs3.conf","w",encoding = "utf-8")
 for key in config_order:
     config_out.write(key + "=" + config[key] + "\n")
 
@@ -55,7 +54,7 @@ for key in config_order:
 if args.t:
     os.system("cp " + args.p + " " + args.d + "/train")
     os.system("cp " + args.t + " " + args.d + "/test") 
-    config_out = codecs.open(args.d + "lcs3.conf","w","utf-8")
+    config_out = open(args.d + "lcs3.conf","w",encoding = "utf-8")
     for key in config_order:
         config_out.write(key + "=" + config[key] + "\n")
     #classify
