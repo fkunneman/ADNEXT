@@ -9,12 +9,16 @@ import gen_functions
 """
 Script to convert a file with tweetfeatures to the format needed for LCS Balanced Winnow classification.
 """
-parser = argparse.ArgumentParser(description = "Script to convert a file with tweet features to the format needed for lcs classification.")
+parser = argparse.ArgumentParser(description = 
+    "Script to convert a file with tweet features to the format needed for lcs classification.")
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
 parser.add_argument('-d', action = 'store', required = True, help = "the files directory")
-parser.add_argument('-w', action = 'store', required = True, help = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
-parser.add_argument('-l', action = 'store', required = True, help = "the label of the tweet set")
-parser.add_argument('-p', action = 'store', type = int, required = False, help = "choose to apply parralel processing by giving the number of chores to be used")
+parser.add_argument('-w', action = 'store', required = True, 
+    elp = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
+parser.add_argument('-l', action = 'store', required = True, 
+    help = "the label of the tweet set")
+parser.add_argument('-p', action = 'store', type = int, required = False, 
+    help = "choose to apply parralel processing by giving the number of chores to be used")
 
 args = parser.parse_args() 
 
