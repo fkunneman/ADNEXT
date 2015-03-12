@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description =
 parser.add_argument('-i', action = 'store', required = True, help = "the input file")  
 parser.add_argument('-d', action = 'store', required = True, help = "the files directory")
 parser.add_argument('-w', action = 'store', required = True, 
-    elp = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
+    help = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
 parser.add_argument('-l', action = 'store', required = True, 
     help = "the label of the tweet set")
 parser.add_argument('-p', action = 'store', type = int, required = False, 
