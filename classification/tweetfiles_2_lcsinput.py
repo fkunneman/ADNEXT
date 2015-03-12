@@ -14,13 +14,13 @@ parser.add_argument('-i', action = 'store', required = True, help = "the input f
 parser.add_argument('-d', action = 'store', required = True, help = "the files directory")
 parser.add_argument('-w', action = 'store', required = True, help = "the directory in which to write \'parts.txt\' and \'meta.txt\'")
 parser.add_argument('-l', action = 'store', required = True, help = "the label of the tweet set")
-parser.add_argument('-p', action = 'store', required = False, help = "choose to apply parralel processing by giving the number of chores to be used")
+parser.add_argument('-p', action = 'store', type = int, required = False, help = "choose to apply parralel processing by giving the number of chores to be used")
 
 args = parser.parse_args() 
 
 outparts = open(args.w + "parts.txt","w",encoding = "utf-8")
 outmeta = open(args.w + "meta.txt","w",encoding = "utf-8")
-infile = open(args.i,"r","utf-8")
+infile = open(args.i,"r",encoding = "utf-8")
 instances = infile.readlines()
 infile.close()
 
@@ -48,7 +48,7 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
             while j < zeros:
                 file_name="0" + file_name
                 j += 1
-            outfile=codecs.open(filesdir + file_name,"w","utf-8")
+            outfile=open(filesdir + file_name,"w",encoding="utf-8")
             tokens = tweet.strip().split("\t")
             features = tokens[-1].split(" ")
             label = tokens[1]
