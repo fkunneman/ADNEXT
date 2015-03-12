@@ -2,7 +2,6 @@
 
 import argparse
 import os
-import codecs
 import multiprocessing
 
 import gen_functions
@@ -19,23 +18,23 @@ parser.add_argument('-p', action = 'store', required = False, help = "choose to 
 
 args = parser.parse_args() 
 
-outparts = codecs.open(args.w + "parts.txt","w","utf-8")
-outmeta = codecs.open(args.w + "meta.txt","w","utf-8")
-infile = codecs.open(args.i,"r","utf-8")
+outparts = open(args.w + "parts.txt","w",encoding = "utf-8")
+outmeta = open(args.w + "meta.txt","w",encoding = "utf-8")
+infile = open(args.i,"r","utf-8")
 instances = infile.readlines()
 infile.close()
 
 def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
-    print "starting chunk",chunkindex
+    print("starting chunk",chunkindex)
     i = 0
     while i < (len(instances)):
         subdir = str(chunkindex) + "_" + args.l + str(i) + "/"
         filesdir = args.d + subdir
         os.system("mkdir " + filesdir)
         while not os.path.exists(filesdir):
-            print "directory not succesfully made"
+            print("directory not succesfully made")
             os.system("mkdir " + filesdir)
-        print "directory succesfully made"
+        print("directory succesfully made")
         file_index,dirsize=0,25000
         if i+dirsize < len(instances):
             subtweets=instances[i:i+dirsize]
@@ -67,7 +66,7 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
                 outmeta.write(metaline)            
             file_index += 1
         i += dirsize
-    print "chunk",chunkindex,"done"
+    print("chunk",chunkindex,"done")
 
 if args.p:
     q = multiprocessing.Queue()
