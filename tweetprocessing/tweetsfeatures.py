@@ -93,6 +93,7 @@ class Tweetsfeatures():
         user = re.compile(r"@")
         for t in self.instances:
             if lower: 
+                t.text = t.text.lower()
                 words = t.text.lower().split(" ")
             else:
                 words = t.text.split(" ") 
