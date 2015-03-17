@@ -51,12 +51,12 @@ def make_instances(lines,appendlines=False):
         instance = {}
         instance["label"] = tokens[1]
         features = tokens[-1]
-        if len(tokens) > 6:
+        try:
+            instance["features"] = [float(x) for x in tokens[-1].split()]
             instance["meta"] = tokens[:-2]
             instance["ngrams"] = tokens[-2].split()
         #print(tokens[5],"features",feattokens[1])
-            instance["features"] = [float(x) for x in tokens[-1].split()]
-        else:
+        except ValueError:
             instance["meta"] = tokens[:-1]
             instance["ngrams"] = tokens[-1].split()
             instance["features"] = []
