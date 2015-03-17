@@ -130,7 +130,7 @@ class Tweetsfeatures():
             self.instances[i].features.append(str(round(rf/max(feats),2)))
 
     def return_ngrams(self,l,n):
-        return ["_".join(l[i:i+n]) for i in range(len(l)-n+1)]
+        return [(l[i:i+n]) for i in range(len(l)-n+1)]
 
     #Make N-grams of tweets that were set
     def add_ngrams(self,n,t):
@@ -154,7 +154,7 @@ class Tweetsfeatures():
                         seq = ["<s>"] + t.wordsequence + ["<s>"]
                     else:
                         seq = t.wordsequence
-                    t.features[0].extend(self.return_ngrams(seq,n_val))
+                    t.features[0].extend(["_".join(x) for x in self.return_ngrams(seq,n_val)])
         elif t == "pos":
             for t in self.instances:
                 for n_val in n:
@@ -162,7 +162,7 @@ class Tweetsfeatures():
                         seq = ["<s>"] + t.posseq + ["<s>"]
                     else:
                         seq = t.posseq
-                    t.features[0].extend(self.return_ngrams(seq,n_val))
+                    t.features[0].extend(["_".join(x) for x in self.return_ngrams(seq,n_val)])
 
     def add_char_ngrams(self,n,ignore = False):
         """
