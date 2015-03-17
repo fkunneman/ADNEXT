@@ -48,13 +48,20 @@ class Tweetsfeatures():
    
         for line in tweets:
             tokens = line.strip().split("\t")
+            fields = True
             tweet_fields = []
             for i,column in enumerate(columns):
                 if column or column == 0:
-                    tweet_fields.append(tokens[column])
+                    try:
+                        tweet_fields.append(tokens[column])
+                    except IndexError:
+                        print("field indexes do not correspond for",tokens)
+                        fields=False
+                        continue
                 else:
                     tweet_fields.append("-")
-            self.instances.append(Tweetsfeatures.Tweet(tweet_fields))
+            if fields:
+                self.instances.append(Tweetsfeatures.Tweet(tweet_fields))
 
     def process_frog(self,punct):
         fo = frog.FrogOptions(threads=16)
