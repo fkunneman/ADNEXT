@@ -73,9 +73,8 @@ if args.f:
         text = " ".join([x for x in fileopen.read().split("\n") if not re.search("_",x)])
         label = instance[0]
         classification = instance[1]
-        score0 = filename_scores[filename]['0.0']
-        score1 = filename_scores[filename]['1.0']
-        outfile.write(text + "\t" + label + " " + classification + " " + score0 + " " + score1 + "\n")
+        labels = sorted(filename_scores[filename].keys()):
+        outfile.write(text + "\t" + label + " " + classification + " " + "\t".join([" ".join([x,filename_scores[filename][x]]) for x in labels]) + "\n")
     outfile.close()
 
 if args.n:
