@@ -73,14 +73,14 @@ if args.f:
         text = " ".join([x for x in fileopen.read().split("\n") if not re.search("_",x)])
         label = instance[0]
         classification = instance[1]
-        labels = sorted(filename_scores[filename].keys()):
+        labels = sorted(filename_scores[filename].keys())
         outfile.write(text + "\t" + label + " " + classification + " " + "\t".join([" ".join([x,filename_scores[filename][x]]) for x in labels]) + "\n")
     outfile.close()
 
 if args.n:
     #make filename - meta dict:
     print "making meta-dict"
-    metafile = codecs.open("/".join(args.c.split("/")[:-1]) + "/meta.txt","r","utf-8")
+    metafile = codecs.open("/".join(args.c[0].split("/")[:-1]) + "/meta.txt","r","utf-8")
     file_meta = defaultdict(list)
     for line in metafile.readlines():
         tokens = line.strip().split("\t")
@@ -89,7 +89,7 @@ if args.n:
     print "writing ranked file"
     #write tweets
     rankfile = codecs.open("/".join(args.w.split("/")[:-1]) + "/ranked_tweets.txt" ,"w","utf-8")
-    for tweet in sorted(instances,key=lambda x: x[2],reverse = True)[:args.f]:
+    for tweet in sorted(instances,key=lambda x: x[2],reverse = True)[:args.n]:
         # fileopen = codecs.open(args.f + tweet[3],"r","utf-8")
         # feats =  fileopen.read().split("\n")
         meta = file_meta[tweet[3]]
