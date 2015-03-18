@@ -157,7 +157,6 @@ class Classifier():
         self.feature_info={}
         #print self.features      
         for i,feature in enumerate(self.features):
-            print i, feature
             self.feature_info[feature]=i+ind
         
         def sparsify(instances,writelist):
@@ -220,7 +219,6 @@ class Classifier():
             classification = self.clf.predict(t)
             proba = self.clf.predict_proba(t)
             classification_label = self.labeldict_back[classification[0]]
-            print(ts[i]["meta"])
             if len(ts[0]["meta"]) == 6:
                 predictions.append([ts[i]["meta"][5], ts[i]["label"] + " " + classification_label, \
                     " ".join([str(round(x,2)) for x in proba.tolist()[0]])])
