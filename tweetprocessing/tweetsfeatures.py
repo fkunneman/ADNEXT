@@ -100,7 +100,6 @@ class Tweetsfeatures():
         user = re.compile(r"@")
         for t in self.instances:
             if lower: 
-                t.text = t.text.lower()
                 words = t.text.lower().split(" ")
             else:
                 words = t.text.split(" ") 
@@ -172,7 +171,7 @@ class Tweetsfeatures():
                         seq = t.posseq
                     t.features[0].extend(["_".join(x) for x in self.return_ngrams(seq,n_val)])
 
-    def add_char_ngrams(self,n,ignore = False):
+    def add_char_ngrams(self,n,ignore = False,lower = False):
         """
         add character ngrams to the featurespace of each tweet 
         """        
@@ -190,6 +189,8 @@ class Tweetsfeatures():
         #make list of raw tweets        
         for t in self.instances:
             text = t.text
+            if lower:
+                test = text.lower()
             if ignore:
                 text = rm_string([text],ignore)
             for n_val in n:

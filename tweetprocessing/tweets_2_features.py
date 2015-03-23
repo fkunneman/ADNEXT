@@ -121,7 +121,7 @@ if args.p:
 if args.rb:
     tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
-    tf.add_char_ngrams(args.cn,args.rb)
+    tf.add_char_ngrams(args.cn,args.rb,args.lo)
 tf.add_stats(args.ht,args.cap,args.length,args.pronoun,args.punct,args.emo)
 # if args.sentiment:
 #     tf.add_sentiment()
