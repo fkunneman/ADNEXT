@@ -4,6 +4,7 @@ import argparse
 import requests
 import datetime
 import time
+import codecs
 
 """
 Script to collect tweets within a timeframe from twiqs
@@ -30,11 +31,7 @@ requestloop = int(30/requestwait)
 s = requests.Session()
 r = s.post("http://" + args.i + "/cgi-bin/twitter", data={"NAME":args.u, "PASSWD":args.p})
 
-def RequestTweets(t):
-    """
-    Fetches the tweets from twiqs.nl
-    Warning = The url may need to be updated from time to time!
-    """
+def request_tweets(t):
     try:
             output1st = requests.get("http://" + args.i + "/cgi-bin/twitter", params=t, cookies=s.cookies)
     except:
@@ -42,12 +39,33 @@ def RequestTweets(t):
             output1st = False
     return output1st
 
+def process_request(t1,t2):
+    payload = {'SEARCH': args.k, 'DATE': t1 + "-" + t2, 'DOWNLOAD':True, 'SHOWTWEETS':True}
+    print("fetching",payload["SEARCH"],"in",payload['DATE'],"from twiqs")
+    output = False
+    while not output:
+        output = RequestTweets(payload)
+    dumpoutput = '#user_id\t#tweet_id\t#date\t#time\t#reply_to_tweet_id\t#retweet_to_tweet_id\t#user_name\t#tweet\t#DATE='+payload['DATE']+'\t#SEARCHTOKEN=' + args.k + '\n'
+    if output.text[:1000] == dumpoutput: #If there isn't any tweet try the request again for 10 times.
+        for i in range(0,requestloop):
+            output = False
+            while not output:
+                time.sleep(60*requestwait) #Wait for the search done at twiqs.nl before the next request
+                output = RequestTweets(payload)
+            if output.text != dumpoutput:
+                break
+
+    #Check the results one last time
+    if output.text[:1000] == dumpoutput: #If there isn't any tweet again, it will skip this hour.
+        print("no tweets last attempt")
+        return = False
+    else:
+        return output.text
 
 if args.k == "echtalles":
     current = datetime.datetime(int(args.s[:4]),int(args.s[4:6]),int(args.s[6:8]),int(args.s[8:]),0,0)
     end = datetime.datetime(int(args.f[:4]),int(args.f[4:6]),int(args.f[6:8]),int(args.f[8:]),0,0)
     while current <= end:
-        print current
         year = str(current.year)
         month = str(current.month)
         day = str(current.day)
@@ -59,54 +77,14 @@ if args.k == "echtalles":
         if len(hour) == 1:
             hour = "0" + hour
         timeobj = year+month+day+hour
-        outfile = args.o + timeobj + ".txt"
-        #print "curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'"
-        #os.system("curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
-        success = True
-        payload = {'SEARCH': args.k, 'DATE': timeobj + "-" + timeobj, 'DOWNLOAD':True, 'SHOWTWEETS':True}
-        print("fetching",payload['DATE'],"from twiqs")
-        output = False
-        while not output:
-            output = RequestTweets(payload)
-
-        dumpoutput = '#user_id\t#tweet_id\t#date\t#time\t#reply_to_tweet_id\t#retweet_to_tweet_id\t#user_name\t#tweet\t#DATE='+payload['DATE']+'\t#SEARCHTOKEN=' + args.k + '\n'
-        if output.text[:1000] == dumpoutput: #If there isn't any tweet try the request again for 10 times.
-            for i in range(0,requestloop):
-                output = False
-                while not output:
-                    time.sleep(60*requestwait) #Wait for the search done at twiqs.nl before the next request
-                    output = RequestTweets(payload)
-                if output.text != dumpoutput:
-                    break
-
-        #Check the results one last time
-        if output.text[:1000] == dumpoutput: #If there isn't any tweet again, it will skip this hour.
-            print("no tweets last attempt")
-            success = False
-        if success:
-            print(output.text)
-
+        tweets = process_request(timeobj,timeobj)
+        outfile = codecs.open(args.o + timeobj + ".txt","w","utf-8")
+        outfile.write(tweets)
+        outfile.close()
         current = current + datetime.timedelta(hours = 1)
 
-
-        # outlines = []
-        # while len(outlines) <= 2:
-        #     print "waiting for",outfile
-        #     time.sleep(300)
-        #     os.system("curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
-        #     outopen = open(outfile)
-        #     outlines = outopen.readlines()
-        #     outopen.close()
-
 else:
-    outfile = args.o + args.k + ".txt"
-    print "curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=" + args.k + "&DATE=" + args.s + "-" + args.f + "&SHOWTWEETS&DOWNLOAD\'"
-    os.system("curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=" + args.k + "&DATE=" + args.s + "-" + args.f + "&SHOWTWEETS&DOWNLOAD\'")
-    outlines = []
-    while len(outlines) <= 2:
-        print "waiting for",outfile
-        time.sleep(300)
-        os.system("curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=" + args.k + "&DATE=" + args.s + "-" + args.f + "&SHOWTWEETS&DOWNLOAD\'")
-        outopen = open(outfile)
-        outlines = outopen.readlines()
-        outopen.close()
+    tweets = process_request(args.s,args.f)
+    outfile = codecs.open(args.o + args.k + ".txt","w","utf-8")
+    outfile.write(tweets)
+    outfile.close()
