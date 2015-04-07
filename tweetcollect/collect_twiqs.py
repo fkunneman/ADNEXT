@@ -63,8 +63,8 @@ if args.k == "echtalles":
         #print "curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'"
         #os.system("curl -o " + outfile + " --cookie \'cookie=ofqcMkrR9DEVR6fG\' \'http://" + args.i + "//cgi-bin/twitter?SEARCH=echtalles&DATE=" + timeobj + "-" + timeobj + "&SHOWTWEETS&DOWNLOAD\'")
         success = True
-        print("fetching",d['DATE'],"from twiqs")
         payload = {'SEARCH': args.k, 'DATE': timeobj + "-" + timeobj, 'DOWNLOAD':True, 'SHOWTWEETS':True}
+        print("fetching",payload['DATE'],"from twiqs")
         output = False
         while not output:
                 output = RequestTweets(payload)
