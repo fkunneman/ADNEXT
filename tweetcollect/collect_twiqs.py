@@ -44,21 +44,20 @@ def process_request(t1,t2):
     print("fetching",payload["SEARCH"],"in",payload['DATE'],"from twiqs")
     output = False
     while not output:
-        output = RequestTweets(payload)
+        output = request_tweets(payload)
     dumpoutput = '#user_id\t#tweet_id\t#date\t#time\t#reply_to_tweet_id\t#retweet_to_tweet_id\t#user_name\t#tweet\t#DATE='+payload['DATE']+'\t#SEARCHTOKEN=' + args.k + '\n'
     if output.text[:1000] == dumpoutput: #If there isn't any tweet try the request again for 10 times.
         for i in range(0,requestloop):
             output = False
             while not output:
                 time.sleep(60*requestwait) #Wait for the search done at twiqs.nl before the next request
-                output = RequestTweets(payload)
+                output = request_tweets(payload)
             if output.text != dumpoutput:
                 break
 
     #Check the results one last time
     if output.text[:1000] == dumpoutput: #If there isn't any tweet again, it will skip this hour.
         print("no tweets last attempt")
-        return = False
     else:
         return output.text
 
