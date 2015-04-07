@@ -86,6 +86,7 @@ if args.k == "echtalles":
         if success:
             print(output.text)
 
+        current = current + datetime.timedelta(hours = 1)
 
 
         # outlines = []
@@ -96,7 +97,6 @@ if args.k == "echtalles":
         #     outopen = open(outfile)
         #     outlines = outopen.readlines()
         #     outopen.close()
-        # current = current + datetime.timedelta(hours = 1)
 
 else:
     outfile = args.o + args.k + ".txt"
