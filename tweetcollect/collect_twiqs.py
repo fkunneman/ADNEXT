@@ -20,12 +20,13 @@ parser.add_argument('-f', action = 'store', required = True, help =
     "the end time (format = YYYYMMDDHH)")
 parser.add_argument('-i', action = 'store', required = True, help = "the ip")
 parser.add_argument('-o', action = 'store', required = True, help = "the directory to write to")
+parser.add_argument('-l', action = 'store', type = int, default = 30, help = "the time to wait for query results")
+parser.add_argument('-w', action = 'store', type = int, default = 2, help = "the time of repetitive querying")
 
 args = parser.parse_args()
 
-looptime = 1
-requestwait = 2
-requestloop = int(30/requestwait)
+requestwait = args.w
+requestloop = int(args.l/requestwait)
 
 #get cookie
 s = requests.Session()
@@ -58,6 +59,7 @@ def process_request(t1,t2):
     #Check the results one last time
     if output.text[:1000] == dumpoutput: #If there isn't any tweet again, it will skip this hour.
         print("no tweets last attempt")
+        return ""
     else:
         return output.text
 
@@ -77,13 +79,15 @@ if args.k == "echtalles":
             hour = "0" + hour
         timeobj = year+month+day+hour
         tweets = process_request(timeobj,timeobj)
-        outfile = codecs.open(args.o + timeobj + ".txt","w","utf-8")
-        outfile.write(tweets)
-        outfile.close()
-        current = current + datetime.timedelta(hours = 1)
+        if tweets != "":
+            outfile = codecs.open(args.o + timeobj + ".txt","w","utf-8")
+            outfile.write(tweets)
+            outfile.close()
+            current = current + datetime.timedelta(hours = 1)
 
 else:
     tweets = process_request(args.s,args.f)
-    outfile = codecs.open(args.o + args.k + ".txt","w","utf-8")
-    outfile.write(tweets)
-    outfile.close()
+    if tweets != "":
+        outfile = codecs.open(args.o + args.k + ".txt","w","utf-8")
+        outfile.write(tweets)
+        outfile.close()
