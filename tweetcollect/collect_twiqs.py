@@ -67,7 +67,7 @@ if args.k == "echtalles":
         print("fetching",payload['DATE'],"from twiqs")
         output = False
         while not output:
-                output = RequestTweets(payload)
+            output = RequestTweets(payload)
 
         dumpoutput = '#user_id\t#tweet_id\t#date\t#time\t#reply_to_tweet_id\t#retweet_to_tweet_id\t#user_name\t#tweet\t#DATE='+payload['DATE']+'\t#SEARCHTOKEN=' + args.k + '\n'
         if output.text[:1000] == dumpoutput: #If there isn't any tweet try the request again for 10 times.
@@ -76,6 +76,8 @@ if args.k == "echtalles":
                 while not output:
                     time.sleep(60*requestwait) #Wait for the search done at twiqs.nl before the next request
                     output = RequestTweets(payload)
+                if output.text != dumpoutput:
+                    break
 
         #Check the results one last time
         if output.text[:1000] == dumpoutput: #If there isn't any tweet again, it will skip this hour.
