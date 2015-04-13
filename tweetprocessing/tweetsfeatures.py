@@ -94,7 +94,7 @@ class Tweetsfeatures():
                 templist.append(t)           
         self.instances = templist
 
-    def set_sequences(self, ht = False, lower = False, us = False, ur = False):
+    def set_sequences(self, ht = False, lower = False, us = False, ur = False, cap = False):
         hashtag = re.compile(r"#")
         url = re.compile(r"http://")
         user = re.compile(r"@")
@@ -110,6 +110,8 @@ class Tweetsfeatures():
                     t.wordsequence.append("URL")
                 elif us and user.search(word):
                     t.wordsequence.append("USER")
+                elif cap and re.search("[A-Z]",word) and re.search("[a-z]",word):
+                    t.wordsequence.append(word.lower())
                 else:
                     t.wordsequence.append(word)      
 

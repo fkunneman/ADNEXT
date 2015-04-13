@@ -36,10 +36,11 @@ parser.add_argument('--man', action = 'store', required = False,
     help = "specify a label that applies to all tweets")
 parser.add_argument('-ur', action = 'store_true', default = False, 
     help = "choose whether url's are normalized")
-parser.add_argument('-us', action = 'store_true', default = False, 
-    help = "choose whether usernames are normalized")
-parser.add_argument('-lo', action = 'store_true', default = False, 
+parser.add_argument('-us', action = 'store_true', help = "choose whether usernames are normalized")
+parser.add_argument('-lo', action = 'store_true', 
     help = "choose whether words are standardized to lower case")
+parser.add_argument('-partcap', action = 'store_true', 
+    help = "choose to normalize words to lowercase that -partly- consist of capitals")
 parser.add_argument('--eos', action = 'store_true', 
     help = "choose to retain end-of-sentence markers, if a feature with such a marker is removed \
     (the marker will be added to previous word)")
@@ -93,7 +94,7 @@ if args.frog:
     outfile = open(args.frog,"w",encoding="utf-8")
     for tweet in tf.instances:
         outfile.write("\t".join([tweet.label,tweet.id,tweet.user,tweet.date,tweet.time,tweet.text]) + "\n")
-tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur)
+tf.set_sequences(lower=args.lo,us=args.us,ur=args.ur,cap=args.partcap)
 if args.man:
     tf.add_label(args.man)
 
