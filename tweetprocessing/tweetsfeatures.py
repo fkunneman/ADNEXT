@@ -66,7 +66,9 @@ class Tweetsfeatures():
     def process_frog(self,punct):
         fo = frog.FrogOptions(threads=16)
         frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
-        for t in self.instances:
+        num_instances = len(self.instances)
+        for i,t in enumerate(self.instances):
+            print("tokenizing",i,"of",num_instances,"instances")
             tokens = []
             stems = []
             poss = []
