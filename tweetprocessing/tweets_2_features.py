@@ -122,6 +122,8 @@ if args.n:
     tf.add_ngrams(args.n,t="word")
 if args.p:
     tf.add_ngrams(args.p,t="pos")
+if args.s:
+    tf.add_ngrams(args.s,t="stem")
 if args.rb:
     tf.remove_blacklist(args.rb,args.eos)
 if args.cn:
