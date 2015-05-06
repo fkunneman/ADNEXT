@@ -61,7 +61,10 @@ parser.add_argument('-n', type = int, action = 'store', nargs = '+', required = 
     help = "to include word n-grams, specify the values of \'n\'")
 parser.add_argument('-p', type = int, action = 'store', nargs = '+', required = False, 
     help = "to include pos n-grams, specify the values of \'n\'" 
-        ", pos-argument should be included")
+        ", frog-argument should be included")
+parser.add_argument('-s', type = int, action = 'store', nargs = '+', required = False, 
+    help = "to include stem n-grams, specify the values of \'n\'" 
+        ", frog-argument should be included")
 parser.add_argument('-cn', type = int, action = 'store', nargs = '+', required = False, 
     help = "to include character n-grams, specify the values of \'n\'")
 parser.add_argument('-l', nargs='+', action = 'store', required = False, 

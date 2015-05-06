@@ -174,6 +174,14 @@ class Tweetsfeatures():
                     else:
                         seq = t.posseq
                     t.features[0].extend(["_".join(x) for x in self.return_ngrams(seq,n_val)])
+        elif t == "stem":
+            for t in self.instances:
+                for n_val in n:
+                    if n_val > 1:
+                        seq = ["<s>"] + t.stemseq + ["<s>"]
+                    else:
+                        seq = t.stemseq
+                    t.features[0].extend(["_".join(x) for x in self.return_ngrams(seq,n_val)])
 
     def add_char_ngrams(self,n,ignore = False,lower = False):
         """
