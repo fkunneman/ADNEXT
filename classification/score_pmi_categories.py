@@ -48,17 +48,19 @@ for i, infile in enumerate(infiles):
         lines = f.readlines()
         clprob = len(lines)/nlines_total
         for l in lines:
-            words = l.strip().split(" ")
-            for i in range(3):
-                if i == 0:
-                    ngrams = zip(words)
-                elif i == 1:
-                    ngrams = zip(words, words[1:])
-                elif i == 2:
-                    ngrams = zip(words, words[1:], words[2:])
-                for ngram in ngrams:
-                    pattern = classencoder.buildpattern(" ".join(ngram))
-                    classmodel.add(pattern) #(will count +1 if already exists)
+            # words = l.strip().split(" ")
+            # for i in range(3):
+            #     if i == 0:
+            #         ngrams = zip(words)
+            #     elif i == 1:
+            #         ngrams = zip(words, words[1:])
+            #     elif i == 2:
+            #         ngrams = zip(words, words[1:], words[2:])
+            #     for ngram in ngrams:
+            #         pattern = classencoder.buildpattern(" ".join(ngram))
+            #         classmodel.add(pattern) #(will count +1 if already exists)
+            pattern = classencoder.buildpattern(line.strip())
+            classmodel.add(pattern)
     classmodels.append((cls,clprob,classmodel))
 
 print("Calculating statistics",file=sys.stderr)
