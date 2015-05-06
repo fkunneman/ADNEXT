@@ -51,18 +51,18 @@ for i, infile in enumerate(infiles):
             words = l.strip().split(" ")
             for i in range(3):
                 if i == 0:
-                    ngrams = zip(c)
+                    ngrams = zip(words)
                 elif i == 1:
-                    ngrams = zip(c, c[1:])
+                    ngrams = zip(words, words[1:])
                 elif i == 2:
-                    ngrams = zip(c, c[1:], c[2:])
+                    ngrams = zip(words, words[1:], words[2:])
                 for ngram in ngrams:
                     pattern = classencoder.buildpattern(" ".join(ngram))
                     classmodel.add(pattern) #(will count +1 if already exists)
     classmodels.append((cls,clprob,classmodel))
 
 print("Calculating statistics",file=sys.stderr)
-options = colibricore.PatternModelOptions(mintokens=1, maxlength=3)
+options = colibricore.PatternModelOptions(mintokens=10, maxlength=3)
 for classmodel in classmodels:
     pattern_pmi = []
     class_probability = classmodel[1]
@@ -75,5 +75,5 @@ for classmodel in classmodels:
     pattern_pmi_sorted = sorted(pattern_pmi,key = lambda k : k[1],reverse = True)
     outfile = open(outdir + classmodel[0] + "_pmi.txt","w",encoding="utf-8")
     for pp in pattern_pmi_sorted:
-        outfile.write(pp + "\t" + str(round(pp[1],2)))
+        outfile.write(pp[0] + "\t" + str(round(pp[1],2)) + "\n")
     outfile.close()

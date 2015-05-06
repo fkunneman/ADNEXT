@@ -46,7 +46,6 @@ def lcswriter(instances,chunkindex,partsqueue=False,metaqueue=False):
             subtweets=instances[i:]
         for j,tweet in enumerate(subtweets):
             #make filename and write contents to it
-            print(j)
             zeros=5-len(str(file_index))
             j=0
             file_name=str(file_index) + ".txt"

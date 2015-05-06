@@ -9,10 +9,15 @@ lw = int(sys.argv[2])
 outplot = sys.argv[3]
 xlabel = sys.argv[4]
 ylabel = sys.argv[5]
-plotfiles = sys.argv[6:]
+sort = sys.argv[6]
+legend = sys.argv[7]
+plotfiles = sys.argv[8:]
 
 if plottype[:4] == "line":
     linestyles = ["-","--","-.",":"]
+    d = 1
+    if legend:
+        d = 2
     half = int(len(plotfiles)/2)
     for i,pf in enumerate(plotfiles[:half]):
         pf_open = open(pf)
@@ -27,13 +32,17 @@ if plottype[:4] == "line":
             else:
                 ytoken = float(tokens[1])
             y.append(ytoken)
-        print x
-        print y
         if plottype[4:] == "range":
             x = range(len(x))
         plt.plot(x,y,linestyle=linestyles[i],linewidth=lw)
-    legend = plotfiles[half:]
-    plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
+        if sort == "nosort":
+            plt.gca().invert_xaxis()
+#pos = np.arange(len(x))
+        #    plt.xticks(xpos,x)
+    if legend:
+        legend = plotfiles[half:]
+        plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
+    plt.ylim(top=1)
 
 elif plottype == "hist":
     pf_open = open(plotfiles[0])
@@ -48,6 +57,18 @@ elif plottype == "hist":
     print b
     plt.hist(y,bins=b)
     plt.ylim(0,20)
+
+elif plottype == "bar":
+    pf_open = open(plotfiles[0])
+    x = []
+    y = []
+    for line in pf_open.readlines():
+        tokens = line.strip().split("\t")
+        x.append(tokens[0])
+        y.append(float(tokens[1]))
+    x_pos = np.arange(len(x))
+    plt.bar(x_pos,y,align="center")
+    plt.xticks(x_pos, x)
 
 plt.ylabel(ylabel)
 plt.xlabel(xlabel)
