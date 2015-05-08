@@ -14,6 +14,14 @@ def return_datetime(date,time = False,minute = False,setting = "eu"):
     elif setting == "vs":
         parse_date = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
         date = parse_date.search(date).groups(1)
+    elif setting == "twitter":
+        month = {"Jan":1, "Feb":2, "Mar":3, "Apr":4, "May":5, "Jun":6, 
+            "Jul":7, "Aug":8, "Sep":9, "Oct":10, "Nov":11, "Dec":12}
+        parse_dt = re.compile(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+) " +
+            r"(\d{2}:\d{2}:\d{2}) \+\d+ (\d{4})")
+        dtsearch = date_time.search(date).groups()
+        date = [dtsearch[3],month[dtsearch[0]],dtsearch[2]]
+        time = dtsearch[2]
     if time:
         parse_time = re.compile(r"(\d{2}):(\d{2})")
         timeparse = parse_time.match(time).groups(1)
