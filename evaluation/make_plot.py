@@ -10,7 +10,7 @@ outplot = sys.argv[3]
 xlabel = sys.argv[4]
 ylabel = sys.argv[5]
 sort = sys.argv[6]
-legend = sys.argv[7]
+legend = int(sys.argv[7])
 plotfiles = sys.argv[8:]
 
 if plottype[:4] == "line":
@@ -18,7 +18,7 @@ if plottype[:4] == "line":
     d = 1
     if legend:
         d = 2
-    half = int(len(plotfiles)/2)
+    half = int(len(plotfiles)/d)
     for i,pf in enumerate(plotfiles[:half]):
         pf_open = open(pf)
         x = []
@@ -41,7 +41,7 @@ if plottype[:4] == "line":
         #    plt.xticks(xpos,x)
     if legend:
         legend = plotfiles[half:]
-        plt.legend(legend,loc = "upper right",ncol = 2,bbox_to_anchor=(1.1, 1.2))
+        plt.legend(legend,loc = "lower right")
     plt.ylim(top=1)
 
 elif plottype == "hist":

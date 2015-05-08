@@ -59,7 +59,7 @@ for i, infile in enumerate(infiles):
             #     for ngram in ngrams:
             #         pattern = classencoder.buildpattern(" ".join(ngram))
             #         classmodel.add(pattern) #(will count +1 if already exists)
-            pattern = classencoder.buildpattern(line.strip())
+            pattern = classencoder.buildpattern(l.strip())
             classmodel.add(pattern)
     classmodels.append((cls,clprob,classmodel))
 
