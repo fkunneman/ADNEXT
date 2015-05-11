@@ -7,7 +7,7 @@ import csv
 import re
 import multiprocessing
 import gen_functions
-#import utils
+import utils
       
 #Function to tokenize the inputfile
 def frogger(ls,o,i):
@@ -33,29 +33,36 @@ stemslist = []
 poslist = []
 
 print("reading in file")
-dataset = load_data(filename=sys[1], random_state=None, max_n=None)
+#dataset = utils.load_data(filename=sys[1], random_state=None, max_n=None)
 
-# with open(sys.argv[1], 'r') as csvfile:
-#     reader = csv.reader(csvfile)
-#     for row in reader:
-#         lines.append(row)
+with open(sys.argv[1], 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        lines.append(row)
 
-texts = dataset["texts"]
-#texts = [i[-1] for i in lines]
+#texts = dataset["texts"]
+texts = [i[-1] for i in lines]
 indices = range(len(texts))
 
 print("Frogging")
 fc = pynlpl.clients.frogclient.FrogClient('localhost',sys.argv[2])    
 
 ts = texts[:2]
+lemmas = []
+tokens = []
 for t in ts:
-    tokens = fc.process(t)
-    print(t[0] for t in tokens)
-    print(t[1] for t in tokens)
-    print(t[2] for t in tokens)
+    frs = fc.process(t)
+    for t in frs:
+        if t[0]:
+            lemmas.append(t[1])
+            tokens.append(t[0])
+#print(t[0] for t in tokens)
+    #print(t[1] for t in tokens)
+    #print(t[3] for t in tokens)
 # for t in texts[:20]:    
 #     for output in fc.process(t):
 #         print(output)
+print(zip(tokens,lemmas))
 quit()
 
 print("Processing lines.")
