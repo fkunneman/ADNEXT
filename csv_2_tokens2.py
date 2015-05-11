@@ -3,13 +3,11 @@
 import pynlpl.clients.frogclient
 import sys
 import csv
-import codecs
+#import codecs
 import re
-import argparse
 import multiprocessing
-import gzip
 import gen_functions
-import utils
+#import utils
       
 #Function to tokenize the inputfile
 def frogger(t,o,i):
@@ -21,8 +19,9 @@ def frogger(t,o,i):
         #outstring = outstring + "\n"
         #o.put(outstring)
     
-    print "Chunk " + str(i) + " done."
+    print("Chunk ",i," done.")
 
+csv.field_size_limit(sys.maxsize)
 filename = sys.argv[1][:-4]
 
 lines = []
@@ -31,19 +30,26 @@ tokenslist = []
 stemslist = []
 poslist = []
 
+#dataset = load_data(filename=sys[1], random_state=None, max_n=None)
 print("reading in file")
-dataset = load_data(filename=sys[1], random_state=None, max_n=None)
+with open(sys.argv[1], 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        lines.append(row)
 
-texts = dataset["texts"]
+#texts = dataset["texts"]
+texts = [i[-1] for i in lines]
 indices = range(len(texts))
 
-fc = pynlpl.clients.frogclient.FrogClient('localhost','15243',returnall = True)    
-    
-for output in fc.process(texts[:10]):
-    print(output)
+print("Frogging")
+fc = pynlpl.clients.frogclient.FrogClient('localhost',sys.argv[2])    
+
+for t in texts[:20]:    
+    for output in fc.process(t):
+        print(output)
 quit()
 
-print "Processing lines."
+print("Processing lines.")
 q = multiprocessing.Queue()
 frogged = []
 chunks = gen_functions.make_chunks(zip(indices,texts))
