@@ -19,12 +19,12 @@ def return_datetime(date,time = False,minute = False,setting = "eu"):
             "Jul":7, "Aug":8, "Sep":9, "Oct":10, "Nov":11, "Dec":12}
         parse_dt = re.compile(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+) " +
             r"(\d{2}:\d{2}:\d{2}) \+\d+ (\d{4})")
-        dtsearch = date_time.search(date).groups()
-        date = [dtsearch[3],month[dtsearch[0]],dtsearch[2]]
+        dtsearch = parse_dt.search(date).groups()
+        date = [dtsearch[3],month[dtsearch[0]],dtsearch[1]]
         time = dtsearch[2]
     if time:
-        parse_time = re.compile(r"(\d{2}):(\d{2})")
-        timeparse = parse_time.match(time).groups(1)
+        parse_time = re.compile(r"^(\d{2}):(\d{2})")
+        timeparse = parse_time.search(time).groups(1)
         if minute:
             datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),int(timeparse[0]),0,0)
         else:

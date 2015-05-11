@@ -53,5 +53,5 @@ def collect_usertweets(api,user,max_c = 1000,cnt=200):
 
 def return_tweet(api,tid):
     status = api.show_status(id=tid)
-    tweet = [tid,status["screen_name"],time_functions.return_datetime(status["created_at"],setting="twitter"),status["text"]]
+    tweet = [tid,status["user"]["screen_name"],time_functions.return_datetime(status["created_at"],setting="twitter"),status["text"]]
     return tweet
