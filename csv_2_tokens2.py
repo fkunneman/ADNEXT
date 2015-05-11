@@ -68,9 +68,10 @@ print("writing to files")
 frogged_sorted = sorted(frogged,key = lambda k : k[0])
 meta = []
 for index in [i[0] for i in frogged_sorted]:
-    meta.append([dataset['user_id'][index],dataset['age'][index],dataset['gender'][index],
-        dataset['loc_country'][index],dataset['loc_region'][index],dataset['loc_city'][index],
-        dataset['education'][index],dataset['pers_big5'][index],dataset['pers_mbti'][index]])
+    # meta.append([dataset['user_id'][index],dataset['age'][index],dataset['gender'][index],
+    #     dataset['loc_country'][index],dataset['loc_region'][index],dataset['loc_city'][index],
+    #     dataset['education'][index],dataset['pers_big5'][index],dataset['pers_mbti'][index]])
+    meta.append(line[index][:-1])
 
 with open(filename + "_tokenized.csv", 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
