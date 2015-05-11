@@ -10,10 +10,12 @@ import gen_functions
 #import utils
       
 #Function to tokenize the inputfile
-def frogger(t,o,i):
-    fc = pynlpl.clients.frogclient.FrogClient('localhost',args.p,returnall = True)    
-        
-    for output in fc.process(t):
+def frogger(ls,o,i):
+    fc = pynlpl.clients.frogclient.FrogClient('localhost',sys.argv[2])    
+    
+    for l in ls:
+        ts = fc.process(l)
+        lemma
         print(output)
         #words.append(word)    
         #outstring = outstring + "\n"
@@ -30,23 +32,30 @@ tokenslist = []
 stemslist = []
 poslist = []
 
-#dataset = load_data(filename=sys[1], random_state=None, max_n=None)
 print("reading in file")
-with open(sys.argv[1], 'r') as csvfile:
-    reader = csv.reader(csvfile)
-    for row in reader:
-        lines.append(row)
+dataset = load_data(filename=sys[1], random_state=None, max_n=None)
 
-#texts = dataset["texts"]
-texts = [i[-1] for i in lines]
+# with open(sys.argv[1], 'r') as csvfile:
+#     reader = csv.reader(csvfile)
+#     for row in reader:
+#         lines.append(row)
+
+texts = dataset["texts"]
+#texts = [i[-1] for i in lines]
 indices = range(len(texts))
 
 print("Frogging")
 fc = pynlpl.clients.frogclient.FrogClient('localhost',sys.argv[2])    
 
-for t in texts[:20]:    
-    for output in fc.process(t):
-        print(output)
+ts = texts[:2]
+for t in ts:
+    tokens = fc.process(t)
+    print(t[0] for t in tokens)
+    print(t[1] for t in tokens)
+    print(t[2] for t in tokens)
+# for t in texts[:20]:    
+#     for output in fc.process(t):
+#         print(output)
 quit()
 
 print("Processing lines.")
