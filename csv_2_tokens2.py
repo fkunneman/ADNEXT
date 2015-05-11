@@ -11,6 +11,7 @@ import utils
       
 #Function to tokenize the inputfile
 def frogger(ls,o,i):
+    print(len(ls))
     fc = pynlpl.clients.frogclient.FrogClient('localhost',sys.argv[2])    
 
     out = []
@@ -24,7 +25,7 @@ def frogger(ls,o,i):
                 tokens.append(t[0])
                 lemmas.append(t[1])
                 poss.append(t[3])
-        o.put(l[0]," ".join(tokens)," ".join(lemmas)," ".join(poss))
+        o.put([l[0]," ".join(tokens)," ".join(lemmas)," ".join(poss)])
 
     print("chunk",i,"done")
 
@@ -32,7 +33,6 @@ csv.field_size_limit(sys.maxsize)
 filename = sys.argv[1][:-4]
 
 lines = []
-
 
 print("reading in file")
 #dataset = utils.load_data(filename=sys[1], random_state=None, max_n=None)
@@ -50,9 +50,10 @@ print("Processing lines.")
 q = multiprocessing.Queue()
 frogged = []
 chunks = gen_functions.make_chunks(zip(indices,texts))
+print(len(chunks))
 
-for i in range(len(tweets_chunks)):
-    p = multiprocessing.Process(target=frogger,args=[tweets_chunks[i],q,i])
+for i in range(len(chunks)):
+    p = multiprocessing.Process(target=frogger,args=[chunks[i],q,i])
     p.start()
 
 total = len(lines)
