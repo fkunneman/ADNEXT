@@ -55,7 +55,7 @@ for i,line in enumerate(lines):
             #print("YES",text)
             l = ""
             regexPattern = '|'.join(map(re.escape, url.findall(text)))
-            urls = ', '.join(url.findall(text).groups())
+            urls = ', '.join(url.findall(text))
             output = [re.split(regexPattern, text),urls]
             for x in output[0]:
                 print(x)
