@@ -7,8 +7,8 @@ import ucto
 import re
 
 fo = frog.FrogOptions(threads=25)
-frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
-#frogger = frog.Frog(fo,"/home/fkunneman/netlogconf/frog-netlog.cfg")
+#frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+frogger = frog.Frog(fo,"/home/fkunneman/netlogconf/frog-netlog.cfg")
 csv.field_size_limit(sys.maxsize)
 
 #ucto_settingsfile = "/home/fkunneman/netlogconf/tokconfig-nl-netlog"
@@ -55,7 +55,7 @@ for i,line in enumerate(lines):
             #print("YES",text)
             l = ""
             regexPattern = '|'.join(map(re.escape, url.findall(text)))
-            urls = ', '.join(url.findall(text).groups())
+            urls = ', '.join(url.findall(text))
             output = [re.split(regexPattern, text),urls]
             for x in output[0]:
                 if len(x) > 0:
