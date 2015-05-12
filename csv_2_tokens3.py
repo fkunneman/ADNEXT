@@ -7,7 +7,8 @@ import ucto
 import re
 
 fo = frog.FrogOptions(threads=25)
-frogger = frog.Frog(fo,"/home/fkunneman/netlogconf/frog-netlog.cfg")
+frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+#frogger = frog.Frog(fo,"/home/fkunneman/netlogconf/frog-netlog.cfg")
 csv.field_size_limit(sys.maxsize)
 
 #ucto_settingsfile = "/home/fkunneman/netlogconf/tokconfig-nl-netlog"
@@ -48,29 +49,29 @@ for i,line in enumerate(lines):
     text = line[-1]
     if re.search(url,text): #replace with dummy
         l = ""
-        regexPattern = '|'.join(map(re.escape, url.search(line).groups()))
-        urls = ', '.join(url.search(line).groups())
-        output = [re.split(regexPattern, line),urls]
+        regexPattern = '|'.join(map(re.escape, url.search(text).groups()))
+        urls = ', '.join(url.search(text).groups())
+        output = [re.split(regexPattern, text),urls]
         for x in output[0]:
             l = l + x + " URL "
-        line = l
+        text = l
     if re.search(photo,text): #replace with dummy
         l = ""
-        regexPattern = '|'.join(map(re.escape, photo.search(line).groups()))
-        photos = ', '.join(photo.search(line).groups())
-        output = [re.split(regexPattern, line),photos]
+        regexPattern = '|'.join(map(re.escape, photo.search(text).groups()))
+        photos = ', '.join(photo.search(text).groups())
+        output = [re.split(regexPattern, text),photos]
         for x in output[0]:
             l = l + x + " PHOTO "
-        line = l
+        text = l
     if re.search(video,text): #replace with dummy
         l = ""
-        regexPattern = '|'.join(map(re.escape, video.search(line).groups()))
-        videos = ', '.join(video.search(line).groups())
-        output = [re.split(regexPattern, line),videos]
+        regexPattern = '|'.join(map(re.escape, video.search(text).groups()))
+        videos = ', '.join(video.search(text).groups())
+        output = [re.split(regexPattern, text),videos]
         for x in output[0]:
             l = l + x + " VIDEO "
-        line = l
-    data = frogger.process(line)
+        text = l
+    data = frogger.process(text)
     for token in data:
         tokens.append(token["text"])
         pos.append(token["pos"])
