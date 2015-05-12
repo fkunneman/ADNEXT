@@ -47,6 +47,7 @@ for i,line in enumerate(lines):
     pos = []
     metalist.append(line[:-1])
     text = line[-1]
+    print(text)
     if re.search(url,text): #replace with dummy
         print("YES",text)
         l = ""
