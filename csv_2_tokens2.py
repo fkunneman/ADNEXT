@@ -43,13 +43,13 @@ with open(sys.argv[1], 'r') as csvfile:
         lines.append(row)
 
 #texts = dataset["texts"]
-texts = [i[-1] for i in lines][:20]
+texts = [i[-1] for i in lines][:200]
 indices = range(len(texts))
 
 print("Processing lines.")
 q = multiprocessing.Queue()
 frogged = []
-chunks = gen_functions.make_chunks(zip(indices,texts))
+chunks = gen_functions.make_chunks(zip(indices,texts),12)
 print(len(chunks))
 
 for i in range(len(chunks)):
