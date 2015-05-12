@@ -23,7 +23,7 @@ stemslist = []
 poslist = []
 
 url = re.compile(r"(\[url=http[^\]]+\][^\[]+\[\/url\])")
-photo = re.compile(r"(\[photo\][^\[\]]+\[\/photo\])")
+photo = re.compile(r"(\[photo\][^\]]+\[\/photo\])")
 video = re.compile(r"(\[video\][^\[\]]+\[\/video\])")
 
 print("reading in file")
@@ -52,7 +52,7 @@ for i,line in enumerate(lines):
     for text in cats:
         #print(text)
         if re.search(url,text): #replace with dummy
-            print("YES",text)
+            #print("YES",text)
             l = ""
             regexPattern = '|'.join(map(re.escape, url.search(text).groups()))
             urls = ', '.join(url.search(text).groups())
@@ -62,10 +62,10 @@ for i,line in enumerate(lines):
                 if len(x) > 0:
                     l = l + x + " URL "
             text = l
-            print(text)
-            print("END",text)
+            #print(text)
+            #print("END",text)
         if re.search(photo,text): #replace with dummy
-            print("YES",text)
+            #print("YES",text)
             l = ""
             regexPattern = '|'.join(map(re.escape, photo.search(text).groups()))
             photos = ', '.join(photo.search(text).groups())
@@ -73,9 +73,9 @@ for i,line in enumerate(lines):
             for x in output[0]:
                 l = l + x + " PHOTO "
             text = l
-            print("END",text)
+            #print("END",text)
         if re.search(video,text): #replace with dummy
-            print("YES",text)
+            #print("YES",text)
             l = ""
             regexPattern = '|'.join(map(re.escape, video.search(text).groups()))
             videos = ', '.join(video.search(text).groups())
@@ -83,7 +83,7 @@ for i,line in enumerate(lines):
             for x in output[0]:
                 l = l + x + " VIDEO "
             text = l
-            print("END",text)
+            #print("END",text)
         new_cats.append(text)
     txt = "\n".join(new_cats)
     data = frogger.process(txt)
