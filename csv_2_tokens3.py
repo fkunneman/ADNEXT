@@ -58,7 +58,6 @@ for i,line in enumerate(lines):
             urls = ', '.join(url.findall(text).groups())
             output = [re.split(regexPattern, text),urls]
             for x in output[0]:
-                print(x)
                 if len(x) > 0:
                     l = l + x + " URL "
             text = l
@@ -118,10 +117,3 @@ with open(filename + "_lemmatized.csv", 'w') as csvfile:
 
 
 # infile = open(sys.argv[1],encoding="utf-8")
-
-
-
-
-
-
-
