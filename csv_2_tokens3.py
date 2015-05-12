@@ -33,7 +33,7 @@ with open(sys.argv[1], 'r') as csvfile:
         lines.append(row)
 
 print("frogging")
-lines = lines[:30]
+#lines = lines[:30]
 le = len(lines)
 for i,line in enumerate(lines):
     print("line",i,"of",le)
