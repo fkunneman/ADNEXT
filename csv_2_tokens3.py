@@ -7,8 +7,8 @@ import ucto
 import re
 
 fo = frog.FrogOptions(threads=25)
-frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
-#frogger = frog.Frog(fo,"/home/fkunneman/netlogconf/frog-netlog.cfg")
+#frogger = frog.Frog(fo,"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+frogger = frog.Frog(fo,"/home/fkunneman/netlogconf/frog-netlog.cfg")
 csv.field_size_limit(sys.maxsize)
 
 #ucto_settingsfile = "/home/fkunneman/netlogconf/tokconfig-nl-netlog"
