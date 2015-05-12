@@ -22,9 +22,9 @@ tokenslist = []
 stemslist = []
 poslist = []
 
-url = re.compile(r"^(\[url=http[^\]]+\][^\[]+\[\/url\])$")
-photo = re.compile(r"^(\[photo\][^\[\]]+\[\/photo\])$")
-video = re.compile(r"^(\[video\][^\[\]]+\[\/video\])$")
+url = re.compile(r"(\[url=http[^\]]+\][^\[]+\[\/url\])")
+photo = re.compile(r"(\[photo\][^\[\]]+\[\/photo\])")
+video = re.compile(r"(\[video\][^\[\]]+\[\/video\])")
 
 print("reading in file")
 with open(sys.argv[1], 'r') as csvfile:
@@ -34,9 +34,9 @@ with open(sys.argv[1], 'r') as csvfile:
 
 print("frogging")
 lines = lines[:30]
-l = len(lines)
+le = len(lines)
 for i,line in enumerate(lines):
-    print("line",i,"of",l)
+    print("line",i,"of",le)
     #tokenizer = ucto.Tokenizer(ucto_settingsfile)
     #tokenizer.process(line[-1])
     #print(line)
@@ -46,39 +46,47 @@ for i,line in enumerate(lines):
     stems = []
     pos = []
     metalist.append(line[:-1])
-    text = line[-1]
-    print(text)
-    if re.search(url,text): #replace with dummy
-        print("YES",text)
-        l = ""
-        regexPattern = '|'.join(map(re.escape, url.search(text).groups()))
-        urls = ', '.join(url.search(text).groups())
-        output = [re.split(regexPattern, text),urls]
-        for x in output[0]:
-            l = l + x + " URL "
-        text = l
-        print("END",text)
-    if re.search(photo,text): #replace with dummy
-        print("YES",text)
-        l = ""
-        regexPattern = '|'.join(map(re.escape, photo.search(text).groups()))
-        photos = ', '.join(photo.search(text).groups())
-        output = [re.split(regexPattern, text),photos]
-        for x in output[0]:
-            l = l + x + " PHOTO "
-        text = l
-        print("END",text)
-    if re.search(video,text): #replace with dummy
-        print("YES",text)
-        l = ""
-        regexPattern = '|'.join(map(re.escape, video.search(text).groups()))
-        videos = ', '.join(video.search(text).groups())
-        output = [re.split(regexPattern, text),videos]
-        for x in output[0]:
-            l = l + x + " VIDEO "
-        text = l
-        print("END",text)
-    data = frogger.process(text)
+    txt = line[-1]
+    cats = txt.split("\n")
+    new_cats = []
+    for text in cats:
+        #print(text)
+        if re.search(url,text): #replace with dummy
+            print("YES",text)
+            l = ""
+            regexPattern = '|'.join(map(re.escape, url.search(text).groups()))
+            urls = ', '.join(url.search(text).groups())
+            output = [re.split(regexPattern, text),urls]
+            for x in output[0]:
+                print(x)
+                if len(x) > 0:
+                    l = l + x + " URL "
+            text = l
+            print(text)
+            print("END",text)
+        if re.search(photo,text): #replace with dummy
+            print("YES",text)
+            l = ""
+            regexPattern = '|'.join(map(re.escape, photo.search(text).groups()))
+            photos = ', '.join(photo.search(text).groups())
+            output = [re.split(regexPattern, text),photos]
+            for x in output[0]:
+                l = l + x + " PHOTO "
+            text = l
+            print("END",text)
+        if re.search(video,text): #replace with dummy
+            print("YES",text)
+            l = ""
+            regexPattern = '|'.join(map(re.escape, video.search(text).groups()))
+            videos = ', '.join(video.search(text).groups())
+            output = [re.split(regexPattern, text),videos]
+            for x in output[0]:
+                l = l + x + " VIDEO "
+            text = l
+            print("END",text)
+        new_cats.append(text)
+    txt = "\n".join(new_cats)
+    data = frogger.process(txt)
     for token in data:
         tokens.append(token["text"])
         pos.append(token["pos"])
