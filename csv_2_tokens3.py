@@ -54,8 +54,8 @@ for i,line in enumerate(lines):
         if re.search(url,text): #replace with dummy
             #print("YES",text)
             l = ""
-            regexPattern = '|'.join(map(re.escape, url.search(text).groups()))
-            urls = ', '.join(url.search(text).groups())
+            regexPattern = '|'.join(map(re.escape, url.findall(text)))
+            urls = ', '.join(url.findall(text).groups())
             output = [re.split(regexPattern, text),urls]
             for x in output[0]:
                 print(x)
@@ -67,8 +67,8 @@ for i,line in enumerate(lines):
         if re.search(photo,text): #replace with dummy
             #print("YES",text)
             l = ""
-            regexPattern = '|'.join(map(re.escape, photo.search(text).groups()))
-            photos = ', '.join(photo.search(text).groups())
+            regexPattern = '|'.join(map(re.escape, photo.findall(text)))
+            photos = ', '.join(photo.findall(text))
             output = [re.split(regexPattern, text),photos]
             for x in output[0]:
                 l = l + x + " PHOTO "
@@ -77,8 +77,8 @@ for i,line in enumerate(lines):
         if re.search(video,text): #replace with dummy
             #print("YES",text)
             l = ""
-            regexPattern = '|'.join(map(re.escape, video.search(text).groups()))
-            videos = ', '.join(video.search(text).groups())
+            regexPattern = '|'.join(map(re.escape, video.findall(text)))
+            videos = ', '.join(video.findall(text))
             output = [re.split(regexPattern, text),videos]
             for x in output[0]:
                 l = l + x + " VIDEO "
