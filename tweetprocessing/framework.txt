@@ -1,0 +1,50 @@
+
+exp/
+data/ --->   
+
+
+Pipeline
+
+1a: doc_2_csv
+
+possible input: excel, txt
+arguments: column
+output: csv with fields doc_id, user_id, date, time, user
+
+1b: json_2_csv
+
+input: json-file
+arguments: how to 
+output: 
+
+2: frog_csv
+
+input: csv-file
+arguments: tokenize only --> ucto
+uses: csv-reader
+output: csv-file with extra (frogged) column
+
+3: format_instances
+- remove 
+    * by string (e.g. RT)
+    * by time window
+    * by end hashtag 
+- add label
+- combine files
+uses: csv-reader
+
+4: extract features
+
+input: csv-file (frogged or not)
+arguments: 
+uses: featurizer-class, csv-reader
+output: [class,vector], csv-file
+
+
+5: classifier
+
+
+
+
+
+6: report
