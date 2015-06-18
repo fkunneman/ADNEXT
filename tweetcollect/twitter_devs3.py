@@ -29,7 +29,6 @@ def collect_usertweets(api,user,max_c = 1000,cnt=200):
     c = 1
 
     while not no_tweets:
-        #tweets = api.get_user_timeline(screen_name=user,count=200,page=c)
         try:
             tweets = api.get_user_timeline(screen_name=user,count=cnt,page=c)
             if len(tweets) < 1:
