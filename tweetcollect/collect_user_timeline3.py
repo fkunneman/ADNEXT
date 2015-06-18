@@ -23,7 +23,7 @@ for user in users:
     # Collect tweets
     tweets = twitter_devs3.collect_usertweets(api,user)
     while not tweets[0]:
-        time.sleep(3600)
+        time.sleep(1800)
         api = twython.Twython(passwords[0],passwords[1],passwords[2],passwords[3])
         tweets = twitter_devs3.collect_usertweets(api,user)
     outfile.write("\n".join(tweets))

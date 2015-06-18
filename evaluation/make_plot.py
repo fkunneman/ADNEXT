@@ -42,7 +42,13 @@ if plottype[:4] == "line":
     if legend:
         legend = plotfiles[half:]
         plt.legend(legend,loc = "lower right")
-    plt.ylim(top=1)
+    plt.tick_params(
+        axis='x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        bottom='off',      # ticks along the bottom edge are off
+        top='off',         # ticks along the top edge are off
+        labelbottom='off') # labels along the bottom edge are off
+    #plt.ylim(top=1)
 
 elif plottype == "hist":
     pf_open = open(plotfiles[0])
@@ -56,7 +62,7 @@ elif plottype == "hist":
     b = arange(min(y),max(y) + d,d)
     print b
     plt.hist(y,bins=b)
-    plt.ylim(0,20)
+    #plt.ylim(0,20)
 
 elif plottype == "bar":
     pf_open = open(plotfiles[0])
