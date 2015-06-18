@@ -88,15 +88,20 @@ def calculate_cohens_kappa(lines):
     print "lines-fields",len(lines),fields
 
     cohens_kappas = []
+    print(annotator_couples.keys())
     for annotator_1 in annotator_couples.keys():
         for annotator_2 in annotator_couples[annotator_1].keys():
+            print(annotator_1,annotator_2)
             agreement = annotator_couples[annotator_1][annotator_2]["match"] / len(lines)
+            print("agreement:",agreement)
             random = 0
             for answer in annotator_scores[annotator_1].keys():
                 percent_1 = annotator_scores[annotator_1][answer] / len(lines)
                 percent_2 = annotator_scores[annotator_2][answer] / len(lines)
                 random += (percent_1 * percent_2)
+            print("random",random)
             ck = (agreement - random) / (1 - random)
+            print("ck",ck)
             cohens_kappas.append(ck)    
 
     cohens_kappa = round(sum(cohens_kappas) / len(cohens_kappas),2)
@@ -252,11 +257,8 @@ def calculate_krippendorffs_alpha(lines):
 def calculate_fscore(lines,index_1,index_2):
     ce = evaluation.ClassEvaluation()
     for item in lines:
-        try:
-            ce.append(item[index_1],item[index_2])
-        except:
-            continue
-    return round(ce.fscore(cls=1),2)
+        ce.append(item[index_1],item[index_2])
+    return round(ce.fscore(cls='1'),2)
 
 def calculate_mutual_fscore(lines,lax=False):
     if lax:
@@ -267,5 +269,6 @@ def calculate_mutual_fscore(lines,lax=False):
     perms = list(itertools.permutations(range(num_coders),2))
     for p in perms:
         fscores.append(calculate_fscore(lines,p[0],p[1]))
+    print(fscores)
     mutual_fscore = round(sum(fscores)/len(fscores),2)
     return mutual_fscore

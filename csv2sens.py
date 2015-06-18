@@ -29,11 +29,10 @@ for i,line in enumerate(lines):
     ind = []
     x = 0
     for token in tokenizer:
-        x+=1
         #print(token.text,token.role,token.type(),token.isendofsentence())
-        if token.isendofsentence():
-            ind.append(str(x))
-            x = 0
+        ind.append(str(x))
+        if token.isendofsentence():    
+            x += 1 
     indices.append(" ".join(ind))
 
 with open(filename + "_sentences.csv", 'w') as csvfile:
