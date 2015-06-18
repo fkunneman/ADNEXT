@@ -22,5 +22,14 @@ class Coco:
         pattern_counts = []
         for pattern, count in patternmodel.items():
             pattern_counts.append(pattern.tostring(self.classdecoder), count)
-        sorted_pattern_counts = sorted(pattern_counts, key = lambda k : k[1], reverse = True)
+        sorted_pattern_counts = sorted(pattern_counts, key = lambda k : k[1], reverse = True)r
         return sorted_pattern_counts
+
+    def count_lexicon(self, lexicon):
+        for key in lexicon:
+            querypattern = classencoder.buildpattern(key)
+            try:
+                print(model[querypattern])
+            except KeyError:
+                continue
+            
