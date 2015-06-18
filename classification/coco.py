@@ -25,11 +25,13 @@ class Coco:
         sorted_pattern_counts = sorted(pattern_counts, key = lambda k : k[1], reverse = True)r
         return sorted_pattern_counts
 
-    def count_lexicon(self, lexicon):
+    def count_lexicon(self, lexicon, tokens, length):
+        patternmodel = colibricore.UnindexedPatternModel()
+        patternmodel.train(self.corpusfile, options)
         for key in lexicon:
-            querypattern = classencoder.buildpattern(key)
+            querypattern = self.classencoder.buildpattern(key)
             try:
-                print(model[querypattern])
+                print(patternmodel[querypattern])
             except KeyError:
                 continue
-            
+
