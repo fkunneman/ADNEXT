@@ -9,9 +9,11 @@ lw = int(sys.argv[2])
 outplot = sys.argv[3]
 xlabel = sys.argv[4]
 ylabel = sys.argv[5]
-sort = sys.argv[6]
-legend = int(sys.argv[7])
-plotfiles = sys.argv[8:]
+yrange_lowest = int(sys.argv[6])
+yrange_highest = int(sys.argv[7])
+sort = sys.argv[8]
+legend = int(sys.argv[9])
+plotfiles = sys.argv[10:]
 
 if plottype[:4] == "line":
     linestyles = ["-","--","-.",":"]
@@ -39,6 +41,7 @@ if plottype[:4] == "line":
             plt.gca().invert_xaxis()
 #pos = np.arange(len(x))
         #    plt.xticks(xpos,x)
+    plt.ylim((yrange_lowest,yrange_highest))
     if legend:
         legend = plotfiles[half:]
         plt.legend(legend,loc = "lower right")

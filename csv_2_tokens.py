@@ -38,6 +38,7 @@ for i,line in enumerate(lines):
     pos = []
     metalist.append(line[:-1])
     data = frogger.process(line[-1])
+#    print(data)
     for token in data:
         tokens.append(token["text"])
         pos.append(token["pos"])

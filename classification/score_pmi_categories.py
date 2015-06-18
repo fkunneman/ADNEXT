@@ -8,7 +8,6 @@ import colibricore
 tmp = sys.argv[1]
 outdir = sys.argv[2]
 infiles = sys.argv[3:]
-
 """
 script to read in x files (where x is the number of categories) with tokenized sentences, and 
 return lists of words ranked by pmi per category
@@ -47,6 +46,7 @@ for i, infile in enumerate(infiles):
         cls = infile.split("/")[-1][:-4]
         lines = f.readlines()
         clprob = len(lines)/nlines_total
+        outfile = open(outdir + cls + "_freq.txt","w",encoding="utf-8")
         for l in lines:
             # words = l.strip().split(" ")
             # for i in range(3):
@@ -61,21 +61,39 @@ for i, infile in enumerate(infiles):
             #         classmodel.add(pattern) #(will count +1 if already exists)
             pattern = classencoder.buildpattern(l.strip())
             classmodel.add(pattern)
-    classmodels.append((cls,clprob,classmodel))
+        options = colibricore.PatternModelOptions(mintokens=0, maxlength=1)
+        patternmodel = colibricore.UnindexedPatternModel()
+#    patternmodel.train(corpusfile, options, classmodel[2])
+        patternmodel.train(corpusfile, options)
+        freqs = []
+        for ngram, count in patternmodel.items():
+            freqs.append(["_".join(ngram.tostring(classdecoder).split()), str(count)])
+        freqs_sorted = sorted(freqs, key = lambda k : k[1], reverse = True)
+        for f in freqs_sorted:
+            outfile.write(f[0] + "\t" + f[1] + "\n")
+            
+    #classmodels.append((cls,clprob,classmodel))
+
+quit()
 
 print("Calculating statistics",file=sys.stderr)
-options = colibricore.PatternModelOptions(mintokens=10, maxlength=3)
+options = colibricore.PatternModelOptions(mintokens=0, maxlength=3)
 for classmodel in classmodels:
     pattern_pmi = []
     class_probability = classmodel[1]
     patternmodel = colibricore.UnindexedPatternModel()
-    patternmodel.train(corpusfile, options, classmodel[2]) #(last argument constrains the training to patterns only occuring in that model, i.e the intersectino of these models, saves heaps of space)
+#    patternmodel.train(corpusfile, options, classmodel[2]) 
+    patternmodel.train(corpusfile, options) 
+#(last argument constrains the training to patterns only occuring in that model, i.e the intersectino of these models, saves heaps of space)
     for ngram, count in patternmodel.items():
-        class_cooc = classmodel[2][ngram]
-        pmi = math.log(class_cooc/((count/nlines_total) * class_probability))
-        pattern_pmi.append((ngram.tostring(classdecoder),pmi))
+        try:
+            class_cooc = classmodel[2][ngram]
+            pmi = math.log(class_cooc/((count/nlines_total) * class_probability))
+            pattern_pmi.append((ngram.tostring(classdecoder),pmi,str(count)))
+        except KeyError:
+            continue             
     pattern_pmi_sorted = sorted(pattern_pmi,key = lambda k : k[1],reverse = True)
     outfile = open(outdir + classmodel[0] + "_pmi.txt","w",encoding="utf-8")
     for pp in pattern_pmi_sorted:
-        outfile.write(pp[0] + "\t" + str(round(pp[1],2)) + "\n")
+        outfile.write(pp[0] + "\t" + str(round(pp[1],2)) + "\t" + pp[2] + "\n")
     outfile.close()
